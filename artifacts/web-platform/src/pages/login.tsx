@@ -131,6 +131,13 @@ export default function LoginPage() {
           />
         </div>
 
+        {/* Slogan */}
+        <div className="relative z-10 text-center">
+          <p className="text-white/50 text-base tracking-wide">
+            System Pay — <span className="text-white/70">seu sistema completo de cobranças.</span>
+          </p>
+        </div>
+
         {/* Bottom */}
         <div className="relative z-10 flex flex-col items-center gap-5 w-full">
           <div className="flex flex-col items-center gap-2.5">
