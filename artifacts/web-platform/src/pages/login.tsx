@@ -35,13 +35,16 @@ export default function LoginPage() {
       {/* ── LEFT PANEL ──────────────────────────────────────── */}
       <div className="hidden lg:flex w-[52%] flex-col items-center justify-between py-14 px-12 relative">
 
-        {/* Logo */}
-        <div className="relative z-10 w-full -mx-12 overflow-hidden">
+        {/* Logo — mask fade elimina bordas da imagem */}
+        <div className="relative z-10 w-full flex justify-center">
           <img
             src={logoImg}
             alt="SystemPay"
-            className="w-full object-cover select-none"
-            style={{ maxHeight: 220, objectPosition: "center" }}
+            className="w-80 object-contain select-none"
+            style={{
+              maskImage: "radial-gradient(ellipse 80% 75% at 50% 50%, black 40%, transparent 100%)",
+              WebkitMaskImage: "radial-gradient(ellipse 80% 75% at 50% 50%, black 40%, transparent 100%)",
+            }}
             draggable={false}
           />
         </div>
@@ -103,11 +106,6 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Vertical divider */}
-      <div
-        className="hidden lg:block w-px self-stretch my-10"
-        style={{ background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.08), transparent)" }}
-      />
 
       {/* ── RIGHT PANEL ─────────────────────────────────────── */}
       <div className="flex-1 flex flex-col items-center justify-center px-8 md:px-14 py-12 relative z-10">
