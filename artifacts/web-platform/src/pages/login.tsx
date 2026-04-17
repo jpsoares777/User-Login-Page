@@ -32,6 +32,91 @@ export default function LoginPage() {
         </svg>
       </div>
 
+      {/* Ghost bar chart — bottom right */}
+      <div className="fixed bottom-0 right-0 pointer-events-none" style={{ opacity: 0.07 }}>
+        <svg width="420" height="260" viewBox="0 0 420 260" fill="none">
+          <defs>
+            <linearGradient id="bar1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#39e37c" stopOpacity="1" />
+              <stop offset="100%" stopColor="#39e37c" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="bar2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#00aaff" stopOpacity="1" />
+              <stop offset="100%" stopColor="#00aaff" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {/* Bars */}
+          <rect x="30"  y="160" width="32" height="100" rx="4" fill="url(#bar2)" />
+          <rect x="80"  y="110" width="32" height="150" rx="4" fill="url(#bar1)" />
+          <rect x="130" y="80"  width="32" height="180" rx="4" fill="url(#bar2)" />
+          <rect x="180" y="50"  width="32" height="210" rx="4" fill="url(#bar1)" />
+          <rect x="230" y="30"  width="32" height="230" rx="4" fill="url(#bar2)" />
+          <rect x="280" y="60"  width="32" height="200" rx="4" fill="url(#bar1)" />
+          <rect x="330" y="40"  width="32" height="220" rx="4" fill="url(#bar2)" />
+          <rect x="380" y="20"  width="32" height="240" rx="4" fill="url(#bar1)" />
+          {/* Baseline */}
+          <line x1="20" y1="258" x2="420" y2="258" stroke="white" strokeWidth="1" strokeOpacity="0.4" />
+        </svg>
+      </div>
+
+      {/* Ghost line chart — top left */}
+      <div className="fixed top-0 left-0 pointer-events-none" style={{ opacity: 0.06 }}>
+        <svg width="480" height="220" viewBox="0 0 480 220" fill="none">
+          <defs>
+            <linearGradient id="lineArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#00aaff" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#00aaff" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="lineArea2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#39e37c" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#39e37c" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {/* Area fill */}
+          <path
+            d="M0,160 C40,140 80,100 120,90 C160,80 200,110 240,80 C280,50 320,60 360,40 C400,20 440,30 480,10 L480,220 L0,220 Z"
+            fill="url(#lineArea)"
+          />
+          {/* Line */}
+          <path
+            d="M0,160 C40,140 80,100 120,90 C160,80 200,110 240,80 C280,50 320,60 360,40 C400,20 440,30 480,10"
+            stroke="#00aaff" strokeWidth="2" fill="none"
+          />
+          {/* Second line */}
+          <path
+            d="M0,180 C40,170 80,150 120,130 C160,110 200,140 240,120 C280,100 320,115 360,90 C400,65 440,75 480,55"
+            stroke="#39e37c" strokeWidth="1.5" fill="none" strokeDasharray="6 4"
+          />
+          {/* Dots on first line */}
+          {[[120,90],[240,80],[360,40]].map(([x,y], i) => (
+            <circle key={i} cx={x} cy={y} r="4" fill="#00aaff" />
+          ))}
+        </svg>
+      </div>
+
+      {/* Ghost mini sparklines — right center */}
+      <div className="fixed right-8 top-1/2 -translate-y-1/2 pointer-events-none flex flex-col gap-6" style={{ opacity: 0.06 }}>
+        {[
+          { d: "M0,20 L10,15 L20,18 L30,8 L40,12 L50,4 L60,9", color: "#39e37c" },
+          { d: "M0,18 L10,14 L20,20 L30,10 L40,16 L50,6 L60,14", color: "#00aaff" },
+          { d: "M0,22 L10,16 L20,19 L30,12 L40,15 L50,8 L60,5",  color: "#a78bfa" },
+        ].map((s, i) => (
+          <svg key={i} width="60" height="28" viewBox="0 0 60 28">
+            <path d={s.d} stroke={s.color} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="60" cy={s.d.split(" ").pop()!.split(",")[1]} r="3" fill={s.color} />
+          </svg>
+        ))}
+      </div>
+
+      {/* Ghost donut / ring — center left */}
+      <div className="fixed left-16 top-1/2 -translate-y-1/2 pointer-events-none" style={{ opacity: 0.05 }}>
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="64" fill="none" stroke="#00aaff" strokeWidth="18" strokeDasharray="240 160" strokeDashoffset="-20" />
+          <circle cx="80" cy="80" r="64" fill="none" stroke="#39e37c" strokeWidth="18" strokeDasharray="120 280" strokeDashoffset="220" />
+          <circle cx="80" cy="80" r="64" fill="none" stroke="#a78bfa" strokeWidth="18" strokeDasharray="60 340" strokeDashoffset="340" />
+        </svg>
+      </div>
+
       {/* ── LEFT PANEL ──────────────────────────────────────── */}
       <div className="hidden lg:flex w-[52%] flex-col items-center justify-between py-14 px-12 relative">
 
