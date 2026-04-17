@@ -125,7 +125,7 @@ export default function LoginPage() {
           <img
             src={logoImg}
             alt="SystemPay"
-            className="w-96 object-contain select-none"
+            className="w-[28rem] object-contain select-none"
             style={{ mixBlendMode: "screen" }}
             draggable={false}
           />
