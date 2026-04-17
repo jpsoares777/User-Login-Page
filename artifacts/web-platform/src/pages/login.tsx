@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logoImg from "@assets/ChatGPT_Image_12_de_mar._de_2026,_23_47_11_1776469089971.png";
+import logoImg from "@assets/ChatGPT_Image_17_de_abr._de_2026,_20_49_18_(2)_1776469795366.png";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -120,16 +120,13 @@ export default function LoginPage() {
       {/* ── LEFT PANEL ──────────────────────────────────────── */}
       <div className="hidden lg:flex w-[52%] flex-col items-center justify-between py-14 px-12 relative">
 
-        {/* Logo — mask fade elimina bordas da imagem */}
+        {/* Logo — mix-blend-mode:screen remove fundo preto */}
         <div className="relative z-10 w-full flex justify-center">
           <img
             src={logoImg}
             alt="SystemPay"
-            className="w-80 object-contain select-none"
-            style={{
-              maskImage: "radial-gradient(ellipse 80% 75% at 50% 50%, black 40%, transparent 100%)",
-              WebkitMaskImage: "radial-gradient(ellipse 80% 75% at 50% 50%, black 40%, transparent 100%)",
-            }}
+            className="w-96 object-contain select-none"
+            style={{ mixBlendMode: "screen" }}
             draggable={false}
           />
         </div>
