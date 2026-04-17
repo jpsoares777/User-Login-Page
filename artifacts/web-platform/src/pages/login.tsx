@@ -133,10 +133,10 @@ export default function LoginPage() {
 
         {/* Headline central */}
         <div className="relative z-10 w-full">
-          <h2 className="text-white font-extrabold leading-tight mb-5" style={{ fontSize: "2.6rem" }}>
+          <h2 className="text-white font-extrabold leading-tight mb-3" style={{ fontSize: "2.1rem" }}>
             System Pay — controle total<br />das suas cobranças.
           </h2>
-          <p className="text-white/45 text-base leading-relaxed max-w-sm">
+          <p className="text-white/40 text-sm leading-relaxed max-w-xs">
             Gerencie clientes, parcelas e lucros de forma simples e eficiente.
           </p>
         </div>
