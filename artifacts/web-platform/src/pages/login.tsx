@@ -11,41 +11,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div
+      className="min-h-screen flex"
+      style={{ background: "#0c1d38" }}
+    >
+      {/* Ambient glow blobs — full page */}
+      <div className="fixed -top-24 -right-24 w-96 h-96 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(0,150,255,0.12) 0%, transparent 70%)", filter: "blur(40px)" }} />
+      <div className="fixed -bottom-24 -left-24 w-96 h-96 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(57,227,124,0.08) 0%, transparent 70%)", filter: "blur(40px)" }} />
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(0,80,200,0.06) 0%, transparent 60%)", filter: "blur(60px)" }} />
+
+      {/* Subtle grid — full page */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03]">
+        <svg width="100%" height="100%">
+          <defs>
+            <pattern id="g" width="48" height="48" patternUnits="userSpaceOnUse">
+              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="white" strokeWidth="0.6" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#g)" />
+        </svg>
+      </div>
 
       {/* ── LEFT PANEL ──────────────────────────────────────── */}
-      <div
-        className="hidden lg:flex w-[52%] flex-col items-center justify-between py-14 px-12 relative overflow-hidden"
-        style={{ background: "#0c1d38" }}
-      >
-        {/* Ambient glow blobs */}
-        <div
-          className="absolute -top-24 -right-24 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(0,150,255,0.12) 0%, transparent 70%)", filter: "blur(40px)" }}
-        />
-        <div
-          className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(57,227,124,0.09) 0%, transparent 70%)", filter: "blur(40px)" }}
-        />
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(0,80,200,0.06) 0%, transparent 60%)", filter: "blur(60px)" }}
-        />
+      <div className="hidden lg:flex w-[52%] flex-col items-center justify-between py-14 px-12 relative">
 
-        {/* Subtle grid */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
-          <svg width="100%" height="100%">
-            <defs>
-              <pattern id="g" width="48" height="48" patternUnits="userSpaceOnUse">
-                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="white" strokeWidth="0.6" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#g)" />
-          </svg>
-        </div>
-
-        {/* Logo — ocupa a largura total, sem caixa visível */}
-        <div className="relative z-10 w-full -mx-12 px-0 overflow-hidden" style={{ background: "#0c1d38" }}>
+        {/* Logo */}
+        <div className="relative z-10 w-full -mx-12 overflow-hidden">
           <img
             src={logoImg}
             alt="SystemPay"
@@ -59,29 +50,23 @@ export default function LoginPage() {
         <div className="relative z-10 text-center px-6 max-w-sm">
           <div
             className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest mb-6"
-            style={{
-              background: "rgba(0,150,255,0.1)",
-              border: "1px solid rgba(0,150,255,0.2)",
-              color: "#5ab4ff",
-            }}
+            style={{ background: "rgba(0,150,255,0.1)", border: "1px solid rgba(0,150,255,0.2)", color: "#5ab4ff" }}
           >
             Plataforma de Gestão
           </div>
           <h2 className="text-white text-2xl font-light leading-relaxed mb-6">
-            Gerencie seu negócio com <span className="font-semibold text-white">inteligência</span> e <span className="font-semibold text-white">segurança</span>
+            Gerencie seu negócio com{" "}
+            <span className="font-semibold text-white">inteligência</span> e{" "}
+            <span className="font-semibold text-white">segurança</span>
           </h2>
-          <div
-            className="w-12 h-0.5 mx-auto mb-6"
-            style={{ background: "linear-gradient(90deg, #39e37c, #00aaff)" }}
-          />
+          <div className="w-12 h-0.5 mx-auto mb-6" style={{ background: "linear-gradient(90deg, #39e37c, #00aaff)" }} />
           <p className="text-white/35 text-sm leading-relaxed">
             Conecte-se à sua plataforma e acesse todos os recursos da sua conta em um só lugar.
           </p>
         </div>
 
-        {/* Bottom: download + stats */}
+        {/* Bottom */}
         <div className="relative z-10 flex flex-col items-center gap-5 w-full">
-          {/* Stats row */}
           <div className="flex items-center gap-8 mb-1">
             {[
               { value: "99.9%", label: "Uptime" },
@@ -94,11 +79,7 @@ export default function LoginPage() {
               </div>
             ))}
           </div>
-
-          {/* Divider */}
-          <div className="w-full h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
-
-          {/* Google Play */}
+          <div className="w-full h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
           <div className="flex flex-col items-center gap-2.5">
             <p className="text-white/25 text-[10px] uppercase tracking-[0.25em]">Baixe o aplicativo</p>
             <a
@@ -117,53 +98,42 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Footer */}
         <p className="absolute bottom-3 text-white/15 text-[10px]">
           © {new Date().getFullYear()} systempay.tech · All rights reserved
         </p>
       </div>
 
+      {/* Vertical divider */}
+      <div
+        className="hidden lg:block w-px self-stretch my-10"
+        style={{ background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.08), transparent)" }}
+      />
+
       {/* ── RIGHT PANEL ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white px-8 md:px-14 py-12 relative">
-
-        {/* Subtle top accent line */}
-        <div
-          className="absolute top-0 left-0 right-0 h-0.5"
-          style={{ background: "linear-gradient(90deg, #0070f3, #00c6ff, #39e37c)" }}
-        />
-
+      <div className="flex-1 flex flex-col items-center justify-center px-8 md:px-14 py-12 relative z-10">
         <div className="w-full max-w-[360px]">
 
-          {/* Logo for mobile / small screens */}
+          {/* Logo for mobile */}
           <div className="lg:hidden flex justify-center mb-8">
-            <div className="rounded-xl px-6 py-3" style={{ background: "#0c1d38" }}>
-              <img src={logoImg} alt="SystemPay" className="h-10 object-contain" />
-            </div>
-          </div>
-
-          {/* Logo shown on desktop right panel */}
-          <div className="hidden lg:flex justify-center mb-10">
-            <div className="rounded-2xl px-7 py-4 shadow-md" style={{ background: "#0c1d38" }}>
-              <img src={logoImg} alt="SystemPay" className="h-10 object-contain" />
-            </div>
+            <img src={logoImg} alt="SystemPay" className="w-48 object-contain" draggable={false} />
           </div>
 
           {/* Heading */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Bem-vindo de volta</h1>
-            <p className="text-gray-400 text-sm">Insira suas credenciais para acessar</p>
+            <h1 className="text-2xl font-bold text-white mb-1">Bem-vindo de volta</h1>
+            <p className="text-white/35 text-sm">Insira suas credenciais para acessar</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
 
             {/* Usuário */}
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
                 Usuário
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-white/25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </span>
@@ -173,16 +143,16 @@ export default function LoginPage() {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Digite seu usuário"
                   autoComplete="username"
-                  className="w-full pl-10 pr-4 py-3.5 rounded-xl text-sm text-gray-800 placeholder-gray-300 outline-none transition-all duration-200"
-                  style={{ border: "1.5px solid #e5e7eb", background: "#fafafa" }}
+                  className="w-full pl-10 pr-4 py-3.5 rounded-xl text-sm text-white placeholder-white/20 outline-none transition-all duration-200"
+                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#0070f3";
-                    e.currentTarget.style.background = "#fff";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0,112,243,0.1)";
+                    e.currentTarget.style.borderColor = "rgba(0,198,255,0.5)";
+                    e.currentTarget.style.background = "rgba(0,198,255,0.05)";
+                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0,198,255,0.08)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e5e7eb";
-                    e.currentTarget.style.background = "#fafafa";
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                    e.currentTarget.style.background = "rgba(255,255,255,0.05)";
                     e.currentTarget.style.boxShadow = "none";
                   }}
                 />
@@ -191,12 +161,12 @@ export default function LoginPage() {
 
             {/* Senha */}
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
                 Senha
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-white/25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </span>
@@ -206,23 +176,23 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Digite sua senha"
                   autoComplete="current-password"
-                  className="w-full pl-10 pr-12 py-3.5 rounded-xl text-sm text-gray-800 placeholder-gray-300 outline-none transition-all duration-200"
-                  style={{ border: "1.5px solid #e5e7eb", background: "#fafafa" }}
+                  className="w-full pl-10 pr-12 py-3.5 rounded-xl text-sm text-white placeholder-white/20 outline-none transition-all duration-200"
+                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#0070f3";
-                    e.currentTarget.style.background = "#fff";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0,112,243,0.1)";
+                    e.currentTarget.style.borderColor = "rgba(0,198,255,0.5)";
+                    e.currentTarget.style.background = "rgba(0,198,255,0.05)";
+                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0,198,255,0.08)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e5e7eb";
-                    e.currentTarget.style.background = "#fafafa";
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                    e.currentTarget.style.background = "rgba(255,255,255,0.05)";
                     e.currentTarget.style.boxShadow = "none";
                   }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-3.5 flex items-center text-gray-300 hover:text-gray-500 transition-colors duration-200"
+                  className="absolute inset-y-0 right-3.5 flex items-center text-white/25 hover:text-white/50 transition-colors duration-200"
                 >
                   {showPassword ? (
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,26 +213,25 @@ export default function LoginPage() {
               <svg className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
-              <a href="#" className="text-sm text-amber-500 hover:text-amber-600 transition-colors font-medium">
+              <a href="#" className="text-sm text-amber-400 hover:text-amber-300 transition-colors font-medium">
                 Esqueceu sua senha?
               </a>
             </div>
 
-            {/* Botão ENTRAR */}
+            {/* Botão */}
             <button
               type="submit"
               className="w-full py-3.5 rounded-xl text-sm font-bold text-white uppercase tracking-widest transition-all duration-200 hover:opacity-90 active:scale-[0.98] mt-1"
               style={{
                 background: "linear-gradient(135deg, #0078ff 0%, #0050c8 100%)",
-                boxShadow: "0 8px 24px rgba(0,112,255,0.3)",
+                boxShadow: "0 8px 28px rgba(0,112,255,0.35)",
               }}
             >
               Entrar
             </button>
           </form>
 
-          {/* Footer */}
-          <p className="text-center text-gray-300 text-xs mt-10">
+          <p className="text-center text-white/20 text-xs mt-10">
             © {new Date().getFullYear()} systempay.tech · Todos os direitos reservados
           </p>
         </div>
