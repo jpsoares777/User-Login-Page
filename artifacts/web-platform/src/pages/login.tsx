@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logoImg from "@assets/ChatGPT_Image_12_de_mar._de_2026,_23_47_11_1776469089971.png";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -15,11 +16,11 @@ export default function LoginPage() {
       <div
         className="hidden md:flex w-1/2 flex-col items-center justify-between py-16 px-10 relative overflow-hidden"
         style={{
-          background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+          background: "linear-gradient(160deg, #0a1628 0%, #0d1f3c 45%, #0f2850 100%)",
         }}
       >
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-5">
+        {/* Background grid pattern */}
+        <div className="absolute inset-0 opacity-[0.04]">
           <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -30,76 +31,85 @@ export default function LoginPage() {
           </svg>
         </div>
 
-        {/* Decorative circles */}
-        <div className="absolute top-20 right-20 w-64 h-64 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #e94560 0%, transparent 70%)" }} />
-        <div className="absolute bottom-20 left-10 w-48 h-48 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #0f3460 0%, transparent 70%)" }} />
+        {/* Decorative glow orbs */}
+        <div className="absolute top-16 right-10 w-72 h-72 rounded-full opacity-10 blur-3xl pointer-events-none"
+          style={{ background: "radial-gradient(circle, #00c6ff 0%, transparent 70%)" }} />
+        <div className="absolute bottom-16 left-5 w-64 h-64 rounded-full opacity-10 blur-3xl pointer-events-none"
+          style={{ background: "radial-gradient(circle, #39e37c 0%, transparent 70%)" }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-5 blur-3xl pointer-events-none"
+          style={{ background: "radial-gradient(circle, #0078ff 0%, transparent 70%)" }} />
 
-        {/* Logo area */}
+        {/* Logo */}
         <div className="relative z-10 flex flex-col items-center">
-          <div className="w-32 h-32 rounded-full border-2 border-red-600/40 bg-white/5 flex items-center justify-center mb-6 shadow-2xl">
-            <span className="text-white/40 text-xs text-center px-4 leading-tight">
-              Sua logo<br />aparece aqui
-            </span>
-          </div>
-          <p className="text-red-500/80 uppercase tracking-[0.3em] text-xs font-semibold mt-2">
-            Plataforma de Gestão
-          </p>
+          <img
+            src={logoImg}
+            alt="SystemPay"
+            className="w-64 object-contain drop-shadow-2xl"
+          />
         </div>
 
         {/* Center tagline */}
         <div className="relative z-10 text-center px-8">
-          <h2 className="text-white/90 text-2xl font-light leading-relaxed mb-4">
+          <h2 className="text-white/90 text-2xl font-light leading-relaxed mb-5">
             Conecte-se à sua plataforma com segurança e eficiência
           </h2>
-          <div className="w-16 h-0.5 bg-red-500 mx-auto mb-4" />
-          <p className="text-white/50 text-sm font-light tracking-wide">
-            SOLUÇÕES TECNOLÓGICAS INTELIGENTES
+          <div
+            className="w-16 h-0.5 mx-auto mb-5"
+            style={{ background: "linear-gradient(90deg, #39e37c, #00c6ff)" }}
+          />
+          <p className="text-white/45 text-sm font-light tracking-[0.2em] uppercase">
+            systempay.tech
           </p>
         </div>
 
         {/* Download app area */}
         <div className="relative z-10 flex flex-col items-center gap-3">
-          <p className="text-white/50 text-xs uppercase tracking-widest">Baixe o APP</p>
+          <p className="text-white/40 text-xs uppercase tracking-[0.25em]">Baixe o APP</p>
           <a
             href="#"
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/20 rounded-lg px-5 py-2.5 transition-all duration-200"
+            className="flex items-center gap-3 border border-white/15 rounded-xl px-5 py-3 transition-all duration-200 hover:border-white/30 hover:bg-white/5"
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0" style={{ fill: "url(#googleGrad)" }}>
+              <defs>
+                <linearGradient id="googleGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#39e37c" />
+                  <stop offset="100%" stopColor="#00c6ff" />
+                </linearGradient>
+              </defs>
               <path d="M3.18 23.76c.33.18.7.24 1.06.18l11.62-11.62-2.83-2.83L3.18 23.76zm14.65-12.77-2.53-2.53 2.53-2.53c.7-.7.7-1.83 0-2.53-.7-.7-1.83-.7-2.53 0l-2.53 2.53-2.53-2.53c-.7-.7-1.83-.7-2.53 0-.7.7-.7 1.83 0 2.53l2.53 2.53-2.53 2.53c-.7.7-.7 1.83 0 2.53.7.7 1.83.7 2.53 0l2.53-2.53 2.53 2.53c.7.7 1.83.7 2.53 0 .7-.7.7-1.83 0-2.53zM4.24.06C3.88 0 3.51.06 3.18.24L13.03 10.1l2.83-2.83L4.24.06z" />
             </svg>
             <div>
-              <p className="text-white/40 text-[9px] uppercase tracking-widest leading-none">Disponível no</p>
-              <p className="text-white text-sm font-medium leading-tight">Google Play</p>
+              <p className="text-white/35 text-[9px] uppercase tracking-widest leading-none mb-0.5">Disponível no</p>
+              <p className="text-white text-sm font-semibold leading-tight">Google Play</p>
             </div>
           </a>
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-4 text-white/25 text-xs text-center w-full">
-          © Copyright {new Date().getFullYear()} · All rights reserved
+        <div className="absolute bottom-4 text-white/20 text-xs text-center w-full">
+          © Copyright {new Date().getFullYear()} systempay.tech · All rights reserved
         </div>
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white px-8 md:px-16 lg:px-24 py-16">
-        {/* Mobile logo (only visible on mobile) */}
-        <div className="md:hidden mb-8 flex flex-col items-center">
-          <div className="w-20 h-20 rounded-full border-2 border-gray-200 bg-gray-50 flex items-center justify-center mb-3">
-            <span className="text-gray-400 text-xs text-center px-2 leading-tight">Logo</span>
+      <div className="flex-1 flex flex-col items-center justify-center bg-white px-8 md:px-16 lg:px-20 py-16">
+
+        {/* Mobile logo */}
+        <div className="md:hidden mb-8 flex justify-center">
+          <div className="bg-[#0d1f3c] rounded-2xl px-6 py-4">
+            <img src={logoImg} alt="SystemPay" className="h-12 object-contain" />
           </div>
         </div>
 
         <div className="w-full max-w-sm">
-          {/* Logo placeholder for desktop */}
+          {/* Logo for desktop */}
           <div className="hidden md:flex justify-center mb-10">
-            <div className="w-24 h-24 rounded-full border-2 border-gray-100 bg-gray-50 shadow-sm flex items-center justify-center">
-              <span className="text-gray-400 text-[10px] text-center leading-tight px-2">Sua logo<br />aqui</span>
+            <div className="bg-[#0d1f3c] rounded-2xl px-8 py-5 shadow-lg">
+              <img src={logoImg} alt="SystemPay" className="h-14 object-contain" />
             </div>
           </div>
 
-          <h1 className="text-2xl font-semibold text-gray-800 mb-1">Bem-vindo</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-1">Bem-vindo</h1>
           <p className="text-gray-500 text-sm mb-8">Faça login para acessar sua conta</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -119,7 +129,9 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Digite seu usuário"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-200 bg-gray-50/50"
+                  autoComplete="username"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-blue-400 transition-all duration-200 bg-gray-50/50"
+                  style={{ "--tw-ring-color": "rgba(0,198,255,0.25)" } as React.CSSProperties}
                 />
               </div>
             </div>
@@ -140,7 +152,9 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Digite sua senha"
-                  className="w-full pl-10 pr-11 py-3 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-200 bg-gray-50/50"
+                  autoComplete="current-password"
+                  className="w-full pl-10 pr-11 py-3 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-blue-400 transition-all duration-200 bg-gray-50/50"
+                  style={{ "--tw-ring-color": "rgba(0,198,255,0.25)" } as React.CSSProperties}
                 />
                 <button
                   type="button"
@@ -174,9 +188,9 @@ export default function LoginPage() {
             {/* Submit button */}
             <button
               type="submit"
-              className="w-full py-3 rounded-lg text-sm font-semibold text-white transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.99] mt-2"
+              className="w-full py-3 rounded-lg text-sm font-bold text-white transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.99] mt-2"
               style={{
-                background: "linear-gradient(135deg, #1a4fc4 0%, #1e3a8a 100%)",
+                background: "linear-gradient(135deg, #0066cc 0%, #0047ab 50%, #003380 100%)",
               }}
             >
               ENTRAR
@@ -185,7 +199,7 @@ export default function LoginPage() {
 
           {/* Footer */}
           <p className="text-center text-gray-400 text-xs mt-10">
-            © Copyright {new Date().getFullYear()} · Todos os direitos reservados
+            © Copyright {new Date().getFullYear()} systempay.tech · Todos os direitos reservados
           </p>
         </div>
       </div>
