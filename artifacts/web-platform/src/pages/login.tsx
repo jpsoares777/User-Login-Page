@@ -120,47 +120,47 @@ export default function LoginPage() {
       {/* ── LEFT PANEL ──────────────────────────────────────── */}
       <div className="hidden lg:flex w-[52%] flex-col items-center justify-between py-14 px-12 relative">
 
-        {/* Logo — mix-blend-mode:screen remove fundo preto */}
-        <div className="relative z-10 w-full flex justify-center">
+        {/* Logo — topo esquerdo, pequena */}
+        <div className="relative z-10 w-full flex justify-start">
           <img
             src={logoImg}
             alt="SystemPay"
-            className="w-[28rem] object-contain select-none"
+            className="w-52 object-contain select-none"
             style={{ mixBlendMode: "screen" }}
             draggable={false}
           />
         </div>
 
-        {/* Slogan */}
-        <div className="relative z-10 text-center">
-          <p className="text-white/50 text-base tracking-wide">
-            System Pay — <span className="text-white/70">seu sistema completo de cobranças.</span>
+        {/* Headline central */}
+        <div className="relative z-10 w-full">
+          <h2 className="text-white font-extrabold leading-tight mb-5" style={{ fontSize: "2.6rem" }}>
+            System Pay — controle total<br />das suas cobranças.
+          </h2>
+          <p className="text-white/45 text-base leading-relaxed max-w-sm">
+            Gerencie clientes, parcelas e lucros de forma simples e eficiente.
           </p>
         </div>
 
-        {/* Bottom */}
-        <div className="relative z-10 flex flex-col items-center gap-5 w-full">
-          <div className="flex flex-col items-center gap-2.5">
-            <p className="text-white/25 text-[10px] uppercase tracking-[0.25em]">Baixe o aplicativo</p>
-            <a
-              href="#"
-              className="flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all duration-200 hover:bg-white/5"
-              style={{ border: "1px solid rgba(255,255,255,0.1)" }}
-            >
-              <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0 fill-white opacity-60">
-                <path d="M3.18 23.76c.33.18.7.24 1.06.18l11.62-11.62-2.83-2.83L3.18 23.76zm14.65-12.77-2.53-2.53 2.53-2.53c.7-.7.7-1.83 0-2.53-.7-.7-1.83-.7-2.53 0l-2.53 2.53-2.53-2.53c-.7-.7-1.83-.7-2.53 0-.7.7-.7 1.83 0 2.53l2.53 2.53-2.53 2.53c-.7.7-.7 1.83 0 2.53.7.7 1.83.7 2.53 0l2.53-2.53 2.53 2.53c.7.7 1.83.7 2.53 0 .7-.7.7-1.83 0-2.53zM4.24.06C3.88 0 3.51.06 3.18.24L13.03 10.1l2.83-2.83L4.24.06z" />
-              </svg>
-              <div>
-                <p className="text-white/30 text-[9px] uppercase tracking-widest leading-none mb-0.5">Disponível no</p>
-                <p className="text-white/75 text-sm font-semibold">Google Play</p>
-              </div>
-            </a>
-          </div>
+        {/* Bottom — Google Play */}
+        <div className="relative z-10 w-full flex flex-col items-start gap-2.5">
+          <p className="text-white/25 text-[10px] uppercase tracking-[0.25em]">Baixe o aplicativo</p>
+          <a
+            href="#"
+            className="flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all duration-200 hover:bg-white/5"
+            style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+          >
+            <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0 fill-white opacity-60">
+              <path d="M3.18 23.76c.33.18.7.24 1.06.18l11.62-11.62-2.83-2.83L3.18 23.76zm14.65-12.77-2.53-2.53 2.53-2.53c.7-.7.7-1.83 0-2.53-.7-.7-1.83-.7-2.53 0l-2.53 2.53-2.53-2.53c-.7-.7-1.83-.7-2.53 0-.7.7-.7 1.83 0 2.53l2.53 2.53-2.53 2.53c-.7.7-.7 1.83 0 2.53.7.7 1.83.7 2.53 0l2.53-2.53 2.53 2.53c.7.7 1.83.7 2.53 0 .7-.7.7-1.83 0-2.53zM4.24.06C3.88 0 3.51.06 3.18.24L13.03 10.1l2.83-2.83L4.24.06z" />
+            </svg>
+            <div>
+              <p className="text-white/30 text-[9px] uppercase tracking-widest leading-none mb-0.5">Disponível no</p>
+              <p className="text-white/75 text-sm font-semibold">Google Play</p>
+            </div>
+          </a>
+          <p className="text-white/15 text-[10px] mt-2">
+            © {new Date().getFullYear()} systempay.tech · Todos os direitos reservados
+          </p>
         </div>
-
-        <p className="absolute bottom-3 text-white/15 text-[10px]">
-          © {new Date().getFullYear()} systempay.tech · All rights reserved
-        </p>
       </div>
 
 
