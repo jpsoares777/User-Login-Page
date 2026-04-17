@@ -131,40 +131,8 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Center content */}
-        <div className="relative z-10 text-center px-6 max-w-sm">
-          <div
-            className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest mb-6"
-            style={{ background: "rgba(0,150,255,0.1)", border: "1px solid rgba(0,150,255,0.2)", color: "#5ab4ff" }}
-          >
-            Plataforma de Gestão
-          </div>
-          <h2 className="text-white text-2xl font-light leading-relaxed mb-6">
-            Gerencie seu negócio com{" "}
-            <span className="font-semibold text-white">inteligência</span> e{" "}
-            <span className="font-semibold text-white">segurança</span>
-          </h2>
-          <div className="w-12 h-0.5 mx-auto mb-6" style={{ background: "linear-gradient(90deg, #39e37c, #00aaff)" }} />
-          <p className="text-white/35 text-sm leading-relaxed">
-            Conecte-se à sua plataforma e acesse todos os recursos da sua conta em um só lugar.
-          </p>
-        </div>
-
         {/* Bottom */}
         <div className="relative z-10 flex flex-col items-center gap-5 w-full">
-          <div className="flex items-center gap-8 mb-1">
-            {[
-              { value: "99.9%", label: "Uptime" },
-              { value: "256-bit", label: "Criptografia" },
-              { value: "24/7", label: "Suporte" },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <p className="text-white/90 text-sm font-bold">{s.value}</p>
-                <p className="text-white/30 text-[10px] uppercase tracking-widest mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="w-full h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
           <div className="flex flex-col items-center gap-2.5">
             <p className="text-white/25 text-[10px] uppercase tracking-[0.25em]">Baixe o aplicativo</p>
             <a
