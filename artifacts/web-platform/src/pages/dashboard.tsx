@@ -154,50 +154,44 @@ function DesempenhoContent() {
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={clientesData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
+            <BarChart data={clientesData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={28}>
-                <Label content={<RotatedYLabel value="Clientes Comparativo por Años" />} />
-              </YAxis>
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={24} />
               <Tooltip contentStyle={{ fontSize: 11 }} />
-              <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
-              <Bar dataKey="Clientes 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
-              <Bar dataKey="Clientes 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
+              <Legend iconSize={10} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              <Bar dataKey="Clientes 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={22} />
+              <Bar dataKey="Clientes 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={22} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={ventasData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
+            <BarChart data={ventasData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={32}
-                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}>
-                <Label content={<RotatedYLabel value="Total Ventas Comparativo por Años" />} />
-              </YAxis>
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
-              <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
-              <Bar dataKey="Ventas 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
-              <Bar dataKey="Ventas 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
+              <Legend iconSize={10} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              <Bar dataKey="Ventas 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={22} />
+              <Bar dataKey="Ventas 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={22} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={gastosIngresosData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
+            <BarChart data={gastosIngresosData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={32}
-                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}>
-                <Label content={<RotatedYLabel value="Total Gasto/Ingresos 2026" />} />
-              </YAxis>
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
-              <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
-              <Bar dataKey="Ingresos" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
-              <Bar dataKey="Gastos" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
+              <Legend iconSize={10} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              <Bar dataKey="Ingresos" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={22} />
+              <Bar dataKey="Gastos" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={22} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
