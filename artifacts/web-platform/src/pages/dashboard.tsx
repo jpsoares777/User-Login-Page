@@ -40,34 +40,36 @@ export default function DashboardPage() {
       </div>
 
       {/* ── MAIN TABS ROW ── */}
-      <div className="flex items-end px-0 gap-0" style={{ background: "#1e3a5f", borderBottom: "2px solid #2563eb" }}>
+      <div className="flex items-end px-2 gap-1 pt-1" style={{ background: "#1e3a5f" }}>
         {MAIN_TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveMain(tab)}
-            className="px-6 h-11 text-sm font-medium transition-all border-r"
+            className="px-6 h-10 text-sm font-medium transition-all rounded-t"
             style={{
-              background: activeMain === tab ? "#2563eb" : "transparent",
+              background: activeMain === tab ? "#2563eb" : "rgba(255,255,255,0.08)",
               color: activeMain === tab ? "#fff" : "rgba(255,255,255,0.65)",
-              borderRightColor: "rgba(255,255,255,0.1)",
+              border: activeMain === tab ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              borderBottom: "none",
             }}
           >
             {tab}
           </button>
         ))}
       </div>
+      <div style={{ height: "2px", background: "#2563eb" }} />
 
       {/* ── SUB TABS ROW ── */}
-      <div className="flex items-center gap-0 px-0" style={{ background: "#fff", borderBottom: "1px solid #ddd" }}>
+      <div className="flex items-center gap-1 px-2 py-1" style={{ background: "#e8edf2" }}>
         {SUB_TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveSub(tab)}
-            className="px-5 h-11 text-sm font-medium transition-all border-r"
+            className="px-4 h-9 text-sm font-medium transition-all rounded"
             style={{
               background: activeSub === tab ? "#2563eb" : "#fff",
               color: activeSub === tab ? "#fff" : "#444",
-              borderRightColor: "#e5e7eb",
+              border: activeSub === tab ? "1px solid #2563eb" : "1px solid #cdd3da",
             }}
           >
             {tab}
