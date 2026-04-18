@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell, Label,
+  PieChart, Pie, Cell, Label, Customized,
 } from "recharts";
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
@@ -125,6 +125,49 @@ const ingresosPieData = [
   { name: "Outro (3780)", value: 3780, color: "#444" },
 ];
 
+// ── 3D Grid background ────────────────────────────────────────────────────────
+
+const CHART_DEPTH = 10;
+
+function Background3D(props: any) {
+  const { offset, yAxisMap } = props;
+  if (!offset) return null;
+  const { left, top, width, height } = offset;
+  const d = CHART_DEPTH;
+
+  // Get y-axis ticks to draw depth lines on side wall
+  const yAxis: any = yAxisMap ? Object.values(yAxisMap)[0] : null;
+  const ticks: number[] = yAxis?.niceTicks ?? yAxis?.ticks ?? [];
+  const scale = yAxis?.scale;
+
+  return (
+    <g style={{ pointerEvents: "none" }}>
+      {/* Top roof parallelogram */}
+      <polygon
+        points={`${left},${top} ${left + d},${top - d} ${left + width + d},${top - d} ${left + width},${top}`}
+        fill="#eff3f8" stroke="#c8d0da" strokeWidth={0.5}
+      />
+      {/* Right side wall parallelogram */}
+      <polygon
+        points={`${left + width},${top} ${left + width + d},${top - d} ${left + width + d},${top + height - d} ${left + width},${top + height}`}
+        fill="#e4eaf2" stroke="#c8d0da" strokeWidth={0.5}
+      />
+      {/* Horizontal depth lines at each tick on the side wall */}
+      {scale && ticks.map((tick: number) => {
+        const yPos = scale(tick);
+        if (yPos == null || yPos < top - 1 || yPos > top + height + 1) return null;
+        return (
+          <line key={tick}
+            x1={left + width} y1={yPos}
+            x2={left + width + d} y2={yPos - d}
+            stroke="#c8d0da" strokeWidth={0.5}
+          />
+        );
+      })}
+    </g>
+  );
+}
+
 // ── 3D Bar shape ─────────────────────────────────────────────────────────────
 
 function Bar3D({ x, y, width, height, fill, depth = 10 }: any) {
@@ -182,6 +225,7 @@ function DesempenhoContent() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={clientesData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
+              <Customized component={Background3D} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={24} />
               <Tooltip contentStyle={{ fontSize: 11 }} />
@@ -196,6 +240,7 @@ function DesempenhoContent() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={ventasData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }} barCategoryGap="30%">
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
+              <Customized component={Background3D} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
                 domain={[0, 20000]} ticks={[0, 5000, 10000, 15000, 20000]}
@@ -212,6 +257,7 @@ function DesempenhoContent() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={gastosIngresosData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
+              <Customized component={Background3D} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
