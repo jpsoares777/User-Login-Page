@@ -155,7 +155,7 @@ function DesempenhoContent() {
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={clientesData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" />
+              <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={24} />
               <Tooltip contentStyle={{ fontSize: 11 }} />
@@ -169,7 +169,7 @@ function DesempenhoContent() {
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={ventasData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }} barCategoryGap="30%">
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" />
+              <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
                 domain={[0, 20000]} ticks={[0, 5000, 10000, 15000, 20000]}
@@ -185,7 +185,7 @@ function DesempenhoContent() {
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={gastosIngresosData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" />
+              <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
