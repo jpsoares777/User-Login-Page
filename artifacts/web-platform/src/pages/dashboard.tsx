@@ -14,7 +14,7 @@ export default function DashboardPage() {
     <div className="min-h-screen flex flex-col" style={{ fontFamily: "system-ui, sans-serif", background: "#f4f4f4" }}>
 
       {/* ── TOP BAR ── */}
-      <div className="flex items-center justify-between h-12 px-3" style={{ background: "#0c1d38" }}>
+      <div className="flex items-center justify-between h-12 px-3" style={{ background: "#1e3a5f" }}>
         <img
           src={logoImg}
           alt="SystemPay"
