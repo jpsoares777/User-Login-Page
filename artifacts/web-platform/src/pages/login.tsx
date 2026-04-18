@@ -57,7 +57,6 @@ export default function LoginPage() {
               <stop offset="100%" stopColor="#00aaff" stopOpacity="0" />
             </linearGradient>
           </defs>
-          {/* Bars */}
           <rect x="30"  y="160" width="32" height="100" rx="4" fill="url(#bar2)" />
           <rect x="80"  y="110" width="32" height="150" rx="4" fill="url(#bar1)" />
           <rect x="130" y="80"  width="32" height="180" rx="4" fill="url(#bar2)" />
@@ -66,7 +65,6 @@ export default function LoginPage() {
           <rect x="280" y="60"  width="32" height="200" rx="4" fill="url(#bar1)" />
           <rect x="330" y="40"  width="32" height="220" rx="4" fill="url(#bar2)" />
           <rect x="380" y="20"  width="32" height="240" rx="4" fill="url(#bar1)" />
-          {/* Baseline */}
           <line x1="20" y1="258" x2="420" y2="258" stroke="white" strokeWidth="1" strokeOpacity="0.4" />
         </svg>
       </div>
@@ -84,22 +82,18 @@ export default function LoginPage() {
               <stop offset="100%" stopColor="#39e37c" stopOpacity="0" />
             </linearGradient>
           </defs>
-          {/* Area fill */}
           <path
             d="M0,160 C40,140 80,100 120,90 C160,80 200,110 240,80 C280,50 320,60 360,40 C400,20 440,30 480,10 L480,220 L0,220 Z"
             fill="url(#lineArea)"
           />
-          {/* Line */}
           <path
             d="M0,160 C40,140 80,100 120,90 C160,80 200,110 240,80 C280,50 320,60 360,40 C400,20 440,30 480,10"
             stroke="#00aaff" strokeWidth="2" fill="none"
           />
-          {/* Second line */}
           <path
             d="M0,180 C40,170 80,150 120,130 C160,110 200,140 240,120 C280,100 320,115 360,90 C400,65 440,75 480,55"
             stroke="#39e37c" strokeWidth="1.5" fill="none" strokeDasharray="6 4"
           />
-          {/* Dots on first line */}
           {[[120,90],[240,80],[360,40]].map(([x,y], i) => (
             <circle key={i} cx={x} cy={y} r="4" fill="#00aaff" />
           ))}
@@ -296,7 +290,6 @@ export default function LoginPage() {
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 hover:bg-white/5"
           style={{ border: "1px solid rgba(255,255,255,0.08)" }}
         >
-          {/* Google Play icon */}
           <svg viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0 opacity-60" fill="none">
             <path d="M3 20.5v-17c0-.83 1-.97 1.45-.5l14 8.5a.5.5 0 0 1 0 .86l-14 8.5C3.99 21.47 3 21.33 3 20.5z" fill="white"/>
           </svg>
