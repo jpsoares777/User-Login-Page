@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell,
+  PieChart, Pie, Cell, Label,
 } from "recharts";
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
@@ -56,21 +56,21 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
   return (
     <div className="bg-white border border-gray-200 rounded flex flex-col" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-2.5 py-1.5 border-b border-gray-100 shrink-0">
-        <button className="flex items-center justify-center w-6 h-6 rounded shrink-0" style={{ background: "#16a34a" }}>
-          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white">
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 shrink-0">
+        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 36, height: 36 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} className="fill-white">
             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
           </svg>
         </button>
-        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
-          <option>Rota Cred Bank</option>
+        <select className="text-[12px] border border-gray-300 rounded px-1.5 py-1 bg-white text-gray-700 cursor-pointer">
+          <option>Rota Cred Bank -</option>
         </select>
-        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
+        <select className="text-[12px] border border-gray-300 rounded px-1.5 py-1 bg-white text-gray-700 cursor-pointer">
           <option>{year}</option>
           <option>{String(Number(year) - 1)}</option>
         </select>
         <div className="flex-1" />
-        <button className="text-gray-400 hover:text-gray-600 text-lg leading-none px-1">≡</button>
+        <button className="text-gray-500 hover:text-gray-700 text-xl leading-none px-1">≡</button>
       </div>
       {/* Title area */}
       {subtitle && (
@@ -103,8 +103,8 @@ const clientesData = MONTHS.map((m, i) => ({
 
 const ventasData = MONTHS.map((m, i) => ({
   mes: m,
-  "Ventas 2026": [0, 0, 3000, 7500, 1000, 0, 0, 0, 0, 0, 0, 0][i],
-  "Ventas 2025": [0, 0, 5000, 0, 0, 0, 0, 0, 0, 0, 0, 0][i],
+  "Ventas 2026": [0, 500, 15000, 6800, 600, 0, 0, 0, 0, 0, 0, 0][i],
+  "Ventas 2025": [200, 400, 1500, 200, 100, 0, 0, 0, 0, 0, 0, 0][i],
 }));
 
 const gastosIngresosData = MONTHS.map((m, i) => ({
@@ -127,16 +127,18 @@ const ingresosPieData = [
 
 // Custom y-axis label rotated
 const RotatedYLabel = ({ value, viewBox }: any) => {
-  const { x, y, height } = viewBox;
+  const { x, y, width = 0, height } = viewBox;
+  const cx = x + width / 2;
+  const cy = y + height / 2;
   return (
     <text
-      x={x - 6}
-      y={y + height / 2}
+      x={cx}
+      y={cy}
       textAnchor="middle"
       dominantBaseline="middle"
-      transform={`rotate(-90, ${x - 6}, ${y + height / 2})`}
-      fontSize={9}
-      fill="#666"
+      transform={`rotate(-90, ${cx}, ${cy})`}
+      fontSize={8}
+      fill="#888"
     >
       {value}
     </text>
@@ -151,13 +153,15 @@ function DesempenhoContent() {
       <div className="grid grid-cols-3 gap-2 mb-2">
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={clientesData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={clientesData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={24} />
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={28}>
+                <Label content={<RotatedYLabel value="Clientes Comparativo por Años" />} />
+              </YAxis>
               <Tooltip contentStyle={{ fontSize: 11 }} />
-              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
               <Bar dataKey="Clientes 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
               <Bar dataKey="Clientes 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
             </BarChart>
@@ -165,14 +169,16 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={ventasData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={ventasData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={32}
-                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}>
+                <Label content={<RotatedYLabel value="Total Ventas Comparativo por Años" />} />
+              </YAxis>
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
-              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
               <Bar dataKey="Ventas 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
               <Bar dataKey="Ventas 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
             </BarChart>
@@ -180,14 +186,16 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={gastosIngresosData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={gastosIngresosData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={32}
-                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}>
+                <Label content={<RotatedYLabel value="Total Gasto/Ingresos 2026" />} />
+              </YAxis>
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
-              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
               <Bar dataKey="Ingresos" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
               <Bar dataKey="Gastos" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
             </BarChart>
@@ -200,13 +208,13 @@ function DesempenhoContent() {
       <div className="grid grid-cols-3 gap-2">
 
         <ChartCard subtitle="Gastos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={170}>
+          <ResponsiveContainer width="100%" height={190}>
             <PieChart>
               <Pie
                 data={gastosPieData}
                 cx="50%"
                 cy="50%"
-                outerRadius={62}
+                outerRadius={72}
                 dataKey="value"
                 label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
@@ -231,13 +239,13 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard subtitle="Ingresos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={170}>
+          <ResponsiveContainer width="100%" height={190}>
             <PieChart>
               <Pie
                 data={ingresosPieData}
                 cx="50%"
                 cy="50%"
-                outerRadius={62}
+                outerRadius={72}
                 dataKey="value"
                 label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
