@@ -93,7 +93,7 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
 
 // ── Desempenho data ───────────────────────────────────────────────────────────
 
-const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sept.", "Octu.", "Nov.", "Dic."];
+const MONTHS = ["Jan.", "Fev.", "Mar.", "Abr.", "Mai.", "Jun.", "Jul.", "Ago.", "Set.", "Out.", "Nov.", "Dez."];
 
 const clientesData = MONTHS.map((m, i) => ({
   mes: m,
