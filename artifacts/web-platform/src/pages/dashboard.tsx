@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import logoImg from "@assets/ChatGPT_Image_17_de_abr._de_2026,_20_49_18_(2)_1776469795366.png";
+import menuIcon from "@assets/botao-de-menu-3d-icon-png-download-13039694_1776472817889.webp";
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
 const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Clientes", "Agendados", "Roteirizar", "Notas", "GPS", "Relatórios"];
@@ -16,10 +17,9 @@ export default function DashboardPage() {
       {/* ── TOP BAR ── */}
       <div className="flex items-center justify-between h-12 px-3" style={{ background: "#1e3a5f" }}>
         <img
-          src={logoImg}
-          alt="SystemPay"
-          className="h-10 w-auto object-contain select-none"
-          style={{ mixBlendMode: "screen" }}
+          src={menuIcon}
+          alt="Menu"
+          className="h-9 w-9 object-contain select-none cursor-pointer"
           draggable={false}
         />
         <div className="flex items-center gap-2">
