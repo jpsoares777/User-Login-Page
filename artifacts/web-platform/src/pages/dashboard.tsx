@@ -143,14 +143,6 @@ export default function DashboardPage() {
 
             {/* CENTER: Grouped data rows */}
             <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
-              <div className="flex items-center gap-2 px-3 py-1.5 sticky top-0 z-10" style={{ background: "#e8edf2", borderBottom: "1px solid #dde3ea" }}>
-                <button className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold text-white shrink-0" style={{ background: "#2563eb" }}>
-                  <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
-                  Filtro Ativo
-                </button>
-                <span className="text-[11px] text-gray-500 truncate">Vendedor: <strong className="text-gray-700">Rota Cred Bank</strong></span>
-              </div>
-
               <SectionHeader title="Dados do Vendedor" color="#2563eb" />
               <Row label="Vendedor" index={0}>
                 <strong className="text-gray-800">Rota Cred Bank</strong>&nbsp;— Cod: 10600
