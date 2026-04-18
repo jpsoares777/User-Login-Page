@@ -56,27 +56,27 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
   return (
     <div className="bg-white border border-gray-200 rounded flex flex-col flex-1 min-w-0 min-h-0" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-1.5 px-2 py-1 border-b border-gray-100 shrink-0">
-        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 22, height: 22 }}>
-          <svg viewBox="0 0 24 24" style={{ width: 12, height: 12 }} className="fill-white">
+      <div className="flex items-center gap-1 px-1.5 py-0.5 border-b border-gray-100 shrink-0">
+        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 16, height: 16 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 9, height: 9 }} className="fill-white">
             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
           </svg>
         </button>
-        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
+        <select className="text-[9px] border border-gray-200 rounded px-0.5 py-0 bg-white text-gray-700 cursor-pointer leading-tight">
           <option>Rota Cred Bank -</option>
         </select>
-        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
+        <select className="text-[9px] border border-gray-200 rounded px-0.5 py-0 bg-white text-gray-700 cursor-pointer leading-tight">
           <option>{year}</option>
           <option>{String(Number(year) - 1)}</option>
         </select>
         <div className="flex-1" />
-        <button className="text-gray-500 hover:text-gray-700 text-base leading-none px-0.5">≡</button>
+        <button className="text-gray-500 hover:text-gray-700 text-xs leading-none px-0.5">≡</button>
       </div>
       {/* Title area */}
       {subtitle && (
-        <div className="px-2 pt-1 pb-0">
-          <div className="text-xs font-bold text-gray-800">{year}</div>
-          <div className="text-[10px] text-gray-500">{subtitle}</div>
+        <div className="px-1.5 pt-0.5 pb-0">
+          <div className="text-[9px] font-bold text-gray-800">{year}</div>
+          <div className="text-[8px] text-gray-500">{subtitle}</div>
         </div>
       )}
       {/* Chart body */}
@@ -84,8 +84,8 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
         {children}
       </div>
       {/* Watermark */}
-      <div className="text-right pr-1.5 pb-0.5 shrink-0">
-        <span className="text-gray-300 text-[8px]">Highcharts.com</span>
+      <div className="text-right pr-1 pb-0.5 shrink-0">
+        <span className="text-gray-300 text-[7px]">Highcharts.com</span>
       </div>
     </div>
   );
