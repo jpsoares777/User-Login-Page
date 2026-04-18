@@ -150,10 +150,10 @@ function DesempenhoContent() {
     <div className="flex-1 overflow-y-auto p-2" style={{ background: "#f0f2f5" }}>
 
       {/* Row 1: 3 bar charts */}
-      <div className="grid grid-cols-3 gap-2 mb-2">
+      <div className="grid grid-cols-4 gap-2 mb-2">
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={185}>
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={clientesData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
@@ -169,7 +169,7 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={185}>
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={ventasData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
@@ -186,7 +186,7 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={185}>
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={gastosIngresosData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
@@ -202,19 +202,21 @@ function DesempenhoContent() {
           </ResponsiveContainer>
         </ChartCard>
 
+        <div />
+
       </div>
 
       {/* Row 2: 2 pie charts + empty */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-4 gap-2">
 
         <ChartCard subtitle="Gastos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={175}>
+          <ResponsiveContainer width="100%" height={190}>
             <PieChart>
               <Pie
                 data={gastosPieData}
                 cx="50%"
                 cy="50%"
-                outerRadius={62}
+                outerRadius={72}
                 dataKey="value"
                 label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
@@ -239,13 +241,13 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard subtitle="Ingresos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={175}>
+          <ResponsiveContainer width="100%" height={190}>
             <PieChart>
               <Pie
                 data={ingresosPieData}
                 cx="50%"
                 cy="50%"
-                outerRadius={62}
+                outerRadius={72}
                 dataKey="value"
                 label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
@@ -269,6 +271,7 @@ function DesempenhoContent() {
           </ResponsiveContainer>
         </ChartCard>
 
+        <div />
         <div />
 
       </div>
