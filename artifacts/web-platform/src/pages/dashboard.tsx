@@ -24,7 +24,7 @@ function Row({ label, children, bold, index = 0 }: { label: string; children: Re
       onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
       onMouseLeave={e => (e.currentTarget.style.background = even ? "#ffffff" : "#f9fafb")}
     >
-      <span className="shrink-0 pr-3 py-1 whitespace-nowrap font-bold" style={{ width: "230px", fontSize: "11.5px", color: "#111" }}>{label}</span>
+      <span className="shrink-0 pr-3 py-1 whitespace-nowrap font-bold" style={{ width: "230px", fontSize: "11.5px", color: "#374151" }}>{label}</span>
       <div className="w-px self-stretch bg-gray-200 mr-3 shrink-0" />
       <span className={`px-1 py-1 flex items-center gap-1.5 leading-tight flex-wrap ${bold ? "font-bold text-gray-900 text-[13px]" : "text-gray-700"}`}>
         {children}
