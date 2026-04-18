@@ -154,17 +154,17 @@ export default function LoginPage() {
 
 
       {/* ── RIGHT PANEL ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 md:px-14 py-12 relative z-10">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 md:px-14 py-8 relative z-10">
         <div className="w-full max-w-[360px]">
 
           {/* Logo for mobile */}
-          <div className="lg:hidden flex justify-center mb-8">
-            <img src={logoImg} alt="SystemPay" className="w-48 object-contain" draggable={false} />
+          <div className="lg:hidden flex justify-center mb-6">
+            <img src={logoImg} alt="SystemPay" className="w-36 object-contain" draggable={false} />
           </div>
 
           {/* Heading */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-white mb-1">Bem-vindo de volta</h1>
+          <div className="mb-6">
+            <h1 className="text-xl font-bold text-white mb-1">Bem-vindo de volta</h1>
             <p className="text-white/35 text-sm">Insira suas credenciais para acessar</p>
           </div>
 
