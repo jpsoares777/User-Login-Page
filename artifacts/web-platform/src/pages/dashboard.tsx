@@ -52,40 +52,40 @@ const PersonIcon = () => (
 
 // ── Chart card wrapper ────────────────────────────────────────────────────────
 
-function ChartCard({ children, title, year = "2026", subtitle }: { children: React.ReactNode; title?: string; year?: string; subtitle?: string }) {
+function ChartCard({ children, year = "2026", subtitle }: { children: React.ReactNode; year?: string; subtitle?: string }) {
   return (
-    <div className="bg-white border border-gray-200 rounded flex flex-col" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+    <div className="bg-white border border-gray-200 rounded flex flex-col flex-1 min-h-0 min-w-0" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-2.5 py-1.5 border-b border-gray-100 shrink-0">
-        <button className="flex items-center justify-center w-6 h-6 rounded shrink-0" style={{ background: "#16a34a" }}>
-          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white">
+      <div className="flex items-center gap-1.5 px-2 py-1 border-b border-gray-100 shrink-0">
+        <button className="flex items-center justify-center w-5 h-5 rounded shrink-0" style={{ background: "#16a34a" }}>
+          <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white">
             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
           </svg>
         </button>
-        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
+        <select className="text-[10px] border border-gray-200 rounded px-1 py-0 bg-white text-gray-600 cursor-pointer leading-tight">
           <option>Rota Cred Bank</option>
         </select>
-        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
+        <select className="text-[10px] border border-gray-200 rounded px-1 py-0 bg-white text-gray-600 cursor-pointer leading-tight">
           <option>{year}</option>
           <option>{String(Number(year) - 1)}</option>
         </select>
         <div className="flex-1" />
-        <button className="text-gray-400 hover:text-gray-600 text-lg leading-none px-1">≡</button>
+        <button className="text-gray-400 hover:text-gray-600 text-base leading-none px-0.5">≡</button>
       </div>
-      {/* Title area */}
+      {/* Title area (pie charts only) */}
       {subtitle && (
-        <div className="px-3 pt-2 pb-0">
-          <div className="text-sm font-bold text-gray-800">{year}</div>
-          <div className="text-[11px] text-gray-500">{subtitle}</div>
+        <div className="px-3 pt-1.5 pb-0 shrink-0">
+          <div className="text-xs font-bold text-gray-800 leading-tight">{year}</div>
+          <div className="text-[10px] text-gray-500 leading-tight">{subtitle}</div>
         </div>
       )}
-      {/* Chart body */}
-      <div className="flex-1 min-h-0 px-1 py-1">
+      {/* Chart body — flex-1 so it fills available space */}
+      <div className="flex-1 min-h-0 overflow-hidden">
         {children}
       </div>
       {/* Watermark */}
-      <div className="text-right pr-2 pb-1 shrink-0">
-        <span className="text-gray-300 text-[9px]">Highcharts.com</span>
+      <div className="text-right pr-2 pb-0.5 shrink-0">
+        <span className="text-gray-300 text-[8px]">Highcharts.com</span>
       </div>
     </div>
   );
@@ -145,82 +145,76 @@ const RotatedYLabel = ({ value, viewBox }: any) => {
 
 function DesempenhoContent() {
   return (
-    <div className="flex-1 overflow-y-auto p-3" style={{ background: "#f0f2f5" }}>
+    <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#e8edf2", gap: "4px", padding: "4px" }}>
+
       {/* Row 1: 3 bar charts */}
-      <div className="grid grid-cols-3 gap-3 mb-3">
+      <div className="flex gap-1.5" style={{ height: 215, flexShrink: 0 }}>
 
-        {/* Chart 1: Clientes */}
-        <ChartCard title="Clientes">
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={clientesData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
+        <ChartCard>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={clientesData} margin={{ top: 4, right: 10, left: 0, bottom: 14 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e6ed" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={24}
-                label={<RotatedYLabel value="Clientes Comparativo por Años" viewBox={undefined} />} />
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={22} />
               <Tooltip contentStyle={{ fontSize: 11 }} />
-              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
-              <Bar dataKey="Clientes 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
-              <Bar dataKey="Clientes 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
+              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, position: "absolute", bottom: 0 }} />
+              <Bar dataKey="Clientes 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={16} />
+              <Bar dataKey="Clientes 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={16} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        {/* Chart 2: Ventas */}
-        <ChartCard title="Ventas">
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={ventasData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
+        <ChartCard>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={ventasData} margin={{ top: 4, right: 10, left: 0, bottom: 14 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e6ed" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={32}
-                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}
-                label={<RotatedYLabel value="Total Ventas Comparativo por Años" viewBox={undefined} />} />
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={28}
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
-              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
-              <Bar dataKey="Ventas 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
-              <Bar dataKey="Ventas 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
+              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, position: "absolute", bottom: 0 }} />
+              <Bar dataKey="Ventas 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={16} />
+              <Bar dataKey="Ventas 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={16} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        {/* Chart 3: Gastos/Ingresos */}
-        <ChartCard title="Gastos/Ingresos">
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={gastosIngresosData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
+        <ChartCard>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={gastosIngresosData} margin={{ top: 4, right: 10, left: 0, bottom: 14 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e6ed" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={32}
-                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}
-                label={<RotatedYLabel value="Total Gasto/Ingresos 2026" viewBox={undefined} />} />
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={28}
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
-              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
-              <Bar dataKey="Ingresos" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
-              <Bar dataKey="Gastos" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
+              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, position: "absolute", bottom: 0 }} />
+              <Bar dataKey="Ingresos" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={16} />
+              <Bar dataKey="Gastos" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={16} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
       </div>
 
-      {/* Row 2: 2 pie charts + empty space */}
-      <div className="grid grid-cols-3 gap-3">
+      {/* Row 2: 2 pie charts */}
+      <div className="flex gap-1.5" style={{ height: 195, flexShrink: 0 }}>
 
-        {/* Chart 4: Gastos por Concepto */}
         <ChartCard subtitle="Gastos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={190}>
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={gastosPieData}
-                cx="50%"
+                cx="55%"
                 cy="50%"
-                outerRadius={72}
+                outerRadius="62%"
                 dataKey="value"
-                label={({ name, cx, cy, midAngle, outerRadius, index }) => {
+                label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
-                  const radius = outerRadius + 22;
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  const r = (outerRadius as number) + 26;
+                  const x = (cx as number) + r * Math.cos(-midAngle * RADIAN);
+                  const y = (cy as number) + r * Math.sin(-midAngle * RADIAN);
                   return (
-                    <text x={x} y={y} textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={9} fill="#444">
+                    <text x={x} y={y} textAnchor={x > (cx as number) ? "start" : "end"} dominantBaseline="central" fontSize={9} fill="#444">
                       {gastosPieData[index].name}
                     </text>
                   );
@@ -236,23 +230,22 @@ function DesempenhoContent() {
           </ResponsiveContainer>
         </ChartCard>
 
-        {/* Chart 5: Ingresos por Concepto */}
         <ChartCard subtitle="Ingresos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={190}>
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={ingresosPieData}
-                cx="50%"
+                cx="55%"
                 cy="50%"
-                outerRadius={72}
+                outerRadius="62%"
                 dataKey="value"
-                label={({ name, cx, cy, midAngle, outerRadius, index }) => {
+                label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
-                  const radius = outerRadius + 22;
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  const r = (outerRadius as number) + 26;
+                  const x = (cx as number) + r * Math.cos(-midAngle * RADIAN);
+                  const y = (cy as number) + r * Math.sin(-midAngle * RADIAN);
                   return (
-                    <text x={x} y={y} textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={9} fill="#444">
+                    <text x={x} y={y} textAnchor={x > (cx as number) ? "start" : "end"} dominantBaseline="central" fontSize={9} fill="#444">
                       {ingresosPieData[index].name}
                     </text>
                   );
@@ -269,9 +262,10 @@ function DesempenhoContent() {
         </ChartCard>
 
         {/* Empty third column */}
-        <div />
+        <div className="flex-1" />
 
       </div>
+
     </div>
   );
 }
