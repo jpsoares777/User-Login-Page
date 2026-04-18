@@ -331,9 +331,7 @@ function DesempenhoContent() {
               <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#222", fontWeight: "bold" }} axisLine={false} tickLine={false} width={34}
                 domain={[0, 20000]} ticks={[0, 5000, 10000, 15000, 20000]}
-                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}>
-                <Label content={<RotatedYLabel value="Total Ventas Comparativo por Años" />} />
-              </YAxis>
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 10 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
               <Legend iconSize={7} iconType="circle" wrapperStyle={{ fontSize: 8, paddingTop: 2 }} />
               <Bar dataKey="Ventas 2026" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
