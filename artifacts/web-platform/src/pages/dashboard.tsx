@@ -56,21 +56,21 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
   return (
     <div className="bg-white border border-gray-200 rounded flex flex-col flex-1 min-w-0 min-h-0" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-1 px-1.5 py-0.5 border-b border-gray-100 shrink-0">
-        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 16, height: 16 }}>
-          <svg viewBox="0 0 24 24" style={{ width: 9, height: 9 }} className="fill-white">
+      <div className="flex items-center gap-1.5 px-2 py-1 border-b border-gray-100 shrink-0">
+        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 20, height: 20 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 11, height: 11 }} className="fill-white">
             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
           </svg>
         </button>
-        <select className="text-[9px] border border-gray-200 rounded px-0.5 py-0 bg-white text-gray-700 cursor-pointer leading-tight">
+        <select className="text-[10px] border border-gray-200 rounded px-1 py-0 bg-white text-gray-700 cursor-pointer">
           <option>Rota Cred Bank -</option>
         </select>
-        <select className="text-[9px] border border-gray-200 rounded px-0.5 py-0 bg-white text-gray-700 cursor-pointer leading-tight">
+        <select className="text-[10px] border border-gray-200 rounded px-1 py-0 bg-white text-gray-700 cursor-pointer">
           <option>{year}</option>
           <option>{String(Number(year) - 1)}</option>
         </select>
         <div className="flex-1" />
-        <button className="text-gray-500 hover:text-gray-700 text-xs leading-none px-0.5">≡</button>
+        <button className="text-gray-500 hover:text-gray-700 text-sm leading-none px-0.5">≡</button>
       </div>
       {/* Title area */}
       {subtitle && (
@@ -238,13 +238,15 @@ function DesempenhoContent() {
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={ventasData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }} barCategoryGap="30%">
+            <BarChart data={ventasData} margin={{ top: 14, right: 20, left: 14, bottom: 4 }} barCategoryGap="30%">
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <Customized component={Background3D} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
                 domain={[0, 20000]} ticks={[0, 5000, 10000, 15000, 20000]}
-                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}>
+                <Label content={<RotatedYLabel value="Total Ventas Comparativo por Años" />} />
+              </YAxis>
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
               <Legend iconSize={10} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
               <Bar dataKey="Ventas 2026" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
