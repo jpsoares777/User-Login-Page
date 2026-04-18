@@ -5,11 +5,11 @@ import menuIcon from "@assets/windows_104558_1776473182467.webp";
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
 const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Clientes", "Agendados", "Roteirizar", "Notas", "GPS", "Relatórios"];
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function Row({ label, children, bold }: { label: string; children: React.ReactNode; bold?: boolean }) {
   return (
-    <div className="flex items-center border-b border-gray-100" style={{ minHeight: "20px", fontSize: "12px" }}>
-      <span className="shrink-0 px-2 py-0.5 text-gray-800 font-semibold whitespace-nowrap" style={{ width: "210px" }}>{label}:</span>
-      <span className="px-2 py-0.5 text-gray-700 flex items-center gap-1 flex-wrap leading-tight">{children}</span>
+    <div className="flex items-center border-b border-gray-100" style={{ minHeight: "26px", fontSize: "12.5px" }}>
+      <span className={`shrink-0 px-3 py-1 text-gray-800 whitespace-nowrap ${bold ? "font-bold" : "font-normal"}`} style={{ width: "40%" }}>{label}:</span>
+      <span className={`px-2 py-1 flex items-center gap-1 flex-wrap leading-tight ${bold ? "font-bold text-gray-900" : "text-gray-700"}`}>{children}</span>
     </div>
   );
 }
@@ -144,6 +144,16 @@ export default function DashboardPage() {
                 Rota Cred Bank - &nbsp; Cod: 10600
                 <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer">XLS</span>
               </Row>
+              <Row label="Data de Início de Cobrança">
+                <CalIcon />
+                <span className="bg-cyan-500 text-white px-1.5 rounded text-[11px] font-medium">2026-04-17 00:41:52</span>
+              </Row>
+              <Row label="Data de Fechamento de Cobrança">
+                <CalIcon /> Sistema sem Fechar
+              </Row>
+              <Row label="Último Acesso Móvel">
+                <CalIcon /> 2026-04-17 00:41:52
+              </Row>
               <Row label="Clientes Iniciais">
                 <PersonIcon /> 20 &nbsp;<span className="text-gray-400">( 1 Sincronizados / 20 )</span>
                 <svg viewBox="0 0 24 24" className="w-3 h-3 fill-blue-400 cursor-pointer"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
@@ -160,38 +170,30 @@ export default function DashboardPage() {
               <Row label="Total de Clientes">
                 <PersonIcon /> 20
               </Row>
-              <Row label="Data de Início de Cobrança">
-                <CalIcon />
-                <span className="bg-cyan-500 text-white px-1.5 rounded text-[11px] font-medium">2026-04-17 00:41:52</span>
-              </Row>
-              <Row label="Data de Fechamento de Cobrança">
-                <CalIcon /> Sistema sem Fechar
-              </Row>
-              <Row label="Último Acesso Móvel">
-                <CalIcon /> 2026-04-17 00:41:52
-              </Row>
-              <Row label="Caixa Inicial">$ 2.979,00</Row>
-              <Row label="Carteira Inicial">$ 12.460,00 &nbsp;<span className="text-gray-400">( 100 % )</span></Row>
+              <Row label="Caixa Inicial" bold>$ 2.979,00</Row>
+              <Row label="Carteira Inicial" bold>$ 12.660,00</Row>
               <Row label="Recebimento Previsto do Dia">$ 1.245,00 &nbsp;<span className="text-gray-400">( 100 % )</span></Row>
               <Row label="Recebimento Atual do Dia">
                 $ 200,00 &nbsp;<span className="text-gray-400">( 16,1 % )</span>
-                &nbsp; Pag: <strong className="text-gray-800">1</strong>
-                &nbsp; Não Pag: <strong className="text-red-500">0</strong>
+                &nbsp; Pagos: <strong className="text-gray-800">1</strong>
+                &nbsp; No Pagos: <strong className="text-red-500">0</strong>
               </Row>
               <Row label="Recebimento por Tipo Pagto">
-                Efetivo : ( <span className="text-red-500">$ 200,00</span> ) &nbsp; Transferência : ( 0,00 )
+                $ &nbsp;Efetivo : ( <span className="text-red-500">200,00</span> ) &nbsp; Transferência : ( <span className="text-red-500">0,00</span> )
               </Row>
               <Row label="Vendas">
-                $ 0,00 &nbsp;<span className="text-gray-400">( Juros $ 0,00 )</span>
+                $ 0,00 &nbsp;<span className="text-gray-400">( Interes $ 0,00 )</span>
               </Row>
-              <Row label="Ingressos"><span className="text-green-600">+ 0,00</span></Row>
-              <Row label="Retiradas"><span className="text-orange-500">− 0,00</span></Row>
-              <Row label="Egresos">− 0,00</Row>
-              <Row label="Caixa Final">
-                <span className="text-red-500">●</span> $ 3.179,00
+              <Row label="Ingressos"><span className="text-blue-600 font-bold">+</span> 0,00</Row>
+              <Row label="Retiradas"><span className="text-gray-500 font-bold">−</span> 0,00</Row>
+              <Row label="Egresos"><span className="text-gray-500 font-bold">−</span> 0,00</Row>
+              <Row label="Caixa Final" bold>
+                $ 3.179,00
+                <span className="text-red-500 text-base leading-none cursor-pointer" title="Info">❓</span>
               </Row>
-              <Row label="Carteira Final">
-                <span className="text-red-500">●</span> $ 12.460,00 &nbsp;<span className="text-gray-400">( Sanção 0,00 )</span>
+              <Row label="Carteira Final" bold>
+                $ 12.460,00 &nbsp;<span className="font-normal text-gray-600">( Sanção 0,00 )</span>
+                <span className="text-red-500 text-base leading-none cursor-pointer" title="Info">❓</span>
               </Row>
             </div>
 
