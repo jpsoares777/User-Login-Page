@@ -121,7 +121,7 @@ export default function LoginPage() {
       <div className="flex flex-1">
 
       {/* ── LEFT PANEL ──────────────────────────────────────── */}
-      <div className="hidden lg:flex w-[52%] flex-col items-start justify-start py-14 px-12 relative gap-12">
+      <div className="hidden lg:flex w-[52%] flex-col items-start justify-center py-14 px-12 relative gap-12">
 
         {/* Headline */}
         <div className="relative z-10 w-full flex flex-col gap-10">
