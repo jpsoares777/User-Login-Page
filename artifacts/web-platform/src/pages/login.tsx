@@ -270,14 +270,15 @@ export default function LoginPage() {
 
       {/* ── FOOTER CENTRALIZADO ──────────────────────────────── */}
       <div className="relative z-10 w-full flex flex-col items-center gap-2 py-4">
-        <p className="text-white/25 text-[10px] uppercase tracking-[0.25em]">Baixe o aplicativo</p>
+        <p className="text-white/20 text-[8px] uppercase tracking-[0.2em]">Baixe o aplicativo</p>
         <a
           href="#"
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 hover:bg-white/5"
           style={{ border: "1px solid rgba(255,255,255,0.08)" }}
         >
-          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 flex-shrink-0 fill-white opacity-50">
-            <path d="M3.18 23.76c.33.18.7.24 1.06.18l11.62-11.62-2.83-2.83L3.18 23.76zm14.65-12.77-2.53-2.53 2.53-2.53c.7-.7.7-1.83 0-2.53-.7-.7-1.83-.7-2.53 0l-2.53 2.53-2.53-2.53c-.7-.7-1.83-.7-2.53 0-.7.7-.7 1.83 0 2.53l2.53 2.53-2.53 2.53c-.7.7-.7 1.83 0 2.53.7.7 1.83.7 2.53 0l2.53-2.53 2.53 2.53c.7.7 1.83.7 2.53 0 .7-.7.7-1.83 0-2.53zM4.24.06C3.88 0 3.51.06 3.18.24L13.03 10.1l2.83-2.83L4.24.06z" />
+          {/* Google Play icon */}
+          <svg viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0 opacity-60" fill="none">
+            <path d="M3 20.5v-17c0-.83 1-.97 1.45-.5l14 8.5a.5.5 0 0 1 0 .86l-14 8.5C3.99 21.47 3 21.33 3 20.5z" fill="white"/>
           </svg>
           <div>
             <p className="text-white/25 text-[8px] uppercase tracking-widest leading-none mb-0.5">Disponível no</p>
