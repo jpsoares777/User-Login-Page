@@ -93,7 +93,7 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
 
 // ── Desempenho data ───────────────────────────────────────────────────────────
 
-const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sept", "Octu", "Nov", "Dic"];
+const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sept.", "Octu.", "Nov.", "Dic."];
 
 const clientesData = MONTHS.map((m, i) => ({
   mes: m,
@@ -168,10 +168,11 @@ function DesempenhoContent() {
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={ventasData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
+            <BarChart data={ventasData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }} barCategoryGap="30%">
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
+                domain={[0, 20000]} ticks={[0, 5000, 10000, 15000, 20000]}
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
               <Legend iconSize={10} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
