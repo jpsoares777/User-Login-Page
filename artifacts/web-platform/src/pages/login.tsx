@@ -124,7 +124,7 @@ export default function LoginPage() {
       <div className="hidden lg:flex w-[52%] flex-col items-start justify-start py-14 px-12 relative gap-12">
 
         {/* Headline — posicionado onde a logo ficava */}
-        <div className="relative z-10 w-full flex flex-col gap-10 mt-36">
+        <div className="relative z-10 w-full flex flex-col gap-10 mt-48">
           <div className="flex gap-5 pl-2">
             <div className="w-1 rounded-full flex-shrink-0 self-stretch" style={{ background: "linear-gradient(180deg,#39e37c,#00aaff)" }} />
             <div>
