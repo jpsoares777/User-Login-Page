@@ -8,7 +8,7 @@ const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Cl
 function Row({ label, children, bold }: { label: string; children: React.ReactNode; bold?: boolean }) {
   return (
     <div className="flex items-center border-b border-gray-100" style={{ minHeight: "22px", fontSize: "12px" }}>
-      <span className={`shrink-0 pl-1 pr-3 py-0.5 text-gray-800 whitespace-nowrap ${bold ? "font-bold" : "font-normal"}`} style={{ width: "52%" }}>{label}:</span>
+      <span className={`shrink-0 pl-1 pr-3 py-0.5 text-gray-800 whitespace-nowrap ${bold ? "font-bold" : "font-normal"}`} style={{ width: "52%", paddingLeft: "20px" }}>{label}:</span>
       <span className={`px-2 py-0.5 flex items-center gap-1 flex-wrap leading-tight ${bold ? "font-bold text-gray-900" : "text-gray-700"}`}>{children}</span>
     </div>
   );
