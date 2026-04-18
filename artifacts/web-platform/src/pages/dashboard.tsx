@@ -40,7 +40,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── MAIN TABS ROW ── */}
-      <div className="flex items-end px-2 gap-1 pt-1" style={{ background: "#1e3a5f" }}>
+      <div className="flex items-end px-2 gap-1 pt-1" style={{ background: "#2d5474" }}>
         {MAIN_TABS.map((tab) => (
           <button
             key={tab}
