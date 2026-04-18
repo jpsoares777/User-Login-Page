@@ -147,10 +147,10 @@ const RotatedYLabel = ({ value, viewBox }: any) => {
 
 function DesempenhoContent() {
   return (
-    <div className="flex-1 flex flex-col min-h-0" style={{ background: "#f0f2f5", gap: 10, padding: 12 }}>
+    <div className="flex-1 flex flex-col min-h-0" style={{ background: "#f0f2f5", gap: 16, padding: 12 }}>
 
       {/* Row 1: 3 bar charts */}
-      <div className="flex min-h-0" style={{ flex: 1, gap: 10 }}>
+      <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
@@ -205,7 +205,7 @@ function DesempenhoContent() {
       </div>
 
       {/* Row 2: 2 pie charts + empty third */}
-      <div className="flex min-h-0" style={{ flex: 1, gap: 10 }}>
+      <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
         <ChartCard subtitle="Gastos por Concepto 2026" year="2026">
           <ResponsiveContainer width="100%" height="100%">
