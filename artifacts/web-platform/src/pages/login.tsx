@@ -12,7 +12,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex"
+      className="min-h-screen flex flex-col"
       style={{ background: "#0c1d38" }}
     >
       {/* Ambient glow blobs — full page */}
@@ -117,8 +117,11 @@ export default function LoginPage() {
         </svg>
       </div>
 
+      {/* ── PANELS ROW ───────────────────────────────────────── */}
+      <div className="flex flex-1">
+
       {/* ── LEFT PANEL ──────────────────────────────────────── */}
-      <div className="hidden lg:flex w-[52%] flex-col items-center justify-between py-14 px-12 relative">
+      <div className="hidden lg:flex w-[52%] flex-col items-start justify-start py-14 px-12 relative gap-12">
 
         {/* Logo + Headline agrupados no topo */}
         <div className="relative z-10 w-full flex flex-col gap-10">
@@ -145,26 +148,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Bottom — Google Play */}
-        <div className="relative z-10 w-full flex flex-col items-start gap-2.5">
-          <p className="text-white/25 text-[10px] uppercase tracking-[0.25em]">Baixe o aplicativo</p>
-          <a
-            href="#"
-            className="flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all duration-200 hover:bg-white/5"
-            style={{ border: "1px solid rgba(255,255,255,0.1)" }}
-          >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0 fill-white opacity-60">
-              <path d="M3.18 23.76c.33.18.7.24 1.06.18l11.62-11.62-2.83-2.83L3.18 23.76zm14.65-12.77-2.53-2.53 2.53-2.53c.7-.7.7-1.83 0-2.53-.7-.7-1.83-.7-2.53 0l-2.53 2.53-2.53-2.53c-.7-.7-1.83-.7-2.53 0-.7.7-.7 1.83 0 2.53l2.53 2.53-2.53 2.53c-.7.7-.7 1.83 0 2.53.7.7 1.83.7 2.53 0l2.53-2.53 2.53 2.53c.7.7 1.83.7 2.53 0 .7-.7.7-1.83 0-2.53zM4.24.06C3.88 0 3.51.06 3.18.24L13.03 10.1l2.83-2.83L4.24.06z" />
-            </svg>
-            <div>
-              <p className="text-white/30 text-[9px] uppercase tracking-widest leading-none mb-0.5">Disponível no</p>
-              <p className="text-white/75 text-sm font-semibold">Google Play</p>
-            </div>
-          </a>
-          <p className="text-white/15 text-[10px] mt-2">
-            © {new Date().getFullYear()} systempay.tech · Todos os direitos reservados
-          </p>
-        </div>
       </div>
 
 
@@ -290,11 +273,32 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-white/20 text-xs mt-10">
-            © {new Date().getFullYear()} systempay.tech · Todos os direitos reservados
-          </p>
         </div>
       </div>
+
+      </div>{/* end PANELS ROW */}
+
+      {/* ── FOOTER CENTRALIZADO ──────────────────────────────── */}
+      <div className="relative z-10 w-full flex flex-col items-center gap-3 py-6" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        <p className="text-white/25 text-[10px] uppercase tracking-[0.25em]">Baixe o aplicativo</p>
+        <a
+          href="#"
+          className="flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all duration-200 hover:bg-white/5"
+          style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+        >
+          <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0 fill-white opacity-60">
+            <path d="M3.18 23.76c.33.18.7.24 1.06.18l11.62-11.62-2.83-2.83L3.18 23.76zm14.65-12.77-2.53-2.53 2.53-2.53c.7-.7.7-1.83 0-2.53-.7-.7-1.83-.7-2.53 0l-2.53 2.53-2.53-2.53c-.7-.7-1.83-.7-2.53 0-.7.7-.7 1.83 0 2.53l2.53 2.53-2.53 2.53c-.7.7-.7 1.83 0 2.53.7.7 1.83.7 2.53 0l2.53-2.53 2.53 2.53c.7.7 1.83.7 2.53 0 .7-.7.7-1.83 0-2.53zM4.24.06C3.88 0 3.51.06 3.18.24L13.03 10.1l2.83-2.83L4.24.06z" />
+          </svg>
+          <div>
+            <p className="text-white/30 text-[9px] uppercase tracking-widest leading-none mb-0.5">Disponível no</p>
+            <p className="text-white/75 text-sm font-semibold">Google Play</p>
+          </div>
+        </a>
+        <p className="text-white/15 text-[10px]">
+          © {new Date().getFullYear()} systempay.tech · Todos os direitos reservados
+        </p>
+      </div>
+
     </div>
   );
 }
