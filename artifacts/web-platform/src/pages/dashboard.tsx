@@ -325,7 +325,7 @@ function DesempenhoContent() {
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={ventasData} margin={{ top: 14, right: 20, left: 14, bottom: 4 }} barCategoryGap="30%">
+            <BarChart data={ventasData} margin={{ top: 14, right: 20, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <Customized component={Background3D} />
               <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} />
