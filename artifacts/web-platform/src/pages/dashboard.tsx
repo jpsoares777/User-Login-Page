@@ -5,11 +5,27 @@ import menuIcon from "@assets/windows_104558_1776473182467.webp";
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
 const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Clientes", "Agendados", "Roteirizar", "Notas", "GPS", "Relatórios"];
 
-function Row({ label, children, bold }: { label: string; children: React.ReactNode; bold?: boolean }) {
+function SectionHeader({ title, color }: { title: string; color: string }) {
   return (
-    <div className="flex items-center border-b border-gray-100" style={{ minHeight: "24px", fontSize: "12px", paddingLeft: "8px" }}>
-      <span className={`shrink-0 pr-2 py-0.5 text-gray-700 whitespace-nowrap ${bold ? "font-bold" : "font-normal"}`} style={{ width: "220px" }}>{label}:</span>
-      <span className={`px-2 py-0.5 flex items-center gap-1 leading-tight ${bold ? "font-bold text-gray-900" : "text-gray-600"}`}>{children}</span>
+    <div className="flex items-center gap-2 px-3 py-1.5 select-none" style={{ background: "#f0f4f8", borderBottom: "2px solid " + color, borderTop: "1px solid #e2e8f0" }}>
+      <div className="w-1 h-4 rounded-full shrink-0" style={{ background: color }} />
+      <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color }}>{title}</span>
+    </div>
+  );
+}
+
+function Row({ label, children, bold, index = 0 }: { label: string; children: React.ReactNode; bold?: boolean; index?: number }) {
+  const even = index % 2 === 0;
+  return (
+    <div
+      className="flex items-center group transition-colors"
+      style={{ minHeight: "26px", fontSize: "12px", paddingLeft: "12px", background: even ? "#ffffff" : "#f9fafb", borderBottom: "1px solid #edf0f3" }}
+      onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
+      onMouseLeave={e => (e.currentTarget.style.background = even ? "#ffffff" : "#f9fafb")}
+    >
+      <span className={`shrink-0 pr-3 py-1 whitespace-nowrap ${bold ? "font-semibold text-gray-800" : "text-gray-500 font-normal"}`} style={{ width: "230px", fontSize: bold ? "12px" : "11.5px" }}>{label}</span>
+      <div className="w-px self-stretch bg-gray-200 mr-3 shrink-0" />
+      <span className={`px-1 py-1 flex items-center gap-1.5 leading-tight flex-wrap ${bold ? "font-bold text-gray-900" : "text-gray-700"}`}>{children}</span>
     </div>
   );
 }
@@ -130,68 +146,103 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* CENTER: Flat data rows */}
-            <div className="flex-1 overflow-y-auto bg-white border-r border-gray-200">
+            {/* CENTER: Grouped data rows */}
+            <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
               {/* Filter indicator row */}
-              <div className="flex items-center py-0.5 border-b border-gray-200 bg-gray-50" style={{ paddingLeft: "8px" }}>
-                <button className="flex items-center justify-center w-5 h-5 rounded" style={{ background: "#2563eb" }}>
+              <div className="flex items-center gap-2 px-3 py-1.5" style={{ background: "#e8edf2", borderBottom: "1px solid #dde3ea" }}>
+                <button className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold text-white" style={{ background: "#2563eb" }}>
                   <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
+                  Filtro Ativo
                 </button>
+                <span className="text-[11px] text-gray-500">Vendedor selecionado: <strong className="text-gray-700">Rota Cred Bank</strong></span>
               </div>
-              <Row label="Vendedor">
-                Rota Cred Bank - &nbsp; Cod: 10600
-                <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer">XLS</span>
+
+              {/* SECTION: Dados do Vendedor */}
+              <SectionHeader title="Dados do Vendedor" color="#2563eb" />
+              <Row label="Vendedor" index={0}>
+                <strong className="text-gray-800">Rota Cred Bank</strong>&nbsp;— Cod: 10600
+                <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
               </Row>
-              <Row label="Data de Início de Cobrança">
+              <Row label="Data de Início de Cobrança" index={1}>
                 <CalIcon />
-                <span className="bg-cyan-500 text-white px-1.5 rounded text-[11px] font-medium">2026-04-17 00:41:52</span>
+                <span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">2026-04-17 00:41:52</span>
               </Row>
-              <Row label="Data de Fechamento de Cobrança">
-                <CalIcon /> Sistema sem Fechar
+              <Row label="Data de Fechamento de Cobrança" index={2}>
+                <CalIcon /><span className="text-amber-600 font-medium">Sistema sem Fechar</span>
               </Row>
-              <Row label="Último Acesso Móvel">
+              <Row label="Último Acesso Móvel" index={3}>
                 <CalIcon /> 2026-04-17 00:41:52
               </Row>
-              <Row label="Clientes Iniciais">
-                <PersonIcon /> 20 &nbsp;<span className="text-gray-400">( 1 Sincronizados / 20 )</span>
+
+              {/* SECTION: Clientes */}
+              <SectionHeader title="Clientes" color="#16a34a" />
+              <Row label="Clientes Iniciais" index={0}>
+                <PersonIcon /> <strong className="text-gray-800">20</strong>
+                <span className="text-gray-400 text-[11px]">( 1 Sincronizados / 20 )</span>
                 <svg viewBox="0 0 24 24" className="w-3 h-3 fill-blue-400 cursor-pointer"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
               </Row>
-              <Row label="Clientes Novos/Renovados">
-                <PersonIcon /> 0 <span className="text-gray-400">(0/0)</span>
+              <Row label="Clientes Novos/Renovados" index={1}>
+                <PersonIcon /> <strong className="text-gray-800">0</strong> <span className="text-gray-400 text-[11px]">(0/0)</span>
               </Row>
-              <Row label="Pag. Adiado Próx. Dia">
-                <PersonIcon /> 0
+              <Row label="Pag. Adiado Próx. Dia" index={2}>
+                <PersonIcon /> <strong className="text-gray-800">0</strong>
               </Row>
-              <Row label="Clientes Cancelados">
-                <PersonIcon /> 0
+              <Row label="Clientes Cancelados" index={3}>
+                <PersonIcon /> <strong className="text-gray-800">0</strong>
               </Row>
-              <Row label="Total de Clientes">
-                <PersonIcon /> 20
+              <Row label="Total de Clientes" index={4}>
+                <PersonIcon /> <strong className="text-gray-800">20</strong>
               </Row>
-              <Row label="Caixa Inicial" bold>$ 2.979,00</Row>
-              <Row label="Carteira Inicial" bold>$ 12.660,00</Row>
-              <Row label="Recebimento Previsto do Dia">$ 1.245,00 &nbsp;<span className="text-gray-400">( 100 % )</span></Row>
-              <Row label="Recebimento Atual do Dia">
-                $ 200,00 &nbsp;<span className="text-gray-400">( 16,1 % )</span>
-                &nbsp; Pagos: <strong className="text-gray-800">1</strong>
-                &nbsp; No Pagos: <strong className="text-red-500">0</strong>
+
+              {/* SECTION: Financeiro */}
+              <SectionHeader title="Financeiro" color="#7c3aed" />
+              <Row label="Caixa Inicial" bold index={0}>
+                <span className="text-green-700">$ 2.979,00</span>
               </Row>
-              <Row label="Recebimento por Tipo Pagto">
-                $ &nbsp;Efetivo : ( <span className="text-red-500">200,00</span> ) &nbsp; Transferência : ( <span className="text-red-500">0,00</span> )
+              <Row label="Carteira Inicial" bold index={1}>
+                <span className="text-green-700">$ 12.660,00</span>
               </Row>
-              <Row label="Vendas">
-                $ 0,00 &nbsp;<span className="text-gray-400">( Interes $ 0,00 )</span>
+              <Row label="Recebimento Previsto do Dia" index={2}>
+                <span className="font-semibold text-gray-800">$ 1.245,00</span>
+                <span className="text-[11px] bg-blue-100 text-blue-700 px-1.5 rounded font-medium">100 %</span>
               </Row>
-              <Row label="Ingressos"><span className="text-blue-600 font-bold">+</span> 0,00</Row>
-              <Row label="Retiradas"><span className="text-gray-500 font-bold">−</span> 0,00</Row>
-              <Row label="Egresos"><span className="text-gray-500 font-bold">−</span> 0,00</Row>
-              <Row label="Caixa Final" bold>
-                $ 3.179,00
-                <span className="text-red-500 text-base leading-none cursor-pointer" title="Info">❓</span>
+              <Row label="Recebimento Atual do Dia" index={3}>
+                <span className="font-semibold text-gray-800">$ 200,00</span>
+                <span className="text-[11px] bg-orange-100 text-orange-700 px-1.5 rounded font-medium">16,1 %</span>
+                <span className="text-[11px] text-gray-500 ml-1">Pagos: <strong className="text-gray-800">1</strong></span>
+                <span className="text-[11px] text-gray-500">No Pagos: <strong className="text-red-500">0</strong></span>
               </Row>
-              <Row label="Carteira Final" bold>
-                $ 12.460,00 &nbsp;<span className="font-normal text-gray-600">( Sanção 0,00 )</span>
-                <span className="text-red-500 text-base leading-none cursor-pointer" title="Info">❓</span>
+              <Row label="Recebimento por Tipo Pagto" index={4}>
+                <span className="text-[11px] text-gray-500">Efetivo:</span>
+                <span className="text-red-500 font-semibold">$ 200,00</span>
+                <span className="text-gray-300 mx-1">|</span>
+                <span className="text-[11px] text-gray-500">Transferência:</span>
+                <span className="text-red-500 font-semibold">$ 0,00</span>
+              </Row>
+              <Row label="Vendas" index={5}>
+                <span className="font-semibold text-gray-800">$ 0,00</span>
+                <span className="text-gray-400 text-[11px]">( Juros: $ 0,00 )</span>
+              </Row>
+              <Row label="Ingressos" index={6}>
+                <span className="text-blue-600 font-bold text-sm">+</span>
+                <span className="font-semibold text-blue-700">0,00</span>
+              </Row>
+              <Row label="Retiradas" index={7}>
+                <span className="text-gray-500 font-bold text-sm">−</span>
+                <span className="font-semibold text-gray-600">0,00</span>
+              </Row>
+              <Row label="Egresos" index={8}>
+                <span className="text-gray-500 font-bold text-sm">−</span>
+                <span className="font-semibold text-gray-600">0,00</span>
+              </Row>
+              <Row label="Caixa Final" bold index={9}>
+                <span className="text-green-700">$ 3.179,00</span>
+                <span className="text-red-400 text-sm cursor-pointer ml-1" title="Detalhes do cálculo">❓</span>
+              </Row>
+              <Row label="Carteira Final" bold index={10}>
+                <span className="text-green-700">$ 12.460,00</span>
+                <span className="text-[11px] text-gray-500 ml-1">( Sanção: 0,00 )</span>
+                <span className="text-red-400 text-sm cursor-pointer ml-1" title="Detalhes do cálculo">❓</span>
               </Row>
             </div>
 
