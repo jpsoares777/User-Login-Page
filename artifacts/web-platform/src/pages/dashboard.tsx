@@ -133,7 +133,7 @@ export default function DashboardPage() {
             {/* CENTER: Flat data rows */}
             <div className="flex-1 overflow-y-auto bg-white border-r border-gray-200">
               {/* Filter indicator row */}
-              <div className="flex items-center py-0.5 border-b border-gray-200 bg-gray-50" style={{ paddingLeft: "60px" }}>
+              <div className="flex items-center py-0.5 border-b border-gray-200 bg-gray-50" style={{ paddingLeft: "350px" }}>
                 <button className="flex items-center justify-center w-5 h-5 rounded" style={{ background: "#2563eb" }}>
                   <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
                 </button>
