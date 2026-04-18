@@ -8,7 +8,7 @@ const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Cl
 function Row({ label, children, bold }: { label: string; children: React.ReactNode; bold?: boolean }) {
   return (
     <div className="flex items-center border-b border-gray-100" style={{ minHeight: "22px", fontSize: "12px" }}>
-      <span className={`shrink-0 pl-1 pr-3 py-0.5 text-gray-800 whitespace-nowrap ${bold ? "font-bold" : "font-normal"}`} style={{ width: "52%", paddingLeft: "40px" }}>{label}:</span>
+      <span className={`shrink-0 pl-1 pr-3 py-0.5 text-gray-800 whitespace-nowrap ${bold ? "font-bold" : "font-normal"}`} style={{ width: "52%", paddingLeft: "60px" }}>{label}:</span>
       <span className={`px-2 py-0.5 flex items-center gap-1 flex-wrap leading-tight ${bold ? "font-bold text-gray-900" : "text-gray-700"}`}>{children}</span>
     </div>
   );
@@ -133,7 +133,7 @@ export default function DashboardPage() {
             {/* CENTER: Flat data rows */}
             <div className="flex-1 overflow-y-auto bg-white border-r border-gray-200">
               {/* Filter indicator row */}
-              <div className="flex items-center px-2 py-0.5 border-b border-gray-200 bg-gray-50">
+              <div className="flex items-center py-0.5 border-b border-gray-200 bg-gray-50" style={{ paddingLeft: "60px" }}>
                 <button className="flex items-center justify-center w-5 h-5 rounded" style={{ background: "#2563eb" }}>
                   <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
                 </button>
