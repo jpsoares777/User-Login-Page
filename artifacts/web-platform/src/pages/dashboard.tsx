@@ -313,8 +313,8 @@ function DesempenhoContent() {
             <BarChart data={clientesData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <Customized component={Background3D} />
-              <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#888", fontWeight: "bold" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 7, fill: "#888", fontWeight: "bold" }} axisLine={false} tickLine={false} width={20} />
+              <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 7, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} width={20} />
               <Tooltip contentStyle={{ fontSize: 10 }} />
               <Legend iconSize={7} iconType="circle" wrapperStyle={{ fontSize: 8, paddingTop: 2 }} />
               <Bar dataKey="Clientes 2026" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
@@ -328,8 +328,8 @@ function DesempenhoContent() {
             <BarChart data={ventasData} margin={{ top: 14, right: 20, left: 14, bottom: 4 }} barCategoryGap="30%">
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <Customized component={Background3D} />
-              <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#888", fontWeight: "bold" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 7, fill: "#888", fontWeight: "bold" }} axisLine={false} tickLine={false} width={26}
+              <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 7, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} width={26}
                 domain={[0, 20000]} ticks={[0, 5000, 10000, 15000, 20000]}
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}>
                 <Label content={<RotatedYLabel value="Total Ventas Comparativo por Años" />} />
@@ -347,8 +347,8 @@ function DesempenhoContent() {
             <BarChart data={gastosIngresosData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <Customized component={Background3D} />
-              <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#888", fontWeight: "bold" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 7, fill: "#888", fontWeight: "bold" }} axisLine={false} tickLine={false} width={26}
+              <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 7, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} width={26}
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 10 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
               <Legend iconSize={7} iconType="circle" wrapperStyle={{ fontSize: 8, paddingTop: 2 }} />
