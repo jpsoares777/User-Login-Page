@@ -45,7 +45,7 @@ export default function DashboardPage() {
           <button
             key={tab}
             onClick={() => setActiveMain(tab)}
-            className="px-6 h-9 text-sm font-medium transition-all border-r"
+            className="px-6 h-11 text-sm font-medium transition-all border-r"
             style={{
               background: activeMain === tab ? "#2563eb" : "transparent",
               color: activeMain === tab ? "#fff" : "rgba(255,255,255,0.65)",
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           <button
             key={tab}
             onClick={() => setActiveSub(tab)}
-            className="px-5 h-9 text-sm font-medium transition-all border-r"
+            className="px-5 h-11 text-sm font-medium transition-all border-r"
             style={{
               background: activeSub === tab ? "#2563eb" : "#fff",
               color: activeSub === tab ? "#fff" : "#444",
