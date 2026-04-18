@@ -131,12 +131,20 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Headline central */}
-        <div className="relative z-10 w-full">
-          <h2 className="text-white font-extrabold leading-tight mb-3" style={{ fontSize: "2.1rem" }}>
+        {/* Headline — card visível */}
+        <div
+          className="relative z-10 w-full rounded-2xl p-8"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.09)",
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          <div className="w-8 h-1 rounded-full mb-5" style={{ background: "linear-gradient(90deg,#39e37c,#00aaff)" }} />
+          <h2 className="text-white font-extrabold leading-tight mb-4" style={{ fontSize: "2rem" }}>
             System Pay — controle total<br />das suas cobranças.
           </h2>
-          <p className="text-white/40 text-sm leading-relaxed max-w-xs">
+          <p className="text-white/50 text-sm leading-relaxed">
             Gerencie clientes, parcelas e lucros de forma simples e eficiente.
           </p>
         </div>
