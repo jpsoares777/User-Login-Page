@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  PieChart, Pie, Cell,
+} from "recharts";
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
 const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Clientes", "Agendados", "Roteirizar", "Notas", "GPS", "Relatórios"];
+
+// ── Helper components ─────────────────────────────────────────────────────────
 
 function SectionHeader({ title, color }: { title: string; color: string }) {
   return (
@@ -44,11 +50,240 @@ const PersonIcon = () => (
   </svg>
 );
 
+// ── Chart card wrapper ────────────────────────────────────────────────────────
+
+function ChartCard({ children, title, year = "2026", subtitle }: { children: React.ReactNode; title?: string; year?: string; subtitle?: string }) {
+  return (
+    <div className="bg-white border border-gray-200 rounded flex flex-col" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+      {/* Toolbar */}
+      <div className="flex items-center gap-2 px-2.5 py-1.5 border-b border-gray-100 shrink-0">
+        <button className="flex items-center justify-center w-6 h-6 rounded shrink-0" style={{ background: "#16a34a" }}>
+          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white">
+            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+          </svg>
+        </button>
+        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
+          <option>Rota Cred Bank</option>
+        </select>
+        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
+          <option>{year}</option>
+          <option>{String(Number(year) - 1)}</option>
+        </select>
+        <div className="flex-1" />
+        <button className="text-gray-400 hover:text-gray-600 text-lg leading-none px-1">≡</button>
+      </div>
+      {/* Title area */}
+      {subtitle && (
+        <div className="px-3 pt-2 pb-0">
+          <div className="text-sm font-bold text-gray-800">{year}</div>
+          <div className="text-[11px] text-gray-500">{subtitle}</div>
+        </div>
+      )}
+      {/* Chart body */}
+      <div className="flex-1 min-h-0 px-1 py-1">
+        {children}
+      </div>
+      {/* Watermark */}
+      <div className="text-right pr-2 pb-1 shrink-0">
+        <span className="text-gray-300 text-[9px]">Highcharts.com</span>
+      </div>
+    </div>
+  );
+}
+
+// ── Desempenho data ───────────────────────────────────────────────────────────
+
+const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sept", "Octu", "Nov", "Dic"];
+
+const clientesData = MONTHS.map((m, i) => ({
+  mes: m,
+  "Clientes 2026": [0, 0, 5, 12, 0, 0, 0, 0, 0, 0, 0, 0][i],
+  "Clientes 2025": [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0][i],
+}));
+
+const ventasData = MONTHS.map((m, i) => ({
+  mes: m,
+  "Ventas 2026": [0, 0, 3000, 7500, 1000, 0, 0, 0, 0, 0, 0, 0][i],
+  "Ventas 2025": [0, 0, 5000, 0, 0, 0, 0, 0, 0, 0, 0, 0][i],
+}));
+
+const gastosIngresosData = MONTHS.map((m, i) => ({
+  mes: m,
+  Ingresos: [0, 0, 8500, 3200, 0, 0, 0, 0, 0, 0, 0, 0][i],
+  Gastos:   [0, 0, 2500, 1800, 0, 0, 0, 0, 0, 0, 0, 0][i],
+}));
+
+const gastosPieData = [
+  { name: "Ajuste Caja (1300)", value: 1300, color: "#aec7e8" },
+  { name: "Otros (590)", value: 590, color: "#98df8a" },
+  { name: "Retiro Caja Seguros (250)", value: 250, color: "#ffbb78" },
+  { name: "Retiros de caja (251)", value: 251, color: "#555" },
+];
+
+const ingresosPieData = [
+  { name: "Aporte Caja (5610)", value: 5610, color: "#aec7e8" },
+  { name: "Outro (3780)", value: 3780, color: "#444" },
+];
+
+// Custom y-axis label rotated
+const RotatedYLabel = ({ value, viewBox }: any) => {
+  const { x, y, height } = viewBox;
+  return (
+    <text
+      x={x - 6}
+      y={y + height / 2}
+      textAnchor="middle"
+      dominantBaseline="middle"
+      transform={`rotate(-90, ${x - 6}, ${y + height / 2})`}
+      fontSize={9}
+      fill="#666"
+    >
+      {value}
+    </text>
+  );
+};
+
+function DesempenhoContent() {
+  return (
+    <div className="flex-1 overflow-y-auto p-3" style={{ background: "#f0f2f5" }}>
+      {/* Row 1: 3 bar charts */}
+      <div className="grid grid-cols-3 gap-3 mb-3">
+
+        {/* Chart 1: Clientes */}
+        <ChartCard title="Clientes">
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={clientesData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
+              <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={24}
+                label={<RotatedYLabel value="Clientes Comparativo por Años" viewBox={undefined} />} />
+              <Tooltip contentStyle={{ fontSize: 11 }} />
+              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              <Bar dataKey="Clientes 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
+              <Bar dataKey="Clientes 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        {/* Chart 2: Ventas */}
+        <ChartCard title="Ventas">
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={ventasData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
+              <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={32}
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}
+                label={<RotatedYLabel value="Total Ventas Comparativo por Años" viewBox={undefined} />} />
+              <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
+              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              <Bar dataKey="Ventas 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
+              <Bar dataKey="Ventas 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        {/* Chart 3: Gastos/Ingresos */}
+        <ChartCard title="Gastos/Ingresos">
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={gastosIngresosData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
+              <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={32}
+                tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)}
+                label={<RotatedYLabel value="Total Gasto/Ingresos 2026" viewBox={undefined} />} />
+              <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
+              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              <Bar dataKey="Ingresos" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={14} />
+              <Bar dataKey="Gastos" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={14} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+      </div>
+
+      {/* Row 2: 2 pie charts + empty space */}
+      <div className="grid grid-cols-3 gap-3">
+
+        {/* Chart 4: Gastos por Concepto */}
+        <ChartCard subtitle="Gastos por Concepto 2026" year="2026">
+          <ResponsiveContainer width="100%" height={190}>
+            <PieChart>
+              <Pie
+                data={gastosPieData}
+                cx="50%"
+                cy="50%"
+                outerRadius={72}
+                dataKey="value"
+                label={({ name, cx, cy, midAngle, outerRadius, index }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius = outerRadius + 22;
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  return (
+                    <text x={x} y={y} textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={9} fill="#444">
+                      {gastosPieData[index].name}
+                    </text>
+                  );
+                }}
+                labelLine={{ stroke: "#ccc", strokeWidth: 1 }}
+              >
+                {gastosPieData.map((entry, i) => (
+                  <Cell key={i} fill={entry.color} stroke="#fff" strokeWidth={1} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        {/* Chart 5: Ingresos por Concepto */}
+        <ChartCard subtitle="Ingresos por Concepto 2026" year="2026">
+          <ResponsiveContainer width="100%" height={190}>
+            <PieChart>
+              <Pie
+                data={ingresosPieData}
+                cx="50%"
+                cy="50%"
+                outerRadius={72}
+                dataKey="value"
+                label={({ name, cx, cy, midAngle, outerRadius, index }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius = outerRadius + 22;
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  return (
+                    <text x={x} y={y} textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={9} fill="#444">
+                      {ingresosPieData[index].name}
+                    </text>
+                  );
+                }}
+                labelLine={{ stroke: "#ccc", strokeWidth: 1 }}
+              >
+                {ingresosPieData.map((entry, i) => (
+                  <Cell key={i} fill={entry.color} stroke="#fff" strokeWidth={1} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        {/* Empty third column */}
+        <div />
+
+      </div>
+    </div>
+  );
+}
+
+// ── Main dashboard ────────────────────────────────────────────────────────────
+
 export default function DashboardPage() {
   const [, navigate] = useLocation();
   const [activeMain, setActiveMain] = useState("Liq. Diária");
   const [activeSub, setActiveSub] = useState("Vend. Diárias");
 
+  const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Vend. Diárias";
 
   useEffect(() => {
@@ -90,45 +325,51 @@ export default function DashboardPage() {
       </div>
       <div style={{ height: "2px", background: "#2563eb" }} className="shrink-0" />
 
-      {/* ── SUB TABS ROW ── */}
-      <div className="flex items-center gap-1 px-2 py-1 shrink-0" style={{ background: "#e8edf2" }}>
-        {SUB_TABS.map((tab) => (
-          <button key={tab} onClick={() => setActiveSub(tab)}
-            className="px-4 h-9 text-sm font-medium transition-all rounded"
-            style={{
-              background: activeSub === tab ? "#2563eb" : "#fff",
-              color: activeSub === tab ? "#fff" : "#444",
-              border: activeSub === tab ? "1px solid #2563eb" : "1px solid #cdd3da",
-            }}>
-            {tab}
-          </button>
-        ))}
-      </div>
+      {/* ── SUB TABS ROW (hidden on Desempenho) ── */}
+      {!isDesempenho && (
+        <div className="flex items-center gap-1 px-2 py-1 shrink-0" style={{ background: "#e8edf2" }}>
+          {SUB_TABS.map((tab) => (
+            <button key={tab} onClick={() => setActiveSub(tab)}
+              className="px-4 h-9 text-sm font-medium transition-all rounded"
+              style={{
+                background: activeSub === tab ? "#2563eb" : "#fff",
+                color: activeSub === tab ? "#fff" : "#444",
+                border: activeSub === tab ? "1px solid #2563eb" : "1px solid #cdd3da",
+              }}>
+              {tab}
+            </button>
+          ))}
+        </div>
+      )}
 
-      {/* ── FILTER BAR ── */}
-      <div className="flex items-center h-11 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-        <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-          País
-        </button>
-        <button className="flex items-center justify-center w-8 h-8 rounded" style={{ background: "#16a34a", color: "#fff" }}>
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-        </button>
-        <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          Vendedor
-          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white opacity-70"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-          <span className="text-xs bg-white/25 rounded-full w-5 h-5 flex items-center justify-center font-bold">1</span>
-        </button>
-        <div className="flex-1" />
-        <button className="flex items-center justify-center w-9 h-8 rounded" style={{ background: "#2563eb", color: "#fff" }}>
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
-        </button>
-      </div>
+      {/* ── FILTER BAR (hidden on Desempenho) ── */}
+      {!isDesempenho && (
+        <div className="flex items-center h-11 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+          <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            País
+          </button>
+          <button className="flex items-center justify-center w-8 h-8 rounded" style={{ background: "#16a34a", color: "#fff" }}>
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          </button>
+          <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            Vendedor
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white opacity-70"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span className="text-xs bg-white/25 rounded-full w-5 h-5 flex items-center justify-center font-bold">1</span>
+          </button>
+          <div className="flex-1" />
+          <button className="flex items-center justify-center w-9 h-8 rounded" style={{ background: "#2563eb", color: "#fff" }}>
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
+          </button>
+        </div>
+      )}
 
       {/* ── CONTENT AREA ── */}
       <div className="flex-1 overflow-hidden flex">
-        {showContent ? (
+        {isDesempenho ? (
+          <DesempenhoContent />
+        ) : showContent ? (
           <>
             {/* LEFT: Tree */}
             <div className="w-64 shrink-0 border-r border-gray-200 bg-white overflow-y-auto">
