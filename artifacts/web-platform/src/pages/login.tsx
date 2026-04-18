@@ -120,20 +120,19 @@ export default function LoginPage() {
       {/* ── LEFT PANEL ──────────────────────────────────────── */}
       <div className="hidden lg:flex w-[52%] flex-col items-center justify-between py-14 px-12 relative">
 
-        {/* Logo — topo esquerdo, pequena */}
-        <div className="relative z-10 w-full flex justify-start">
-          <img
-            src={logoImg}
-            alt="SystemPay"
-            className="w-52 object-contain select-none"
-            style={{ mixBlendMode: "screen" }}
-            draggable={false}
-          />
-        </div>
+        {/* Logo + Headline agrupados no topo */}
+        <div className="relative z-10 w-full flex flex-col gap-10">
+          <div className="flex justify-start">
+            <img
+              src={logoImg}
+              alt="SystemPay"
+              className="w-52 object-contain select-none"
+              style={{ mixBlendMode: "screen" }}
+              draggable={false}
+            />
+          </div>
 
-        {/* Headline */}
-        <div className="relative z-10 w-full p-2">
-          <div className="flex gap-5">
+          <div className="flex gap-5 pl-2">
             <div className="w-1 rounded-full flex-shrink-0 self-stretch" style={{ background: "linear-gradient(180deg,#39e37c,#00aaff)" }} />
             <div>
               <h2 className="text-white font-extrabold leading-tight mb-3" style={{ fontSize: "2rem" }}>
