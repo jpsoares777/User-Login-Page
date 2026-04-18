@@ -80,7 +80,7 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
         </div>
       )}
       {/* Chart body */}
-      <div className="flex-1 min-h-0 px-0.5">
+      <div className="flex-1 min-h-0 px-3 py-2">
         {children}
       </div>
       {/* Watermark */}
