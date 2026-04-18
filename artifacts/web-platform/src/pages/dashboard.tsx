@@ -56,36 +56,36 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
   return (
     <div className="bg-white border border-gray-200 rounded flex flex-col" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 shrink-0">
-        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 36, height: 36 }}>
-          <svg viewBox="0 0 24 24" style={{ width: 18, height: 18 }} className="fill-white">
+      <div className="flex items-center gap-1.5 px-2 py-1 border-b border-gray-100 shrink-0">
+        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 22, height: 22 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 12, height: 12 }} className="fill-white">
             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
           </svg>
         </button>
-        <select className="text-[12px] border border-gray-300 rounded px-1.5 py-1 bg-white text-gray-700 cursor-pointer">
+        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
           <option>Rota Cred Bank -</option>
         </select>
-        <select className="text-[12px] border border-gray-300 rounded px-1.5 py-1 bg-white text-gray-700 cursor-pointer">
+        <select className="text-[11px] border border-gray-200 rounded px-1 py-0.5 bg-white text-gray-700 cursor-pointer">
           <option>{year}</option>
           <option>{String(Number(year) - 1)}</option>
         </select>
         <div className="flex-1" />
-        <button className="text-gray-500 hover:text-gray-700 text-xl leading-none px-1">≡</button>
+        <button className="text-gray-500 hover:text-gray-700 text-base leading-none px-0.5">≡</button>
       </div>
       {/* Title area */}
       {subtitle && (
-        <div className="px-3 pt-2 pb-0">
-          <div className="text-sm font-bold text-gray-800">{year}</div>
-          <div className="text-[11px] text-gray-500">{subtitle}</div>
+        <div className="px-2 pt-1 pb-0">
+          <div className="text-xs font-bold text-gray-800">{year}</div>
+          <div className="text-[10px] text-gray-500">{subtitle}</div>
         </div>
       )}
       {/* Chart body */}
-      <div className="flex-1 min-h-0 px-1 py-1">
+      <div className="flex-1 min-h-0 px-0.5">
         {children}
       </div>
       {/* Watermark */}
-      <div className="text-right pr-2 pb-1 shrink-0">
-        <span className="text-gray-300 text-[9px]">Highcharts.com</span>
+      <div className="text-right pr-1.5 pb-0.5 shrink-0">
+        <span className="text-gray-300 text-[8px]">Highcharts.com</span>
       </div>
     </div>
   );
@@ -153,7 +153,7 @@ function DesempenhoContent() {
       <div className="grid grid-cols-3 gap-2 mb-2">
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={255}>
+          <ResponsiveContainer width="100%" height={185}>
             <BarChart data={clientesData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
@@ -169,7 +169,7 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={255}>
+          <ResponsiveContainer width="100%" height={185}>
             <BarChart data={ventasData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
@@ -186,7 +186,7 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={255}>
+          <ResponsiveContainer width="100%" height={185}>
             <BarChart data={gastosIngresosData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
@@ -208,13 +208,13 @@ function DesempenhoContent() {
       <div className="grid grid-cols-3 gap-2">
 
         <ChartCard subtitle="Gastos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={245}>
+          <ResponsiveContainer width="100%" height={175}>
             <PieChart>
               <Pie
                 data={gastosPieData}
                 cx="50%"
                 cy="50%"
-                outerRadius={90}
+                outerRadius={62}
                 dataKey="value"
                 label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
@@ -239,13 +239,13 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard subtitle="Ingresos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={245}>
+          <ResponsiveContainer width="100%" height={175}>
             <PieChart>
               <Pie
                 data={ingresosPieData}
                 cx="50%"
                 cy="50%"
-                outerRadius={90}
+                outerRadius={62}
                 dataKey="value"
                 label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
