@@ -104,23 +104,23 @@ export default function DashboardPage() {
         {showContent ? (
           <>
             {/* LEFT: Tree */}
-            <div className="w-52 shrink-0 border-r border-gray-200 bg-white overflow-y-auto text-xs">
-              <div className="flex items-center gap-1 px-3 py-2 font-semibold text-gray-600 border-b border-gray-100">
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-gray-500"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <div className="w-64 shrink-0 border-r border-gray-200 bg-white overflow-y-auto">
+              <div className="flex items-center gap-2 px-3 py-2.5 font-semibold text-gray-600 border-b border-gray-100 text-sm">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                 Vendedores
               </div>
-              <div className="px-2 py-1.5 flex items-center gap-1 text-gray-700 font-semibold cursor-pointer hover:bg-gray-50">
-                <span className="text-base">🌐</span> BRASIL
+              <div className="px-3 py-2 flex items-center gap-2 text-gray-800 font-bold text-sm cursor-pointer hover:bg-gray-50">
+                <span className="text-lg">🌐</span> BRASIL
               </div>
-              <div className="pl-5 py-1 flex items-center gap-1 text-gray-600 cursor-pointer hover:bg-gray-50">
-                <span>📍</span> SAO LUIS
+              <div className="pl-7 py-2 flex items-center gap-2 text-gray-600 text-sm cursor-pointer hover:bg-gray-50">
+                <span className="text-base">📍</span> SAO LUIS
               </div>
-              <div className="pl-8 py-1.5 flex items-center justify-between pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
-                <div className="flex items-center gap-1 text-blue-700">
-                  <svg viewBox="0 0 24 24" className="w-3 h-3 fill-blue-500"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                  Rota Cred Bank -
+              <div className="pl-10 py-2 flex items-center justify-between pr-3 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
+                <div className="flex items-center gap-1.5 text-blue-700 text-sm">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-blue-500 shrink-0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  <span className="whitespace-nowrap">Rota Cred Bank -</span>
                 </div>
-                <span className="text-[10px] bg-cyan-500 text-white px-1 rounded font-medium">2026-04-17</span>
+                <span className="text-[11px] bg-cyan-500 text-white px-1.5 py-0.5 rounded font-medium ml-2 shrink-0">2026-04-17</span>
               </div>
             </div>
 
