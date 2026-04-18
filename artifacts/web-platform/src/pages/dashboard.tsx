@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
 
@@ -50,6 +50,14 @@ export default function DashboardPage() {
   const [activeSub, setActiveSub] = useState("Vend. Diárias");
 
   const showContent = activeMain === "Liq. Diária" && activeSub === "Vend. Diárias";
+
+  useEffect(() => {
+    const vp = document.getElementById("vp") as HTMLMetaElement | null;
+    if (vp) vp.content = "width=1100, initial-scale=1";
+    return () => {
+      if (vp) vp.content = "width=device-width, initial-scale=1";
+    };
+  }, []);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ fontFamily: "system-ui, sans-serif", background: "#f4f4f4" }}>
