@@ -54,7 +54,7 @@ const PersonIcon = () => (
 
 function ChartCard({ children, year = "2026", subtitle }: { children: React.ReactNode; year?: string; subtitle?: string }) {
   return (
-    <div className="bg-white border border-gray-200 rounded flex flex-col" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+    <div className="bg-white border border-gray-200 rounded flex flex-col flex-1 min-w-0 min-h-0" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
       {/* Toolbar */}
       <div className="flex items-center gap-1.5 px-2 py-1 border-b border-gray-100 shrink-0">
         <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 22, height: 22 }}>
@@ -147,13 +147,13 @@ const RotatedYLabel = ({ value, viewBox }: any) => {
 
 function DesempenhoContent() {
   return (
-    <div className="flex-1 overflow-y-auto p-2" style={{ background: "#f0f2f5" }}>
+    <div className="flex-1 flex flex-col min-h-0" style={{ background: "#f0f2f5", gap: 6, padding: 6 }}>
 
       {/* Row 1: 3 bar charts */}
-      <div className="grid grid-cols-4 gap-2 mb-2">
+      <div className="flex min-h-0" style={{ flex: 1, gap: 6 }}>
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={clientesData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
@@ -169,7 +169,7 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={ventasData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
@@ -186,7 +186,7 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={gastosIngresosData} margin={{ top: 8, right: 16, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" vertical={false} />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
@@ -202,21 +202,19 @@ function DesempenhoContent() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <div />
-
       </div>
 
-      {/* Row 2: 2 pie charts + empty */}
-      <div className="grid grid-cols-4 gap-2">
+      {/* Row 2: 2 pie charts + empty third */}
+      <div className="flex min-h-0" style={{ flex: 1, gap: 6 }}>
 
         <ChartCard subtitle="Gastos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={190}>
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={gastosPieData}
                 cx="50%"
                 cy="50%"
-                outerRadius={72}
+                outerRadius="45%"
                 dataKey="value"
                 label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
@@ -241,13 +239,13 @@ function DesempenhoContent() {
         </ChartCard>
 
         <ChartCard subtitle="Ingresos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height={190}>
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={ingresosPieData}
                 cx="50%"
                 cy="50%"
-                outerRadius={72}
+                outerRadius="45%"
                 dataKey="value"
                 label={({ cx, cy, midAngle, outerRadius, index }) => {
                   const RADIAN = Math.PI / 180;
@@ -271,8 +269,8 @@ function DesempenhoContent() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <div />
-        <div />
+        {/* Empty third column */}
+        <div className="flex-1" />
 
       </div>
     </div>
