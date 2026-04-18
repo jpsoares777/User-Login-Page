@@ -125,6 +125,93 @@ const ingresosPieData = [
   { name: "Outro (3780)", value: 3780, color: "#444" },
 ];
 
+// ── 3D Pie Chart ─────────────────────────────────────────────────────────────
+
+function expandHex(hex: string) {
+  hex = hex.replace("#", "");
+  if (hex.length === 3) hex = hex.split("").map(c => c + c).join("");
+  return "#" + hex;
+}
+function darkenColor(hex: string, f = 0.35) {
+  hex = expandHex(hex);
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.max(0, Math.round(((n >> 16) & 255) * (1 - f)));
+  const g = Math.max(0, Math.round(((n >> 8) & 255) * (1 - f)));
+  const b = Math.max(0, Math.round((n & 255) * (1 - f)));
+  return `rgb(${r},${g},${b})`;
+}
+
+function Pie3DChart({ data }: { data: { name: string; value: number; color: string }[] }) {
+  const W = 400, H = 300;
+  const cx = 185, cy = 138;
+  const rx = 112, ry = 68, depth = 22;
+
+  const total = data.reduce((s, d) => s + d.value, 0);
+  let cum = -Math.PI / 2;
+  const slices = data.map(d => {
+    const a1 = cum;
+    const sweep = (d.value / total) * 2 * Math.PI;
+    cum += sweep;
+    const a2 = cum;
+    return { ...d, a1, a2, mid: (a1 + a2) / 2 };
+  });
+
+  const T = (a: number): [number, number] => [cx + rx * Math.cos(a), cy + ry * Math.sin(a)];
+  const B = (a: number): [number, number] => [cx + rx * Math.cos(a), cy + depth + ry * Math.sin(a)];
+
+  const topPath = (a1: number, a2: number) => {
+    const [x1, y1] = T(a1), [x2, y2] = T(a2);
+    const large = a2 - a1 > Math.PI ? 1 : 0;
+    return `M ${cx},${cy} L ${x1},${y1} A ${rx},${ry} 0 ${large} 1 ${x2},${y2} Z`;
+  };
+  const wallPath = (a1: number, a2: number) => {
+    const [tx1, ty1] = T(a1), [tx2, ty2] = T(a2);
+    const [bx1, by1] = B(a1), [bx2, by2] = B(a2);
+    const large = a2 - a1 > Math.PI ? 1 : 0;
+    return `M ${tx1},${ty1} A ${rx},${ry} 0 ${large} 1 ${tx2},${ty2} L ${bx2},${by2} A ${rx},${ry} 0 ${large} 0 ${bx1},${by1} Z`;
+  };
+  const frontParts = (a1: number, a2: number): [number, number][] => {
+    const res: [number, number][] = [];
+    const s = Math.max(a1, 0), e = Math.min(a2, Math.PI);
+    if (s < e) res.push([s, e]);
+    return res;
+  };
+
+  const sorted = [...slices].sort((a, b) => Math.sin(a.mid) - Math.sin(b.mid));
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" style={{ overflow: "visible" }}>
+      {/* Outer walls (back to front) */}
+      {sorted.map((s, i) =>
+        frontParts(s.a1, s.a2).map(([ps, pe], j) => (
+          <path key={`w${i}${j}`} d={wallPath(ps, pe)} fill={darkenColor(s.color)} />
+        ))
+      )}
+      {/* Top faces (back to front) */}
+      {sorted.map((s, i) => (
+        <path key={`t${i}`} d={topPath(s.a1, s.a2)} fill={s.color} stroke="#fff" strokeWidth={1.5} />
+      ))}
+      {/* Labels with connector lines */}
+      {slices.map((s, i) => {
+        const [ex, ey] = T(s.mid);
+        const lx = cx + (rx + 30) * Math.cos(s.mid);
+        const ly = cy + (ry + 16) * Math.sin(s.mid);
+        const anchor = Math.cos(s.mid) >= 0 ? "start" : "end";
+        const tx = lx + (Math.cos(s.mid) >= 0 ? 4 : -4);
+        return (
+          <g key={`l${i}`}>
+            <line x1={ex} y1={ey} x2={lx} y2={ly} stroke="#bbb" strokeWidth={0.8} />
+            <text x={tx} y={ly} textAnchor={anchor} dominantBaseline="middle"
+              fontSize={9} fontWeight="bold" fill="#333">
+              {s.name}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 // ── 3D Grid background ────────────────────────────────────────────────────────
 
 const CHART_DEPTH = 10;
@@ -277,65 +364,11 @@ function DesempenhoContent() {
       <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
         <ChartCard subtitle="Gastos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={gastosPieData}
-                cx="50%"
-                cy="50%"
-                outerRadius="45%"
-                dataKey="value"
-                label={({ cx, cy, midAngle, outerRadius, index }) => {
-                  const RADIAN = Math.PI / 180;
-                  const r = (outerRadius as number) + 22;
-                  const x = (cx as number) + r * Math.cos(-midAngle * RADIAN);
-                  const y = (cy as number) + r * Math.sin(-midAngle * RADIAN);
-                  return (
-                    <text x={x} y={y} textAnchor={x > (cx as number) ? "start" : "end"} dominantBaseline="central" fontSize={9} fill="#444">
-                      {gastosPieData[index].name}
-                    </text>
-                  );
-                }}
-                labelLine={{ stroke: "#ccc", strokeWidth: 1 }}
-              >
-                {gastosPieData.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} stroke="#fff" strokeWidth={1} />
-                ))}
-              </Pie>
-              <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
-            </PieChart>
-          </ResponsiveContainer>
+          <Pie3DChart data={gastosPieData} />
         </ChartCard>
 
         <ChartCard subtitle="Ingresos por Concepto 2026" year="2026">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={ingresosPieData}
-                cx="50%"
-                cy="50%"
-                outerRadius="45%"
-                dataKey="value"
-                label={({ cx, cy, midAngle, outerRadius, index }) => {
-                  const RADIAN = Math.PI / 180;
-                  const r = (outerRadius as number) + 22;
-                  const x = (cx as number) + r * Math.cos(-midAngle * RADIAN);
-                  const y = (cy as number) + r * Math.sin(-midAngle * RADIAN);
-                  return (
-                    <text x={x} y={y} textAnchor={x > (cx as number) ? "start" : "end"} dominantBaseline="central" fontSize={9} fill="#444">
-                      {ingresosPieData[index].name}
-                    </text>
-                  );
-                }}
-                labelLine={{ stroke: "#ccc", strokeWidth: 1 }}
-              >
-                {ingresosPieData.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} stroke="#fff" strokeWidth={1} />
-                ))}
-              </Pie>
-              <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
-            </PieChart>
-          </ResponsiveContainer>
+          <Pie3DChart data={ingresosPieData} />
         </ChartCard>
 
         {/* Empty third column */}
