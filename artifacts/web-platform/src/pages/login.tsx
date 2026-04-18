@@ -140,13 +140,17 @@ export default function LoginPage() {
             backdropFilter: "blur(8px)",
           }}
         >
-          <div className="w-8 h-1 rounded-full mb-5" style={{ background: "linear-gradient(90deg,#39e37c,#00aaff)" }} />
-          <h2 className="text-white font-extrabold leading-tight mb-4" style={{ fontSize: "2rem" }}>
-            System Pay — controle total<br />das suas cobranças.
-          </h2>
-          <p className="text-white/50 text-sm leading-relaxed">
-            Gerencie clientes, parcelas e lucros de forma simples e eficiente.
-          </p>
+          <div className="flex gap-5">
+            <div className="w-1 rounded-full flex-shrink-0 self-stretch" style={{ background: "linear-gradient(180deg,#39e37c,#00aaff)" }} />
+            <div>
+              <h2 className="text-white font-extrabold leading-tight mb-3" style={{ fontSize: "2rem" }}>
+                System Pay — controle total<br />das suas cobranças.
+              </h2>
+              <p className="text-white/50 text-sm leading-relaxed">
+                Gerencie clientes, parcelas e lucros de forma simples e eficiente.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Bottom — Google Play */}
