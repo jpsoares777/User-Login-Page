@@ -1,13 +1,25 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import logoImg from "@assets/ChatGPT_Image_17_de_abr._de_2026,_20_49_18_(2)_1776469795366.png";
 
+const VALID_USER = "admin";
+const VALID_PASS = "admin123";
+
 export default function LoginPage() {
+  const [, navigate] = useLocation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (username === VALID_USER && password === VALID_PASS) {
+      setError("");
+      navigate("/dashboard");
+    } else {
+      setError("Usuário ou senha incorretos.");
+    }
   };
 
   return (
@@ -239,6 +251,14 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+
+            {/* Erro de credenciais */}
+            {error && (
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-red-400"
+                style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
+                ⚠ {error}
+              </div>
+            )}
 
             {/* Esqueceu senha */}
             <div className="flex items-center gap-1.5">
