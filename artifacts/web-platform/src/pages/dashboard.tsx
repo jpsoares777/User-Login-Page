@@ -7,9 +7,9 @@ const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Cl
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center border-b border-gray-100 text-xs min-h-[22px]">
-      <span className="w-48 shrink-0 px-3 py-1 text-gray-800 font-semibold">{label}:</span>
-      <span className="px-2 py-1 text-gray-700 flex items-center gap-1.5 flex-wrap">{children}</span>
+    <div className="flex items-center border-b border-gray-100" style={{ minHeight: "20px", fontSize: "12px" }}>
+      <span className="shrink-0 px-2 py-0.5 text-gray-800 font-semibold whitespace-nowrap" style={{ width: "210px" }}>{label}:</span>
+      <span className="px-2 py-0.5 text-gray-700 flex items-center gap-1 flex-wrap leading-tight">{children}</span>
     </div>
   );
 }
@@ -127,9 +127,9 @@ export default function DashboardPage() {
             {/* CENTER: Flat data rows */}
             <div className="flex-1 overflow-y-auto bg-white border-r border-gray-200">
               {/* Filter indicator row */}
-              <div className="flex items-center px-2 py-1 border-b border-gray-200 bg-gray-50">
-                <button className="flex items-center justify-center w-6 h-6 rounded" style={{ background: "#2563eb" }}>
-                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
+              <div className="flex items-center px-2 py-0.5 border-b border-gray-200 bg-gray-50">
+                <button className="flex items-center justify-center w-5 h-5 rounded" style={{ background: "#2563eb" }}>
+                  <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
                 </button>
               </div>
               <Row label="Vendedor">
@@ -138,7 +138,7 @@ export default function DashboardPage() {
               </Row>
               <Row label="Data de Início de Cobrança">
                 <CalIcon />
-                <span className="bg-cyan-500 text-white px-1.5 py-0.5 rounded text-[11px] font-medium">2026-04-17 00:41:52</span>
+                <span className="bg-cyan-500 text-white px-1.5 rounded text-[11px] font-medium">2026-04-17 00:41:52</span>
               </Row>
               <Row label="Data de Fechamento de Cobrança">
                 <CalIcon /> Sistema sem Fechar
@@ -148,12 +148,12 @@ export default function DashboardPage() {
               </Row>
               <Row label="Clientes Iniciais">
                 <PersonIcon /> 20 &nbsp;<span className="text-gray-400">( 1 Sincronizados / 20 )</span>
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-blue-400 cursor-pointer"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                <svg viewBox="0 0 24 24" className="w-3 h-3 fill-blue-400 cursor-pointer"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
               </Row>
               <Row label="Clientes Novos/Renovados">
                 <PersonIcon /> 0 <span className="text-gray-400">(0/0)</span>
               </Row>
-              <Row label="Pagamento Adiado Próx. Dia">
+              <Row label="Pag. Adiado Próx. Dia">
                 <PersonIcon /> 0
               </Row>
               <Row label="Clientes Cancelados">
@@ -167,10 +167,10 @@ export default function DashboardPage() {
               <Row label="Recebimento Previsto do Dia">$ 1.245,00 &nbsp;<span className="text-gray-400">( 100 % )</span></Row>
               <Row label="Recebimento Atual do Dia">
                 $ 200,00 &nbsp;<span className="text-gray-400">( 16,1 % )</span>
-                &nbsp; Pagamentos: <strong className="text-gray-800">1</strong>
+                &nbsp; Pag: <strong className="text-gray-800">1</strong>
                 &nbsp; Não Pag: <strong className="text-red-500">0</strong>
               </Row>
-              <Row label="Recebimento por Tipo de Pagto">
+              <Row label="Recebimento por Tipo Pagto">
                 Efetivo : ( <span className="text-red-500">$ 200,00</span> ) &nbsp; Transferência : ( 0,00 )
               </Row>
               <Row label="Vendas">
@@ -180,10 +180,10 @@ export default function DashboardPage() {
               <Row label="Retiradas"><span className="text-orange-500">− 0,00</span></Row>
               <Row label="Egresos">− 0,00</Row>
               <Row label="Caixa Final">
-                <span className="text-red-500 text-base leading-none">●</span> $ 3.179,00
+                <span className="text-red-500">●</span> $ 3.179,00
               </Row>
               <Row label="Carteira Final">
-                <span className="text-red-500 text-base leading-none">●</span> $ 12.460,00 &nbsp;<span className="text-gray-400">( Sanção 0,00 )</span>
+                <span className="text-red-500">●</span> $ 12.460,00 &nbsp;<span className="text-gray-400">( Sanção 0,00 )</span>
               </Row>
             </div>
 
