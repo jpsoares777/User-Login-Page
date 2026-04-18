@@ -131,15 +131,8 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Headline — card visível */}
-        <div
-          className="relative z-10 w-full rounded-lg p-8"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.09)",
-            backdropFilter: "blur(8px)",
-          }}
-        >
+        {/* Headline */}
+        <div className="relative z-10 w-full p-2">
           <div className="flex gap-5">
             <div className="w-1 rounded-full flex-shrink-0 self-stretch" style={{ background: "linear-gradient(180deg,#39e37c,#00aaff)" }} />
             <div>
