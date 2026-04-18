@@ -8,7 +8,7 @@ const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Cl
 function Row({ label, children, bold }: { label: string; children: React.ReactNode; bold?: boolean }) {
   return (
     <div className="flex items-center border-b border-gray-100" style={{ minHeight: "22px", fontSize: "12px" }}>
-      <span className={`shrink-0 px-3 py-0.5 text-gray-800 whitespace-nowrap ${bold ? "font-bold" : "font-normal"}`} style={{ width: "40%" }}>{label}:</span>
+      <span className={`shrink-0 px-3 py-0.5 text-gray-800 whitespace-nowrap ${bold ? "font-bold" : "font-normal"}`} style={{ width: "45%" }}>{label}:</span>
       <span className={`px-2 py-0.5 flex items-center gap-1 flex-wrap leading-tight ${bold ? "font-bold text-gray-900" : "text-gray-700"}`}>{children}</span>
     </div>
   );
@@ -123,12 +123,10 @@ export default function DashboardPage() {
                 SAO LUIS
               </div>
               {/* Rota Cred Bank */}
-              <div className="pl-12 py-2 flex items-center justify-between pr-3 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
-                <div className="flex items-center gap-1.5 text-gray-700 text-sm">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                  <span className="whitespace-nowrap">Rota Cred Bank -</span>
-                </div>
-                <span className="text-[11px] bg-green-500 text-white px-1.5 py-0.5 rounded font-medium ml-2 shrink-0">2026-04-17</span>
+              <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span className="text-gray-700 text-sm whitespace-nowrap">Rota Cred Bank -</span>
+                <span className="flex-1 ml-2 text-center text-[11px] bg-green-500 text-white py-0.5 rounded font-medium">2026-04-17</span>
               </div>
             </div>
 
