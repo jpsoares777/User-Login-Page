@@ -7,9 +7,9 @@ const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Cl
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start border-b border-gray-100 text-xs min-h-[26px]">
-      <span className="w-52 shrink-0 px-3 py-1.5 text-gray-700 font-medium bg-gray-50 border-r border-gray-200">{label}:</span>
-      <span className="px-3 py-1.5 text-gray-800 flex items-center gap-1.5 flex-wrap">{children}</span>
+    <div className="flex items-center border-b border-gray-100 text-xs min-h-[22px]">
+      <span className="w-48 shrink-0 px-3 py-1 text-gray-800 font-semibold">{label}:</span>
+      <span className="px-2 py-1 text-gray-700 flex items-center gap-1.5 flex-wrap">{children}</span>
     </div>
   );
 }
@@ -126,6 +126,12 @@ export default function DashboardPage() {
 
             {/* CENTER: Flat data rows */}
             <div className="flex-1 overflow-y-auto bg-white border-r border-gray-200">
+              {/* Filter indicator row */}
+              <div className="flex items-center px-2 py-1 border-b border-gray-200 bg-gray-50">
+                <button className="flex items-center justify-center w-6 h-6 rounded" style={{ background: "#2563eb" }}>
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
+                </button>
+              </div>
               <Row label="Vendedor">
                 Rota Cred Bank - &nbsp; Cod: 10600
                 <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer">XLS</span>
