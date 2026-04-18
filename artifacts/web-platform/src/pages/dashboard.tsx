@@ -10,38 +10,34 @@ export default function DashboardPage() {
   const [activeMain, setActiveMain] = useState("Liq. Diária");
   const [activeSub, setActiveSub] = useState("Vend. Diárias");
 
-  const handleLogout = () => {
-    navigate("/");
-  };
+  const handleLogout = () => navigate("/");
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100" style={{ fontFamily: "system-ui, sans-serif" }}>
 
       {/* ── TOP BAR ── */}
-      <div className="flex items-center h-10 px-2 gap-1" style={{ background: "#0c1d38" }}>
+      <div className="flex items-center h-14 px-3 gap-1" style={{ background: "#0c1d38" }}>
 
-        {/* Logo small */}
-        <div className="flex items-center mr-2">
+        <div className="flex items-center mr-3">
           <img
             src={logoImg}
             alt="SystemPay"
-            className="h-8 w-auto object-contain select-none"
+            className="h-10 w-auto object-contain select-none"
             style={{ mixBlendMode: "screen" }}
             draggable={false}
           />
         </div>
 
         {/* Main tabs */}
-        <div className="flex items-center gap-0.5 flex-1">
+        <div className="flex items-center gap-1 flex-1">
           {MAIN_TABS.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveMain(tab)}
-              className="px-4 h-7 text-xs font-medium rounded-t transition-all"
+              className="px-5 h-9 text-sm font-medium rounded-t transition-all"
               style={{
                 background: activeMain === tab ? "#1a73e8" : "transparent",
-                color: activeMain === tab ? "#fff" : "rgba(255,255,255,0.55)",
-                border: activeMain === tab ? "none" : "none",
+                color: activeMain === tab ? "#fff" : "rgba(255,255,255,0.6)",
               }}
             >
               {tab}
@@ -50,22 +46,22 @@ export default function DashboardPage() {
         </div>
 
         {/* Right side actions */}
-        <div className="flex items-center gap-1.5">
-          <button className="px-2.5 h-6 text-[10px] font-semibold rounded text-white flex items-center gap-1"
+        <div className="flex items-center gap-2">
+          <button className="px-3 h-8 text-xs font-semibold rounded text-white flex items-center gap-1.5"
             style={{ background: "#c0392b" }}>
-            <span>▶</span> Tutoriais
+            ▶ Tutoriais
           </button>
-          <button className="px-2.5 h-6 text-[10px] font-semibold rounded text-white"
+          <button className="px-3 h-8 text-xs font-semibold rounded text-white"
             style={{ background: "#e67e22" }}>
             Admin
           </button>
-          <button className="px-2.5 h-6 text-[10px] font-medium rounded text-white/70 flex items-center gap-1"
-            style={{ background: "rgba(255,255,255,0.1)" }}>
+          <button className="px-3 h-8 text-xs font-medium rounded flex items-center gap-1.5"
+            style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.75)" }}>
             🔑 Alterar Senha
           </button>
           <button
             onClick={handleLogout}
-            className="px-2.5 h-6 text-[10px] font-medium rounded flex items-center gap-1"
+            className="px-3 h-8 text-xs font-medium rounded flex items-center gap-1.5"
             style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)" }}
           >
             ⏻ Sair
@@ -74,12 +70,12 @@ export default function DashboardPage() {
       </div>
 
       {/* ── SUB TABS ── */}
-      <div className="flex items-center h-9 px-2 gap-0.5" style={{ background: "#f0f0f0", borderBottom: "1px solid #ddd" }}>
+      <div className="flex items-center h-11 px-3 gap-1" style={{ background: "#f0f0f0", borderBottom: "1px solid #ddd" }}>
         {SUB_TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveSub(tab)}
-            className="px-3 h-7 text-xs font-medium rounded transition-all border"
+            className="px-4 h-8 text-sm font-medium rounded transition-all border"
             style={{
               background: activeSub === tab ? "#1a73e8" : "#fff",
               color: activeSub === tab ? "#fff" : "#333",
@@ -92,20 +88,19 @@ export default function DashboardPage() {
       </div>
 
       {/* ── FILTER BAR ── */}
-      <div className="flex items-center h-9 px-2 gap-1.5" style={{ background: "#f8f8f8", borderBottom: "1px solid #e0e0e0" }}>
-        <button className="flex items-center gap-1.5 px-2.5 h-6 text-xs font-medium rounded border"
+      <div className="flex items-center h-12 px-3 gap-2" style={{ background: "#f8f8f8", borderBottom: "1px solid #e0e0e0" }}>
+        <button className="flex items-center gap-2 px-3 h-8 text-sm font-medium rounded border"
           style={{ background: "#1a73e8", color: "#fff", borderColor: "#1a73e8" }}>
-          <span>🌎</span> País
-          <span className="ml-0.5 text-[10px] bg-white/30 rounded-full w-4 h-4 flex items-center justify-center">↺</span>
+          🌎 País
+          <span className="text-xs bg-white/25 rounded px-1">↺</span>
         </button>
-        <button className="flex items-center justify-center w-6 h-6 rounded border text-xs"
+        <button className="flex items-center justify-center w-8 h-8 rounded border text-sm font-bold"
           style={{ background: "#1a73e8", color: "#fff", borderColor: "#1a73e8" }}>
           ↺
         </button>
-        <button className="flex items-center gap-1.5 px-2.5 h-6 text-xs font-medium rounded border"
+        <button className="flex items-center gap-2 px-3 h-8 text-sm font-medium rounded border"
           style={{ background: "#fff", color: "#333", borderColor: "#ccc" }}>
-          <span>👤</span> Vendedor
-          <span className="text-[10px] text-gray-400 ml-0.5">▼</span>
+          👤 Vendedor <span className="text-gray-400 text-xs">▼</span>
         </button>
       </div>
 
