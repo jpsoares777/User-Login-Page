@@ -19,7 +19,7 @@ export default function DashboardPage() {
         <img
           src={menuIcon}
           alt="Menu"
-          className="h-9 w-9 object-contain select-none cursor-pointer"
+          className="h-11 w-11 object-contain select-none cursor-pointer"
           draggable={false}
         />
         <div className="flex items-center gap-2">
