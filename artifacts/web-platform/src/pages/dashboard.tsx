@@ -56,21 +56,21 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
   return (
     <div className="bg-white border border-gray-200 rounded flex flex-col flex-1 min-w-0 min-h-0" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-1.5 px-2 py-1 border-b border-gray-100 shrink-0">
-        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 20, height: 20 }}>
-          <svg viewBox="0 0 24 24" style={{ width: 11, height: 11 }} className="fill-white">
+      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-gray-100 shrink-0">
+        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 30, height: 30 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 16, height: 16 }} className="fill-white">
             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
           </svg>
         </button>
-        <select className="text-[10px] border border-gray-200 rounded px-1 py-0 bg-white text-gray-700 cursor-pointer">
+        <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
           <option>Rota Cred Bank -</option>
         </select>
-        <select className="text-[10px] border border-gray-200 rounded px-1 py-0 bg-white text-gray-700 cursor-pointer">
+        <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
           <option>{year}</option>
           <option>{String(Number(year) - 1)}</option>
         </select>
         <div className="flex-1" />
-        <button className="text-gray-500 hover:text-gray-700 text-sm leading-none px-0.5">≡</button>
+        <button className="text-gray-500 hover:text-gray-700 text-xl leading-none px-1">≡</button>
       </div>
       {/* Title area */}
       {subtitle && (
