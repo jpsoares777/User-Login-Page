@@ -114,15 +114,15 @@ const gastosIngresosData = MONTHS.map((m, i) => ({
 }));
 
 const gastosPieData = [
-  { name: "Ajuste Caja (1300)", value: 1300, color: "#aec7e8" },
-  { name: "Otros (590)", value: 590, color: "#98df8a" },
-  { name: "Retiro Caja Seguros (250)", value: 250, color: "#ffbb78" },
-  { name: "Retiros de caja (251)", value: 251, color: "#555" },
+  { name: "Ajuste Caja (1300)", value: 1300, color: "#3d9cd2" },
+  { name: "Otros (590)", value: 590, color: "#4cae4c" },
+  { name: "Retiro Caja Seguros (250)", value: 250, color: "#ff8c42" },
+  { name: "Retiros de caja (251)", value: 251, color: "#2e2e2e" },
 ];
 
 const ingresosPieData = [
-  { name: "Aporte Caja (5610)", value: 5610, color: "#aec7e8" },
-  { name: "Outro (3780)", value: 3780, color: "#444" },
+  { name: "Aporte Caja (5610)", value: 5610, color: "#3d9cd2" },
+  { name: "Outro (3780)", value: 3780, color: "#2e2e2e" },
 ];
 
 // ── 3D Pie Chart ─────────────────────────────────────────────────────────────
@@ -194,15 +194,15 @@ function Pie3DChart({ data }: { data: { name: string; value: number; color: stri
       {/* Labels with connector lines */}
       {slices.map((s, i) => {
         const [ex, ey] = T(s.mid);
-        const lx = cx + (rx + 30) * Math.cos(s.mid);
-        const ly = cy + (ry + 16) * Math.sin(s.mid);
+        const lx = cx + (rx + 36) * Math.cos(s.mid);
+        const ly = cy + (ry + 22) * Math.sin(s.mid);
         const anchor = Math.cos(s.mid) >= 0 ? "start" : "end";
         const tx = lx + (Math.cos(s.mid) >= 0 ? 4 : -4);
         return (
           <g key={`l${i}`}>
             <line x1={ex} y1={ey} x2={lx} y2={ly} stroke="#bbb" strokeWidth={0.8} />
             <text x={tx} y={ly} textAnchor={anchor} dominantBaseline="middle"
-              fontSize={9} fontWeight="bold" fill="#333">
+              fontSize={11} fontWeight="bold" fill="#222">
               {s.name}
             </text>
           </g>
