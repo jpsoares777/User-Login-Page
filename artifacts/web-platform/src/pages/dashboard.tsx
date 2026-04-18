@@ -5,36 +5,25 @@ import menuIcon from "@assets/windows_104558_1776473182467.webp";
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
 const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Clientes", "Agendados", "Roteirizar", "Notas", "GPS", "Relatórios"];
 
-function SectionHeader({ color, label }: { color: string; label: string }) {
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-200" style={{ background: "#f0f4ff" }}>
-      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: color }} />
-      <span className="text-xs font-bold tracking-wide" style={{ color: "#333" }}>{label}</span>
+    <div className="flex items-start border-b border-gray-100 text-xs min-h-[26px]">
+      <span className="w-52 shrink-0 px-3 py-1.5 text-gray-700 font-medium bg-gray-50 border-r border-gray-200">{label}:</span>
+      <span className="px-3 py-1.5 text-gray-800 flex items-center gap-1.5 flex-wrap">{children}</span>
     </div>
   );
 }
 
-function DataRow({
-  label,
-  value,
-  valueColor,
-  sub,
-}: {
-  label: string;
-  value: React.ReactNode;
-  valueColor?: string;
-  sub?: string;
-}) {
-  return (
-    <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100 text-xs hover:bg-gray-50 transition-colors">
-      <span className="text-gray-600">{label}</span>
-      <span className="font-medium text-right" style={{ color: valueColor || "#222" }}>
-        {value}
-        {sub && <span className="ml-1 text-gray-400 font-normal">{sub}</span>}
-      </span>
-    </div>
-  );
-}
+const CalIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-gray-400 shrink-0">
+    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
+  </svg>
+);
+const PersonIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-gray-400 shrink-0">
+    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+  </svg>
+);
 
 export default function DashboardPage() {
   const [, navigate] = useLocation();
@@ -112,7 +101,6 @@ export default function DashboardPage() {
 
       {/* ── CONTENT AREA ── */}
       <div className="flex-1 overflow-hidden flex">
-
         {showContent ? (
           <>
             {/* LEFT: Tree */}
@@ -136,67 +124,91 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* CENTER: Sectioned data */}
-            <div className="flex-1 overflow-y-auto bg-white">
-
-              {/* CLIENTES */}
-              <div className="border-b border-gray-200 mb-0">
-                <SectionHeader color="#3b82f6" label="CLIENTES" />
-                <DataRow label="Número de Clientes" value="20" />
-                <DataRow label="Clientes Novos" value="0" valueColor="#2563eb" />
-                <DataRow label="Clientes Ausentes" value="0" />
-                <DataRow label="Renovação de Cliente" value="0" />
-                <DataRow
-                  label="Cobranças Feitas"
-                  value={<span>1 / 20 <span className="text-gray-400">— Adicionais: 0</span></span>}
-                />
-              </div>
-
-              {/* COBRANÇAS */}
-              <div className="border-b border-gray-200">
-                <SectionHeader color="#22c55e" label="COBRANÇAS" />
-                <DataRow label="Cobrança Esperada" value="R$ 1.245,00 (100%)" />
-                <DataRow label="Cobrança Diária" value="R$ 200,00 (16,1%)" valueColor="#ef4444" />
-                <DataRow label="Dinheiro / Transferência" value="R$ 200,00 / R$ 0,00" />
-              </div>
-
-              {/* FINANCEIRO */}
-              <div className="border-b border-gray-200">
-                <SectionHeader color="#3b82f6" label="FINANCEIRO" />
-                <DataRow label="Caixa Inicial" value="R$ 2.979,00" />
-                <DataRow label="Total de Empréstimos (Carteira)" value="R$ 12.460,00" />
-                <DataRow label="Retirada de Caixa" value="R$ 0,00" />
-                <DataRow label="Despesas" value="R$ 0,00" valueColor="#ef4444" />
-                <DataRow label="Rendimento" value="R$ 0,00" />
-                <DataRow label="Saldo de Caixa" value="R$ 3.179,00" />
-              </div>
-
-              {/* MICRO SEGURO */}
-              <div>
-                <SectionHeader color="#f59e0b" label="MICRO SEGURO" />
-                <DataRow label="Ingresso Seguros" value="R$ 0,00" />
-                <DataRow label="Retirada Seguros" value="R$ 0,00" />
-                <DataRow label="Caixa Seguros" value="R$ -250,00" valueColor="#ef4444" />
-              </div>
-
+            {/* CENTER: Flat data rows */}
+            <div className="flex-1 overflow-y-auto bg-white border-r border-gray-200">
+              <Row label="Vendedor">
+                Rota Cred Bank - &nbsp; Cod: 10600
+                <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer">XLS</span>
+              </Row>
+              <Row label="Data de Início de Cobrança">
+                <CalIcon />
+                <span className="bg-cyan-500 text-white px-1.5 py-0.5 rounded text-[11px] font-medium">2026-04-17 00:41:52</span>
+              </Row>
+              <Row label="Data de Fechamento de Cobrança">
+                <CalIcon /> Sistema sem Fechar
+              </Row>
+              <Row label="Último Acesso Móvel">
+                <CalIcon /> 2026-04-17 00:41:52
+              </Row>
+              <Row label="Clientes Iniciais">
+                <PersonIcon /> 20 &nbsp;<span className="text-gray-400">( 1 Sincronizados / 20 )</span>
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-blue-400 cursor-pointer"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+              </Row>
+              <Row label="Clientes Novos/Renovados">
+                <PersonIcon /> 0 <span className="text-gray-400">(0/0)</span>
+              </Row>
+              <Row label="Pagamento Adiado Próx. Dia">
+                <PersonIcon /> 0
+              </Row>
+              <Row label="Clientes Cancelados">
+                <PersonIcon /> 0
+              </Row>
+              <Row label="Total de Clientes">
+                <PersonIcon /> 20
+              </Row>
+              <Row label="Caixa Inicial">$ 2.979,00</Row>
+              <Row label="Carteira Inicial">$ 12.460,00 &nbsp;<span className="text-gray-400">( 100 % )</span></Row>
+              <Row label="Recebimento Previsto do Dia">$ 1.245,00 &nbsp;<span className="text-gray-400">( 100 % )</span></Row>
+              <Row label="Recebimento Atual do Dia">
+                $ 200,00 &nbsp;<span className="text-gray-400">( 16,1 % )</span>
+                &nbsp; Pagamentos: <strong className="text-gray-800">1</strong>
+                &nbsp; Não Pag: <strong className="text-red-500">0</strong>
+              </Row>
+              <Row label="Recebimento por Tipo de Pagto">
+                Efetivo : ( <span className="text-red-500">$ 200,00</span> ) &nbsp; Transferência : ( 0,00 )
+              </Row>
+              <Row label="Vendas">
+                $ 0,00 &nbsp;<span className="text-gray-400">( Juros $ 0,00 )</span>
+              </Row>
+              <Row label="Ingressos"><span className="text-green-600">+ 0,00</span></Row>
+              <Row label="Retiradas"><span className="text-orange-500">− 0,00</span></Row>
+              <Row label="Egresos">− 0,00</Row>
+              <Row label="Caixa Final">
+                <span className="text-red-500 text-base leading-none">●</span> $ 3.179,00
+              </Row>
+              <Row label="Carteira Final">
+                <span className="text-red-500 text-base leading-none">●</span> $ 12.460,00 &nbsp;<span className="text-gray-400">( Sanção 0,00 )</span>
+              </Row>
             </div>
 
-            {/* RIGHT: Action buttons */}
-            <div className="w-48 shrink-0 border-l border-gray-200 bg-gray-50 flex flex-col gap-1 p-2 overflow-y-auto">
+            {/* RIGHT: Action buttons + Micro Seguro */}
+            <div className="w-48 shrink-0 bg-gray-50 flex flex-col gap-1.5 p-2 overflow-y-auto">
               {[
-                { label: "⚙ Configurações" },
-                { label: "📊 Relatório Monitor" },
-                { label: "👥 Lista Clientes" },
-                { label: "🔒 Bloquear Unidade" },
-                { label: "💰 M. Juros" },
-                { label: "📈 Ganância ( $0.00 )" },
-              ].map((btn) => (
-                <button key={btn.label}
-                  className="w-full text-left px-3 py-2 text-xs font-medium rounded text-white hover:opacity-90 transition-opacity"
+                "⚙ Configurações",
+                "📊 Relatório Monitor",
+                "👥 Lista Clientes",
+                "🔒 Bloquear Unidade",
+                "💰 M. Juros",
+                "📈 Ganância ( $0.00 )",
+              ].map((label) => (
+                <button key={label}
+                  className="w-full text-left px-3 py-2 text-xs font-medium rounded text-white hover:opacity-90"
                   style={{ background: "#6b7280" }}>
-                  {btn.label}
+                  {label}
                 </button>
               ))}
+
+              <div className="mt-auto border border-gray-200 rounded bg-white p-2">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-bold text-gray-700">MICRO SEGURO</span>
+                  <span className="text-[10px] bg-red-500 text-white px-1 rounded font-bold">●</span>
+                </div>
+                <div className="text-[11px] text-gray-600 space-y-0.5">
+                  <div className="flex justify-between"><span>Ingresso Seguros:</span><span className="font-medium">$ 0,00</span></div>
+                  <div className="flex justify-between"><span>Retirada Seguros:</span><span className="font-medium">$ 0,00</span></div>
+                  <div className="flex justify-between"><span>Caixa Seguros:</span><span className="font-medium text-red-500">( $ -250,00 )</span></div>
+                </div>
+              </div>
             </div>
           </>
         ) : (
