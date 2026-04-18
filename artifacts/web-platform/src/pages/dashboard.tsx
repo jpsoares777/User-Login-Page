@@ -125,6 +125,32 @@ const ingresosPieData = [
   { name: "Outro (3780)", value: 3780, color: "#444" },
 ];
 
+// ── 3D Bar shape ─────────────────────────────────────────────────────────────
+
+function Bar3D({ x, y, width, height, fill, depth = 10 }: any) {
+  if (!height || height <= 0 || !width || width <= 0) return null;
+  const d = depth;
+  // Lighten top face
+  const topFill = fill === "#5b9bd5" ? "#a8d4f0" : fill === "#2c2c2c" ? "#777" : "#ccc";
+  const sideFill = fill === "#5b9bd5" ? "#3a78ab" : fill === "#2c2c2c" ? "#1a1a1a" : "#999";
+  return (
+    <g>
+      {/* Front face */}
+      <rect x={x} y={y} width={width} height={height} fill={fill} />
+      {/* Top face */}
+      <polygon
+        points={`${x},${y} ${x + d},${y - d} ${x + width + d},${y - d} ${x + width},${y}`}
+        fill={topFill}
+      />
+      {/* Right side face */}
+      <polygon
+        points={`${x + width},${y} ${x + width + d},${y - d} ${x + width + d},${y + height - d} ${x + width},${y + height}`}
+        fill={sideFill}
+      />
+    </g>
+  );
+}
+
 // Custom y-axis label rotated
 const RotatedYLabel = ({ value, viewBox }: any) => {
   const { x, y, width = 0, height } = viewBox;
@@ -154,21 +180,21 @@ function DesempenhoContent() {
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={clientesData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
+            <BarChart data={clientesData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={24} />
               <Tooltip contentStyle={{ fontSize: 11 }} />
               <Legend iconSize={10} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
-              <Bar dataKey="Clientes 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={22} />
-              <Bar dataKey="Clientes 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={22} />
+              <Bar dataKey="Clientes 2026" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey="Clientes 2025" fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={ventasData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }} barCategoryGap="30%">
+            <BarChart data={ventasData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }} barCategoryGap="30%">
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
@@ -176,23 +202,23 @@ function DesempenhoContent() {
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
               <Legend iconSize={10} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
-              <Bar dataKey="Ventas 2026" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={22} />
-              <Bar dataKey="Ventas 2025" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={22} />
+              <Bar dataKey="Ventas 2026" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey="Ventas 2025" fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={gastosIngresosData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
+            <BarChart data={gastosIngresosData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <XAxis dataKey="mes" tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: "#888" }} axisLine={false} tickLine={false} width={30}
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
               <Legend iconSize={10} iconType="circle" wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
-              <Bar dataKey="Ingresos" fill="#5b9bd5" radius={[2,2,0,0]} maxBarSize={22} />
-              <Bar dataKey="Gastos" fill="#2c2c2c" radius={[2,2,0,0]} maxBarSize={22} />
+              <Bar dataKey="Ingresos" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey="Gastos" fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
