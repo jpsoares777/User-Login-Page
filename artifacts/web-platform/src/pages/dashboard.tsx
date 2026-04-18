@@ -204,7 +204,7 @@ export default function DashboardPage() {
                 </button>
               ))}
 
-              <div className="mt-auto border border-gray-200 rounded bg-white p-2">
+              <div className="mt-2 border border-gray-200 rounded bg-white p-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[11px] font-bold text-gray-700">MICRO SEGURO</span>
                   <span className="text-[10px] bg-red-500 text-white px-1 rounded font-bold">●</span>
