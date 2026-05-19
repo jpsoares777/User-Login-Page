@@ -114,14 +114,14 @@ const gastosIngresosData = MONTHS.map((m, i) => ({
 }));
 
 const gastosPieData = [
-  { name: "Ajuste Caja (1300)", value: 1300, color: "#3d9cd2" },
-  { name: "Otros (590)", value: 590, color: "#4cae4c" },
-  { name: "Retiro Caja Seguros (250)", value: 250, color: "#ff8c42" },
-  { name: "Retiros de caja (251)", value: 251, color: "#2e2e2e" },
+  { name: "Ajuste Caixa (1300)", value: 1300, color: "#3d9cd2" },
+  { name: "Outros (590)", value: 590, color: "#4cae4c" },
+  { name: "Retirada Caixa Seguros (250)", value: 250, color: "#ff8c42" },
+  { name: "Retiradas de Caixa (251)", value: 251, color: "#2e2e2e" },
 ];
 
 const ingresosPieData = [
-  { name: "Aporte Caja (5610)", value: 5610, color: "#3d9cd2" },
+  { name: "Aporte Caixa (5610)", value: 5610, color: "#3d9cd2" },
   { name: "Outro (3780)", value: 3780, color: "#2e2e2e" },
 ];
 
@@ -361,11 +361,11 @@ function DesempenhoContent() {
       {/* Row 2: 2 pie charts + empty third */}
       <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
-        <ChartCard subtitle="Gastos por Concepto 2026" year="2026">
+        <ChartCard subtitle="Gastos por Conceito 2026" year="2026">
           <Pie3DChart data={gastosPieData} />
         </ChartCard>
 
-        <ChartCard subtitle="Ingresos por Concepto 2026" year="2026">
+        <ChartCard subtitle="Ingressos por Conceito 2026" year="2026">
           <Pie3DChart data={ingresosPieData} />
         </ChartCard>
 
