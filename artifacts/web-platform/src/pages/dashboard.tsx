@@ -103,8 +103,8 @@ const clientesData = MONTHS.map((m, i) => ({
 
 const ventasData = MONTHS.map((m, i) => ({
   mes: m,
-  "Ventas 2026": [0, 500, 15000, 6800, 600, 0, 0, 0, 0, 0, 0, 0][i],
-  "Ventas 2025": [200, 400, 1500, 200, 100, 0, 0, 0, 0, 0, 0, 0][i],
+  "Empréstimo 2026": [0, 500, 15000, 6800, 600, 0, 0, 0, 0, 0, 0, 0][i],
+  "Empréstimo 2025": [200, 400, 1500, 200, 100, 0, 0, 0, 0, 0, 0, 0][i],
 }));
 
 const gastosIngresosData = MONTHS.map((m, i) => ({
@@ -334,8 +334,8 @@ function DesempenhoContent() {
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 10 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
               <Legend iconSize={7} iconType="circle" wrapperStyle={{ fontSize: 8, paddingTop: 2 }} />
-              <Bar dataKey="Ventas 2026" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
-              <Bar dataKey="Ventas 2025" fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey="Empréstimo 2026" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey="Empréstimo 2025" fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
