@@ -116,7 +116,7 @@ const gastosIngresosData = MONTHS.map((m, i) => ({
 const gastosPieData = [
   { name: "Ajuste Caixa (1300)", value: 1300, color: "#3d9cd2" },
   { name: "Outros (590)", value: 590, color: "#4cae4c" },
-  { name: "Retirada Caixa Seguros (250)", value: 250, color: "#ff8c42" },
+
   { name: "Retiradas de Caixa (251)", value: 251, color: "#2e2e2e" },
 ];
 
