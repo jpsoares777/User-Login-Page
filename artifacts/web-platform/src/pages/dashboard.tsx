@@ -848,27 +848,32 @@ function DespesasContent() {
 
 // ── Rendimentos data ───────────────────────────────────────────────────────────
 const rendimentosData = [
-  { id: 1,  cliente: "Mariana Silva",   tipo: "PARC.", valor: 250.00, parcela: "3/6",  data: "2026-05-25", hora: "08:14", formaPag: "Dinheiro", obs: "" },
-  { id: 2,  cliente: "Elaira Barros",   tipo: "PARC.", valor: 120.00, parcela: "2/4",  data: "2026-05-25", hora: "10:05", formaPag: "Dinheiro", obs: "" },
-  { id: 3,  cliente: "Antônio Gomes",   tipo: "PARC.", valor: 300.00, parcela: "1/3",  data: "2026-05-25", hora: "13:15", formaPag: "PIX",      obs: "" },
-  { id: 4,  cliente: "Bianca Lemos",    tipo: "PARC.", valor: 175.00, parcela: "4/6",  data: "2026-05-25", hora: "15:22", formaPag: "Dinheiro", obs: "" },
-  { id: 5,  cliente: "Erick Prado",     tipo: "ABONO", valor: 60.00,  parcela: "—",    data: "2026-05-25", hora: "16:45", formaPag: "Dinheiro", obs: "Abono concedido" },
-  { id: 6,  cliente: "Patrick Duarte",  tipo: "PARC.", valor: 200.00, parcela: "2/5",  data: "2026-05-25", hora: "09:00", formaPag: "Dinheiro", obs: "" },
-  { id: 7,  cliente: "Kleiton Ramos",   tipo: "PARC.", valor: 150.00, parcela: "5/6",  data: "2026-05-25", hora: "11:30", formaPag: "PIX",      obs: "" },
-  { id: 8,  cliente: "Daniele Figueiredo", tipo: "PARC.", valor: 90.00, parcela: "1/4", data: "2026-05-25", hora: "14:40", formaPag: "Dinheiro", obs: "" },
+  { id: 1, categoria: "Parcela",  descricao: "Pagamento recebido - Mariana Silva",      valor: 250.00, data: "2026-05-25", hora: "08:14", responsavel: "João Mendes",  obs: "Parcela 3/6" },
+  { id: 2, categoria: "Parcela",  descricao: "Pagamento recebido - Elaira Barros",      valor: 120.00, data: "2026-05-25", hora: "10:05", responsavel: "João Mendes",  obs: "Parcela 2/4" },
+  { id: 3, categoria: "Parcela",  descricao: "Pagamento recebido - Antônio Gomes",      valor: 300.00, data: "2026-05-25", hora: "13:15", responsavel: "Carlos Souza", obs: "Parcela 1/3" },
+  { id: 4, categoria: "Parcela",  descricao: "Pagamento recebido - Bianca Lemos",       valor: 175.00, data: "2026-05-25", hora: "15:22", responsavel: "João Mendes",  obs: "Parcela 4/6" },
+  { id: 5, categoria: "Abono",    descricao: "Abono concedido - Erick Prado",           valor: 60.00,  data: "2026-05-25", hora: "16:45", responsavel: "Carlos Souza", obs: "Abono concedido" },
+  { id: 6, categoria: "Parcela",  descricao: "Pagamento recebido - Patrick Duarte",     valor: 200.00, data: "2026-05-25", hora: "09:00", responsavel: "João Mendes",  obs: "Parcela 2/5" },
+  { id: 7, categoria: "Parcela",  descricao: "Pagamento recebido - Kleiton Ramos",      valor: 150.00, data: "2026-05-25", hora: "11:30", responsavel: "Ana Lima",     obs: "Parcela 5/6" },
+  { id: 8, categoria: "Parcela",  descricao: "Pagamento recebido - Daniele Figueiredo", valor: 90.00,  data: "2026-05-25", hora: "14:40", responsavel: "Ana Lima",     obs: "Parcela 1/4" },
 ];
+
+const rendCategoriaColor: Record<string, { bg: string; text: string; border: string }> = {
+  "Parcela": { bg: "#dcfce7", text: "#15803d", border: "#86efac" },
+  "Abono":   { bg: "#fef9c3", text: "#92400e", border: "#fde047" },
+  "Outros":  { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" },
+};
 
 function RendimentosContent() {
   const cols = [
-    { label: "Nro.",        w: 54,  align: "center" as const },
-    { label: "Cliente",     w: 200, align: "left"   as const },
-    { label: "Tipo",        w: 100, align: "center" as const },
-    { label: "Parcela",     w: 80,  align: "center" as const },
-    { label: "Valor",       w: 130, align: "right"  as const },
-    { label: "Forma Pag.",  w: 110, align: "center" as const },
-    { label: "Data",        w: 110, align: "center" as const },
-    { label: "Hora",        w: 80,  align: "center" as const },
-    { label: "Observações", w: 220, align: "left"   as const },
+    { label: "Nro.",          w: 54,  align: "center" as const },
+    { label: "Categoria",     w: 150, align: "center" as const },
+    { label: "Descrição",     w: 300, align: "left"   as const },
+    { label: "Valor",         w: 120, align: "right"  as const },
+    { label: "Data",          w: 110, align: "center" as const },
+    { label: "Hora",          w: 80,  align: "center" as const },
+    { label: "Responsável",   w: 160, align: "left"   as const },
+    { label: "Observações",   w: 200, align: "left"   as const },
   ];
 
   const total = rendimentosData.reduce((a, r) => a + r.valor, 0);
@@ -879,17 +884,11 @@ function RendimentosContent() {
     textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
   });
 
-  const tipoBadge = (tipo: string) => {
-    if (tipo === "PARC.") return { bg: "#dcfce7", text: "#15803d", border: "#86efac", icon: "✓" };
-    if (tipo === "ABONO") return { bg: "#fef9c3", text: "#92400e", border: "#fde047", icon: "↑" };
-    return { bg: "#fee2e2", text: "#b91c1c", border: "#fca5a5", icon: "✕" };
-  };
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-        <span className="text-xs font-bold text-green-700 uppercase tracking-wide flex items-center gap-1">
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-green-600"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+        <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
+          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
           Rendimentos do Dia
         </span>
         <div className="flex-1" />
@@ -913,30 +912,22 @@ function RendimentosContent() {
           </thead>
           <tbody>
             {rendimentosData.map((r, i) => {
-              const badge = tipoBadge(r.tipo);
+              const cat = rendCategoriaColor[r.categoria] ?? rendCategoriaColor["Outros"];
               return (
-                <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f0fdf4" }}>
+                <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
                   <td style={tdR("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
-                  <td style={tdR("left", { fontWeight: 600, color: "#15803d" })}>{r.cliente}</td>
                   <td style={tdR("center")}>
                     <span style={{
-                      display: "inline-flex", alignItems: "center", gap: 3,
-                      padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700,
-                      background: badge.bg, color: badge.text, border: `1px solid ${badge.border}`,
-                    }}>{badge.icon} {r.tipo}</span>
+                      display: "inline-block", padding: "2px 10px", borderRadius: 4,
+                      fontSize: 11, fontWeight: 700,
+                      background: cat.bg, color: cat.text, border: `1px solid ${cat.border}`,
+                    }}>{r.categoria}</span>
                   </td>
-                  <td style={tdR("center", { color: "#6b7280" })}>{r.parcela}</td>
+                  <td style={tdR("left", { color: "#374151" })}>{r.descricao}</td>
                   <td style={tdR("right", { fontWeight: 700, color: "#15803d" })}>{fmt(r.valor)}</td>
-                  <td style={tdR("center")}>
-                    <span style={{
-                      display: "inline-block", padding: "1px 8px", borderRadius: 3,
-                      fontSize: 11, fontWeight: 600,
-                      background: r.formaPag === "PIX" ? "#ede9fe" : "#dbeafe",
-                      color: r.formaPag === "PIX" ? "#6d28d9" : "#1d4ed8",
-                    }}>{r.formaPag}</span>
-                  </td>
                   <td style={tdR("center", { color: "#6b7280" })}>{r.data}</td>
                   <td style={tdR("center", { color: "#6b7280" })}>{r.hora}</td>
+                  <td style={tdR("left", { color: "#374151" })}>{r.responsavel}</td>
                   <td style={tdR("left", { color: "#6b7280", fontStyle: r.obs ? "normal" : "italic" })}>{r.obs || "—"}</td>
                 </tr>
               );
@@ -947,7 +938,7 @@ function RendimentosContent() {
 
       <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-white uppercase tracking-widest">Total Recebido</span>
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Total de Rendimentos</span>
           <span className="text-base font-bold text-blue-200">{fmt(total)}</span>
         </div>
         <div className="w-px h-5 bg-blue-400" />
