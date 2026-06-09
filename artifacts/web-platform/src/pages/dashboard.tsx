@@ -719,12 +719,12 @@ function PagamentosContent() {
           </div>
           <div className="w-px h-5 bg-slate-600" />
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-slate-400 font-semibold">Taxa de recebimento</span>
+            <span className="text-xs text-white font-bold">Taxa de recebimento</span>
             <span className="text-sm font-bold" style={{ color: "#f59e0b" }}>23,3%</span>
           </div>
           <div className="w-px h-5 bg-slate-600" />
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-slate-400 font-semibold">Não pagos</span>
+            <span className="text-xs text-white font-bold">Não pagos</span>
             <span className="text-sm font-bold text-red-400">{pagamentosData.length}</span>
           </div>
           <div className="ml-auto text-xs text-slate-500">
