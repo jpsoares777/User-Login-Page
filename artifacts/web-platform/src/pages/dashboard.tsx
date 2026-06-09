@@ -749,16 +749,26 @@ type EmpRow = typeof emprestimosData[0];
 
 function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => void }) {
   const hist = [
-    { data: "2026-04-08", consec: row.consec, estado: "Sem Verificação", parcelas: 20, parcPagas: 12.4, parcFalt: "7.6 (Sanc. 0)", saldo: 800, sancao: "$ 0", juros: 40, valorEmpr: 2100, vrParc: 105, visitas: 5, freq: "Diário" },
-    { data: "2026-03-14", consec: row.consec, estado: "Sem Verificação", parcelas: 14,  parcPagas: 14,   parcFalt: "0.0 (Sanc. 0)", saldo: 0,   sancao: "$ 0", juros: 40, valorEmpr: 840,  vrParc: 60,  visitas: 8, freq: "Diário" },
+    { nro: 2, data: "2026-04-08", estado: "Sem Verificação", parcelas: 20, parcPagas: 12.4, parcFalt: 7.6, sancao: 0, valorEmpr: 2100, vrParc: 105, freq: "Diário" },
+    { nro: 1, data: "2026-03-14", estado: "Sem Verificação", parcelas: 14, parcPagas: 14,   parcFalt: 0,   sancao: 0, valorEmpr: 840,  vrParc: 60,  freq: "Diário" },
   ];
 
-  const cols = ["Data Venda","Consecutivo","Cliente","Documento","Estado","Celular","Parcelas","Parc. Pagas","Parc. Falt.","Saldo","Sanção","Juros","Valor Empr.","Vr. Parcela","Visitas","Frequência"];
+  const totalEmpr = hist.reduce((a, h) => a + h.valorEmpr, 0);
+
+  const thS: React.CSSProperties = {
+    padding: "8px 10px", fontSize: 12, fontWeight: 700, color: "#fff",
+    background: "#2563eb", borderRight: "1px solid #3b82f6",
+    whiteSpace: "nowrap", position: "sticky", top: 0,
+  };
+  const tdS = (align: "left"|"center"|"right" = "left", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "8px 10px", fontSize: 13, borderBottom: "1px solid #f0f4f8",
+    textAlign: align, ...extra,
+  });
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
       onClick={onClose}>
-      <div style={{ background: "#fff", borderRadius: 8, width: "min(1020px, 96vw)", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
+      <div style={{ background: "#fff", borderRadius: 8, width: "min(820px, 95vw)", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
         onClick={e => e.stopPropagation()}>
 
         {/* Header */}
@@ -772,41 +782,51 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
         {/* Client info */}
         <div style={{ padding: "10px 18px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 8 }}>
           <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#2d5474" }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#b45309" }}>{row.cliente}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#b45309" }}>{row.cliente.toUpperCase()}</span>
           <span style={{ fontSize: 12, color: "#6b7280", marginLeft: 4 }}>#{row.consec}</span>
         </div>
 
-        {/* Table */}
-        <div style={{ overflowX: "auto", maxHeight: 320, overflowY: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
+        {/* Table — no overflowX, width 100% */}
+        <div style={{ maxHeight: 340, overflowY: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+            <colgroup>
+              <col style={{ width: "5%" }} />
+              <col style={{ width: "13%" }} />
+              <col style={{ width: "16%" }} />
+              <col style={{ width: "8%" }} />
+              <col style={{ width: "11%" }} />
+              <col style={{ width: "11%" }} />
+              <col style={{ width: "9%" }} />
+              <col style={{ width: "14%" }} />
+              <col style={{ width: "13%" }} />
+            </colgroup>
             <thead>
               <tr>
-                {cols.map(h => (
-                  <th key={h} style={{ padding: "7px 10px", textAlign: "left", fontSize: 12, fontWeight: 700, color: "#fff", background: "#2d5474", borderRight: "1px solid #3d6a8a", whiteSpace: "nowrap", position: "sticky", top: 0 }}>{h}</th>
-                ))}
+                <th style={{ ...thS, textAlign: "center" }}>Nro.</th>
+                <th style={{ ...thS, textAlign: "center" }}>Data Venda</th>
+                <th style={{ ...thS }}>Estado</th>
+                <th style={{ ...thS, textAlign: "center" }}>Parc.</th>
+                <th style={{ ...thS, textAlign: "center" }}>Parc. Pagas</th>
+                <th style={{ ...thS, textAlign: "center" }}>Parc. Falt.</th>
+                <th style={{ ...thS, textAlign: "right" }}>Saldo</th>
+                <th style={{ ...thS, textAlign: "right" }}>Valor Empr.</th>
+                <th style={{ ...thS, textAlign: "center" }}>Frequência</th>
               </tr>
             </thead>
             <tbody>
               {hist.map((h, i) => (
                 <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#4b5563" }}>{h.data}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#2563eb", fontWeight: 600 }}>{h.consec}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#2563eb", fontWeight: 600 }}>{row.cliente.toUpperCase()}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#6b7280" }}>{row.documento}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap" }}>
-                    <span style={{ color: "#b45309", fontWeight: 600 }}>{h.estado}</span>
+                  <td style={tdS("center", { fontWeight: 700, color: "#2563eb" })}>{h.nro}</td>
+                  <td style={tdS("center", { color: "#4b5563" })}>{h.data}</td>
+                  <td style={tdS("left")}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#92400e", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 4, padding: "2px 7px" }}>{h.estado}</span>
                   </td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#6b7280" }}>{row.celular}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#374151" }}>{h.parcelas}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#374151" }}>{h.parcPagas}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#b91c1c" }}>{h.parcFalt}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "right", fontWeight: 700, color: h.saldo > 0 ? "#374151" : "#9ca3af" }}>{h.saldo}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#6b7280" }}>{h.sancao}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#374151" }}>{h.juros}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "right", fontWeight: 700, color: "#374151" }}>{h.valorEmpr}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "right", color: "#374151" }}>{h.vrParc}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#374151" }}>{h.visitas}</td>
-                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#6b7280" }}>{h.freq}</td>
+                  <td style={tdS("center", { color: "#374151", fontWeight: 600 })}>{h.parcelas}</td>
+                  <td style={tdS("center", { color: "#374151" })}>{h.parcPagas}</td>
+                  <td style={tdS("center", { color: h.parcFalt > 0 ? "#b91c1c" : "#9ca3af", fontWeight: h.parcFalt > 0 ? 600 : 400 })}>{h.parcFalt}</td>
+                  <td style={tdS("right", { fontWeight: 700, color: h.parcFalt > 0 ? "#374151" : "#9ca3af" })}>$ {h.valorEmpr - (h.parcPagas * h.vrParc) > 0 ? (h.valorEmpr - h.parcPagas * h.vrParc).toFixed(0) : "0"}</td>
+                  <td style={tdS("right", { fontWeight: 700, color: "#1d4ed8" })}>$ {h.valorEmpr.toLocaleString("pt-BR")}</td>
+                  <td style={tdS("center", { color: "#6b7280" })}>{h.freq}</td>
                 </tr>
               ))}
             </tbody>
@@ -814,8 +834,11 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
         </div>
 
         {/* Footer */}
-        <div style={{ padding: "10px 18px", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end" }}>
-          <button onClick={onClose} style={{ padding: "6px 20px", background: "#6b7280", color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>Cancelar</button>
+        <div style={{ padding: "10px 18px", borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>
+            TOTAL EMPRÉSTIMOS: <span style={{ color: "#1d4ed8" }}>$ {totalEmpr.toLocaleString("pt-BR")}</span>
+          </span>
+          <button onClick={onClose} style={{ padding: "6px 22px", background: "#64748b", color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>Cancelar</button>
         </div>
       </div>
     </div>
