@@ -7,7 +7,7 @@ import {
 } from "recharts";
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
-const SUB_TABS = ["Relatório Diário", "Pagamentos", "Empréstimos Novos", "Rec/Desp", "Clientes", "Agendados", "Relatórios"];
+const SUB_TABS = ["Relatório Diário", "Pagamentos", "Empréstimos Novos", "Rec/Desp", "Despesas", "Rendimentos", "Clientes", "Agendados", "Relatórios"];
 
 // ── Helper components ─────────────────────────────────────────────────────────
 
@@ -856,6 +856,229 @@ function RecDespContent() {
   );
 }
 
+// ── Despesas data ─────────────────────────────────────────────────────────────
+const despesasData = [
+  { id: 1, categoria: "Combustível",        descricao: "Abastecimento veículo operacional",  valor: 120.00, data: "2026-05-25", hora: "07:45", responsavel: "João Mendes",   obs: "" },
+  { id: 2, categoria: "Alimentação",        descricao: "Almoço equipe",                       valor: 85.00,  data: "2026-05-25", hora: "12:30", responsavel: "João Mendes",   obs: "4 pessoas" },
+  { id: 3, categoria: "Retirada de Caixa", descricao: "Retirada diária do operador",         valor: 500.00, data: "2026-05-25", hora: "14:00", responsavel: "Carlos Souza",  obs: "Autorizado" },
+  { id: 4, categoria: "Material",          descricao: "Material de escritório",               valor: 35.00,  data: "2026-05-25", hora: "15:10", responsavel: "Ana Lima",      obs: "" },
+  { id: 5, categoria: "Manutenção",        descricao: "Manutenção preventiva veículo",       valor: 220.00, data: "2026-05-25", hora: "16:00", responsavel: "Carlos Souza",  obs: "Troca de óleo" },
+  { id: 6, categoria: "Combustível",        descricao: "Abastecimento rota extra",            valor: 60.00,  data: "2026-05-25", hora: "17:20", responsavel: "João Mendes",   obs: "" },
+  { id: 7, categoria: "Outros",            descricao: "Recarga cartão telefone",              valor: 30.00,  data: "2026-05-25", hora: "08:50", responsavel: "Ana Lima",      obs: "" },
+];
+
+const categoriaColor: Record<string, { bg: string; text: string; border: string }> = {
+  "Combustível":        { bg: "#fef9c3", text: "#854d0e", border: "#fde047" },
+  "Alimentação":        { bg: "#fce7f3", text: "#9d174d", border: "#f9a8d4" },
+  "Retirada de Caixa": { bg: "#fee2e2", text: "#b91c1c", border: "#fca5a5" },
+  "Material":          { bg: "#e0f2fe", text: "#075985", border: "#7dd3fc" },
+  "Manutenção":        { bg: "#f3e8ff", text: "#6b21a8", border: "#d8b4fe" },
+  "Outros":            { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" },
+};
+
+function DespesasContent() {
+  const cols = [
+    { label: "Nro.",          w: 54,  align: "center" as const },
+    { label: "Categoria",     w: 150, align: "center" as const },
+    { label: "Descrição",     w: 300, align: "left"   as const },
+    { label: "Valor",         w: 120, align: "right"  as const },
+    { label: "Data",          w: 110, align: "center" as const },
+    { label: "Hora",          w: 80,  align: "center" as const },
+    { label: "Responsável",   w: 160, align: "left"   as const },
+    { label: "Observações",   w: 200, align: "left"   as const },
+  ];
+
+  const total = despesasData.reduce((a, r) => a + r.valor, 0);
+  const fmt = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+
+  const tdD = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "5px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+  });
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs font-bold text-red-600 uppercase tracking-wide flex items-center gap-1">
+          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-red-500"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5l4-4h10v4z"/></svg>
+          Despesas do Dia
+        </span>
+        <div className="flex-1" />
+        <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: 2026-05-25</span>
+      </div>
+
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1024 }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>
+              {cols.map((c) => (
+                <th key={c.label} style={{
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  whiteSpace: "nowrap", color: "#fff", background: "#dc2626",
+                  borderRight: "1px solid #ef4444", letterSpacing: "0.02em",
+                  position: "sticky", top: 0, zIndex: 1,
+                }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {despesasData.map((r, i) => {
+              const cat = categoriaColor[r.categoria] ?? categoriaColor["Outros"];
+              return (
+                <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#fef2f2" }}>
+                  <td style={tdD("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdD("center")}>
+                    <span style={{
+                      display: "inline-block", padding: "2px 10px", borderRadius: 4,
+                      fontSize: 11, fontWeight: 700,
+                      background: cat.bg, color: cat.text, border: `1px solid ${cat.border}`,
+                    }}>{r.categoria}</span>
+                  </td>
+                  <td style={tdD("left", { color: "#374151" })}>{r.descricao}</td>
+                  <td style={tdD("right", { fontWeight: 700, color: "#b91c1c" })}>{fmt(r.valor)}</td>
+                  <td style={tdD("center", { color: "#6b7280" })}>{r.data}</td>
+                  <td style={tdD("center", { color: "#6b7280" })}>{r.hora}</td>
+                  <td style={tdD("left", { color: "#374151" })}>{r.responsavel}</td>
+                  <td style={tdD("left", { color: "#6b7280", fontStyle: r.obs ? "normal" : "italic" })}>{r.obs || "—"}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t" style={{ background: "#dc2626" }}>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Total de Despesas</span>
+          <span className="text-base font-bold text-red-200">{fmt(total)}</span>
+        </div>
+        <div className="w-px h-5 bg-red-400" />
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Registros</span>
+          <span className="text-base font-bold text-white">{despesasData.length}</span>
+        </div>
+        <div className="ml-auto text-xs text-red-200">DATA DE REFERÊNCIA: 2026-05-25</div>
+      </div>
+    </div>
+  );
+}
+
+// ── Rendimentos data ───────────────────────────────────────────────────────────
+const rendimentosData = [
+  { id: 1,  cliente: "Mariana Silva",   tipo: "PARC.", valor: 250.00, parcela: "3/6",  data: "2026-05-25", hora: "08:14", formaPag: "Dinheiro", obs: "" },
+  { id: 2,  cliente: "Elaira Barros",   tipo: "PARC.", valor: 120.00, parcela: "2/4",  data: "2026-05-25", hora: "10:05", formaPag: "Dinheiro", obs: "" },
+  { id: 3,  cliente: "Antônio Gomes",   tipo: "PARC.", valor: 300.00, parcela: "1/3",  data: "2026-05-25", hora: "13:15", formaPag: "PIX",      obs: "" },
+  { id: 4,  cliente: "Bianca Lemos",    tipo: "PARC.", valor: 175.00, parcela: "4/6",  data: "2026-05-25", hora: "15:22", formaPag: "Dinheiro", obs: "" },
+  { id: 5,  cliente: "Erick Prado",     tipo: "ABONO", valor: 60.00,  parcela: "—",    data: "2026-05-25", hora: "16:45", formaPag: "Dinheiro", obs: "Abono concedido" },
+  { id: 6,  cliente: "Patrick Duarte",  tipo: "PARC.", valor: 200.00, parcela: "2/5",  data: "2026-05-25", hora: "09:00", formaPag: "Dinheiro", obs: "" },
+  { id: 7,  cliente: "Kleiton Ramos",   tipo: "PARC.", valor: 150.00, parcela: "5/6",  data: "2026-05-25", hora: "11:30", formaPag: "PIX",      obs: "" },
+  { id: 8,  cliente: "Daniele Figueiredo", tipo: "PARC.", valor: 90.00, parcela: "1/4", data: "2026-05-25", hora: "14:40", formaPag: "Dinheiro", obs: "" },
+];
+
+function RendimentosContent() {
+  const cols = [
+    { label: "Nro.",        w: 54,  align: "center" as const },
+    { label: "Cliente",     w: 200, align: "left"   as const },
+    { label: "Tipo",        w: 100, align: "center" as const },
+    { label: "Parcela",     w: 80,  align: "center" as const },
+    { label: "Valor",       w: 130, align: "right"  as const },
+    { label: "Forma Pag.",  w: 110, align: "center" as const },
+    { label: "Data",        w: 110, align: "center" as const },
+    { label: "Hora",        w: 80,  align: "center" as const },
+    { label: "Observações", w: 220, align: "left"   as const },
+  ];
+
+  const total = rendimentosData.reduce((a, r) => a + r.valor, 0);
+  const fmt = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+
+  const tdR = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "5px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+  });
+
+  const tipoBadge = (tipo: string) => {
+    if (tipo === "PARC.") return { bg: "#dcfce7", text: "#15803d", border: "#86efac", icon: "✓" };
+    if (tipo === "ABONO") return { bg: "#fef9c3", text: "#92400e", border: "#fde047", icon: "↑" };
+    return { bg: "#fee2e2", text: "#b91c1c", border: "#fca5a5", icon: "✕" };
+  };
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs font-bold text-green-700 uppercase tracking-wide flex items-center gap-1">
+          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-green-600"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+          Rendimentos do Dia
+        </span>
+        <div className="flex-1" />
+        <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: 2026-05-25</span>
+      </div>
+
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1024 }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>
+              {cols.map((c) => (
+                <th key={c.label} style={{
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  whiteSpace: "nowrap", color: "#fff", background: "#16a34a",
+                  borderRight: "1px solid #22c55e", letterSpacing: "0.02em",
+                  position: "sticky", top: 0, zIndex: 1,
+                }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rendimentosData.map((r, i) => {
+              const badge = tipoBadge(r.tipo);
+              return (
+                <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f0fdf4" }}>
+                  <td style={tdR("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdR("left", { fontWeight: 600, color: "#15803d" })}>{r.cliente}</td>
+                  <td style={tdR("center")}>
+                    <span style={{
+                      display: "inline-flex", alignItems: "center", gap: 3,
+                      padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700,
+                      background: badge.bg, color: badge.text, border: `1px solid ${badge.border}`,
+                    }}>{badge.icon} {r.tipo}</span>
+                  </td>
+                  <td style={tdR("center", { color: "#6b7280" })}>{r.parcela}</td>
+                  <td style={tdR("right", { fontWeight: 700, color: "#15803d" })}>{fmt(r.valor)}</td>
+                  <td style={tdR("center")}>
+                    <span style={{
+                      display: "inline-block", padding: "1px 8px", borderRadius: 3,
+                      fontSize: 11, fontWeight: 600,
+                      background: r.formaPag === "PIX" ? "#ede9fe" : "#dbeafe",
+                      color: r.formaPag === "PIX" ? "#6d28d9" : "#1d4ed8",
+                    }}>{r.formaPag}</span>
+                  </td>
+                  <td style={tdR("center", { color: "#6b7280" })}>{r.data}</td>
+                  <td style={tdR("center", { color: "#6b7280" })}>{r.hora}</td>
+                  <td style={tdR("left", { color: "#6b7280", fontStyle: r.obs ? "normal" : "italic" })}>{r.obs || "—"}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t" style={{ background: "#16a34a" }}>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Total Recebido</span>
+          <span className="text-base font-bold text-green-200">{fmt(total)}</span>
+        </div>
+        <div className="w-px h-5 bg-green-400" />
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Registros</span>
+          <span className="text-base font-bold text-white">{rendimentosData.length}</span>
+        </div>
+        <div className="ml-auto text-xs text-green-200">DATA DE REFERÊNCIA: 2026-05-25</div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
@@ -867,6 +1090,8 @@ export default function DashboardPage() {
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
   const showPagamentos = activeMain === "Liq. Diária" && activeSub === "Pagamentos";
   const showRecDesp = activeMain === "Liq. Diária" && activeSub === "Rec/Desp";
+  const showDespesas = activeMain === "Liq. Diária" && activeSub === "Despesas";
+  const showRendimentos = activeMain === "Liq. Diária" && activeSub === "Rendimentos";
 
   useEffect(() => {
     const vp = document.getElementById("vp") as HTMLMetaElement | null;
@@ -923,7 +1148,7 @@ export default function DashboardPage() {
       )}
 
       {/* ── FILTER BAR (hidden on Desempenho and Pagamentos) ── */}
-      {!isDesempenho && !showPagamentos && !showRecDesp && (
+      {!isDesempenho && !showPagamentos && !showRecDesp && !showDespesas && !showRendimentos && (
         <div className="flex items-center h-11 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
@@ -953,6 +1178,10 @@ export default function DashboardPage() {
           <PagamentosContent />
         ) : showRecDesp ? (
           <RecDespContent />
+        ) : showDespesas ? (
+          <DespesasContent />
+        ) : showRendimentos ? (
+          <RendimentosContent />
         ) : showContent ? (
           <>
             {/* LEFT: Tree */}
