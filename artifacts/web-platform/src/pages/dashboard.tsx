@@ -899,7 +899,7 @@ export default function DashboardPage() {
                 <span className="font-semibold text-gray-800">$ 1.245,00</span>
                 <span className="text-[11px] bg-blue-100 text-blue-700 px-1.5 rounded font-medium">100 %</span>
               </Row>
-              <Row label="Recebimento Atual do Dia" index={3}>
+              <Row label="Total Recaudo do Dia" index={3}>
                 <span className="font-semibold text-gray-800">$ 200,00</span>
                 <span className="text-[11px] bg-orange-100 text-orange-700 px-1.5 rounded font-medium">16,1 %</span>
                 <span className="text-[11px] text-gray-500">Pagos: <strong className="text-gray-800">1</strong></span>
