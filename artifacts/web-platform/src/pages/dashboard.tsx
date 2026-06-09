@@ -768,9 +768,6 @@ function EmprestimosNovosContent() {
     { label: "Data de Venda",      w: 150, align: "center" as const },
     { label: "Parc. Rest.",        w: 80,  align: "center" as const },
     { label: "Saldo",              w: 90,  align: "right"  as const },
-    { label: "Nº Seguro",          w: 80,  align: "center" as const },
-    { label: "Vr. Seguro",         w: 90,  align: "right"  as const },
-    { label: "Chave Autorização",  w: 130, align: "center" as const },
   ];
 
   const totalValorProd = emprestimosData.reduce((a, r) => a + r.valorProd, 0);
@@ -845,9 +842,6 @@ function EmprestimosNovosContent() {
                 <td style={tdE("center", { color: "#6b7280" })}>{r.dataVenda}</td>
                 <td style={tdE("center", { color: r.parcRest === 0 ? "#9ca3af" : "#374151" })}>{r.parcRest}</td>
                 <td style={tdE("right", { color: r.saldo > 0 ? "#374151" : "#9ca3af" })}>{fmt(r.saldo)}</td>
-                <td style={tdE("center", { color: "#9ca3af" })}>{r.numSeguro || "—"}</td>
-                <td style={tdE("right", { color: "#9ca3af" })}>{fmt(r.vrSeguro)}</td>
-                <td style={tdE("center", { color: "#9ca3af" })}>{r.chaveAutor || "—"}</td>
               </tr>
             ))}
             {/* Total row */}
@@ -856,9 +850,8 @@ function EmprestimosNovosContent() {
                 TOTAL EMPRÉSTIMOS DO DIA:
               </td>
               <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>$ {fmt(totalValorProd)}</td>
-              <td colSpan={5} style={tdE("center")} />
-              <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>{fmt(totalSaldo)}</td>
               <td colSpan={3} style={tdE("center")} />
+              <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>{fmt(totalSaldo)}</td>
             </tr>
           </tbody>
         </table>
