@@ -69,6 +69,13 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
           <option>{year}</option>
           <option>{String(Number(year) - 1)}</option>
         </select>
+        <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
+          <option value="">--Mes--</option>
+          <option>Jan.</option><option>Fev.</option><option>Mar.</option>
+          <option>Abr.</option><option>Mai.</option><option>Jun.</option>
+          <option>Jul.</option><option>Ago.</option><option>Set.</option>
+          <option>Out.</option><option>Nov.</option><option>Dez.</option>
+        </select>
         <div className="flex-1" />
         <button className="text-gray-500 hover:text-gray-700 text-xl leading-none px-1">≡</button>
       </div>
