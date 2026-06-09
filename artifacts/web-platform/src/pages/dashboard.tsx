@@ -915,8 +915,8 @@ function DespesasContent() {
               {cols.map((c) => (
                 <th key={c.label} style={{
                   padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
-                  whiteSpace: "nowrap", color: "#fff", background: "#dc2626",
-                  borderRight: "1px solid #ef4444", letterSpacing: "0.02em",
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2563eb",
+                  borderRight: "1px solid #3b82f6", letterSpacing: "0.02em",
                   position: "sticky", top: 0, zIndex: 1,
                 }}>{c.label}</th>
               ))}
@@ -1022,8 +1022,8 @@ function RendimentosContent() {
               {cols.map((c) => (
                 <th key={c.label} style={{
                   padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
-                  whiteSpace: "nowrap", color: "#fff", background: "#16a34a",
-                  borderRight: "1px solid #22c55e", letterSpacing: "0.02em",
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2563eb",
+                  borderRight: "1px solid #3b82f6", letterSpacing: "0.02em",
                   position: "sticky", top: 0, zIndex: 1,
                 }}>{c.label}</th>
               ))}
