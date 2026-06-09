@@ -564,11 +564,11 @@ export default function DashboardPage() {
                 <span className="font-semibold text-gray-800">$ 0,00</span>
                 <span className="text-gray-400 text-[11px]">( Juros: $ 0,00 )</span>
               </Row>
-              <Row label="Despesas" index={6}>
+              <Row label="Rendimentos" index={6}>
                 <span className="text-blue-600 font-bold text-sm">+</span>
                 <span className="font-semibold text-blue-700">0,00</span>
               </Row>
-              <Row label="Rendimentos" index={7}>
+              <Row label="Despesas" index={7}>
                 <span className="text-gray-500 font-bold text-sm">−</span>
                 <span className="font-semibold text-gray-600">0,00</span>
               </Row>
