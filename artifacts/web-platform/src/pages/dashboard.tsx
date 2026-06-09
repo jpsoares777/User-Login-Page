@@ -827,25 +827,25 @@ function EmprestimosNovosContent() {
   const fmt = (v: number) => v === 0 ? "0,00" : v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
   const tdE = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "5px 5px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
-    textAlign: align, fontSize: 12, whiteSpace: "nowrap", ...extra,
+    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
   });
 
   const cols = [
-    { label: "Histórico",     w: 65,  align: "center" as const },
-    { label: "Consecutivo",   w: 85,  align: "center" as const },
-    { label: "Frequência",    w: 55,  align: "center" as const },
-    { label: "Valor Ant.",    w: 65,  align: "right"  as const },
-    { label: "Cliente",       w: 135, align: "left"   as const },
-    { label: "Documento",     w: 88,  align: "center" as const },
-    { label: "Celular",       w: 90,  align: "center" as const },
-    { label: "Valor Empr.",   w: 75,  align: "right"  as const },
-    { label: "Parcelas",      w: 55,  align: "center" as const },
-    { label: "% Juros",       w: 80,  align: "center" as const },
-    { label: "Valor Parcela", w: 78,  align: "right"  as const },
-    { label: "Data de Venda", w: 112, align: "center" as const },
-    { label: "Parc. Rest.",   w: 62,  align: "center" as const },
-    { label: "Saldo",         w: 67,  align: "right"  as const },
+    { label: "Histórico",          w: 76,  align: "center" as const },
+    { label: "Consecutivo",        w: 108, align: "center" as const },
+    { label: "Frequência",         w: 80,  align: "center" as const },
+    { label: "Valor Ant.",         w: 90,  align: "right"  as const },
+    { label: "Cliente",            w: 260, align: "left"   as const },
+    { label: "Documento",          w: 120, align: "center" as const },
+    { label: "Celular",            w: 120, align: "center" as const },
+    { label: "Valor Empr.",        w: 110, align: "right"  as const },
+    { label: "Parcelas",           w: 72,  align: "center" as const },
+    { label: "% Juros",            w: 110, align: "center" as const },
+    { label: "Valor Parcela",      w: 100, align: "right"  as const },
+    { label: "Data de Venda",      w: 150, align: "center" as const },
+    { label: "Parc. Rest.",        w: 80,  align: "center" as const },
+    { label: "Saldo",              w: 90,  align: "right"  as const },
   ];
 
   const totalValorProd = emprestimosData.reduce((a, r) => a + r.valorProd, 0);
@@ -866,7 +866,7 @@ function EmprestimosNovosContent() {
 
       {/* Table */}
       <div className="flex-1 overflow-auto">
-        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1600 }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
             <tr>
