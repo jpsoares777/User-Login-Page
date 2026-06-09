@@ -745,7 +745,85 @@ const emprestimosData = [
   { id: 3, consec: "4700627090", freq: "Diário", valorAnt: 0.00,   cliente: "Daniele Texeira Lindoso",        tag: "Novo",     documento: "01148713379", celular: "559899687036",valorProd: 1000.00, parcelas: 14, pctJuros: 40, valorJuros: 400.00, valorParcela: 100.00, dataVenda: "2026-03-30 21:03:29", parcRest: 9,  saldo: 900.00, numSeguro: "",  vrSeguro: 0.00, chaveAutor: "" },
 ];
 
+type EmpRow = typeof emprestimosData[0];
+
+function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => void }) {
+  const hist = [
+    { data: "2026-04-08", consec: row.consec, estado: "Sem Verificação", parcelas: 20, parcPagas: 12.4, parcFalt: "7.6 (Sanc. 0)", saldo: 800, sancao: "$ 0", juros: 40, valorEmpr: 2100, vrParc: 105, visitas: 5, freq: "Diário" },
+    { data: "2026-03-14", consec: row.consec, estado: "Sem Verificação", parcelas: 14,  parcPagas: 14,   parcFalt: "0.0 (Sanc. 0)", saldo: 0,   sancao: "$ 0", juros: 40, valorEmpr: 840,  vrParc: 60,  visitas: 8, freq: "Diário" },
+  ];
+
+  const cols = ["Data Venda","Consecutivo","Cliente","Documento","Estado","Celular","Parcelas","Parc. Pagas","Parc. Falt.","Saldo","Sanção","Juros","Valor Empr.","Vr. Parcela","Visitas","Frequência"];
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      onClick={onClose}>
+      <div style={{ background: "#fff", borderRadius: 8, width: "min(1020px, 96vw)", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
+        onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{ background: "#2d5474", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Histórico de Empréstimos</span>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer" }}>
+            <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#cbd5e1" }}><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
+
+        {/* Client info */}
+        <div style={{ padding: "10px 18px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 8 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#2d5474" }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#b45309" }}>{row.cliente}</span>
+          <span style={{ fontSize: 12, color: "#6b7280", marginLeft: 4 }}>#{row.consec}</span>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: "auto", maxHeight: 320, overflowY: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
+            <thead>
+              <tr>
+                {cols.map(h => (
+                  <th key={h} style={{ padding: "7px 10px", textAlign: "left", fontSize: 12, fontWeight: 700, color: "#fff", background: "#2d5474", borderRight: "1px solid #3d6a8a", whiteSpace: "nowrap", position: "sticky", top: 0 }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {hist.map((h, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#4b5563" }}>{h.data}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#2563eb", fontWeight: 600 }}>{h.consec}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#2563eb", fontWeight: 600 }}>{row.cliente.toUpperCase()}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#6b7280" }}>{row.documento}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap" }}>
+                    <span style={{ color: "#b45309", fontWeight: 600 }}>{h.estado}</span>
+                  </td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#6b7280" }}>{row.celular}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#374151" }}>{h.parcelas}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#374151" }}>{h.parcPagas}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#b91c1c" }}>{h.parcFalt}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "right", fontWeight: 700, color: h.saldo > 0 ? "#374151" : "#9ca3af" }}>{h.saldo}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#6b7280" }}>{h.sancao}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#374151" }}>{h.juros}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "right", fontWeight: 700, color: "#374151" }}>{h.valorEmpr}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "right", color: "#374151" }}>{h.vrParc}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", textAlign: "center", color: "#374151" }}>{h.visitas}</td>
+                  <td style={{ padding: "7px 10px", fontSize: 12, borderBottom: "1px solid #e9ecef", whiteSpace: "nowrap", color: "#6b7280" }}>{h.freq}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding: "10px 18px", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end" }}>
+          <button onClick={onClose} style={{ padding: "6px 20px", background: "#6b7280", color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>Cancelar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function EmprestimosNovosContent() {
+  const [selectedEmp, setSelectedEmp] = useState<EmpRow | null>(null);
   const fmt = (v: number) => v === 0 ? "0,00" : v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
   const tdE = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
@@ -808,7 +886,7 @@ function EmprestimosNovosContent() {
                 {/* Histórico button — só para Renovado */}
                 <td style={tdE("center")}>
                   {r.tag === "Renovado" && (
-                    <button style={{
+                    <button onClick={() => setSelectedEmp(r)} style={{
                       background: "#0e7490", color: "#fff", border: "none", borderRadius: 4,
                       padding: "3px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer",
                       display: "inline-flex", alignItems: "center", justifyContent: "center", width: "100%",
@@ -875,6 +953,7 @@ function EmprestimosNovosContent() {
         </div>
         <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-03-30</div>
       </div>
+      {selectedEmp && <HistorialVendasModal row={selectedEmp} onClose={() => setSelectedEmp(null)} />}
     </div>
   );
 }
