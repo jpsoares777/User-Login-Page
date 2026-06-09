@@ -761,7 +761,7 @@ function EmprestimosNovosContent() {
     { label: "Cliente",            w: 260, align: "left"   as const },
     { label: "Documento",          w: 120, align: "center" as const },
     { label: "Celular",            w: 120, align: "center" as const },
-    { label: "Valor Produto",      w: 110, align: "right"  as const },
+    { label: "Valor Empr.",        w: 110, align: "right"  as const },
     { label: "Parcelas",           w: 72,  align: "center" as const },
     { label: "% Juros",            w: 110, align: "center" as const },
     { label: "Valor Parcela",      w: 100, align: "right"  as const },
