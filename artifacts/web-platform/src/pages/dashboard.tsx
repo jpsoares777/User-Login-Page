@@ -711,7 +711,7 @@ function PagamentosContent() {
         <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t border-gray-200"
           style={{ background: "#1e3a52" }}>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Total Recaudo do Dia</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Recebimento Atual do Dia</span>
             <span className="text-base font-bold text-white">R$ 290,00</span>
           </div>
           <div className="w-px h-5 bg-slate-600" />
