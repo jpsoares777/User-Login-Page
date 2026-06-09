@@ -749,8 +749,8 @@ function EmprestimosNovosContent() {
   const fmt = (v: number) => v === 0 ? "0,00" : v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
   const tdE = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "4px 6px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
-    textAlign: align, fontSize: 12, whiteSpace: "nowrap", ...extra,
+    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
   });
 
   const cols = [
@@ -797,7 +797,7 @@ function EmprestimosNovosContent() {
             <tr>
               {cols.map((c) => (
                 <th key={c.label} style={{
-                  padding: "6px 6px", textAlign: c.align, fontSize: 12, fontWeight: 700,
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
                   whiteSpace: "nowrap", color: "#e2e8f0", background: "#2563eb",
                   borderRight: "1px solid #3b82f6", letterSpacing: "0.02em",
                   position: "sticky", top: 0, zIndex: 1,
