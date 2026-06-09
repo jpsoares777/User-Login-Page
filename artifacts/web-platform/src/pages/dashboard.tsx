@@ -808,12 +808,14 @@ function EmprestimosNovosContent() {
           <tbody>
             {emprestimosData.map((r, i) => (
               <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
-                {/* Histórico button */}
+                {/* Histórico button — só para Renovado */}
                 <td style={tdE("center")}>
-                  <button style={{
-                    background: "#2563eb", color: "#fff", border: "none", borderRadius: 4,
-                    padding: "2px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer",
-                  }}>Histórico</button>
+                  {r.tag === "Renovado" && (
+                    <button style={{
+                      background: "#2563eb", color: "#fff", border: "none", borderRadius: 4,
+                      padding: "2px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                    }}>Histórico</button>
+                  )}
                 </td>
                 <td style={tdE("center", { color: "#2563eb", fontWeight: 700 })}>{r.consec}</td>
                 <td style={tdE("center", { color: "#6b7280" })}>{r.freq}</td>
