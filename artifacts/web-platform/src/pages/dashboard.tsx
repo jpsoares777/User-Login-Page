@@ -536,7 +536,7 @@ function PagamentosContent() {
     { label: "Hora",         w: 86,  align: "center" as const },
     { label: "Valor Empr.",  w: 170, align: "left"   as const },
     { label: "Saldo",        w: 96,  align: "right"  as const },
-    { label: "Restantes",    w: 88,  align: "right"  as const },
+    { label: "Parc. Restantes", w: 110, align: "right" as const },
     { label: "Visitas",      w: 70,  align: "center" as const },
     { label: "Frequência",   w: 90,  align: "center" as const },
   ];
