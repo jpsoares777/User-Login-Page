@@ -403,7 +403,108 @@ const pagamentosData = [
   { id:12, consecutivo: "4700627025", cliente: "BIANCA DE ARAÚJO ALVES",          obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "420,00",  sancao: "0,00", saldo: "420,00",  restantes: "14.0", visitas: 3,  freq: "Diario" },
 ];
 
+type PagRow = typeof pagamentosData[0];
+
+function HistorialModal({ row, onClose }: { row: PagRow; onClose: () => void }) {
+  const hist = [
+    { nro: 4, tipo: "No Pago", valor: 0.00,  fecha: "2026-05-25", obs: "Operacion Masiva" },
+    { nro: 3, tipo: "No Pago", valor: 0.00,  fecha: "2026-04-28", obs: "Operacion Masiva" },
+    { nro: 2, tipo: "No Pago", valor: 0.00,  fecha: "2026-04-17", obs: "Operacion Masiva" },
+    { nro: 1, tipo: "Cuota",   valor: 80.00, fecha: "2026-04-16", obs: "Cuota"            },
+  ];
+  const total = hist.reduce((s, h) => s + h.valor, 0);
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 1000,
+      background: "rgba(0,0,0,0.45)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+    }} onClick={onClose}>
+      <div style={{
+        background: "#fff", borderRadius: 8, width: 640,
+        boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+        overflow: "hidden",
+      }} onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{ background: "#2d5474", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.01em" }}>
+            Historial de Pagos
+          </span>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", lineHeight: 1 }}>
+            <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#cbd5e1" }}><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
+
+        {/* Client info */}
+        <div style={{ padding: "10px 18px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 8 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#2d5474" }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#b45309" }}>{row.cliente}</span>
+          <span style={{ fontSize: 12, color: "#6b7280", marginLeft: 4 }}>#{row.consecutivo}</span>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                {["Nro.", "Cliente", "Tipo", "Valor", "Fecha", "Observações"].map(h => (
+                  <th key={h} style={{
+                    padding: "8px 12px", textAlign: "left", fontSize: 12,
+                    fontWeight: 700, color: "#fff", background: "#2d5474",
+                    borderRight: "1px solid #3d6a8a", whiteSpace: "nowrap",
+                  }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {hist.map((h, i) => (
+                <tr key={h.nro} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
+                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", fontWeight: 600, color: "#6b7280" }}>{h.nro}</td>
+                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", color: "#b45309", fontWeight: 600 }}>{row.cliente}</td>
+                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef" }}>
+                    {h.tipo === "No Pago" ? (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>
+                        <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ef4444", display: "inline-block" }} />
+                        No Pago
+                      </span>
+                    ) : (
+                      <span style={{ background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>
+                        {h.tipo}
+                      </span>
+                    )}
+                  </td>
+                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", fontWeight: 600, textAlign: "right", color: h.valor > 0 ? "#059669" : "#374151" }}>
+                    R$ {h.valor.toFixed(2).replace(".", ",")}
+                  </td>
+                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", color: "#4b5563" }}>{h.fecha}</td>
+                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", color: "#6b7280", fontStyle: "italic" }}>{h.obs}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding: "10px 18px", background: "#f8fafc", borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>
+            TOTAL PAGOS: <span style={{ color: "#059669" }}>R$ {total.toFixed(2).replace(".", ",")}</span>
+          </span>
+          <button onClick={onClose} style={{
+            padding: "6px 20px", borderRadius: 6, border: "1px solid #d1d5db",
+            background: "#fff", fontSize: 13, fontWeight: 600, color: "#374151",
+            cursor: "pointer",
+          }}>
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PagamentosContent() {
+  const [selectedRow, setSelectedRow] = useState<PagRow | null>(null);
   const cols = [
     { label: "Nro.",         w: 52,  align: "center" as const },
     { label: "Consecutivo",  w: 128, align: "left"   as const },
@@ -543,9 +644,10 @@ function PagamentosContent() {
                     <td style={td("left", { color: "#2563eb", fontWeight: 700 })}>
                       <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.consecutivo}</span>
                     </td>
-                    <td style={td("left", { color: "#b45309", fontWeight: 600 })}>
+                    <td style={td("left", { color: "#b45309", fontWeight: 600, cursor: "pointer" })}
+                      onClick={() => setSelectedRow(r)}>
                       <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                        <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{r.cliente}</span>
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", textDecoration: "underline", textUnderlineOffset: 2 }}>{r.cliente}</span>
                         <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#d1d5db", flexShrink: 0 }}><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                       </span>
                     </td>
@@ -609,6 +711,8 @@ function PagamentosContent() {
           </div>
         </div>
       </div>
+
+      {selectedRow && <HistorialModal row={selectedRow} onClose={() => setSelectedRow(null)} />}
     </div>
   );
 }
