@@ -738,6 +738,149 @@ function PagamentosContent() {
   );
 }
 
+// ── Empréstimos Novos data ─────────────────────────────────────────────────────
+const emprestimosData = [
+  { id: 1, consec: "4700627026", freq: "Diário", valorAnt: 600.00, cliente: "Andrela de Jesus Costa Araújo", tag: "Renovado", documento: "91633427315", celular: "98985014328", valorProd: 800.00,  parcelas: 14, pctJuros: 40, valorJuros: 320.00, valorParcela: 80.00,  dataVenda: "2026-03-30 14:03:51", parcRest: 0,  saldo: 0.00,   numSeguro: "",  vrSeguro: 0.00, chaveAutor: "" },
+  { id: 2, consec: "4700627089", freq: "Diário", valorAnt: 0.00,   cliente: "Geilson Eduardo Rosa de Jesus",  tag: "Novo",     documento: "00503307300", celular: "9885397102",  valorProd: 700.00,  parcelas: 14, pctJuros: 40, valorJuros: 280.00, valorParcela: 70.00,  dataVenda: "2026-03-30 19:39:09", parcRest: 10, saldo: 700.00, numSeguro: "",  vrSeguro: 0.00, chaveAutor: "" },
+  { id: 3, consec: "4700627090", freq: "Diário", valorAnt: 0.00,   cliente: "Daniele Texeira Lindoso",        tag: "Novo",     documento: "01148713379", celular: "559899687036",valorProd: 1000.00, parcelas: 14, pctJuros: 40, valorJuros: 400.00, valorParcela: 100.00, dataVenda: "2026-03-30 21:03:29", parcRest: 9,  saldo: 900.00, numSeguro: "",  vrSeguro: 0.00, chaveAutor: "" },
+];
+
+function EmprestimosNovosContent() {
+  const fmt = (v: number) => v === 0 ? "0,00" : v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  const tdE = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "4px 6px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 12, whiteSpace: "nowrap", ...extra,
+  });
+
+  const cols = [
+    { label: "Histórico",          w: 76,  align: "center" as const },
+    { label: "Consecutivo",        w: 108, align: "center" as const },
+    { label: "Frequência",         w: 80,  align: "center" as const },
+    { label: "Valor Ant.",         w: 90,  align: "right"  as const },
+    { label: "Cliente",            w: 260, align: "left"   as const },
+    { label: "Documento",          w: 120, align: "center" as const },
+    { label: "Celular",            w: 120, align: "center" as const },
+    { label: "Valor Produto",      w: 110, align: "right"  as const },
+    { label: "Parcelas",           w: 72,  align: "center" as const },
+    { label: "% Juros",            w: 110, align: "center" as const },
+    { label: "Valor Parcela",      w: 100, align: "right"  as const },
+    { label: "Data de Venda",      w: 150, align: "center" as const },
+    { label: "Parc. Rest.",        w: 80,  align: "center" as const },
+    { label: "Saldo",              w: 90,  align: "right"  as const },
+    { label: "Nº Seguro",          w: 80,  align: "center" as const },
+    { label: "Vr. Seguro",         w: 90,  align: "right"  as const },
+    { label: "Chave Autorização",  w: 130, align: "center" as const },
+  ];
+
+  const totalValorProd = emprestimosData.reduce((a, r) => a + r.valorProd, 0);
+  const totalSaldo = emprestimosData.reduce((a, r) => a + r.saldo, 0);
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Filter bar */}
+      <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs font-bold text-blue-700 uppercase tracking-wide flex items-center gap-1">
+          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-blue-600"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
+          Empréstimos Novos
+        </span>
+        <span className="text-xs text-gray-400 ml-1">{emprestimosData.length} registros encontrados</span>
+        <div className="flex-1" />
+        <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: 2026-03-30</span>
+      </div>
+
+      {/* Table */}
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1600 }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>
+              {cols.map((c) => (
+                <th key={c.label} style={{
+                  padding: "6px 6px", textAlign: c.align, fontSize: 12, fontWeight: 700,
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2563eb",
+                  borderRight: "1px solid #3b82f6", letterSpacing: "0.02em",
+                  position: "sticky", top: 0, zIndex: 1,
+                }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {emprestimosData.map((r, i) => (
+              <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
+                {/* Histórico button */}
+                <td style={tdE("center")}>
+                  <button style={{
+                    background: "#2563eb", color: "#fff", border: "none", borderRadius: 4,
+                    padding: "2px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                  }}>Histórico</button>
+                </td>
+                <td style={tdE("center", { color: "#2563eb", fontWeight: 700 })}>{r.consec}</td>
+                <td style={tdE("center", { color: "#6b7280" })}>{r.freq}</td>
+                <td style={tdE("right", { color: r.valorAnt > 0 ? "#374151" : "#9ca3af" })}>$ {fmt(r.valorAnt)}</td>
+                {/* Cliente with tag */}
+                <td style={tdE("left")}>
+                  <span style={{ color: "#374151", fontWeight: 500 }}>{r.cliente}</span>
+                  {r.tag === "Novo" && (
+                    <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "1px 5px" }}>→→ Novo</span>
+                  )}
+                  {r.tag === "Renovado" && (
+                    <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 700, color: "#b45309", background: "#fef9c3", border: "1px solid #fde047", borderRadius: 3, padding: "1px 5px" }}>→→ Renovado</span>
+                  )}
+                </td>
+                <td style={tdE("center", { color: "#6b7280" })}>{r.documento}</td>
+                <td style={tdE("center", { color: "#6b7280" })}>{r.celular}</td>
+                <td style={tdE("right", { fontWeight: 700, color: "#374151" })}>$ {fmt(r.valorProd)}</td>
+                <td style={tdE("center", { color: "#374151" })}>{r.parcelas}</td>
+                <td style={tdE("center")}>
+                  <span style={{ color: "#374151" }}>{r.pctJuros}%</span>
+                  <span style={{ color: "#b91c1c", marginLeft: 3 }}>({fmt(r.valorJuros)})</span>
+                </td>
+                <td style={tdE("right", { color: "#374151" })}>{fmt(r.valorParcela)}</td>
+                <td style={tdE("center", { color: "#6b7280" })}>{r.dataVenda}</td>
+                <td style={tdE("center", { color: r.parcRest === 0 ? "#9ca3af" : "#374151" })}>{r.parcRest}</td>
+                <td style={tdE("right", { color: r.saldo > 0 ? "#374151" : "#9ca3af" })}>{fmt(r.saldo)}</td>
+                <td style={tdE("center", { color: "#9ca3af" })}>{r.numSeguro || "—"}</td>
+                <td style={tdE("right", { color: "#9ca3af" })}>{fmt(r.vrSeguro)}</td>
+                <td style={tdE("center", { color: "#9ca3af" })}>{r.chaveAutor || "—"}</td>
+              </tr>
+            ))}
+            {/* Total row */}
+            <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
+              <td colSpan={7} style={{ ...tdE("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
+                TOTAL EMPRÉSTIMOS DO DIA:
+              </td>
+              <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>$ {fmt(totalValorProd)}</td>
+              <td colSpan={5} style={tdE("center")} />
+              <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>{fmt(totalSaldo)}</td>
+              <td colSpan={3} style={tdE("center")} />
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* Footer */}
+      <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Total Empréstimos do Dia</span>
+          <span className="text-base font-bold text-blue-200">$ {fmt(totalValorProd)}</span>
+        </div>
+        <div className="w-px h-5 bg-blue-400" />
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Saldo Total</span>
+          <span className="text-base font-bold text-blue-200">$ {fmt(totalSaldo)}</span>
+        </div>
+        <div className="w-px h-5 bg-blue-400" />
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Registros</span>
+          <span className="text-base font-bold text-white">{emprestimosData.length}</span>
+        </div>
+        <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-03-30</div>
+      </div>
+    </div>
+  );
+}
+
 // ── Despesas data ─────────────────────────────────────────────────────────────
 const despesasData = [
   { id: 1, categoria: "Combustível",        descricao: "Abastecimento veículo operacional",  valor: 120.00, data: "2026-05-25", hora: "07:45", responsavel: "João Mendes",   obs: "" },
@@ -962,6 +1105,7 @@ export default function DashboardPage() {
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
   const showPagamentos = activeMain === "Liq. Diária" && activeSub === "Pagamentos";
+  const showEmprestimos = activeMain === "Liq. Diária" && activeSub === "Empréstimos Novos";
   const showDespesas = activeMain === "Liq. Diária" && activeSub === "Despesas";
   const showRendimentos = activeMain === "Liq. Diária" && activeSub === "Rendimentos";
 
@@ -1020,7 +1164,7 @@ export default function DashboardPage() {
       )}
 
       {/* ── FILTER BAR (hidden on Desempenho and Pagamentos) ── */}
-      {!isDesempenho && !showPagamentos && !showDespesas && !showRendimentos && (
+      {!isDesempenho && !showPagamentos && !showEmprestimos && !showDespesas && !showRendimentos && (
         <div className="flex items-center h-11 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
@@ -1048,6 +1192,8 @@ export default function DashboardPage() {
           <DesempenhoContent />
         ) : showPagamentos ? (
           <PagamentosContent />
+        ) : showEmprestimos ? (
+          <EmprestimosNovosContent />
         ) : showDespesas ? (
           <DespesasContent />
         ) : showRendimentos ? (
