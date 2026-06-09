@@ -808,7 +808,7 @@ function DespesasContent() {
             {despesasData.map((r, i) => {
               const cat = categoriaColor[r.categoria] ?? categoriaColor["Outros"];
               return (
-                <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#fef2f2" }}>
+                <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
                   <td style={tdD("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
                   <td style={tdD("center")}>
                     <span style={{
