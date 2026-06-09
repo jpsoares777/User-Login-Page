@@ -7,7 +7,7 @@ import {
 } from "recharts";
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
-const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Vend. Novas", "Rec/Desp", "Clientes", "Agendados", "Relatórios"];
+const SUB_TABS = ["Vend. Diárias", "Pagamentos", "Empréstimos Novos", "Rec/Desp", "Clientes", "Agendados", "Relatórios"];
 
 // ── Helper components ─────────────────────────────────────────────────────────
 
