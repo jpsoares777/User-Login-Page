@@ -584,7 +584,6 @@ export default function DashboardPage() {
                 "📊 Relatório Monitor",
                 "👥 Lista Clientes",
                 "🔒 Bloquear Unidade",
-                "💰 M. Juros",
                 "📈 Ganância ( $0.00 )",
               ].map((label) => (
                 <button key={label}
