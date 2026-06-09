@@ -402,8 +402,6 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between h-12 px-3 shrink-0" style={{ background: "#2d5474" }}>
         <img src={menuIcon} alt="Menu" className="h-8 w-8 object-contain select-none cursor-pointer" draggable={false} />
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1 px-3 h-7 text-sm font-semibold rounded text-white" style={{ background: "#c0392b" }}>▶ Tutoriais</button>
-          <button className="px-3 h-7 text-sm font-semibold rounded text-white" style={{ background: "#e67e22" }}>Admin</button>
           <button className="flex items-center gap-1 px-3 h-7 text-sm font-medium rounded" style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.8)" }}>🔑 Alterar Senha</button>
           <button onClick={() => navigate("/")} className="flex items-center gap-1 px-3 h-7 text-sm font-medium rounded" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)" }}>⏻ Sair</button>
         </div>
