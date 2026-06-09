@@ -779,7 +779,7 @@ function EmprestimosNovosContent() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Filter bar */}
-      <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+      <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
           Empréstimos Novos
