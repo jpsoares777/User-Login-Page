@@ -528,7 +528,7 @@ function PagamentosContent() {
     { label: "Consecutivo",  w: 128, align: "left"   as const },
     { label: "Cliente",      w: 250, align: "left"   as const },
     { label: "Observações",  w: 150, align: "left"   as const },
-    { label: "Pagadas",      w: 76,  align: "center" as const },
+    { label: "Pagas",        w: 76,  align: "center" as const },
     { label: "Tipo",         w: 110, align: "center" as const },
     { label: "Forma Pag.",   w: 100, align: "left"   as const },
     { label: "Valor",        w: 86,  align: "right"  as const },
