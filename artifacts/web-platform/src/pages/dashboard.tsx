@@ -812,8 +812,9 @@ function EmprestimosNovosContent() {
                 <td style={tdE("center")}>
                   {r.tag === "Renovado" && (
                     <button style={{
-                      background: "#2563eb", color: "#fff", border: "none", borderRadius: 4,
-                      padding: "2px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                      background: "#0e7490", color: "#fff", border: "none", borderRadius: 4,
+                      padding: "3px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                      display: "inline-flex", alignItems: "center", justifyContent: "center", width: "100%",
                     }}>Histórico</button>
                   )}
                 </td>
