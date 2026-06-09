@@ -578,7 +578,7 @@ export default function DashboardPage() {
             </div>
 
             {/* RIGHT: Action buttons + Micro Seguro */}
-            <div className="w-48 shrink-0 bg-gray-50 flex flex-col gap-1.5 p-2 overflow-y-auto">
+            <div className="w-48 shrink-0 bg-gray-50 flex flex-col gap-3 p-2 overflow-y-auto">
               {[
                 "⚙ Configurações",
                 "📊 Relatório Monitor",
