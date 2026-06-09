@@ -405,12 +405,39 @@ const pagamentosData = [
 
 type PagRow = typeof pagamentosData[0];
 
+function TipoBadge({ tipo }: { tipo: string }) {
+  if (tipo === "S/PAG.") return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 20 }}>
+      <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#ef4444", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <svg viewBox="0 0 24 24" style={{ width: 9, height: 9, fill: "#fff" }}><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </span>
+      S/PAG.
+    </span>
+  );
+  if (tipo === "ABONO") return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#fffbeb", color: "#b45309", border: "1px solid #fde68a", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 20 }}>
+      <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#f59e0b", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <svg viewBox="0 0 24 24" style={{ width: 9, height: 9, fill: "#fff" }}><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
+      </span>
+      ABONO
+    </span>
+  );
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 20 }}>
+      <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#22c55e", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <svg viewBox="0 0 24 24" style={{ width: 9, height: 9, fill: "#fff" }}><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+      </span>
+      PARC.
+    </span>
+  );
+}
+
 function HistorialModal({ row, onClose }: { row: PagRow; onClose: () => void }) {
   const hist = [
-    { nro: 4, tipo: "No Pago", valor: 0.00,  fecha: "2026-05-25", obs: "Operacion Masiva" },
-    { nro: 3, tipo: "No Pago", valor: 0.00,  fecha: "2026-04-28", obs: "Operacion Masiva" },
-    { nro: 2, tipo: "No Pago", valor: 0.00,  fecha: "2026-04-17", obs: "Operacion Masiva" },
-    { nro: 1, tipo: "Cuota",   valor: 80.00, fecha: "2026-04-16", obs: "Cuota"            },
+    { nro: 4, tipo: "S/PAG.", valor: 0.00,  fecha: "2026-05-25", obs: "Operacion Masiva" },
+    { nro: 3, tipo: "S/PAG.", valor: 0.00,  fecha: "2026-04-28", obs: "Operacion Masiva" },
+    { nro: 2, tipo: "ABONO",  valor: 0.00,  fecha: "2026-04-17", obs: "Operacion Masiva" },
+    { nro: 1, tipo: "PARC.",  valor: 80.00, fecha: "2026-04-16", obs: "Cuota"            },
   ];
   const total = hist.reduce((s, h) => s + h.valor, 0);
 
@@ -463,16 +490,7 @@ function HistorialModal({ row, onClose }: { row: PagRow; onClose: () => void }) 
                   <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", fontWeight: 600, color: "#6b7280" }}>{h.nro}</td>
                   <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", color: "#b45309", fontWeight: 600 }}>{row.cliente}</td>
                   <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef" }}>
-                    {h.tipo === "No Pago" ? (
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>
-                        <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ef4444", display: "inline-block" }} />
-                        No Pago
-                      </span>
-                    ) : (
-                      <span style={{ background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>
-                        {h.tipo}
-                      </span>
-                    )}
+                    <TipoBadge tipo={h.tipo} />
                   </td>
                   <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", fontWeight: 600, textAlign: "right", color: h.valor > 0 ? "#059669" : "#374151" }}>
                     R$ {h.valor.toFixed(2).replace(".", ",")}
