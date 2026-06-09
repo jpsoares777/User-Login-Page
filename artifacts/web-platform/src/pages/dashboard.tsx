@@ -560,7 +560,7 @@ export default function DashboardPage() {
                 <span className="text-[11px] text-gray-500">Transferência:</span>
                 <span className="text-red-500 font-semibold">$ 0,00</span>
               </Row>
-              <Row label="Vendas" index={5}>
+              <Row label="Novos Empréstimos" index={5}>
                 <span className="font-semibold text-gray-800">$ 0,00</span>
                 <span className="text-gray-400 text-[11px]">( Juros: $ 0,00 )</span>
               </Row>
