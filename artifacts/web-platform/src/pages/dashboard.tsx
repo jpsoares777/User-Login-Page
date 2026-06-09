@@ -740,10 +740,10 @@ function PagamentosContent() {
 export default function DashboardPage() {
   const [, navigate] = useLocation();
   const [activeMain, setActiveMain] = useState("Liq. Diária");
-  const [activeSub, setActiveSub] = useState("Vend. Diárias");
+  const [activeSub, setActiveSub] = useState("Relatório Diário");
 
   const isDesempenho = activeMain === "Desempenho";
-  const showContent = activeMain === "Liq. Diária" && activeSub === "Vend. Diárias";
+  const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
   const showPagamentos = activeMain === "Liq. Diária" && activeSub === "Pagamentos";
 
   useEffect(() => {
