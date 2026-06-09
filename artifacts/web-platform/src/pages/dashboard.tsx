@@ -572,7 +572,7 @@ export default function DashboardPage() {
                 <span className="text-gray-500 font-bold text-sm">−</span>
                 <span className="font-semibold text-gray-600">0,00</span>
               </Row>
-              <Row label="Egresos" index={8}>
+              <Row label="Retirada de Caixa" index={8}>
                 <span className="text-gray-500 font-bold text-sm">−</span>
                 <span className="font-semibold text-gray-600">0,00</span>
               </Row>
