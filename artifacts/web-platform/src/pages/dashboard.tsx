@@ -386,6 +386,114 @@ function DesempenhoContent() {
   );
 }
 
+// ── Pagamentos ────────────────────────────────────────────────────────────────
+
+const pagamentosData = [
+  { id: 1, consecutivo: "4700627089", cliente: "GEILSON EDUARDO ROSA DE JESUS",  obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "980,00",  sancao: "0,00", saldo: "700,00",  restantes: "10.0", visitas: 13, freq: "Diario" },
+  { id: 2, consecutivo: "4700627058", cliente: "ALINE LIMA DE ALENCAR",           obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.120,00", sancao: "0,00", saldo: "1.040,00",restantes: "13.0", visitas: 4,  freq: "Diario" },
+  { id: 3, consecutivo: "4700627078", cliente: "MARIANA BEATRIZ RABELO BARBOSA",  obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.400,00", sancao: "0,00", saldo: "1.400,00",restantes: "4.0",  visitas: 4,  freq: "Diario" },
+  { id: 4, consecutivo: "4700627145", cliente: "BORES VIANA DE SOUZA",            obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "560,00",  sancao: "0,00", saldo: "480,00",  restantes: "12.0", visitas: 5,  freq: "Diario" },
+  { id: 5, consecutivo: "4700627024", cliente: "ANNY BRIANE PIRES BELFORT",       obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.120,00", sancao: "0,00", saldo: "210,00",  restantes: "2.6",  visitas: 23, freq: "Diario" },
+  { id: 6, consecutivo: "4700627090", cliente: "DANIELE TEXEIRA LINDOSO",         obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.400,00", sancao: "0,00", saldo: "900,00",  restantes: "9.0",  visitas: 13, freq: "Diario" },
+  { id: 7, consecutivo: "4700627023", cliente: "ELAIRA KISLEY CONCEIÇÃO LOPES",   obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "540,00",  sancao: "0,00", saldo: "540,00",  restantes: "9.0",  visitas: 10, freq: "Diario" },
+  { id: 8, consecutivo: "4700627164", cliente: "ERICK PEREIRA SANTOS",            obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "840,00",  sancao: "0,00", saldo: "780,00",  restantes: "13.0", visitas: 9,  freq: "Diario" },
+  { id: 9, consecutivo: "4700627059", cliente: "PATRICK MICHAEL SÁ MENEZES",      obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "700,00",  sancao: "0,00", saldo: "600,00",  restantes: "12.0", visitas: 16, freq: "Diario" },
+  { id:10, consecutivo: "4700627022", cliente: "KLEITON VIANA GONÇALVES",         obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.170,00", sancao: "0,00", saldo: "420,00",  restantes: "4.7",  visitas: 23, freq: "Diario" },
+  { id:11, consecutivo: "4700627027", cliente: "ANTÔNIO LEITE NETO",              obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "800,00",  sancao: "0,00", saldo: "750,00",  restantes: "12.5", visitas: 21, freq: "Diario" },
+  { id:12, consecutivo: "4700627025", cliente: "BIANCA DE ARAÚJO ALVES",          obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "420,00",  sancao: "0,00", saldo: "420,00",  restantes: "14.0", visitas: 3,  freq: "Diario" },
+];
+
+function PagamentosContent() {
+  const thStyle: React.CSSProperties = {
+    padding: "6px 8px", textAlign: "left", fontWeight: 700,
+    fontSize: 11, whiteSpace: "nowrap", color: "#fff",
+    background: "#2d5474", borderRight: "1px solid #3d6a8a",
+  };
+  const tdStyle = (even: boolean): React.CSSProperties => ({
+    padding: "5px 8px", fontSize: 11, whiteSpace: "nowrap",
+    borderRight: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0",
+    background: even ? "#f8fafc" : "#fff",
+  });
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden bg-white">
+      {/* Filter bar */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200 bg-gray-50 flex-wrap shrink-0">
+        <input placeholder="Consecutivo" className="border border-gray-300 rounded px-2 py-1 text-xs w-32 outline-none focus:border-blue-400" />
+        <input placeholder="Nombres"     className="border border-gray-300 rounded px-2 py-1 text-xs w-36 outline-none focus:border-blue-400" />
+        <input placeholder="Apellidos"   className="border border-gray-300 rounded px-2 py-1 text-xs w-36 outline-none focus:border-blue-400" />
+        <input placeholder="Documento"   className="border border-gray-300 rounded px-2 py-1 text-xs w-36 outline-none focus:border-blue-400" />
+        <select className="border border-gray-300 rounded px-2 py-1 text-xs w-36 outline-none text-gray-400 bg-white focus:border-blue-400">
+          <option value="">--Selecciones--</option>
+          <option>Efectivo</option><option>Transferência</option>
+        </select>
+        <select className="border border-gray-300 rounded px-2 py-1 text-xs w-36 outline-none text-gray-400 bg-white focus:border-blue-400">
+          <option value="">--Seleccione--</option>
+          <option>Diario</option><option>Semanal</option>
+        </select>
+        <button className="flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold text-white" style={{ background: "#2563eb" }}>
+          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          Buscar
+        </button>
+      </div>
+
+      {/* Table */}
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 1200 }}>
+          <thead>
+            <tr>
+              {["Nro.","Consecutivo","Cliente","Observações","Pagadas","Tipo","Forma de Pago","Valor","Fecha","Hora","Valor Prod.","Saldo","Restantes","Visitas","Frequência"].map(h => (
+                <th key={h} style={thStyle}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {pagamentosData.map((r, i) => {
+              const even = i % 2 === 1;
+              const td = tdStyle(even);
+              return (
+                <tr key={r.id}>
+                  <td style={{ ...td, color: "#374151", fontWeight: 600 }}>{r.id}</td>
+                  <td style={{ ...td, color: "#2563eb", cursor: "pointer", fontWeight: 600 }}>{r.consecutivo}</td>
+                  <td style={{ ...td, color: "#d97706", fontWeight: 600, minWidth: 200 }}>
+                    <span className="flex items-center gap-1">
+                      {r.cliente}
+                      <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 shrink-0" style={{ fill: "#9ca3af" }}><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </span>
+                  </td>
+                  <td style={td}>{r.obs}</td>
+                  <td style={{ ...td, textAlign: "center" }}>{r.pagadas}</td>
+                  <td style={{ ...td, textAlign: "center" }}>
+                    <span style={{ background: "#dc2626", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 3 }}>No Pago</span>
+                  </td>
+                  <td style={td}>{r.formaPago}</td>
+                  <td style={{ ...td, textAlign: "right" }}>{r.valor}</td>
+                  <td style={td}>{r.fecha}</td>
+                  <td style={td}>{r.hora}</td>
+                  <td style={td}>
+                    {r.valorProd} <span style={{ color: "#9ca3af", fontSize: 10 }}>Sanção ({r.sancao})</span>
+                  </td>
+                  <td style={{ ...td, textAlign: "right", fontWeight: 600 }}>{r.saldo}</td>
+                  <td style={{ ...td, textAlign: "right" }}>{r.restantes}</td>
+                  <td style={{ ...td, textAlign: "center" }}>{r.visitas}</td>
+                  <td style={td}>{r.freq}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Footer */}
+      <div className="shrink-0 border-t border-gray-300 px-4 py-2 flex items-center gap-3 text-xs font-semibold" style={{ background: "#f1f5f9" }}>
+        <span className="text-gray-600 uppercase tracking-wide">Total Recaudo do Dia</span>
+        <span className="text-gray-900 font-bold">290,00</span>
+        <span style={{ color: "#d97706", fontWeight: 700 }}>(23,3%)</span>
+      </div>
+    </div>
+  );
+}
+
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
@@ -395,6 +503,7 @@ export default function DashboardPage() {
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Vend. Diárias";
+  const showPagamentos = activeMain === "Liq. Diária" && activeSub === "Pagamentos";
 
   useEffect(() => {
     const vp = document.getElementById("vp") as HTMLMetaElement | null;
@@ -477,6 +586,8 @@ export default function DashboardPage() {
       <div className="flex-1 overflow-hidden flex">
         {isDesempenho ? (
           <DesempenhoContent />
+        ) : showPagamentos ? (
+          <PagamentosContent />
         ) : showContent ? (
           <>
             {/* LEFT: Tree */}
