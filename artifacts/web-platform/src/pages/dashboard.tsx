@@ -595,17 +595,6 @@ export default function DashboardPage() {
                   {label}
                 </button>
               ))}
-              <div className="mt-2 border border-gray-200 rounded bg-white p-2">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px] font-bold text-gray-700">MICRO SEGURO</span>
-                  <span className="text-[10px] bg-red-500 text-white px-1 rounded font-bold">●</span>
-                </div>
-                <div className="text-[11px] text-gray-600 space-y-0.5">
-                  <div className="flex justify-between"><span>Ingresso Seguros:</span><span className="font-medium">$ 0,00</span></div>
-                  <div className="flex justify-between"><span>Retirada Seguros:</span><span className="font-medium">$ 0,00</span></div>
-                  <div className="flex justify-between"><span>Caixa Seguros:</span><span className="font-medium text-red-500">( $ -250,00 )</span></div>
-                </div>
-              </div>
             </div>
           </>
         ) : (
