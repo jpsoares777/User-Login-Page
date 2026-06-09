@@ -832,20 +832,18 @@ function EmprestimosNovosContent() {
   });
 
   const cols = [
-    { label: "Histórico",          w: 76,  align: "center" as const },
-    { label: "Consecutivo",        w: 108, align: "center" as const },
-    { label: "Frequência",         w: 80,  align: "center" as const },
-    { label: "Valor Ant.",         w: 90,  align: "right"  as const },
-    { label: "Cliente",            w: 260, align: "left"   as const },
-    { label: "Documento",          w: 120, align: "center" as const },
-    { label: "Celular",            w: 120, align: "center" as const },
-    { label: "Valor Empr.",        w: 110, align: "right"  as const },
-    { label: "Parcelas",           w: 72,  align: "center" as const },
-    { label: "% Juros",            w: 110, align: "center" as const },
-    { label: "Valor Parcela",      w: 100, align: "right"  as const },
-    { label: "Data de Venda",      w: 150, align: "center" as const },
-    { label: "Parc. Rest.",        w: 80,  align: "center" as const },
-    { label: "Saldo",              w: 90,  align: "right"  as const },
+    { label: "Histórico",     w: "6%",  align: "center" as const },
+    { label: "Consecutivo",   w: "9%",  align: "center" as const },
+    { label: "Frequência",    w: "6%",  align: "center" as const },
+    { label: "Valor Ant.",    w: "7%",  align: "right"  as const },
+    { label: "Cliente",       w: "20%", align: "left"   as const },
+    { label: "Valor Empr.",   w: "8%",  align: "right"  as const },
+    { label: "Parcelas",      w: "6%",  align: "center" as const },
+    { label: "% Juros",       w: "9%",  align: "center" as const },
+    { label: "Valor Parcela", w: "8%",  align: "right"  as const },
+    { label: "Data de Venda", w: "12%", align: "center" as const },
+    { label: "Parc. Rest.",   w: "7%",  align: "center" as const },
+    { label: "Saldo",         w: "7%",  align: "right"  as const },
   ];
 
   const totalValorProd = emprestimosData.reduce((a, r) => a + r.valorProd, 0);
@@ -866,7 +864,7 @@ function EmprestimosNovosContent() {
 
       {/* Table */}
       <div className="flex-1 overflow-auto">
-        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1600 }}>
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
             <tr>
@@ -908,8 +906,6 @@ function EmprestimosNovosContent() {
                     )}
                   </div>
                 </td>
-                <td style={tdE("center", { color: "#6b7280" })}>{r.documento}</td>
-                <td style={tdE("center", { color: "#6b7280" })}>{r.celular}</td>
                 <td style={tdE("right", { fontWeight: 700, color: "#374151" })}>$ {fmt(r.valorProd)}</td>
                 <td style={tdE("center", { color: "#374151" })}>{r.parcelas}</td>
                 <td style={tdE("center")}>
@@ -924,11 +920,11 @@ function EmprestimosNovosContent() {
             ))}
             {/* Total row */}
             <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
-              <td colSpan={7} style={{ ...tdE("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
+              <td colSpan={5} style={{ ...tdE("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
                 TOTAL EMPRÉSTIMOS DO DIA:
               </td>
               <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>$ {fmt(totalValorProd)}</td>
-              <td colSpan={3} style={tdE("center")} />
+              <td colSpan={5} style={tdE("center")} />
               <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>{fmt(totalSaldo)}</td>
             </tr>
           </tbody>
