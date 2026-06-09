@@ -848,20 +848,20 @@ function DespesasContent() {
 
 // ── Rendimentos data ───────────────────────────────────────────────────────────
 const rendimentosData = [
-  { id: 1, categoria: "Parcela",  descricao: "Pagamento recebido - Mariana Silva",      valor: 250.00, data: "2026-05-25", hora: "08:14", responsavel: "João Mendes",  obs: "Parcela 3/6" },
-  { id: 2, categoria: "Parcela",  descricao: "Pagamento recebido - Elaira Barros",      valor: 120.00, data: "2026-05-25", hora: "10:05", responsavel: "João Mendes",  obs: "Parcela 2/4" },
-  { id: 3, categoria: "Parcela",  descricao: "Pagamento recebido - Antônio Gomes",      valor: 300.00, data: "2026-05-25", hora: "13:15", responsavel: "Carlos Souza", obs: "Parcela 1/3" },
-  { id: 4, categoria: "Parcela",  descricao: "Pagamento recebido - Bianca Lemos",       valor: 175.00, data: "2026-05-25", hora: "15:22", responsavel: "João Mendes",  obs: "Parcela 4/6" },
-  { id: 5, categoria: "Abono",    descricao: "Abono concedido - Erick Prado",           valor: 60.00,  data: "2026-05-25", hora: "16:45", responsavel: "Carlos Souza", obs: "Abono concedido" },
-  { id: 6, categoria: "Parcela",  descricao: "Pagamento recebido - Patrick Duarte",     valor: 200.00, data: "2026-05-25", hora: "09:00", responsavel: "João Mendes",  obs: "Parcela 2/5" },
-  { id: 7, categoria: "Parcela",  descricao: "Pagamento recebido - Kleiton Ramos",      valor: 150.00, data: "2026-05-25", hora: "11:30", responsavel: "Ana Lima",     obs: "Parcela 5/6" },
-  { id: 8, categoria: "Parcela",  descricao: "Pagamento recebido - Daniele Figueiredo", valor: 90.00,  data: "2026-05-25", hora: "14:40", responsavel: "Ana Lima",     obs: "Parcela 1/4" },
+  { id: 1, categoria: "Aporte",         descricao: "Aporte inicial de caixa para rota",       valor: 1500.00, data: "2026-05-25", hora: "07:00", responsavel: "Carlos Souza",  obs: "Abertura do dia" },
+  { id: 2, categoria: "Depósito",       descricao: "Depósito bancário transferido para caixa", valor: 800.00,  data: "2026-05-25", hora: "08:30", responsavel: "João Mendes",   obs: "" },
+  { id: 3, categoria: "Entrada Extra",  descricao: "Entrada extra - venda de serviço avulso",  valor: 150.00,  data: "2026-05-25", hora: "10:45", responsavel: "Ana Lima",      obs: "Serviço pontual" },
+  { id: 4, categoria: "Transferência",  descricao: "Transferência entre rotas - matriz",        valor: 500.00,  data: "2026-05-25", hora: "12:00", responsavel: "Carlos Souza",  obs: "Autorizado" },
+  { id: 5, categoria: "Aporte",         descricao: "Aporte emergencial para cobertura",        valor: 300.00,  data: "2026-05-25", hora: "14:20", responsavel: "João Mendes",   obs: "Saldo baixo" },
+  { id: 6, categoria: "Entrada Extra",  descricao: "Recebimento de taxa administrativa",       valor: 75.00,   data: "2026-05-25", hora: "15:50", responsavel: "Ana Lima",      obs: "" },
 ];
 
 const rendCategoriaColor: Record<string, { bg: string; text: string; border: string }> = {
-  "Parcela": { bg: "#dcfce7", text: "#15803d", border: "#86efac" },
-  "Abono":   { bg: "#fef9c3", text: "#92400e", border: "#fde047" },
-  "Outros":  { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" },
+  "Aporte":        { bg: "#dbeafe", text: "#1d4ed8", border: "#93c5fd" },
+  "Depósito":      { bg: "#dcfce7", text: "#15803d", border: "#86efac" },
+  "Entrada Extra": { bg: "#f3e8ff", text: "#6b21a8", border: "#d8b4fe" },
+  "Transferência": { bg: "#fef9c3", text: "#92400e", border: "#fde047" },
+  "Outros":        { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" },
 };
 
 function RendimentosContent() {
@@ -889,7 +889,7 @@ function RendimentosContent() {
       <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-          Rendimentos do Dia
+          Ingressos de Caixa do Dia
         </span>
         <div className="flex-1" />
         <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: 2026-05-25</span>
@@ -938,7 +938,7 @@ function RendimentosContent() {
 
       <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-white uppercase tracking-widest">Total de Rendimentos</span>
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Total de Ingressos</span>
           <span className="text-base font-bold text-blue-200">{fmt(total)}</span>
         </div>
         <div className="w-px h-5 bg-blue-400" />
