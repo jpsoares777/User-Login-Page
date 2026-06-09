@@ -588,7 +588,7 @@ export default function DashboardPage() {
                 "📈 Ganância ( $0.00 )",
               ].map((label) => (
                 <button key={label}
-                  className="w-full text-left px-3 py-3 text-xs font-medium rounded text-white hover:opacity-90"
+                  className="w-full text-left px-3 py-1.5 text-xs font-medium rounded text-white hover:opacity-90"
                   style={{ background: "#6b7280" }}>
                   {label}
                 </button>
