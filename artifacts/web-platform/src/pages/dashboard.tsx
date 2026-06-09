@@ -405,24 +405,24 @@ const pagamentosData = [
 
 function PagamentosContent() {
   const cols = [
-    { label: "Nro.",         w: 44,  align: "center" as const },
-    { label: "Consecutivo",  w: 108, align: "left"   as const },
-    { label: "Cliente",      w: 220, align: "left"   as const },
-    { label: "Observações",  w: 130, align: "left"   as const },
-    { label: "Pagadas",      w: 64,  align: "center" as const },
-    { label: "Tipo",         w: 80,  align: "center" as const },
-    { label: "Forma Pag.",   w: 88,  align: "left"   as const },
-    { label: "Valor",        w: 70,  align: "right"  as const },
-    { label: "Data",         w: 90,  align: "center" as const },
-    { label: "Hora",         w: 72,  align: "center" as const },
-    { label: "Valor Prod.",  w: 150, align: "left"   as const },
-    { label: "Saldo",        w: 80,  align: "right"  as const },
-    { label: "Restantes",    w: 76,  align: "right"  as const },
-    { label: "Visitas",      w: 60,  align: "center" as const },
-    { label: "Frequência",   w: 76,  align: "center" as const },
+    { label: "Nro.",         w: 52,  align: "center" as const },
+    { label: "Consecutivo",  w: 128, align: "left"   as const },
+    { label: "Cliente",      w: 250, align: "left"   as const },
+    { label: "Observações",  w: 150, align: "left"   as const },
+    { label: "Pagadas",      w: 76,  align: "center" as const },
+    { label: "Tipo",         w: 110, align: "center" as const },
+    { label: "Forma Pag.",   w: 100, align: "left"   as const },
+    { label: "Valor",        w: 86,  align: "right"  as const },
+    { label: "Data",         w: 106, align: "center" as const },
+    { label: "Hora",         w: 86,  align: "center" as const },
+    { label: "Valor Prod.",  w: 170, align: "left"   as const },
+    { label: "Saldo",        w: 96,  align: "right"  as const },
+    { label: "Restantes",    w: 88,  align: "right"  as const },
+    { label: "Visitas",      w: 70,  align: "center" as const },
+    { label: "Frequência",   w: 90,  align: "center" as const },
   ];
 
-  const inputCls = "h-7 border border-gray-300 rounded-md px-2.5 text-xs bg-white outline-none transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-200 placeholder-gray-400 text-gray-700";
+  const inputCls = "h-8 border border-gray-300 rounded-md px-3 text-sm bg-white outline-none transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-200 placeholder-gray-400 text-gray-700";
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f2f5" }}>
@@ -500,10 +500,10 @@ function PagamentosContent() {
               <tr>
                 {cols.map(c => (
                   <th key={c.label} style={{
-                    padding: "8px 10px",
+                    padding: "10px 12px",
                     textAlign: c.align,
                     fontWeight: 700,
-                    fontSize: 11,
+                    fontSize: 13,
                     whiteSpace: "nowrap",
                     color: "#e2e8f0",
                     background: "#1e3a52",
@@ -523,8 +523,8 @@ function PagamentosContent() {
                 const even = i % 2 === 1;
                 const rowBg = even ? "#f8fafc" : "#ffffff";
                 const td = (align: "left"|"right"|"center" = "left", extra?: React.CSSProperties): React.CSSProperties => ({
-                  padding: "6px 10px",
-                  fontSize: 11,
+                  padding: "8px 12px",
+                  fontSize: 13,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -539,14 +539,14 @@ function PagamentosContent() {
                   <tr key={r.id} style={{ cursor: "pointer" }}
                     onMouseEnter={e => { (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"; Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff"); }}
                     onMouseLeave={e => { Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach((c,ci) => c.style.background = rowBg); }}>
-                    <td style={td("center", { fontWeight: 700, color: "#6b7280", fontSize: 10 })}>{r.id}</td>
-                    <td style={td("left", { color: "#2563eb", fontWeight: 700, fontSize: 11 })}>
+                    <td style={td("center", { fontWeight: 700, color: "#6b7280", fontSize: 12 })}>{r.id}</td>
+                    <td style={td("left", { color: "#2563eb", fontWeight: 700 })}>
                       <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.consecutivo}</span>
                     </td>
                     <td style={td("left", { color: "#b45309", fontWeight: 600 })}>
                       <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
                         <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{r.cliente}</span>
-                        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#d1d5db", flexShrink: 0 }}><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                        <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#d1d5db", flexShrink: 0 }}><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                       </span>
                     </td>
                     <td style={td("left", { color: "#6b7280", fontStyle: "italic" })}>{r.obs}</td>
@@ -556,11 +556,11 @@ function PagamentosContent() {
                         display: "inline-flex", alignItems: "center", gap: 4,
                         background: "#fef2f2", color: "#b91c1c",
                         border: "1px solid #fecaca",
-                        fontSize: 10, fontWeight: 700,
-                        padding: "2px 7px", borderRadius: 20,
+                        fontSize: 12, fontWeight: 700,
+                        padding: "3px 9px", borderRadius: 20,
                         letterSpacing: "0.03em",
                       }}>
-                        <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ef4444", flexShrink: 0, display:"inline-block" }} />
+                        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ef4444", flexShrink: 0, display:"inline-block" }} />
                         Não Pago
                       </span>
                     </td>
@@ -570,13 +570,13 @@ function PagamentosContent() {
                     <td style={td("center", { color: "#6b7280", fontFamily: "monospace" })}>{r.hora}</td>
                     <td style={td("left")}>
                       <span style={{ fontWeight: 600, color: "#111827" }}>R$ {r.valorProd}</span>
-                      <span style={{ color: "#9ca3af", fontSize: 10, marginLeft: 4 }}>Sanção ({r.sancao})</span>
+                      <span style={{ color: "#9ca3af", fontSize: 12, marginLeft: 4 }}>Sanção ({r.sancao})</span>
                     </td>
                     <td style={td("right", { fontWeight: 700, color: "#059669" })}>R$ {r.saldo}</td>
                     <td style={td("right")}>{r.restantes}</td>
                     <td style={td("center", { fontWeight: 600 })}>{r.visitas}</td>
                     <td style={td("center")}>
-                      <span style={{ background: "#f0f9ff", color: "#0369a1", border: "1px solid #bae6fd", fontSize: 10, fontWeight: 600, padding: "1px 7px", borderRadius: 20 }}>
+                      <span style={{ background: "#f0f9ff", color: "#0369a1", border: "1px solid #bae6fd", fontSize: 12, fontWeight: 600, padding: "2px 9px", borderRadius: 20 }}>
                         {r.freq}
                       </span>
                     </td>
@@ -591,20 +591,20 @@ function PagamentosContent() {
         <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t border-gray-200"
           style={{ background: "#1e3a52" }}>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Total Recaudo do Dia</span>
-            <span className="text-sm font-bold text-white">R$ 290,00</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Total Recaudo do Dia</span>
+            <span className="text-base font-bold text-white">R$ 290,00</span>
           </div>
-          <div className="w-px h-4 bg-slate-600" />
+          <div className="w-px h-5 bg-slate-600" />
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-slate-400 font-semibold">Taxa de recebimento</span>
-            <span className="text-xs font-bold" style={{ color: "#f59e0b" }}>23,3%</span>
+            <span className="text-xs text-slate-400 font-semibold">Taxa de recebimento</span>
+            <span className="text-sm font-bold" style={{ color: "#f59e0b" }}>23,3%</span>
           </div>
-          <div className="w-px h-4 bg-slate-600" />
+          <div className="w-px h-5 bg-slate-600" />
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-slate-400 font-semibold">Não pagos</span>
-            <span className="text-xs font-bold text-red-400">{pagamentosData.length}</span>
+            <span className="text-xs text-slate-400 font-semibold">Não pagos</span>
+            <span className="text-sm font-bold text-red-400">{pagamentosData.length}</span>
           </div>
-          <div className="ml-auto text-[10px] text-slate-500">
+          <div className="ml-auto text-xs text-slate-500">
             Referência: 2026-05-25 · 20:12:44
           </div>
         </div>
