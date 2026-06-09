@@ -52,7 +52,7 @@ const PersonIcon = () => (
 
 // ── Chart card wrapper ────────────────────────────────────────────────────────
 
-function ChartCard({ children, year = "2026", subtitle }: { children: React.ReactNode; year?: string; subtitle?: string }) {
+function ChartCard({ children, year = "2026", subtitle, showMonth = false }: { children: React.ReactNode; year?: string; subtitle?: string; showMonth?: boolean }) {
   return (
     <div className="bg-white border border-gray-200 rounded flex flex-col flex-1 min-w-0 min-h-0" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
       {/* Toolbar */}
@@ -69,13 +69,15 @@ function ChartCard({ children, year = "2026", subtitle }: { children: React.Reac
           <option>{year}</option>
           <option>{String(Number(year) - 1)}</option>
         </select>
-        <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
-          <option value="">--Mes--</option>
-          <option>Jan.</option><option>Fev.</option><option>Mar.</option>
-          <option>Abr.</option><option>Mai.</option><option>Jun.</option>
-          <option>Jul.</option><option>Ago.</option><option>Set.</option>
-          <option>Out.</option><option>Nov.</option><option>Dez.</option>
-        </select>
+        {showMonth && (
+          <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
+            <option value="">--Mes--</option>
+            <option>Jan.</option><option>Fev.</option><option>Mar.</option>
+            <option>Abr.</option><option>Mai.</option><option>Jun.</option>
+            <option>Jul.</option><option>Ago.</option><option>Set.</option>
+            <option>Out.</option><option>Nov.</option><option>Dez.</option>
+          </select>
+        )}
         <div className="flex-1" />
         <button className="text-gray-500 hover:text-gray-700 text-xl leading-none px-1">≡</button>
       </div>
@@ -368,11 +370,11 @@ function DesempenhoContent() {
       {/* Row 2: 2 pie charts + empty third */}
       <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
-        <ChartCard subtitle="Gastos por Conceito 2026" year="2026">
+        <ChartCard subtitle="Gastos por Conceito 2026" year="2026" showMonth>
           <Pie3DChart data={gastosPieData} />
         </ChartCard>
 
-        <ChartCard subtitle="Ingressos por Conceito 2026" year="2026">
+        <ChartCard subtitle="Ingressos por Conceito 2026" year="2026" showMonth>
           <Pie3DChart data={ingresosPieData} />
         </ChartCard>
 
