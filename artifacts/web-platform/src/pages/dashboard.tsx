@@ -822,14 +822,16 @@ function EmprestimosNovosContent() {
                 <td style={tdE("center", { color: "#6b7280" })}>{r.freq}</td>
                 <td style={tdE("right", { color: r.valorAnt > 0 ? "#374151" : "#9ca3af" })}>$ {fmt(r.valorAnt)}</td>
                 {/* Cliente with tag */}
-                <td style={tdE("left")}>
-                  <span style={{ color: "#374151", fontWeight: 500 }}>{r.cliente}</span>
-                  {r.tag === "Novo" && (
-                    <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "1px 5px" }}>→→ Novo</span>
-                  )}
-                  {r.tag === "Renovado" && (
-                    <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 700, color: "#b45309", background: "#fef9c3", border: "1px solid #fde047", borderRadius: 3, padding: "1px 5px" }}>→→ Renovado</span>
-                  )}
+                <td style={{ ...tdE("left"), whiteSpace: "normal", overflow: "hidden" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <span style={{ color: "#374151", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.cliente}</span>
+                    {r.tag === "Novo" && (
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "1px 6px", alignSelf: "flex-start" }}>→→ Novo</span>
+                    )}
+                    {r.tag === "Renovado" && (
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#b45309", background: "#fef9c3", border: "1px solid #fde047", borderRadius: 3, padding: "1px 6px", alignSelf: "flex-start" }}>→→ Renovado</span>
+                    )}
+                  </div>
                 </td>
                 <td style={tdE("center", { color: "#6b7280" })}>{r.documento}</td>
                 <td style={tdE("center", { color: "#6b7280" })}>{r.celular}</td>
