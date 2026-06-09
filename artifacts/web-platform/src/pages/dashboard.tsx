@@ -525,7 +525,8 @@ export default function DashboardPage() {
               <Row label="Clientes Novos/Renovados" index={1}>
                 <PersonIcon /> <strong className="text-gray-800">0</strong> <span className="text-gray-400 text-[11px]">(0/0)</span>
               </Row>
-              <Row label="Pag. Adiado Próx. Dia" index={2}>
+
+              <Row label="Clientes Renovados" index={2}>
                 <PersonIcon /> <strong className="text-gray-800">0</strong>
               </Row>
               <Row label="Clientes Cancelados" index={3}>
