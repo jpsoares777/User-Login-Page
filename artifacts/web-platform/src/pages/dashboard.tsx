@@ -1287,16 +1287,16 @@ function RendimentosContent() {
 
 // ── Clientes data ─────────────────────────────────────────────────────────────
 const clientesRows = [
-  { id:1,  consec:"4700627026", status:"ACTIVO", nome:"Andreia de Jesus Costa Araújo",   tel1:"91633427315",  tel2:"98985014328",  freq:"Diário", valorVenda:1500.00, pctJuros:40, total:2100.00, cuotas:20, atrasadas:0,  pagas:12, restantes:8,  vlrCuota:105, saldo:800.00  },
-  { id:2,  consec:"4700627080", status:"ACTIVO", nome:"Luciana Alves Da Silva",           tel1:"559988345767", tel2:"03270213301",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:14, pagas:0,  restantes:14, vlrCuota:50,  saldo:700.00  },
-  { id:3,  consec:"4700627079", status:"ACTIVO", nome:"Ana Paula Marques De Oliveira",    tel1:"989896248424", tel2:"85259284372",  freq:"Diário", valorVenda:500.00,  pctJuros:20, total:600.00,  cuotas:20, atrasadas:0,  pagas:0,  restantes:20, vlrCuota:30,  saldo:600.00  },
-  { id:4,  consec:"4700627078", status:"ACTIVO", nome:"Mariana Beatriz Rabelo Barbosa",   tel1:"98985721207",  tel2:"985721297",    freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:4,  pagas:0,  restantes:14, vlrCuota:100, saldo:1400.00 },
-  { id:5,  consec:"4700627077", status:"ACTIVO", nome:"Natanael Dos Santos Mendes",       tel1:"5511971269742",tel2:"11971269742",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:13, pagas:1,  restantes:13, vlrCuota:50,  saldo:650.00  },
-  { id:6,  consec:"4700627058", status:"ACTIVO", nome:"Aline Lima De Alencar",            tel1:"98985678901",  tel2:"98985678902",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:1,  restantes:13, vlrCuota:80,  saldo:1040.00 },
-  { id:7,  consec:"4700627145", status:"ACTIVO", nome:"Bores Viana De Souza",             tel1:"98984321100",  tel2:"98984321101",  freq:"Diário", valorVenda:560.00,  pctJuros:40, total:784.00,  cuotas:14, atrasadas:2,  pagas:0,  restantes:12, vlrCuota:40,  saldo:480.00  },
-  { id:8,  consec:"4700627024", status:"ACTIVO", nome:"Anny Briane Pires Belfort",        tel1:"98987654321",  tel2:"98987654322",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:11, restantes:3,  vlrCuota:80,  saldo:210.00  },
-  { id:9,  consec:"4700627090", status:"ACTIVO", nome:"Daniele Texeira Lindoso",          tel1:"559899687036", tel2:"99687036",     freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:5,  pagas:5,  restantes:9,  vlrCuota:100, saldo:900.00  },
-  { id:10, consec:"4700627023", status:"ACTIVO", nome:"Elaira Kisley Conceição Lopes",    tel1:"98986543210",  tel2:"98986543211",  freq:"Diário", valorVenda:540.00,  pctJuros:40, total:756.00,  cuotas:14, atrasadas:9,  pagas:0,  restantes:9,  vlrCuota:54,  saldo:540.00  },
+  { id:1,  consec:"4700627026", status:"ACTIVO", visitas:5,  nome:"Andreia de Jesus Costa Araújo",   tel1:"91633427315",  tel2:"98985014328",  freq:"Diário", valorVenda:1500.00, pctJuros:40, total:2100.00, cuotas:20, atrasadas:0,  pagas:12, restantes:8,  vlrCuota:105, saldo:800.00  },
+  { id:2,  consec:"4700627080", status:"ACTIVO", visitas:14, nome:"Luciana Alves Da Silva",           tel1:"559988345767", tel2:"03270213301",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:14, pagas:0,  restantes:14, vlrCuota:50,  saldo:700.00  },
+  { id:3,  consec:"4700627079", status:"ACTIVO", visitas:0,  nome:"Ana Paula Marques De Oliveira",    tel1:"989896248424", tel2:"85259284372",  freq:"Diário", valorVenda:500.00,  pctJuros:20, total:600.00,  cuotas:20, atrasadas:0,  pagas:0,  restantes:20, vlrCuota:30,  saldo:600.00  },
+  { id:4,  consec:"4700627078", status:"ACTIVO", visitas:4,  nome:"Mariana Beatriz Rabelo Barbosa",   tel1:"98985721207",  tel2:"985721297",    freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:4,  pagas:0,  restantes:14, vlrCuota:100, saldo:1400.00 },
+  { id:5,  consec:"4700627077", status:"ACTIVO", visitas:14, nome:"Natanael Dos Santos Mendes",       tel1:"5511971269742",tel2:"11971269742",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:13, pagas:1,  restantes:13, vlrCuota:50,  saldo:650.00  },
+  { id:6,  consec:"4700627058", status:"ACTIVO", visitas:1,  nome:"Aline Lima De Alencar",            tel1:"98985678901",  tel2:"98985678902",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:1,  restantes:13, vlrCuota:80,  saldo:1040.00 },
+  { id:7,  consec:"4700627145", status:"ACTIVO", visitas:2,  nome:"Bores Viana De Souza",             tel1:"98984321100",  tel2:"98984321101",  freq:"Diário", valorVenda:560.00,  pctJuros:40, total:784.00,  cuotas:14, atrasadas:2,  pagas:0,  restantes:12, vlrCuota:40,  saldo:480.00  },
+  { id:8,  consec:"4700627024", status:"ACTIVO", visitas:11, nome:"Anny Briane Pires Belfort",        tel1:"98987654321",  tel2:"98987654322",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:11, restantes:3,  vlrCuota:80,  saldo:210.00  },
+  { id:9,  consec:"4700627090", status:"ACTIVO", visitas:5,  nome:"Daniele Texeira Lindoso",          tel1:"559899687036", tel2:"99687036",     freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:5,  pagas:5,  restantes:9,  vlrCuota:100, saldo:900.00  },
+  { id:10, consec:"4700627023", status:"ACTIVO", visitas:9,  nome:"Elaira Kisley Conceição Lopes",    tel1:"98986543210",  tel2:"98986543211",  freq:"Diário", valorVenda:540.00,  pctJuros:40, total:756.00,  cuotas:14, atrasadas:9,  pagas:0,  restantes:9,  vlrCuota:54,  saldo:540.00  },
 ];
 
 function ClientesContent() {
@@ -1449,6 +1449,7 @@ function ClientesContent() {
                       <div style={{ fontSize: 12, color: r.atrasadas > 0 ? "#b91c1c" : "#6b7280", fontWeight: r.atrasadas > 0 ? 700 : 400 }}>Atrasadas: {r.atrasadas}</div>
                       <div style={{ fontSize: 12, color: "#15803d" }}>Pagas: {r.pagas}</div>
                       <div style={{ fontSize: 11, color: "#6b7280" }}>Rest.: {r.restantes} (Sanc. 0)</div>
+                      <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>Visitas: <span style={{ fontWeight: 700, color: r.visitas === 0 ? "#9ca3af" : r.atrasadas === 0 ? "#15803d" : r.atrasadas >= 5 ? "#b91c1c" : "#b45309" }}>{r.visitas}</span></div>
                     </div>
                   </td>
 
