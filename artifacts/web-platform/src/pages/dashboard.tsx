@@ -790,17 +790,18 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
         <div style={{ maxHeight: 340, overflowY: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
             <colgroup>
-              <col style={{ width: "5%" }} />
-              <col style={{ width: "11%" }} />
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "7%" }} />
-              <col style={{ width: "9%" }} />
-              <col style={{ width: "9%" }} />
-              <col style={{ width: "8%" }} />
+              <col style={{ width: "4%" }} />
+              <col style={{ width: "10%" }} />
               <col style={{ width: "12%" }} />
+              <col style={{ width: "6%" }} />
+              <col style={{ width: "8%" }} />
+              <col style={{ width: "8%" }} />
+              <col style={{ width: "7%" }} />
               <col style={{ width: "11%" }} />
+              <col style={{ width: "8%" }} />
+              <col style={{ width: "10%" }} />
               <col style={{ width: "7%" }} />
-              <col style={{ width: "7%" }} />
+              <col style={{ width: "9%" }} />
             </colgroup>
             <thead>
               <tr>
@@ -808,11 +809,12 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
                 <th style={{ ...thS, textAlign: "center" }}>Data Venda</th>
                 <th style={{ ...thS }}>Estado</th>
                 <th style={{ ...thS, textAlign: "center" }}>Parc.</th>
-                <th style={{ ...thS, textAlign: "center" }}>Parc. Pagas</th>
-                <th style={{ ...thS, textAlign: "center" }}>Parc. Falt.</th>
+                <th style={{ ...thS, textAlign: "center" }}>Pagas</th>
+                <th style={{ ...thS, textAlign: "center" }}>Falt.</th>
                 <th style={{ ...thS, textAlign: "right" }}>Saldo</th>
                 <th style={{ ...thS, textAlign: "right" }}>Valor Empr.</th>
-                <th style={{ ...thS, textAlign: "center" }}>Frequência</th>
+                <th style={{ ...thS, textAlign: "center" }}>Freq.</th>
+                <th style={{ ...thS, textAlign: "right" }}>Vr. Parcela</th>
                 <th style={{ ...thS, textAlign: "center" }}>Visitas</th>
                 <th style={{ ...thS, textAlign: "center" }}>% Juros</th>
               </tr>
@@ -831,6 +833,7 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
                   <td style={tdS("right", { fontWeight: 700, color: h.parcFalt > 0 ? "#374151" : "#9ca3af" })}>$ {h.valorEmpr - (h.parcPagas * h.vrParc) > 0 ? (h.valorEmpr - h.parcPagas * h.vrParc).toFixed(0) : "0"}</td>
                   <td style={tdS("right", { fontWeight: 700, color: "#1d4ed8" })}>$ {h.valorEmpr.toLocaleString("pt-BR")}</td>
                   <td style={tdS("center", { color: "#6b7280" })}>{h.freq}</td>
+                  <td style={tdS("right", { color: "#374151", fontWeight: 600 })}>$ {h.vrParc}</td>
                   <td style={tdS("center", { color: "#374151", fontWeight: 600 })}>{h.visitas}</td>
                   <td style={tdS("center", { color: "#059669", fontWeight: 700 })}>{h.pctJuros}%</td>
                 </tr>
