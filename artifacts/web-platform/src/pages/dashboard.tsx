@@ -929,7 +929,7 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
             <thead>
               <tr>
                 <th style={{ ...thS, textAlign: "center" }}>Nro.</th>
-                <th style={{ ...thS, textAlign: "center" }}>Data Empr.</th>
+                <th style={{ ...thS, textAlign: "center" }}>Data do Empr.</th>
                 <th style={{ ...thS }}>Estado</th>
                 <th style={{ ...thS, textAlign: "center" }}>Parc.</th>
                 <th style={{ ...thS, textAlign: "center" }}>Pagas</th>
@@ -1012,7 +1012,7 @@ function EmprestimosNovosContent() {
     { label: "Parcelas",      w: "6%",  align: "center" as const },
     { label: "% Juros",       w: "9%",  align: "center" as const },
     { label: "Valor Parcela", w: "8%",  align: "right"  as const },
-    { label: "Data Empr.",    w: "12%", align: "center" as const },
+    { label: "Data do Empr.", w: "12%", align: "center" as const },
     { label: "Parc. Rest.",   w: "7%",  align: "center" as const },
     { label: "Saldo",         w: "7%",  align: "right"  as const },
   ];
