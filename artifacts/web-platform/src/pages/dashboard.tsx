@@ -523,214 +523,173 @@ function HistorialModal({ row, onClose }: { row: PagRow; onClose: () => void }) 
 
 function PagamentosContent() {
   const [selectedRow, setSelectedRow] = useState<PagRow | null>(null);
+
   const cols = [
-    { label: "Nro.",         w: 52,  align: "center" as const },
-    { label: "Nº do Empréstimo", w: 148, align: "left" as const },
-    { label: "Cliente",      w: 250, align: "left"   as const },
-    { label: "Observações",  w: 150, align: "left"   as const },
-    { label: "Pagas",        w: 76,  align: "center" as const },
-    { label: "Tipo",         w: 110, align: "center" as const },
-    { label: "Forma Pag.",   w: 100, align: "left"   as const },
-    { label: "Valor",        w: 86,  align: "right"  as const },
-    { label: "Data",         w: 106, align: "center" as const },
-    { label: "Hora",         w: 86,  align: "center" as const },
-    { label: "Valor Empr.",  w: 170, align: "left"   as const },
-    { label: "Saldo",        w: 96,  align: "right"  as const },
-    { label: "Parc. Restantes", w: 110, align: "right" as const },
-    { label: "Visitas",      w: 70,  align: "center" as const },
-    { label: "Frequência",   w: 90,  align: "center" as const },
+    { label: "Nro.",             w: "4%",  align: "center" as const },
+    { label: "Nº do Empréstimo", w: "10%", align: "left"   as const },
+    { label: "Cliente",          w: "16%", align: "left"   as const },
+    { label: "Observações",      w: "10%", align: "left"   as const },
+    { label: "Pagas",            w: "5%",  align: "center" as const },
+    { label: "Tipo",             w: "8%",  align: "center" as const },
+    { label: "Forma Pag.",       w: "7%",  align: "left"   as const },
+    { label: "Valor",            w: "7%",  align: "right"  as const },
+    { label: "Data",             w: "8%",  align: "center" as const },
+    { label: "Hora",             w: "6%",  align: "center" as const },
+    { label: "Valor Empr.",      w: "9%",  align: "left"   as const },
+    { label: "Saldo",            w: "7%",  align: "right"  as const },
+    { label: "Parc. Rest.",      w: "6%",  align: "center" as const },
+    { label: "Visitas",          w: "5%",  align: "center" as const },
+    { label: "Frequência",       w: "6%",  align: "center" as const },
   ];
 
-  const inputCls = "h-8 border border-gray-300 rounded-md px-3 text-sm bg-white outline-none transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-200 placeholder-gray-400 text-gray-700";
+  const totalRecebimento = pagamentosData.reduce((a, r) => a + parseFloat(r.valor), 0);
+  const fmtR = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
+
+  const tdP = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+  });
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f2f5" }}>
+    <div className="flex-1 flex flex-col overflow-hidden">
 
-      {/* ── Filter card ── */}
-      <div className="shrink-0 mx-3 mt-3 mb-2 rounded-lg bg-white border border-gray-200 shadow-sm px-4 py-3">
-        <div className="flex items-end gap-2 flex-wrap">
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Consecutivo</label>
-            <input placeholder="Ex: 4700627089" className={`${inputCls} w-32`} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Nome</label>
-            <input placeholder="Nome do cliente" className={`${inputCls} w-40`} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Sobrenome</label>
-            <input placeholder="Sobrenome" className={`${inputCls} w-36`} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Documento</label>
-            <input placeholder="CPF / RG" className={`${inputCls} w-36`} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Forma de Pag.</label>
-            <select className={`${inputCls} w-36`} style={{ color: undefined }}>
-              <option value="">-- Todas --</option>
-              <option>Efectivo</option>
-              <option>Transferência</option>
-            </select>
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Frequência</label>
-            <select className={`${inputCls} w-32`}>
-              <option value="">-- Todas --</option>
-              <option>Diario</option>
-              <option>Semanal</option>
-              <option>Quinzenal</option>
-            </select>
-          </div>
-          <div className="flex gap-2 ml-auto">
-            <button className="h-7 px-4 rounded-md text-xs font-semibold border border-gray-300 text-gray-600 bg-white hover:bg-gray-50 transition-colors">
-              Limpar
-            </button>
-            <button className="h-7 px-4 rounded-md text-xs font-semibold text-white flex items-center gap-1.5 transition-colors hover:opacity-90"
-              style={{ background: "#2563eb" }}>
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-              Buscar
-            </button>
-          </div>
+      {/* ── Filter bar ── */}
+      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Consecutivo</label>
+          <input placeholder="Ex: 4700627089" className={`${inputCls} w-32`} />
         </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Nome</label>
+          <input placeholder="Nome do cliente" className={`${inputCls} w-36`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Sobrenome</label>
+          <input placeholder="Sobrenome" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Documento</label>
+          <input placeholder="CPF / RG" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Forma de Pag.</label>
+          <select className={`${inputCls} w-32`}>
+            <option value="">-- Todas --</option>
+            <option>Efectivo</option>
+            <option>Transferência</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Frequência</label>
+          <select className={`${inputCls} w-28`}>
+            <option value="">-- Todas --</option>
+            <option>Diario</option>
+            <option>Semanal</option>
+            <option>Quinzenal</option>
+          </select>
+        </div>
+        <div className="flex gap-1.5 pb-0.5">
+          <button className="h-7 px-3 rounded text-xs font-semibold border border-gray-300 text-gray-600 bg-white hover:bg-gray-50">Limpar</button>
+          <button className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90" style={{ background: "#2563eb" }}>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            Buscar
+          </button>
+        </div>
+        <div className="flex-1" />
+        <span className="text-xs text-gray-400 font-medium pb-0.5">DATA DE REFERÊNCIA: 2026-05-25</span>
       </div>
 
-      {/* ── Table card ── */}
-      <div className="flex-1 overflow-hidden mx-3 mb-3 rounded-lg bg-white border border-gray-200 shadow-sm flex flex-col">
+      {/* ── Count bar ── */}
+      <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs text-gray-500">
+          <span className="font-bold text-gray-800">{pagamentosData.length}</span> registros encontrados
+        </span>
+      </div>
 
-        {/* Toolbar */}
-        <div className="shrink-0 flex items-center justify-between px-4 py-2 border-b border-gray-100">
-          <span className="text-xs font-semibold text-gray-500">
-            <span className="text-gray-900 font-bold">{pagamentosData.length}</span> registros encontrados
-          </span>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">Data de referência:</span>
-            <span className="text-xs font-bold text-gray-700">2026-05-25</span>
-          </div>
-        </div>
+      {/* ── Table ── */}
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>
+              {cols.map(c => (
+                <th key={c.label} style={{
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2563eb",
+                  borderRight: "1px solid #3b82f6", letterSpacing: "0.02em",
+                  position: "sticky", top: 0, zIndex: 1,
+                }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {pagamentosData.map((r, i) => {
+              const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
+              return (
+                <tr key={r.id} style={{ cursor: "pointer" }}
+                  onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
+                  onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
+                  <td style={tdP("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdP("left", { color: "#2563eb", fontWeight: 700 })}>
+                    <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.consecutivo}</span>
+                  </td>
+                  <td style={tdP("left", {
+                      color: r.status === "bom" ? "#16a34a" : r.status === "ruim" ? "#dc2626" : "#d97706",
+                      fontWeight: 600,
+                    })} onClick={() => setSelectedRow(r)}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", textDecoration: "underline", textUnderlineOffset: 2 }}>{r.cliente}</span>
+                      <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#d1d5db", flexShrink: 0 }}><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </span>
+                  </td>
+                  <td style={tdP("left", { color: "#6b7280", fontStyle: "italic" })}>{r.obs}</td>
+                  <td style={tdP("center")}>{r.pagadas}</td>
+                  <td style={tdP("center")}>
+                    <span style={{
+                      display: "inline-flex", alignItems: "center", gap: 3,
+                      background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca",
+                      fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 20,
+                    }}>
+                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ef4444", display: "inline-block" }} />
+                      Não Pago
+                    </span>
+                  </td>
+                  <td style={tdP("left")}>{r.formaPago}</td>
+                  <td style={tdP("right", { fontWeight: 600, color: "#111827" })}>R$ {r.valor}</td>
+                  <td style={tdP("center", { color: "#4b5563" })}>{r.fecha}</td>
+                  <td style={tdP("center", { color: "#6b7280" })}>{r.hora}</td>
+                  <td style={tdP("left")}>
+                    <span style={{ fontWeight: 600, color: "#111827" }}>R$ {r.valorProd}</span>
+                    <span style={{ color: "#9ca3af", fontSize: 11, marginLeft: 4 }}>Sanção ({r.sancao})</span>
+                  </td>
+                  <td style={tdP("right", { fontWeight: 700, color: "#059669" })}>R$ {r.saldo}</td>
+                  <td style={tdP("center")}>{r.restantes}</td>
+                  <td style={tdP("center", { fontWeight: 600 })}>{r.visitas}</td>
+                  <td style={tdP("center")}>
+                    <span style={{ background: "#f0f9ff", color: "#0369a1", border: "1px solid #bae6fd", fontSize: 11, fontWeight: 600, padding: "2px 7px", borderRadius: 20 }}>
+                      {r.freq}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+            {/* Total row */}
+            <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
+              <td colSpan={7} style={{ ...tdP("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
+                TOTAL RECEBIMENTO DO DIA:
+              </td>
+              <td style={tdP("right", { fontWeight: 700, color: "#1d4ed8" })}>{fmtR(totalRecebimento)}</td>
+              <td colSpan={7} style={tdP("center")} />
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        {/* Scrollable table */}
-        <div className="flex-1 overflow-auto">
-          <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 1250, tableLayout: "fixed" }}>
-            <colgroup>
-              {cols.map(c => <col key={c.label} style={{ width: c.w }} />)}
-            </colgroup>
-            <thead>
-              <tr>
-                {cols.map(c => (
-                  <th key={c.label} style={{
-                    padding: "10px 12px",
-                    textAlign: c.align,
-                    fontWeight: 700,
-                    fontSize: 13,
-                    whiteSpace: "nowrap",
-                    color: "#e2e8f0",
-                    background: "#2563eb",
-                    borderRight: "1px solid #3b82f6",
-                    letterSpacing: "0.02em",
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 1,
-                  }}>
-                    {c.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {pagamentosData.map((r, i) => {
-                const even = i % 2 === 1;
-                const rowBg = even ? "#f8fafc" : "#ffffff";
-                const td = (align: "left"|"right"|"center" = "left", extra?: React.CSSProperties): React.CSSProperties => ({
-                  padding: "8px 12px",
-                  fontSize: 13,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  textAlign: align,
-                  borderRight: "1px solid #e9ecef",
-                  borderBottom: "1px solid #e9ecef",
-                  background: rowBg,
-                  color: "#374151",
-                  ...extra,
-                });
-                return (
-                  <tr key={r.id} style={{ cursor: "pointer" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"; Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff"); }}
-                    onMouseLeave={e => { Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach((c,ci) => c.style.background = rowBg); }}>
-                    <td style={td("center", { fontWeight: 700, color: "#6b7280", fontSize: 12 })}>{r.id}</td>
-                    <td style={td("left", { color: "#2563eb", fontWeight: 700 })}>
-                      <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.consecutivo}</span>
-                    </td>
-                    <td style={td("left", {
-                        color: r.status === "bom" ? "#16a34a" : r.status === "ruim" ? "#dc2626" : "#d97706",
-                        fontWeight: 600, cursor: "pointer"
-                      })}
-                      onClick={() => setSelectedRow(r)}>
-                      <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", textDecoration: "underline", textUnderlineOffset: 2 }}>{r.cliente}</span>
-                        <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#d1d5db", flexShrink: 0 }}><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                      </span>
-                    </td>
-                    <td style={td("left", { color: "#6b7280", fontStyle: "italic" })}>{r.obs}</td>
-                    <td style={td("center")}>{r.pagadas}</td>
-                    <td style={td("center")}>
-                      <span style={{
-                        display: "inline-flex", alignItems: "center", gap: 4,
-                        background: "#fef2f2", color: "#b91c1c",
-                        border: "1px solid #fecaca",
-                        fontSize: 12, fontWeight: 700,
-                        padding: "3px 9px", borderRadius: 20,
-                        letterSpacing: "0.03em",
-                      }}>
-                        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ef4444", flexShrink: 0, display:"inline-block" }} />
-                        Não Pago
-                      </span>
-                    </td>
-                    <td style={td("left")}>{r.formaPago}</td>
-                    <td style={td("right", { fontWeight: 600, color: "#111827" })}>R$ {r.valor}</td>
-                    <td style={td("center", { color: "#4b5563" })}>{r.fecha}</td>
-                    <td style={td("center", { color: "#6b7280", fontFamily: "monospace" })}>{r.hora}</td>
-                    <td style={td("left")}>
-                      <span style={{ fontWeight: 600, color: "#111827" }}>R$ {r.valorProd}</span>
-                      <span style={{ color: "#9ca3af", fontSize: 12, marginLeft: 4 }}>Sanção ({r.sancao})</span>
-                    </td>
-                    <td style={td("right", { fontWeight: 700, color: "#059669" })}>R$ {r.saldo}</td>
-                    <td style={td("right")}>{r.restantes}</td>
-                    <td style={td("center", { fontWeight: 600 })}>{r.visitas}</td>
-                    <td style={td("center")}>
-                      <span style={{ background: "#f0f9ff", color: "#0369a1", border: "1px solid #bae6fd", fontSize: 12, fontWeight: 600, padding: "2px 9px", borderRadius: 20 }}>
-                        {r.freq}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* ── Footer ── */}
-        <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t border-gray-200"
-          style={{ background: "#2563eb" }}>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-white uppercase tracking-widest">Recebimento Atual do Dia</span>
-            <span className="text-base font-bold text-white">R$ 290,00</span>
-          </div>
-          <div className="w-px h-5 bg-slate-600" />
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-white font-bold">Taxa de recebimento</span>
-            <span className="text-sm font-bold" style={{ color: "#f59e0b" }}>23,3%</span>
-          </div>
-          <div className="w-px h-5 bg-slate-600" />
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-white font-bold">Não pagos</span>
-            <span className="text-sm font-bold text-red-400">{pagamentosData.length}</span>
-          </div>
-          <div className="ml-auto text-xs text-slate-500">
-            Referência: 2026-05-25 · 20:12:44
-          </div>
-        </div>
+      {/* ── Footer ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
+        <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-05-25</div>
       </div>
 
       {selectedRow && <HistorialModal row={selectedRow} onClose={() => setSelectedRow(null)} />}
