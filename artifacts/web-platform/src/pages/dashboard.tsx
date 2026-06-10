@@ -749,17 +749,17 @@ type EmpRow = typeof emprestimosData[0];
 
 const pagamentosPorEmprestimo: Record<number, { nro: number; tipo: string; valor: number; data: string; obs: string }[]> = {
   2: [
-    { nro: 5, tipo: "Não Pago",     valor: 0,   data: "2026-05-25", obs: "Operação Masiva" },
-    { nro: 4, tipo: "Não Pago",     valor: 0,   data: "2026-04-28", obs: "Operação Masiva" },
-    { nro: 3, tipo: "Valor",        valor: 200, data: "2026-04-17", obs: "" },
-    { nro: 2, tipo: "Valor",        valor: 700, data: "2026-04-16", obs: "" },
-    { nro: 1, tipo: "Valor",        valor: 400, data: "2026-04-15", obs: "" },
+    { nro: 5, tipo: "S/PAG.",  valor: 0,   data: "2026-05-25", obs: "Operação Masiva" },
+    { nro: 4, tipo: "S/PAG.",  valor: 0,   data: "2026-04-28", obs: "Operação Masiva" },
+    { nro: 3, tipo: "ABONO",   valor: 0,   data: "2026-04-17", obs: "Operação Masiva" },
+    { nro: 2, tipo: "PARC.",   valor: 700, data: "2026-04-16", obs: "" },
+    { nro: 1, tipo: "PARC.",   valor: 400, data: "2026-04-15", obs: "" },
   ],
   1: [
-    { nro: 4, tipo: "Valor",        valor: 180, data: "2026-04-10", obs: "" },
-    { nro: 3, tipo: "Valor",        valor: 180, data: "2026-03-27", obs: "" },
-    { nro: 2, tipo: "Valor",        valor: 240, data: "2026-03-20", obs: "" },
-    { nro: 1, tipo: "Valor",        valor: 240, data: "2026-03-14", obs: "" },
+    { nro: 4, tipo: "PARC.",   valor: 180, data: "2026-04-10", obs: "" },
+    { nro: 3, tipo: "PARC.",   valor: 180, data: "2026-03-27", obs: "" },
+    { nro: 2, tipo: "ABONO",   valor: 0,   data: "2026-03-22", obs: "Operação Masiva" },
+    { nro: 1, tipo: "PARC.",   valor: 240, data: "2026-03-14", obs: "" },
   ],
 };
 
@@ -826,10 +826,24 @@ function PagamentosEmprestimoModal({
                   <td style={tdP("center", { fontWeight: 700, color: "#374151" })}>{p.nro}</td>
                   <td style={tdP("left", { color: "#2563eb", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" })}>{cliente.toUpperCase()}</td>
                   <td style={tdP("center")}>
-                    {p.tipo === "Não Pago"
-                      ? <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#dc2626", borderRadius: 4, padding: "2px 8px" }}>Não Pago</span>
-                      : <span style={{ fontSize: 11, fontWeight: 700, color: "#1d4ed8", background: "#dbeafe", border: "1px solid #93c5fd", borderRadius: 4, padding: "2px 8px" }}>Valor</span>
-                    }
+                    {p.tipo === "S/PAG." && (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: "#fff", background: "#dc2626", borderRadius: 20, padding: "3px 10px" }}>
+                        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff", flexShrink: 0 }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>
+                        S/PAG.
+                      </span>
+                    )}
+                    {p.tipo === "ABONO" && (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: "#92400e", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 20, padding: "3px 10px" }}>
+                        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#d97706", flexShrink: 0 }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        ABONO
+                      </span>
+                    )}
+                    {p.tipo === "PARC." && (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: "#166534", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 20, padding: "3px 10px" }}>
+                        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#16a34a", flexShrink: 0 }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14l-4-4 1.41-1.41L10 13.17l6.59-6.59L18 8l-8 8z"/></svg>
+                        PARC.
+                      </span>
+                    )}
                   </td>
                   <td style={tdP("right", { fontWeight: 700, color: p.valor > 0 ? "#166534" : "#9ca3af" })}>
                     R$ {p.valor.toFixed(2).replace(".", ",")}
