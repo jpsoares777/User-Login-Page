@@ -676,12 +676,12 @@ function PagamentosContent() {
               );
             })}
             {/* Total row */}
-            <tr style={{ background: "#2563eb" }}>
-              <td colSpan={7} style={{ ...tdP("right"), color: "#fff", fontWeight: 800, fontSize: 13, paddingRight: 12, borderRight: "1px solid #3b82f6", borderBottom: "none", letterSpacing: "0.04em" }}>
+            <tr style={{ background: "#e8edf2" }}>
+              <td colSpan={7} style={{ ...tdP("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
                 TOTAL RECEBIMENTO DO DIA:
               </td>
-              <td style={{ ...tdP("right"), fontWeight: 800, fontSize: 15, color: "#22c55e", borderRight: "1px solid #3b82f6", borderBottom: "none" }}>{fmtR(totalRecebimento)}</td>
-              <td colSpan={7} style={{ ...tdP("center"), borderBottom: "none", borderRight: "none" }} />
+              <td style={tdP("right", { fontWeight: 700, color: "#15803d" })}>{fmtR(totalRecebimento)}</td>
+              <td colSpan={7} style={tdP("center")} />
             </tr>
           </tbody>
         </table>
