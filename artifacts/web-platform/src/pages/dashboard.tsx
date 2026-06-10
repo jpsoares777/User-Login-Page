@@ -834,7 +834,7 @@ function PagamentosEmprestimoModal({
                     )}
                     {p.tipo === "ABONO" && (
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: "#92400e", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 20, padding: "3px 10px" }}>
-                        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#d97706", flexShrink: 0 }}><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#d97706", flexShrink: 0 }}><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8z"/></svg>
                         ABONO
                       </span>
                     )}
