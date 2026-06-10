@@ -1318,7 +1318,7 @@ function ClientesContent() {
   const totalSaldo = clientesRows.reduce((a, r) => a + r.saldo, 0);
 
   const tdC = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    padding: "11px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
     textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
   });
 
