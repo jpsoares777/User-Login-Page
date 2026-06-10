@@ -1301,25 +1301,25 @@ const clientesRows = [
 
 function ClientesContent() {
   const cols = [
-    { label: "Nro.",               w: "4%",  align: "center" as const },
-    { label: "Consecutivo",        w: "9%",  align: "left"   as const },
-    { label: "Nome e Sobrenome",   w: "18%", align: "left"   as const },
-    { label: "Telefones",          w: "11%", align: "left"   as const },
-    { label: "Frequência",         w: "6%",  align: "center" as const },
-    { label: "Valor Venda",        w: "8%",  align: "right"  as const },
-    { label: "Juros % / Total",    w: "10%", align: "center" as const },
-    { label: "Cuotas",             w: "5%",  align: "center" as const },
-    { label: "Atrasadas / Pagas",  w: "12%", align: "center" as const },
-    { label: "Vlr. Cuota",         w: "7%",  align: "right"  as const },
-    { label: "Saldo",              w: "8%",  align: "right"  as const },
+    { label: "#",                  w: 48,   align: "center" as const },
+    { label: "Consecutivo",        w: 130,  align: "left"   as const },
+    { label: "Nome e Sobrenome",   w: 220,  align: "left"   as const },
+    { label: "Telefones",          w: 150,  align: "left"   as const },
+    { label: "Frequência",         w: 90,   align: "center" as const },
+    { label: "Valor Venda",        w: 110,  align: "right"  as const },
+    { label: "Juros / Total",      w: 130,  align: "center" as const },
+    { label: "Cuotas",             w: 70,   align: "center" as const },
+    { label: "Atrasadas / Pagas",  w: 160,  align: "left"   as const },
+    { label: "Vlr. Cuota",         w: 100,  align: "right"  as const },
+    { label: "Saldo",              w: 120,  align: "right"  as const },
   ];
 
   const fmt = (v: number) => `$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   const totalSaldo = clientesRows.reduce((a, r) => a + r.saldo, 0);
 
   const tdC = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
-    textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+    padding: "14px 12px", borderRight: "1px solid #e5e7eb", borderBottom: "2px solid #edf0f4",
+    textAlign: align, fontSize: 13, verticalAlign: "middle", ...extra,
   });
 
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
@@ -1382,15 +1382,15 @@ function ClientesContent() {
 
       {/* Table */}
       <div className="flex-1 overflow-auto">
-        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
+        <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
             <tr>
               {cols.map(c => (
                 <th key={c.label} style={{
-                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  padding: "10px 12px", textAlign: c.align, fontSize: 12, fontWeight: 700,
                   whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
-                  borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
+                  borderRight: "1px solid #4a7fa0", letterSpacing: "0.04em", textTransform: "uppercase",
                   position: "sticky", top: 0, zIndex: 1,
                 }}>{c.label}</th>
               ))}
@@ -1404,48 +1404,74 @@ function ClientesContent() {
                 <tr key={r.id} style={{ cursor: "pointer" }}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
-                  <td style={tdC("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+
+                  {/* # */}
+                  <td style={tdC("center", { color: "#9ca3af", fontWeight: 700, fontSize: 13 })}>{r.id}</td>
+
+                  {/* Consecutivo + status */}
                   <td style={tdC("left")}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                      <span style={{ color: "#2563eb", fontWeight: 700, fontSize: 12 }}>{r.consec}</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "1px 5px", alignSelf: "flex-start" }}>{r.status}</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                      <span style={{ color: "#2563eb", fontWeight: 700, fontSize: 13 }}>{r.consec}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 7px", alignSelf: "flex-start" }}>{r.status}</span>
                     </div>
                   </td>
+
+                  {/* Nome */}
                   <td style={{ ...tdC("left"), whiteSpace: "normal" }}>
-                    <span style={{ color: "#374151", fontWeight: 500, fontSize: 12 }}>{r.nome}</span>
+                    <span style={{ color: "#111827", fontWeight: 600, fontSize: 14, lineHeight: 1.4 }}>{r.nome}</span>
                   </td>
+
+                  {/* Telefones */}
                   <td style={tdC("left")}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                      <span style={{ color: "#374151", fontSize: 11 }}>📞 {r.tel1}</span>
-                      <span style={{ color: "#6b7280", fontSize: 11 }}>📱 {r.tel2}</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                      <span style={{ color: "#374151", fontSize: 12 }}>📞 {r.tel1}</span>
+                      <span style={{ color: "#6b7280", fontSize: 12 }}>📱 {r.tel2}</span>
                     </div>
                   </td>
+
+                  {/* Frequência */}
                   <td style={tdC("center")}>
-                    <span style={{ background: "#f0f9ff", color: "#0369a1", border: "1px solid #bae6fd", fontSize: 11, fontWeight: 600, padding: "2px 7px", borderRadius: 20 }}>
+                    <span style={{ background: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 20, whiteSpace: "nowrap" }}>
                       {r.freq}
                     </span>
                   </td>
-                  <td style={tdC("right", { fontWeight: 700, color: "#374151" })}>{fmt(r.valorVenda)}</td>
+
+                  {/* Valor Venda */}
+                  <td style={tdC("right", { fontWeight: 700, color: "#111827", fontSize: 14 })}>{fmt(r.valorVenda)}</td>
+
+                  {/* Juros / Total */}
                   <td style={tdC("center")}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center" }}>
-                      <span style={{ fontSize: 11, color: "#6b7280" }}>Juros {r.pctJuros}%</span>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#15803d", padding: "1px 7px", borderRadius: 3 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5, alignItems: "center" }}>
+                      <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>Juros {r.pctJuros}%</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#fff", background: "#16a34a", padding: "3px 10px", borderRadius: 4, whiteSpace: "nowrap" }}>
                         Total {fmt(r.total).replace("$ ", "")}
                       </span>
                     </div>
                   </td>
-                  <td style={tdC("center", { color: "#374151" })}>{r.cuotas}</td>
-                  <td style={tdC("center")}>
-                    <div style={{ fontSize: 11, lineHeight: 1.6 }}>
-                      <div style={{ color: r.atrasadas > 0 ? "#b91c1c" : "#6b7280" }}>Atrasadas <strong>{r.atrasadas}</strong></div>
-                      <div style={{ color: "#15803d" }}>Pagas <strong>{r.pagas}</strong></div>
-                      <div style={{ color: "#6b7280" }}>Rest. {r.restantes} <span style={{ fontSize: 10 }}>(Sanc. 0)</span></div>
+
+                  {/* Cuotas */}
+                  <td style={tdC("center", { fontWeight: 700, fontSize: 15, color: "#374151" })}>{r.cuotas}</td>
+
+                  {/* Atrasadas / Pagas */}
+                  <td style={tdC("left")}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <div style={{ fontSize: 12, color: r.atrasadas > 0 ? "#b91c1c" : "#6b7280", fontWeight: r.atrasadas > 0 ? 700 : 400 }}>
+                        Atrasadas: <strong>{r.atrasadas}</strong>
+                      </div>
+                      <div style={{ fontSize: 12, color: "#15803d" }}>Pagas: <strong>{r.pagas}</strong></div>
+                      <div style={{ fontSize: 12, color: "#6b7280" }}>Rest.: {r.restantes} <span style={{ fontSize: 11 }}>(Sanc. 0)</span></div>
                     </div>
                   </td>
-                  <td style={tdC("right", { fontWeight: 600, color: "#374151" })}>{fmt(r.vlrCuota)}</td>
+
+                  {/* Vlr. Cuota */}
+                  <td style={tdC("right", { fontWeight: 700, fontSize: 14, color: "#374151" })}>{fmt(r.vlrCuota)}</td>
+
+                  {/* Saldo */}
                   <td style={tdC("right")}>
-                    <span style={{ fontWeight: 700, color: saldoColor }}>{fmt(r.saldo)}</span>
-                    <div style={{ fontSize: 10, color: "#9ca3af" }}>Sanção ($ 0)</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 3, alignItems: "flex-end" }}>
+                      <span style={{ fontWeight: 800, fontSize: 15, color: saldoColor }}>{fmt(r.saldo)}</span>
+                      <span style={{ fontSize: 11, color: "#9ca3af" }}>Sanção: $ 0,00</span>
+                    </div>
                   </td>
                 </tr>
               );
