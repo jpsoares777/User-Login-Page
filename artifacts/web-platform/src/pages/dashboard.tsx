@@ -1081,7 +1081,7 @@ function EmprestimosNovosContent() {
                 <td style={tdE("center", { color: "#374151" })}>{r.parcelas}</td>
                 <td style={tdE("center")}>
                   <span style={{ color: "#374151" }}>{r.pctJuros}%</span>
-                  <span style={{ color: "#b91c1c", marginLeft: 3 }}>({fmt(r.valorJuros)})</span>
+                  <span style={{ color: "#15803d", marginLeft: 3 }}>({fmt(r.valorJuros)})</span>
                 </td>
                 <td style={tdE("right", { color: "#374151" })}>{fmt(r.valorParcela)}</td>
                 <td style={tdE("center", { color: "#6b7280" })}>{r.dataVenda}</td>
