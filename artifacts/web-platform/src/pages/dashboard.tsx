@@ -816,7 +816,7 @@ function PagamentosEmprestimoModal({
                 <th style={{ ...thP }}>Cliente</th>
                 <th style={{ ...thP, textAlign: "center" }}>Tipo</th>
                 <th style={{ ...thP, textAlign: "right" }}>Valor</th>
-                <th style={{ ...thP, textAlign: "center" }}>Data Empr.</th>
+                <th style={{ ...thP, textAlign: "center" }}>Fecha</th>
                 <th style={{ ...thP }}>Observações</th>
               </tr>
             </thead>
