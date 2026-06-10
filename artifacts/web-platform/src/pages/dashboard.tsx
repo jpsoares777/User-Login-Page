@@ -747,7 +747,116 @@ const emprestimosData = [
 
 type EmpRow = typeof emprestimosData[0];
 
+const pagamentosPorEmprestimo: Record<number, { nro: number; tipo: string; valor: number; data: string; obs: string }[]> = {
+  2: [
+    { nro: 5, tipo: "Não Pago",     valor: 0,   data: "2026-05-25", obs: "Operação Masiva" },
+    { nro: 4, tipo: "Não Pago",     valor: 0,   data: "2026-04-28", obs: "Operação Masiva" },
+    { nro: 3, tipo: "Valor",        valor: 200, data: "2026-04-17", obs: "" },
+    { nro: 2, tipo: "Valor",        valor: 700, data: "2026-04-16", obs: "" },
+    { nro: 1, tipo: "Valor",        valor: 400, data: "2026-04-15", obs: "" },
+  ],
+  1: [
+    { nro: 4, tipo: "Valor",        valor: 180, data: "2026-04-10", obs: "" },
+    { nro: 3, tipo: "Valor",        valor: 180, data: "2026-03-27", obs: "" },
+    { nro: 2, tipo: "Valor",        valor: 240, data: "2026-03-20", obs: "" },
+    { nro: 1, tipo: "Valor",        valor: 240, data: "2026-03-14", obs: "" },
+  ],
+};
+
+function PagamentosEmprestimoModal({
+  nroEmp, cliente, onClose,
+}: { nroEmp: number; cliente: string; onClose: () => void }) {
+  const pagamentos = pagamentosPorEmprestimo[nroEmp] ?? [];
+  const total = pagamentos.filter(p => p.tipo === "Valor").reduce((a, p) => a + p.valor, 0);
+
+  const thP: React.CSSProperties = {
+    padding: "8px 10px", fontSize: 12, fontWeight: 700, color: "#fff",
+    background: "#2563eb", borderRight: "1px solid #3b82f6",
+    whiteSpace: "nowrap", position: "sticky", top: 0,
+  };
+  const tdP = (align: "left"|"center"|"right" = "left", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "8px 10px", fontSize: 13, borderBottom: "1px solid #f0f4f8", textAlign: align, ...extra,
+  });
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 1100, background: "rgba(0,0,0,0.30)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      onClick={onClose}>
+      <div style={{ background: "#fff", borderRadius: 8, width: "min(620px, 92vw)", boxShadow: "0 24px 64px rgba(0,0,0,0.40)", overflow: "hidden" }}
+        onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{ background: "#2d5474", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Histórico de Pagamentos</span>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer" }}>
+            <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#cbd5e1" }}><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
+
+        {/* Client info */}
+        <div style={{ padding: "10px 18px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 8 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#2d5474" }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#b45309" }}>{cliente.toUpperCase()}</span>
+          <span style={{ fontSize: 12, color: "#6b7280", marginLeft: 4 }}>Empréstimo #{nroEmp}</span>
+        </div>
+
+        {/* Table */}
+        <div style={{ maxHeight: 300, overflowY: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+            <colgroup>
+              <col style={{ width: "8%" }} />
+              <col style={{ width: "28%" }} />
+              <col style={{ width: "16%" }} />
+              <col style={{ width: "14%" }} />
+              <col style={{ width: "16%" }} />
+              <col style={{ width: "18%" }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th style={{ ...thP, textAlign: "center" }}>Nro.</th>
+                <th style={{ ...thP }}>Cliente</th>
+                <th style={{ ...thP, textAlign: "center" }}>Tipo</th>
+                <th style={{ ...thP, textAlign: "right" }}>Valor</th>
+                <th style={{ ...thP, textAlign: "center" }}>Fecha</th>
+                <th style={{ ...thP }}>Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pagamentos.map((p, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
+                  <td style={tdP("center", { fontWeight: 700, color: "#374151" })}>{p.nro}</td>
+                  <td style={tdP("left", { color: "#2563eb", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" })}>{cliente.toUpperCase()}</td>
+                  <td style={tdP("center")}>
+                    {p.tipo === "Não Pago"
+                      ? <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#dc2626", borderRadius: 4, padding: "2px 8px" }}>Não Pago</span>
+                      : <span style={{ fontSize: 11, fontWeight: 700, color: "#1d4ed8", background: "#dbeafe", border: "1px solid #93c5fd", borderRadius: 4, padding: "2px 8px" }}>Valor</span>
+                    }
+                  </td>
+                  <td style={tdP("right", { fontWeight: 700, color: p.valor > 0 ? "#166534" : "#9ca3af" })}>
+                    R$ {p.valor.toFixed(2).replace(".", ",")}
+                  </td>
+                  <td style={tdP("center", { color: "#4b5563" })}>{p.data}</td>
+                  <td style={tdP("left", { color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" })}>{p.obs}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding: "10px 18px", borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>
+            TOTAL PAGOS: <span style={{ color: "#166534" }}>R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+          </span>
+          <button onClick={onClose} style={{ padding: "6px 22px", background: "#64748b", color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>Cancelar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => void }) {
+  const [selectedHistRow, setSelectedHistRow] = useState<number | null>(null);
+
   const hist = [
     { nro: 2, data: "2026-04-08", estado: "Quitado",          parcelas: 20, parcPagas: 12.4, parcFalt: 7.6, sancao: 0, valorEmpr: 2100, vrParc: 105, freq: "Diário", visitas: 5,  pctJuros: 40 },
     { nro: 1, data: "2026-03-14", estado: "Quitado",          parcelas: 14, parcPagas: 14,   parcFalt: 0,   sancao: 0, valorEmpr: 840,  vrParc: 60,  freq: "Diário", visitas: 8,  pctJuros: 40 },
@@ -821,7 +930,12 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
             </thead>
             <tbody>
               {hist.map((h, i) => (
-                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
+                <tr key={i}
+                  onClick={() => setSelectedHistRow(h.nro)}
+                  style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc", cursor: "pointer" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
+                  onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f8fafc")}
+                >
                   <td style={tdS("center", { fontWeight: 700, color: "#2563eb" })}>{h.nro}</td>
                   <td style={tdS("center", { color: "#4b5563" })}>{h.data}</td>
                   <td style={tdS("left")}>
@@ -853,6 +967,14 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
           <button onClick={onClose} style={{ padding: "6px 22px", background: "#64748b", color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>Cancelar</button>
         </div>
       </div>
+
+      {selectedHistRow !== null && (
+        <PagamentosEmprestimoModal
+          nroEmp={selectedHistRow}
+          cliente={row.cliente}
+          onClose={() => setSelectedHistRow(null)}
+        />
+      )}
     </div>
   );
 }
