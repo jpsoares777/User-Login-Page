@@ -1398,7 +1398,7 @@ function ClientesContent() {
           </thead>
           <tbody>
             {clientesRows.map((r, i) => {
-              const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
+              const rowBg = i % 2 === 0 ? "#ffffff" : "#dce6f0";
               const saldoColor = r.atrasadas === 0 ? "#15803d" : r.atrasadas >= 5 ? "#b91c1c" : "#d97706";
               return (
                 <tr key={r.id} style={{ cursor: "pointer" }}
