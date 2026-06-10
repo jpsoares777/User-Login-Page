@@ -1018,7 +1018,7 @@ function EmprestimosNovosContent() {
   ];
 
   const totalValorProd = emprestimosData.reduce((a, r) => a + r.valorProd, 0);
-  const totalSaldo = emprestimosData.reduce((a, r) => a + r.saldo, 0);
+  const totalJuros = emprestimosData.reduce((a, r) => a + r.valorJuros, 0);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -1095,8 +1095,9 @@ function EmprestimosNovosContent() {
                 TOTAL EMPRÉSTIMOS DO DIA:
               </td>
               <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>$ {fmt(totalValorProd)}</td>
-              <td colSpan={5} style={tdE("center")} />
-              <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>{fmt(totalSaldo)}</td>
+              <td style={tdE("center")} />
+              <td style={tdE("center", { fontWeight: 700, color: "#b91c1c" })}>({fmt(totalJuros)})</td>
+              <td colSpan={4} style={tdE("center")} />
             </tr>
           </tbody>
         </table>
