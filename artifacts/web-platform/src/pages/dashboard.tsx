@@ -620,8 +620,8 @@ function PagamentosContent() {
               {cols.map(c => (
                 <th key={c.label} style={{
                   padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
-                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2563eb",
-                  borderRight: "1px solid #3b82f6", letterSpacing: "0.02em",
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2d5474",
+                  borderRight: "1px solid #3a6a8f", letterSpacing: "0.02em",
                   position: "sticky", top: 0, zIndex: 1,
                 }}>{c.label}</th>
               ))}
@@ -737,7 +737,7 @@ function PagamentosEmprestimoModal({
 
   const thP: React.CSSProperties = {
     padding: "8px 10px", fontSize: 12, fontWeight: 700, color: "#fff",
-    background: "#2563eb", borderRight: "1px solid #3b82f6",
+    background: "#2d5474", borderRight: "1px solid #3a6a8f",
     whiteSpace: "nowrap", position: "sticky", top: 0,
   };
   const tdP = (align: "left"|"center"|"right" = "left", extra?: React.CSSProperties): React.CSSProperties => ({
@@ -846,7 +846,7 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
 
   const thS: React.CSSProperties = {
     padding: "8px 10px", fontSize: 12, fontWeight: 700, color: "#fff",
-    background: "#2563eb", borderRight: "1px solid #3b82f6",
+    background: "#2d5474", borderRight: "1px solid #3a6a8f",
     whiteSpace: "nowrap", position: "sticky", top: 0,
   };
   const tdS = (align: "left"|"center"|"right" = "left", extra?: React.CSSProperties): React.CSSProperties => ({
@@ -1008,8 +1008,8 @@ function EmprestimosNovosContent() {
               {cols.map((c) => (
                 <th key={c.label} style={{
                   padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
-                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2563eb",
-                  borderRight: "1px solid #3b82f6", letterSpacing: "0.02em",
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2d5474",
+                  borderRight: "1px solid #3a6a8f", letterSpacing: "0.02em",
                   position: "sticky", top: 0, zIndex: 1,
                 }}>{c.label}</th>
               ))}
@@ -1137,8 +1137,8 @@ function DespesasContent() {
               {cols.map((c) => (
                 <th key={c.label} style={{
                   padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
-                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2563eb",
-                  borderRight: "1px solid #3b82f6", letterSpacing: "0.02em",
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2d5474",
+                  borderRight: "1px solid #3a6a8f", letterSpacing: "0.02em",
                   position: "sticky", top: 0, zIndex: 1,
                 }}>{c.label}</th>
               ))}
@@ -1241,8 +1241,8 @@ function RendimentosContent() {
               {cols.map((c) => (
                 <th key={c.label} style={{
                   padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
-                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2563eb",
-                  borderRight: "1px solid #3b82f6", letterSpacing: "0.02em",
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#2d5474",
+                  borderRight: "1px solid #3a6a8f", letterSpacing: "0.02em",
                   position: "sticky", top: 0, zIndex: 1,
                 }}>{c.label}</th>
               ))}
