@@ -750,7 +750,7 @@ type EmpRow = typeof emprestimosData[0];
 function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => void }) {
   const hist = [
     { nro: 2, data: "2026-04-08", estado: "Sem Verificação", parcelas: 20, parcPagas: 12.4, parcFalt: 7.6, sancao: 0, valorEmpr: 2100, vrParc: 105, freq: "Diário", visitas: 5,  pctJuros: 40 },
-    { nro: 1, data: "2026-03-14", estado: "Sem Verificação", parcelas: 14, parcPagas: 14,   parcFalt: 0,   sancao: 0, valorEmpr: 840,  vrParc: 60,  freq: "Diário", visitas: 8,  pctJuros: 40 },
+    { nro: 1, data: "2026-03-14", estado: "Quitado",          parcelas: 14, parcPagas: 14,   parcFalt: 0,   sancao: 0, valorEmpr: 840,  vrParc: 60,  freq: "Diário", visitas: 8,  pctJuros: 40 },
   ];
 
   const totalEmpr = hist.reduce((a, h) => a + h.valorEmpr, 0);
@@ -825,7 +825,10 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
                   <td style={tdS("center", { fontWeight: 700, color: "#2563eb" })}>{h.nro}</td>
                   <td style={tdS("center", { color: "#4b5563" })}>{h.data}</td>
                   <td style={tdS("left")}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#92400e", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 4, padding: "2px 7px" }}>{h.estado}</span>
+                    {h.estado === "Quitado"
+                      ? <span style={{ fontSize: 11, fontWeight: 700, color: "#166534", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 7px" }}>Quitado</span>
+                      : <span style={{ fontSize: 11, fontWeight: 700, color: "#92400e", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 4, padding: "2px 7px" }}>{h.estado}</span>
+                    }
                   </td>
                   <td style={tdS("center", { color: "#374151", fontWeight: 600 })}>{h.parcelas}</td>
                   <td style={tdS("center", { color: "#374151" })}>{h.parcPagas}</td>
