@@ -929,7 +929,7 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
             <thead>
               <tr>
                 <th style={{ ...thS, textAlign: "center" }}>Nro.</th>
-                <th style={{ ...thS, textAlign: "center" }}>Data Venda</th>
+                <th style={{ ...thS, textAlign: "center" }}>Data Empr.</th>
                 <th style={{ ...thS }}>Estado</th>
                 <th style={{ ...thS, textAlign: "center" }}>Parc.</th>
                 <th style={{ ...thS, textAlign: "center" }}>Pagas</th>
