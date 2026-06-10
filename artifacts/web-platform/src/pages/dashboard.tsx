@@ -542,7 +542,10 @@ function PagamentosContent() {
     { label: "Frequência",       w: "6%",  align: "center" as const },
   ];
 
-  const totalRecebimento = pagamentosData.reduce((a, r) => a + parseFloat(r.valor), 0);
+  const parseVal = (s: string) => parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
+  const totalRecebimento = pagamentosData.reduce((a, r) => a + parseVal(r.valor), 0);
+  const totalEsperado = pagamentosData.reduce((a, r) => a + parseVal(r.valorProd), 0);
+  const taxaPct = totalEsperado > 0 ? (totalRecebimento / totalEsperado) * 100 : 0;
   const fmtR = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
@@ -680,7 +683,12 @@ function PagamentosContent() {
               <td colSpan={7} style={{ ...tdP("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
                 TOTAL RECEBIMENTO DO DIA:
               </td>
-              <td style={tdP("right", { fontWeight: 700, color: "#15803d" })}>{fmtR(totalRecebimento)}</td>
+              <td style={tdP("right", { fontWeight: 700, color: "#15803d" })}>
+                {fmtR(totalRecebimento)}
+                <span style={{ marginLeft: 6, fontSize: 11, color: "#6b7280", fontWeight: 600 }}>
+                  ({taxaPct.toFixed(1)}%)
+                </span>
+              </td>
               <td colSpan={7} style={tdP("center")} />
             </tr>
           </tbody>
