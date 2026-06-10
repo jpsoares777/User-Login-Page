@@ -1111,8 +1111,8 @@ function EmprestimosNovosContent() {
         </div>
         <div className="w-px h-5 bg-blue-400" />
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-white uppercase tracking-widest">Saldo Total</span>
-          <span className="text-base font-bold text-blue-200">$ {fmt(totalSaldo)}</span>
+          <span className="text-xs font-bold text-white uppercase tracking-widest">Total Juros</span>
+          <span className="text-base font-bold text-blue-200">({fmt(totalJuros)})</span>
         </div>
         <div className="w-px h-5 bg-blue-400" />
         <div className="flex items-center gap-2">
