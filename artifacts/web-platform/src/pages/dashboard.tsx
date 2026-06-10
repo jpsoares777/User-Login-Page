@@ -1096,7 +1096,7 @@ function EmprestimosNovosContent() {
               </td>
               <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>$ {fmt(totalValorProd)}</td>
               <td style={tdE("center")} />
-              <td style={tdE("center", { fontWeight: 700, color: "#b91c1c" })}>({fmt(totalJuros)})</td>
+              <td style={tdE("center", { fontWeight: 700, color: "#15803d" })}>({fmt(totalJuros)})</td>
               <td colSpan={4} style={tdE("center")} />
             </tr>
           </tbody>
