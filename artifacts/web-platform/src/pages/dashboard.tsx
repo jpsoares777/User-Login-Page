@@ -1200,20 +1200,18 @@ function DespesasContent() {
                 </tr>
               );
             })}
+            <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
+              <td colSpan={3} style={{ ...tdD("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
+                TOTAL DE DESPESAS DO DIA:
+              </td>
+              <td style={tdD("right", { fontWeight: 700, color: "#b91c1c" })}>{fmt(total)}</td>
+              <td colSpan={4} style={tdD("center")} />
+            </tr>
           </tbody>
         </table>
       </div>
 
-      <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-white uppercase tracking-widest">Total de Despesas</span>
-          <span className="text-base font-bold text-blue-200">{fmt(total)}</span>
-        </div>
-        <div className="w-px h-5 bg-blue-400" />
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-white uppercase tracking-widest">Registros</span>
-          <span className="text-base font-bold text-white">{despesasData.length}</span>
-        </div>
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
         <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-05-25</div>
       </div>
     </div>
@@ -1306,20 +1304,18 @@ function RendimentosContent() {
                 </tr>
               );
             })}
+            <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
+              <td colSpan={3} style={{ ...tdR("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
+                TOTAL DE INGRESSOS DO DIA:
+              </td>
+              <td style={tdR("right", { fontWeight: 700, color: "#15803d" })}>{fmt(total)}</td>
+              <td colSpan={4} style={tdR("center")} />
+            </tr>
           </tbody>
         </table>
       </div>
 
-      <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-white uppercase tracking-widest">Total de Ingressos</span>
-          <span className="text-base font-bold text-blue-200">{fmt(total)}</span>
-        </div>
-        <div className="w-px h-5 bg-blue-400" />
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-white uppercase tracking-widest">Registros</span>
-          <span className="text-base font-bold text-white">{rendimentosData.length}</span>
-        </div>
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
         <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-05-25</div>
       </div>
     </div>
