@@ -1012,7 +1012,7 @@ function EmprestimosNovosContent() {
     { label: "Parcelas",      w: "6%",  align: "center" as const },
     { label: "% Juros",       w: "9%",  align: "center" as const },
     { label: "Valor Parcela", w: "8%",  align: "right"  as const },
-    { label: "Data de Venda", w: "12%", align: "center" as const },
+    { label: "Data Empr.",    w: "12%", align: "center" as const },
     { label: "Parc. Rest.",   w: "7%",  align: "center" as const },
     { label: "Saldo",         w: "7%",  align: "right"  as const },
   ];
