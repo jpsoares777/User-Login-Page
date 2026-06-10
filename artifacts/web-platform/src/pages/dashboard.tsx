@@ -695,7 +695,7 @@ function PagamentosContent() {
       </div>
 
       {/* ── Footer ── */}
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2d5474" }}>
         <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-05-25</div>
       </div>
 
@@ -1070,7 +1070,7 @@ function EmprestimosNovosContent() {
       </div>
 
       {/* Footer */}
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2d5474" }}>
         <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-03-30</div>
       </div>
       {selectedEmp && <HistorialVendasModal row={selectedEmp} onClose={() => setSelectedEmp(null)} />}
@@ -1177,7 +1177,7 @@ function DespesasContent() {
         </table>
       </div>
 
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2d5474" }}>
         <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-05-25</div>
       </div>
     </div>
@@ -1281,7 +1281,7 @@ function RendimentosContent() {
         </table>
       </div>
 
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#2d5474" }}>
         <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-05-25</div>
       </div>
     </div>
