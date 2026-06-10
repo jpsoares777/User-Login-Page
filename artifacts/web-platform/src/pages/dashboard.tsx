@@ -1306,7 +1306,7 @@ function RendimentosContent() {
             })}
             <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
               <td colSpan={3} style={{ ...tdR("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
-                TOTAL DE INGRESSOS DO DIA:
+                TOTAL DE RENDIMENTOS DO DIA:
               </td>
               <td style={tdR("right", { fontWeight: 700, color: "#15803d" })}>{fmt(total)}</td>
               <td colSpan={4} style={tdR("center")} />
