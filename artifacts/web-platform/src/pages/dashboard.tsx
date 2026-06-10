@@ -1107,17 +1107,17 @@ function EmprestimosNovosContent() {
       <div className="shrink-0 flex items-center gap-6 px-4 py-2.5 border-t" style={{ background: "#2563eb" }}>
         <div className="flex items-center gap-2">
           <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#000" }}>Total Empréstimos do Dia</span>
-          <span className="text-base font-bold" style={{color:"#86efac"}}>$ {fmt(totalValorProd)}</span>
+          <span className="text-base font-bold" style={{color:"#22c55e"}}>$ {fmt(totalValorProd)}</span>
         </div>
         <div className="w-px h-5 bg-blue-400" />
         <div className="flex items-center gap-2">
           <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#000" }}>Total Juros</span>
-          <span className="text-base font-bold" style={{color:"#86efac"}}>({fmt(totalJuros)})</span>
+          <span className="text-base font-bold" style={{color:"#22c55e"}}>({fmt(totalJuros)})</span>
         </div>
         <div className="w-px h-5 bg-blue-400" />
         <div className="flex items-center gap-2">
           <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#000" }}>Registros</span>
-          <span className="text-base font-bold" style={{color:"#86efac"}}>{emprestimosData.length}</span>
+          <span className="text-base font-bold" style={{color:"#22c55e"}}>{emprestimosData.length}</span>
         </div>
         <div className="ml-auto text-xs text-blue-200">DATA DE REFERÊNCIA: 2026-03-30</div>
       </div>
