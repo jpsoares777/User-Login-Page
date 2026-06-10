@@ -1436,7 +1436,7 @@ function ClientesContent() {
                   <td style={tdC("center")}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center" }}>
                       <span style={{ fontSize: 11, color: "#6b7280" }}>Juros {r.pctJuros}%</span>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#16a34a", padding: "1px 7px", borderRadius: 3, whiteSpace: "nowrap" }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", whiteSpace: "nowrap" }}>
                         Total {fmt(r.total).replace("$ ", "")}
                       </span>
                     </div>
