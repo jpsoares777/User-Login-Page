@@ -665,7 +665,6 @@ function PagamentosContent() {
                   <td style={tdP("center", { color: "#6b7280" })}>{r.hora}</td>
                   <td style={tdP("left")}>
                     <span style={{ fontWeight: 600, color: "#111827" }}>R$ {r.valorProd}</span>
-                    <span style={{ color: "#9ca3af", fontSize: 11, marginLeft: 4 }}>Sanção ({r.sancao})</span>
                   </td>
                   <td style={tdP("right", { fontWeight: 700, color: "#059669" })}>R$ {r.saldo}</td>
                   <td style={tdP("center")}>{r.restantes}</td>
