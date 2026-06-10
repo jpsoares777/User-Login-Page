@@ -1415,7 +1415,7 @@ function ClientesContent() {
                   </td>
 
                   <td style={{ ...tdC("left"), whiteSpace: "normal" }}>
-                    <span style={{ color: "#111827", fontWeight: 600, fontSize: 13 }}>{r.nome}</span>
+                    <span style={{ fontWeight: 600, fontSize: 13, color: r.atrasadas === 0 ? "#15803d" : r.atrasadas >= 5 ? "#b91c1c" : "#b45309" }}>{r.nome}</span>
                   </td>
 
                   <td style={tdC("left")}>
