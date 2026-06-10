@@ -1285,6 +1285,189 @@ function RendimentosContent() {
   );
 }
 
+// ── Clientes data ─────────────────────────────────────────────────────────────
+const clientesRows = [
+  { id:1,  consec:"4700627026", status:"ACTIVO", nome:"Andreia de Jesus Costa Araújo",   tel1:"91633427315",  tel2:"98985014328",  freq:"Diário", valorVenda:1500.00, pctJuros:40, total:2100.00, cuotas:20, atrasadas:0,  pagas:12, restantes:8,  vlrCuota:105, saldo:800.00  },
+  { id:2,  consec:"4700627080", status:"ACTIVO", nome:"Luciana Alves Da Silva",           tel1:"559988345767", tel2:"03270213301",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:14, pagas:0,  restantes:14, vlrCuota:50,  saldo:700.00  },
+  { id:3,  consec:"4700627079", status:"ACTIVO", nome:"Ana Paula Marques De Oliveira",    tel1:"989896248424", tel2:"85259284372",  freq:"Diário", valorVenda:500.00,  pctJuros:20, total:600.00,  cuotas:20, atrasadas:0,  pagas:0,  restantes:20, vlrCuota:30,  saldo:600.00  },
+  { id:4,  consec:"4700627078", status:"ACTIVO", nome:"Mariana Beatriz Rabelo Barbosa",   tel1:"98985721207",  tel2:"985721297",    freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:4,  pagas:0,  restantes:14, vlrCuota:100, saldo:1400.00 },
+  { id:5,  consec:"4700627077", status:"ACTIVO", nome:"Natanael Dos Santos Mendes",       tel1:"5511971269742",tel2:"11971269742",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:13, pagas:1,  restantes:13, vlrCuota:50,  saldo:650.00  },
+  { id:6,  consec:"4700627058", status:"ACTIVO", nome:"Aline Lima De Alencar",            tel1:"98985678901",  tel2:"98985678902",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:1,  restantes:13, vlrCuota:80,  saldo:1040.00 },
+  { id:7,  consec:"4700627145", status:"ACTIVO", nome:"Bores Viana De Souza",             tel1:"98984321100",  tel2:"98984321101",  freq:"Diário", valorVenda:560.00,  pctJuros:40, total:784.00,  cuotas:14, atrasadas:2,  pagas:0,  restantes:12, vlrCuota:40,  saldo:480.00  },
+  { id:8,  consec:"4700627024", status:"ACTIVO", nome:"Anny Briane Pires Belfort",        tel1:"98987654321",  tel2:"98987654322",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:11, restantes:3,  vlrCuota:80,  saldo:210.00  },
+  { id:9,  consec:"4700627090", status:"ACTIVO", nome:"Daniele Texeira Lindoso",          tel1:"559899687036", tel2:"99687036",     freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:5,  pagas:5,  restantes:9,  vlrCuota:100, saldo:900.00  },
+  { id:10, consec:"4700627023", status:"ACTIVO", nome:"Elaira Kisley Conceição Lopes",    tel1:"98986543210",  tel2:"98986543211",  freq:"Diário", valorVenda:540.00,  pctJuros:40, total:756.00,  cuotas:14, atrasadas:9,  pagas:0,  restantes:9,  vlrCuota:54,  saldo:540.00  },
+];
+
+function ClientesContent() {
+  const cols = [
+    { label: "Nro.",               w: "4%",  align: "center" as const },
+    { label: "Consecutivo",        w: "9%",  align: "left"   as const },
+    { label: "Nome e Sobrenome",   w: "18%", align: "left"   as const },
+    { label: "Telefones",          w: "11%", align: "left"   as const },
+    { label: "Frequência",         w: "6%",  align: "center" as const },
+    { label: "Valor Venda",        w: "8%",  align: "right"  as const },
+    { label: "Juros % / Total",    w: "10%", align: "center" as const },
+    { label: "Cuotas",             w: "5%",  align: "center" as const },
+    { label: "Atrasadas / Pagas",  w: "12%", align: "center" as const },
+    { label: "Vlr. Cuota",         w: "7%",  align: "right"  as const },
+    { label: "Saldo",              w: "8%",  align: "right"  as const },
+  ];
+
+  const fmt = (v: number) => `$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  const totalSaldo = clientesRows.reduce((a, r) => a + r.saldo, 0);
+
+  const tdC = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+  });
+
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+
+      {/* Filter bar */}
+      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Consecutivo</label>
+          <input placeholder="Ex: 4700627026" className={`${inputCls} w-32`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Nome</label>
+          <input placeholder="Nome do cliente" className={`${inputCls} w-36`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Sobrenome</label>
+          <input placeholder="Sobrenome" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Documento</label>
+          <input placeholder="CPF / RG" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Estado</label>
+          <select className={`${inputCls} w-32`}>
+            <option value="">-- Todos --</option>
+            <option>ACTIVO</option>
+            <option>INACTIVO</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Frequência</label>
+          <select className={`${inputCls} w-28`}>
+            <option value="">-- Todas --</option>
+            <option>Diário</option>
+            <option>Semanal</option>
+            <option>Quinzenal</option>
+          </select>
+        </div>
+        <div className="flex gap-1.5 pb-0.5">
+          <button className="h-7 px-3 rounded text-xs font-semibold border border-gray-300 text-gray-600 bg-white hover:bg-gray-50">Limpar</button>
+          <button className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90" style={{ background: "#2563eb" }}>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            Buscar
+          </button>
+        </div>
+        <div className="flex-1" />
+        <span className="text-xs text-gray-400 font-medium pb-0.5">DATA DE REFERÊNCIA: 2026-05-25</span>
+      </div>
+
+      {/* Count bar */}
+      <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs text-gray-500">
+          <span className="font-bold text-gray-800">{clientesRows.length}</span> registros encontrados
+        </span>
+      </div>
+
+      {/* Table */}
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>
+              {cols.map(c => (
+                <th key={c.label} style={{
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
+                  borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
+                  position: "sticky", top: 0, zIndex: 1,
+                }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {clientesRows.map((r, i) => {
+              const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
+              const saldoColor = r.atrasadas === 0 ? "#15803d" : r.atrasadas >= 5 ? "#b91c1c" : "#d97706";
+              return (
+                <tr key={r.id} style={{ cursor: "pointer" }}
+                  onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
+                  onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
+                  <td style={tdC("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdC("left")}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      <span style={{ color: "#2563eb", fontWeight: 700, fontSize: 12 }}>{r.consec}</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "1px 5px", alignSelf: "flex-start" }}>{r.status}</span>
+                    </div>
+                  </td>
+                  <td style={{ ...tdC("left"), whiteSpace: "normal" }}>
+                    <span style={{ color: "#374151", fontWeight: 500, fontSize: 12 }}>{r.nome}</span>
+                  </td>
+                  <td style={tdC("left")}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      <span style={{ color: "#374151", fontSize: 11 }}>📞 {r.tel1}</span>
+                      <span style={{ color: "#6b7280", fontSize: 11 }}>📱 {r.tel2}</span>
+                    </div>
+                  </td>
+                  <td style={tdC("center")}>
+                    <span style={{ background: "#f0f9ff", color: "#0369a1", border: "1px solid #bae6fd", fontSize: 11, fontWeight: 600, padding: "2px 7px", borderRadius: 20 }}>
+                      {r.freq}
+                    </span>
+                  </td>
+                  <td style={tdC("right", { fontWeight: 700, color: "#374151" })}>{fmt(r.valorVenda)}</td>
+                  <td style={tdC("center")}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center" }}>
+                      <span style={{ fontSize: 11, color: "#6b7280" }}>Juros {r.pctJuros}%</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#15803d", padding: "1px 7px", borderRadius: 3 }}>
+                        Total {fmt(r.total).replace("$ ", "")}
+                      </span>
+                    </div>
+                  </td>
+                  <td style={tdC("center", { color: "#374151" })}>{r.cuotas}</td>
+                  <td style={tdC("center")}>
+                    <div style={{ fontSize: 11, lineHeight: 1.6 }}>
+                      <div style={{ color: r.atrasadas > 0 ? "#b91c1c" : "#6b7280" }}>Atrasadas <strong>{r.atrasadas}</strong></div>
+                      <div style={{ color: "#15803d" }}>Pagas <strong>{r.pagas}</strong></div>
+                      <div style={{ color: "#6b7280" }}>Rest. {r.restantes} <span style={{ fontSize: 10 }}>(Sanc. 0)</span></div>
+                    </div>
+                  </td>
+                  <td style={tdC("right", { fontWeight: 600, color: "#374151" })}>{fmt(r.vlrCuota)}</td>
+                  <td style={tdC("right")}>
+                    <span style={{ fontWeight: 700, color: saldoColor }}>{fmt(r.saldo)}</span>
+                    <div style={{ fontSize: 10, color: "#9ca3af" }}>Sanção ($ 0)</div>
+                  </td>
+                </tr>
+              );
+            })}
+            {/* Total row */}
+            <tr style={{ background: "#e8edf2" }}>
+              <td colSpan={10} style={{ ...tdC("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
+                TOTAL CLIENTES:
+              </td>
+              <td style={tdC("right", { fontWeight: 700, color: "#15803d" })}>{fmt(totalSaldo)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* Footer */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }}>
+      </div>
+    </div>
+  );
+}
+
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
@@ -1298,6 +1481,7 @@ export default function DashboardPage() {
   const showEmprestimos = activeMain === "Liq. Diária" && activeSub === "Novos Empréstimos";
   const showDespesas = activeMain === "Liq. Diária" && activeSub === "Despesas";
   const showRendimentos = activeMain === "Liq. Diária" && activeSub === "Rendimentos";
+  const showClientes = activeMain === "Liq. Diária" && activeSub === "Clientes";
 
   useEffect(() => {
     const vp = document.getElementById("vp") as HTMLMetaElement | null;
@@ -1354,7 +1538,7 @@ export default function DashboardPage() {
       )}
 
       {/* ── FILTER BAR (hidden on Desempenho and Pagamentos) ── */}
-      {!isDesempenho && !showPagamentos && !showEmprestimos && !showDespesas && !showRendimentos && (
+      {!isDesempenho && !showPagamentos && !showEmprestimos && !showDespesas && !showRendimentos && !showClientes && (
         <div className="flex items-center h-11 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
@@ -1388,6 +1572,8 @@ export default function DashboardPage() {
           <DespesasContent />
         ) : showRendimentos ? (
           <RendimentosContent />
+        ) : showClientes ? (
+          <ClientesContent />
         ) : showContent ? (
           <>
             {/* LEFT: Tree */}
