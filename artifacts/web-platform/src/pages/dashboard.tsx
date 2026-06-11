@@ -1630,7 +1630,6 @@ function RelatóriosContent() {
         <Card icon={PERCENT} title="RELATÓRIO POR JUROS">
           <span style={lblStyle}>Informe o Juros %</span>
           <input type="number" placeholder="0,00" min="0" step="0.01" style={inpStyle} />
-          <Sel opts={juro} />
         </Card>
 
         <Card icon={CARD} title="CLIENTES VENCIDOS / A VENCER">
