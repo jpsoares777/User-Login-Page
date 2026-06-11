@@ -2879,11 +2879,6 @@ const resumoRow = {
 };
 
 function ResumoContent() {
-  const [fechaIni, setFechaIni] = useState("2026-03-06");
-  const [fechaFin, setFechaFin] = useState("2026-06-11");
-  const [buscar,   setBuscar]   = useState("");
-
-  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
   const fmt = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 
   const cols: { label: string; key: keyof typeof resumoRow; align: "left"|"center"|"right" }[] = [
@@ -2916,33 +2911,6 @@ function ResumoContent() {
     return v as string;
   };
 
-  // ── Exports ────────────────────────────────────────────────────────────────
-  const buildCsv = () => {
-    const hdr  = cols.map(c => c.label).join(",");
-    const data = cols.map(c => cellVal(c.key)).join(",");
-    const tot  = ["ZZ_TOTAL", ...cols.slice(1).map(c => cellVal(c.key, true))].join(",");
-    return [hdr, data, tot].join("\n");
-  };
-
-  const download = (ext: string) => {
-    const blob = new Blob([buildCsv()], { type: "text/csv;charset=utf-8;" });
-    const url  = URL.createObjectURL(blob);
-    const a    = Object.assign(document.createElement("a"), { href: url, download: `resumo_${fechaIni}_${fechaFin}.${ext}` });
-    a.click(); URL.revokeObjectURL(url);
-  };
-
-  const whatsApp = () => {
-    const txt = [
-      `*RESUMO DO PERÍODO: ${fechaIni} a ${fechaFin}*`,
-      `Vendedor: ${resumoRow.vendedor}`,
-      `Clientes: ${resumoRow.nClientes} | Cierres: ${resumoRow.nCierres}`,
-      `Recaudo: $ ${fmt(resumoRow.recaudo)} | Pretendido: $ ${fmt(resumoRow.recaudoPretendido)}`,
-      `Total Ventas: $ ${fmt(resumoRow.totalVentas)} | Juros: $ ${fmt(resumoRow.totalInt)}`,
-      `Retiros: $ ${fmt(resumoRow.retiros)} | Egresos: $ ${fmt(resumoRow.egresos)} | Ingresos: $ ${fmt(resumoRow.ingresos)}`,
-      `Caja Final: $ ${fmt(resumoRow.cajaFinal)}`,
-    ].join("\n");
-    window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, "_blank");
-  };
 
   const thS: React.CSSProperties = {
     padding: "7px 8px", fontSize: 13, fontWeight: 700, color: "#e2e8f0",
@@ -2959,47 +2927,6 @@ function ResumoContent() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
 
-      {/* ── Barra de filtros ── */}
-      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data Inicial</label>
-          <input type="date" value={fechaIni} onChange={e => setFechaIni(e.target.value)} className={`${inputCls} w-36`} />
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data Final</label>
-          <input type="date" value={fechaFin} onChange={e => setFechaFin(e.target.value)} className={`${inputCls} w-36`} />
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Vendedor</label>
-          <input value={buscar} onChange={e => setBuscar(e.target.value)} placeholder="Buscar vendedor…" className={`${inputCls} w-44`} />
-        </div>
-        <button className="h-7 px-4 rounded text-xs font-bold text-white" style={{ background: "#2563eb", border: "none", cursor: "pointer", alignSelf: "flex-end" }}>
-          🔍 Pesquisar
-        </button>
-
-        <div className="flex-1" />
-
-        {/* ── Botões de exportação ── */}
-        <div className="flex items-end gap-1.5">
-          {([
-            { label: "Imprimir", icon: "🖨️", fn: () => window.print(),        bg: "#64748b" },
-            { label: "Excel",    icon: "📊", fn: () => download("xls"),        bg: "#16a34a" },
-            { label: "CSV",      icon: "📋", fn: () => download("csv"),        bg: "#0284c7" },
-            { label: "PDF",      icon: "📄", fn: () => window.print(),         bg: "#dc2626" },
-            { label: "WhatsApp", icon: "💬", fn: whatsApp,                     bg: "#25d366" },
-          ] as { label: string; icon: string; fn: () => void; bg: string }[]).map(b => (
-            <button key={b.label} onClick={b.fn}
-              style={{ height: 28, padding: "0 10px", background: b.bg, border: "none", borderRadius: 5, fontSize: 11, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
-              <span style={{ fontSize: 13 }}>{b.icon}</span>{b.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Contador ── */}
-      <div className="shrink-0 px-3 py-1" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb" }}>
-        <span className="text-xs text-gray-500">1 registro encontrado</span>
-      </div>
 
       {/* ── Tabela ── */}
       <div className="flex-1 overflow-auto">
