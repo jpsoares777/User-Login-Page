@@ -1439,16 +1439,14 @@ function AgendadosContent() {
                 </tr>
               );
             })}
-          </tbody>
-          {filtered.length > 0 && (
-            <tfoot>
-              <tr>
-                <td colSpan={cols.length} style={{ padding: "6px 10px", background: "#3d6e8e", color: "#e2e8f0", fontSize: 12, fontWeight: 700, textAlign: "right", borderTop: "2px solid #2d5474" }}>
-                  {filtered.length} agendamento{filtered.length !== 1 ? "s" : ""}
+            {filtered.length > 0 && (
+              <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
+                <td colSpan={cols.length} style={{ padding: "6px 10px", color: "#374151", fontWeight: 700, fontSize: 12, textAlign: "right", borderTop: "1px solid #d1d5db" }}>
+                  TOTAL DE AGENDAMENTOS: {filtered.length}
                 </td>
               </tr>
-            </tfoot>
-          )}
+            )}
+          </tbody>
         </table>
       </div>
 
