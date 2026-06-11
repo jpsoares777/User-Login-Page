@@ -2671,8 +2671,8 @@ function LiqPeriodosClientesContent() {
   ];
 
   const tdC = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
-    fontSize: 13, textAlign: align, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", ...extra,
+    padding: "7px 9px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    fontSize: 14, textAlign: align, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", ...extra,
   });
 
   return (
@@ -2743,7 +2743,7 @@ function LiqPeriodosClientesContent() {
             <tr>
               {cols.map(c => (
                 <th key={c.label} style={{
-                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  padding: "8px 9px", textAlign: c.align, fontSize: 14, fontWeight: 700,
                   color: "#e2e8f0", background: "#3d6e8e", borderRight: "1px solid #4a7fa0",
                   letterSpacing: "0.02em", position: "sticky", top: 0, zIndex: 1, whiteSpace: "nowrap",
                 }}>{c.label}</th>
@@ -2759,20 +2759,20 @@ function LiqPeriodosClientesContent() {
                 <tr key={r.id} style={{ background: rowBg, cursor: "pointer" }}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
-                  <td style={tdC("left", { color: "#374151", fontSize: 12 })}>{r.id}. {r.vendedor}</td>
+                  <td style={tdC("left", { color: "#374151", fontSize: 13 })}>{r.id}. {r.vendedor}</td>
                   <td style={tdC("center", { color: "#6b7280" })}>{r.fechaVenta}</td>
                   <td style={tdC("left")}>
-                    <span style={{ color: consecColor, fontWeight: 700, borderBottom: `1px dashed ${consecColor}`, fontSize: 12 }}>{r.consec}</span>
-                    <span style={{ color: consecColor, fontSize: 11, marginLeft: 3 }}>
+                    <span style={{ color: consecColor, fontWeight: 700, borderBottom: `1px dashed ${consecColor}`, fontSize: 13 }}>{r.consec}</span>
+                    <span style={{ color: consecColor, fontSize: 12, marginLeft: 3 }}>
                       ({isAtivo ? "Ativo" : `Cancelado${r.cancelDate ? "-" + r.cancelDate : ""}`})
                     </span>
                   </td>
                   <td style={tdC("left", { color: "#374151", fontWeight: 500 })}>{r.cliente}</td>
-                  <td style={tdC("left", { color: "#2563eb", fontWeight: 700, fontSize: 12 })}>
+                  <td style={tdC("left", { color: "#2563eb", fontWeight: 700, fontSize: 13 })}>
                     <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.idVenta}</span>
                   </td>
                   <td style={tdC("left", { color: "#6b7280" })}>{r.movel}</td>
-                  <td style={tdC("left", { color: "#9ca3af", fontStyle: r.direc ? "normal" : "italic", fontSize: 12 })}>{r.direc || "—"}</td>
+                  <td style={tdC("left", { color: "#9ca3af", fontStyle: r.direc ? "normal" : "italic", fontSize: 13 })}>{r.direc || "—"}</td>
                   <td style={tdC("center", { color: "#374151" })}>{r.cuotas}</td>
                   <td style={tdC("center", { color: "#374151" })}>{r.cuoPag}</td>
                   <td style={tdC("center", { color: r.cuoFalt > 0 ? "#374151" : "#9ca3af", fontWeight: r.cuoFalt > 0 ? 600 : 400 })}>{r.cuoFalt}</td>
@@ -2781,7 +2781,7 @@ function LiqPeriodosClientesContent() {
                   <td style={tdC("right", { fontWeight: 700, color: "#374151" })}>{r.valorProd}</td>
                   <td style={tdC("right", { fontWeight: 600, color: "#374151" })}>{r.vrCuota}</td>
                   <td style={tdC("center", { color: "#374151" })}>{r.visitas}</td>
-                  <td style={tdC("center", { color: "#6b7280", fontSize: 12 })}>{r.freq}</td>
+                  <td style={tdC("center", { color: "#6b7280", fontSize: 13 })}>{r.freq}</td>
                 </tr>
               );
             })}
