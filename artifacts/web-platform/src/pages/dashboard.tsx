@@ -2220,7 +2220,7 @@ function LiqPeriodosLiquidacaoView() {
         <Row label="Clientes Renovados" index={2}>
           <PersonIcon /> <strong className="text-gray-800">10</strong>
         </Row>
-        <Row label="Média" index={3}>
+        <Row label="Média por Clientes" index={3}>
           <span className="font-semibold text-gray-800">$ 757,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
         </Row>
