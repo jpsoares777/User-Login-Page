@@ -1581,7 +1581,7 @@ function ClientesContent() {
                       </thead>
                       <tbody>
                         {[...c.historico].reverse().map((h, idx) => {
-                          const isAtivo = h.status === "ACTIVO";
+                          const isAtivo = idx === 0 && h.status === "ACTIVO";
                           const pagasH = isAtivo ? c.pagas : h.cuotas;
                           const faltH  = isAtivo ? c.restantes : 0;
                           const saldoH = isAtivo ? c.saldo : 0;
