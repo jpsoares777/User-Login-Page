@@ -419,28 +419,17 @@ const pagamentosData = [
 type PagRow = typeof pagamentosData[0];
 
 function TipoBadge({ tipo }: { tipo: string }) {
-  if (tipo === "S/PAG.") return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 20 }}>
-      <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#ef4444", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <svg viewBox="0 0 24 24" style={{ width: 9, height: 9, fill: "#fff" }}><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-      </span>
-      S/PAG.
-    </span>
-  );
-  if (tipo === "ABONO") return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#fffbeb", color: "#b45309", border: "1px solid #fde68a", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 20 }}>
-      <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#f59e0b", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <svg viewBox="0 0 24 24" style={{ width: 9, height: 9, fill: "#fff" }}><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
-      </span>
-      ABONO
-    </span>
-  );
+  const cfg =
+    tipo === "S/PAG." ? { bg: "#dc2626", icon: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z", color: "#dc2626" } :
+    tipo === "ABONO"  ? { bg: "#d97706", icon: "M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z",                                              color: "#d97706" } :
+                        { bg: "#16a34a", icon: "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z",                                               color: "#16a34a" };
+  const label = tipo === "S/PAG." ? "S/PAG." : tipo === "ABONO" ? "ABONO" : "PARC.";
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 20 }}>
-      <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#22c55e", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <svg viewBox="0 0 24 24" style={{ width: 9, height: 9, fill: "#fff" }}><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+      <span style={{ width: 18, height: 18, borderRadius: "50%", background: cfg.bg, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <svg viewBox="0 0 24 24" style={{ width: 11, height: 11, fill: "#fff" }}><path d={cfg.icon}/></svg>
       </span>
-      PARC.
+      <span style={{ fontSize: 13, fontWeight: 700, color: cfg.color }}>{label}</span>
     </span>
   );
 }
@@ -452,82 +441,66 @@ function HistorialModal({ row, onClose }: { row: PagRow; onClose: () => void }) 
     { nro: 2, tipo: "ABONO",  valor: 0.00,  fecha: "2026-04-17", obs: "Operacion Masiva" },
     { nro: 1, tipo: "PARC.",  valor: 80.00, fecha: "2026-04-16", obs: "Cuota"            },
   ];
-  const total = hist.reduce((s, h) => s + h.valor, 0);
+  const total = hist.filter(h => h.tipo === "PARC.").reduce((s, h) => s + h.valor, 0);
+  const trunc = (n: string) => n.length > 22 ? n.slice(0, 19) + "..." : n;
 
   return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 1000,
-      background: "rgba(0,0,0,0.45)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-    }} onClick={onClose}>
-      <div style={{
-        background: "#fff", borderRadius: 8, width: 640,
-        boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-        overflow: "hidden",
-      }} onClick={e => e.stopPropagation()}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      onClick={onClose}>
+      <div style={{ background: "#fff", borderRadius: 8, width: 760, maxWidth: "96vw", maxHeight: "88vh", display: "flex", flexDirection: "column", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}
+        onClick={e => e.stopPropagation()}>
 
-        {/* Header */}
-        <div style={{ background: "#2d5474", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.01em" }}>
-            Histórico de Pagamentos
-          </span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", lineHeight: 1 }}>
-            <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#cbd5e1" }}><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-          </button>
+        {/* Título */}
+        <div style={{ background: "#3d6e8e", borderRadius: "8px 8px 0 0", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>Histórico de Pagamentos</span>
+          <button onClick={onClose} style={{ width: 28, height: 28, borderRadius: 4, background: "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", color: "#fff", fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
         </div>
 
-        {/* Client info */}
-        <div style={{ padding: "10px 18px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 8 }}>
-          <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#2d5474" }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#b45309" }}>{row.cliente}</span>
-          <span style={{ fontSize: 12, color: "#6b7280", marginLeft: 4 }}>#{row.consecutivo}</span>
+        {/* Cliente */}
+        <div style={{ padding: "12px 18px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 12, background: "#fff" }}>
+          <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, fill: "#d97706", flexShrink: 0 }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          <span style={{ fontWeight: 800, fontSize: 14, color: "#d97706", letterSpacing: "0.05em", textTransform: "uppercase" }}>{row.cliente}</span>
+          <span style={{ fontSize: 13, color: "#6b7280", marginLeft: 4 }}>Empréstimo #{row.consecutivo}</span>
         </div>
 
-        {/* Table */}
-        <div style={{ overflowX: "auto" }}>
+        {/* Tabela */}
+        <div style={{ flex: 1, overflowY: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
-                {["Nro.", "Cliente", "Tipo", "Valor", "Fecha", "Observações"].map(h => (
-                  <th key={h} style={{
-                    padding: "8px 12px", textAlign: "left", fontSize: 12,
-                    fontWeight: 700, color: "#fff", background: "#2d5474",
-                    borderRight: "1px solid #3d6a8a", whiteSpace: "nowrap",
-                  }}>{h}</th>
+                {[
+                  { l: "Nro.",        w: "7%",  a: "center" as const },
+                  { l: "Cliente",     w: "28%", a: "left"   as const },
+                  { l: "Tipo",        w: "14%", a: "left"   as const },
+                  { l: "Valor",       w: "14%", a: "right"  as const },
+                  { l: "Fecha",       w: "16%", a: "left"   as const },
+                  { l: "Observações", w: "21%", a: "left"   as const },
+                ].map(c => (
+                  <th key={c.l} style={{ padding: "9px 14px", textAlign: c.a, fontSize: 13, fontWeight: 700, color: "#374151", background: "#e8edf2", borderBottom: "2px solid #cbd5e1", whiteSpace: "nowrap", width: c.w }}>{c.l}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {hist.map((h, i) => (
-                <tr key={h.nro} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
-                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", fontWeight: 600, color: "#6b7280" }}>{h.nro}</td>
-                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", color: "#b45309", fontWeight: 600 }}>{row.cliente}</td>
-                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef" }}>
-                    <TipoBadge tipo={h.tipo} />
-                  </td>
-                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", fontWeight: 600, textAlign: "right", color: h.valor > 0 ? "#059669" : "#374151" }}>
-                    R$ {h.valor.toFixed(2).replace(".", ",")}
-                  </td>
-                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", color: "#4b5563" }}>{h.fecha}</td>
-                  <td style={{ padding: "7px 12px", fontSize: 12, borderBottom: "1px solid #e9ecef", color: "#6b7280", fontStyle: "italic" }}>{h.obs}</td>
+                <tr key={h.nro} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
+                  <td style={{ padding: "8px 14px", textAlign: "center", fontSize: 14, fontWeight: 700, color: "#2563eb", borderBottom: "1px solid #f0f0f0" }}>{h.nro}</td>
+                  <td style={{ padding: "8px 14px", fontSize: 13, color: "#2563eb", fontWeight: 600, borderBottom: "1px solid #f0f0f0" }}>{trunc(row.cliente)}</td>
+                  <td style={{ padding: "8px 14px", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}><TipoBadge tipo={h.tipo} /></td>
+                  <td style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, color: "#374151", textAlign: "right", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>R$ {h.valor.toFixed(2).replace(".", ",")}</td>
+                  <td style={{ padding: "8px 14px", fontSize: 13, color: "#6b7280", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>{h.fecha}</td>
+                  <td style={{ padding: "8px 14px", fontSize: 12, color: "#9ca3af", borderBottom: "1px solid #f0f0f0" }}>{h.obs === "Cuota" ? "" : h.obs}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Footer */}
-        <div style={{ padding: "10px 18px", background: "#f8fafc", borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>
-            TOTAL PAGOS: <span style={{ color: "#059669" }}>R$ {total.toFixed(2).replace(".", ",")}</span>
+        {/* Rodapé */}
+        <div style={{ padding: "13px 18px", borderTop: "2px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff" }}>
+          <span style={{ fontSize: 15, fontWeight: 800, color: "#1e293b" }}>
+            TOTAL PAGOS: <span style={{ color: "#2563eb" }}>R$ {total.toFixed(2).replace(".", ",")}</span>
           </span>
-          <button onClick={onClose} style={{
-            padding: "6px 20px", borderRadius: 6, border: "1px solid #d1d5db",
-            background: "#fff", fontSize: 13, fontWeight: 600, color: "#374151",
-            cursor: "pointer",
-          }}>
-            Cancelar
-          </button>
+          <button onClick={onClose} style={{ padding: "7px 24px", background: "#2563eb", border: "none", borderRadius: 6, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer" }}>Cancelar</button>
         </div>
       </div>
     </div>
@@ -791,101 +764,70 @@ function PagamentosEmprestimoModal({
   nroEmp, cliente, onClose,
 }: { nroEmp: number; cliente: string; onClose: () => void }) {
   const pagamentos = pagamentosPorEmprestimo[nroEmp] ?? [];
-  const total = pagamentos.filter(p => p.tipo === "Valor").reduce((a, p) => a + p.valor, 0);
-
-  const thP: React.CSSProperties = {
-    padding: "8px 10px", fontSize: 12, fontWeight: 700, color: "#fff",
-    background: "#3d6e8e", borderRight: "1px solid #4a7fa0",
-    whiteSpace: "nowrap", position: "sticky", top: 0,
-  };
-  const tdP = (align: "left"|"center"|"right" = "left", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "8px 10px", fontSize: 13, borderBottom: "1px solid #f0f4f8", textAlign: align, ...extra,
-  });
+  const total = pagamentos.filter(p => p.tipo === "PARC.").reduce((a, p) => a + p.valor, 0);
+  const trunc = (n: string) => n.length > 22 ? n.slice(0, 19) + "..." : n;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 1100, background: "rgba(0,0,0,0.30)", display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div style={{ position: "fixed", inset: 0, zIndex: 1100, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}
       onClick={onClose}>
-      <div style={{ background: "#fff", borderRadius: 8, width: "min(620px, 92vw)", boxShadow: "0 24px 64px rgba(0,0,0,0.40)", overflow: "hidden" }}
+      <div style={{ background: "#fff", borderRadius: 8, width: 760, maxWidth: "96vw", maxHeight: "88vh", display: "flex", flexDirection: "column", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}
         onClick={e => e.stopPropagation()}>
 
-        {/* Header */}
-        <div style={{ background: "#2d5474", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Histórico de Pagamentos</span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer" }}>
-            <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#cbd5e1" }}><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-          </button>
+        {/* Título */}
+        <div style={{ background: "#3d6e8e", borderRadius: "8px 8px 0 0", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>Histórico de Pagamentos</span>
+          <button onClick={onClose} style={{ width: 28, height: 28, borderRadius: 4, background: "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", color: "#fff", fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
         </div>
 
-        {/* Client info */}
-        <div style={{ padding: "10px 18px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 8 }}>
-          <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#2d5474" }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#b45309" }}>{cliente.toUpperCase()}</span>
-          <span style={{ fontSize: 12, color: "#6b7280", marginLeft: 4 }}>Empréstimo #{nroEmp}</span>
+        {/* Cliente */}
+        <div style={{ padding: "12px 18px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 12, background: "#fff" }}>
+          <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, fill: "#d97706", flexShrink: 0 }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          <span style={{ fontWeight: 800, fontSize: 14, color: "#d97706", letterSpacing: "0.05em", textTransform: "uppercase" }}>{cliente}</span>
+          <span style={{ fontSize: 13, color: "#6b7280", marginLeft: 4 }}>Empréstimo #{nroEmp}</span>
         </div>
 
-        {/* Table */}
-        <div style={{ maxHeight: 300, overflowY: "auto" }}>
+        {/* Tabela */}
+        <div style={{ flex: 1, overflowY: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
             <colgroup>
-              <col style={{ width: "8%" }} />
-              <col style={{ width: "28%" }} />
-              <col style={{ width: "16%" }} />
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "16%" }} />
-              <col style={{ width: "18%" }} />
+              <col style={{ width: "7%" }} /><col style={{ width: "28%" }} /><col style={{ width: "14%" }} />
+              <col style={{ width: "14%" }} /><col style={{ width: "16%" }} /><col style={{ width: "21%" }} />
             </colgroup>
             <thead>
               <tr>
-                <th style={{ ...thP, textAlign: "center" }}>Nro.</th>
-                <th style={{ ...thP }}>Cliente</th>
-                <th style={{ ...thP, textAlign: "center" }}>Tipo</th>
-                <th style={{ ...thP, textAlign: "right" }}>Valor</th>
-                <th style={{ ...thP, textAlign: "center" }}>Fecha</th>
-                <th style={{ ...thP }}>Observações</th>
+                {[
+                  { l: "Nro.",        a: "center" as const },
+                  { l: "Cliente",     a: "left"   as const },
+                  { l: "Tipo",        a: "left"   as const },
+                  { l: "Valor",       a: "right"  as const },
+                  { l: "Data",        a: "left"   as const },
+                  { l: "Observações", a: "left"   as const },
+                ].map(c => (
+                  <th key={c.l} style={{ padding: "9px 14px", textAlign: c.a, fontSize: 13, fontWeight: 700, color: "#374151", background: "#e8edf2", borderBottom: "2px solid #cbd5e1", whiteSpace: "nowrap", position: "sticky", top: 0 }}>{c.l}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {pagamentos.map((p, i) => (
-                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
-                  <td style={tdP("center", { fontWeight: 700, color: "#374151" })}>{p.nro}</td>
-                  <td style={tdP("left", { color: "#2563eb", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" })}>{cliente.toUpperCase()}</td>
-                  <td style={tdP("center")}>
-                    {p.tipo === "S/PAG." && (
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: "#fff", background: "#dc2626", borderRadius: 20, padding: "3px 10px" }}>
-                        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff", flexShrink: 0 }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>
-                        S/PAG.
-                      </span>
-                    )}
-                    {p.tipo === "ABONO" && (
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: "#92400e", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 20, padding: "3px 10px" }}>
-                        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#d97706", flexShrink: 0 }}><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8z"/></svg>
-                        ABONO
-                      </span>
-                    )}
-                    {p.tipo === "PARC." && (
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: "#166534", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 20, padding: "3px 10px" }}>
-                        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#16a34a", flexShrink: 0 }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14l-4-4 1.41-1.41L10 13.17l6.59-6.59L18 8l-8 8z"/></svg>
-                        PARC.
-                      </span>
-                    )}
-                  </td>
-                  <td style={tdP("right", { fontWeight: 700, color: p.valor > 0 ? "#166534" : "#9ca3af" })}>
-                    R$ {p.valor.toFixed(2).replace(".", ",")}
-                  </td>
-                  <td style={tdP("center", { color: "#4b5563" })}>{p.data}</td>
-                  <td style={tdP("left", { color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" })}>{p.obs}</td>
+                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
+                  <td style={{ padding: "8px 14px", textAlign: "center", fontSize: 14, fontWeight: 700, color: "#2563eb", borderBottom: "1px solid #f0f0f0" }}>{p.nro}</td>
+                  <td style={{ padding: "8px 14px", fontSize: 13, color: "#2563eb", fontWeight: 600, borderBottom: "1px solid #f0f0f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{trunc(cliente)}</td>
+                  <td style={{ padding: "8px 14px", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}><TipoBadge tipo={p.tipo} /></td>
+                  <td style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, color: "#374151", textAlign: "right", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>R$ {p.valor.toFixed(2).replace(".", ",")}</td>
+                  <td style={{ padding: "8px 14px", fontSize: 13, color: "#6b7280", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>{p.data}</td>
+                  <td style={{ padding: "8px 14px", fontSize: 12, color: "#9ca3af", borderBottom: "1px solid #f0f0f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.obs}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Footer */}
-        <div style={{ padding: "10px 18px", borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>
-            TOTAL PAGOS: <span style={{ color: "#166534" }}>R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+        {/* Rodapé */}
+        <div style={{ padding: "13px 18px", borderTop: "2px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff" }}>
+          <span style={{ fontSize: 15, fontWeight: 800, color: "#1e293b" }}>
+            TOTAL PAGOS: <span style={{ color: "#2563eb" }}>R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </span>
-          <button onClick={onClose} style={{ padding: "6px 22px", background: "#64748b", color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>Cancelar</button>
+          <button onClick={onClose} style={{ padding: "7px 24px", background: "#2563eb", border: "none", borderRadius: 6, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer" }}>Cancelar</button>
         </div>
       </div>
     </div>
