@@ -1678,7 +1678,7 @@ function ClientesContent() {
     { label: "Juros / Total",      w: "10%", align: "center" as const },
     { label: "Parcela",            w: "5%",  align: "center" as const },
     { label: "Atrasadas / Pagas",  w: "13%", align: "left"   as const },
-    { label: "Vlr. Cuota",         w: "7%",  align: "right"  as const },
+    { label: "Valor Parc.",        w: "7%",  align: "right"  as const },
     { label: "Saldo",              w: "8%",  align: "right"  as const },
   ];
 
