@@ -2230,11 +2230,15 @@ function LiqPeriodosLiquidacaoView() {
         </Row>
 
         <SectionHeader title="Financeiro" color="#7c3aed" />
-        <Row label="Recebimento" index={0}>
+        <Row label="Recebimento Total" index={0}>
           <span className="font-semibold text-gray-800">$ 17.420,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
         </Row>
-        <Row label="Vendas" index={1}>
+        <Row label="Recebimento" index={1}>
+          <span className="font-semibold text-gray-800">$ 17.420,00</span>
+          <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
+        </Row>
+        <Row label="Vendas" index={2}>
           <span className="font-semibold text-gray-800">$ 21.200,00</span>
           <span className="text-gray-400 text-[11px] ml-1">(</span>
           <span className="text-orange-500 text-xs">🔥</span>
@@ -2242,27 +2246,27 @@ function LiqPeriodosLiquidacaoView() {
           <span className="font-semibold text-gray-800">8.390,00</span>
           <span className="text-gray-400 text-[11px]">)</span>
         </Row>
-        <Row label="Retiradas" index={2}>
+        <Row label="Retiradas" index={3}>
           <span className="text-gray-500 font-bold text-sm">−</span>
           <span className="font-semibold text-gray-600">351,00</span>
         </Row>
-        <Row label="Despesas" index={3}>
+        <Row label="Despesas" index={4}>
           <span className="text-gray-500 font-bold text-sm">−</span>
           <span className="font-semibold text-gray-600">1.890,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( 10,85% )</span>
           <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
         </Row>
-        <Row label="Receitas" index={4}>
+        <Row label="Receitas" index={5}>
           <span className="text-blue-600 font-bold text-sm">+</span>
           <span className="font-semibold text-blue-700">9.390,00</span>
         </Row>
-        <Row label="Caixa Inicial de 2026-02-06" index={5}>
+        <Row label="Caixa Inicial de 2026-02-06" index={6}>
           <span className="font-semibold text-gray-800">$ 0,00</span>
         </Row>
-        <Row label="Caixa Final de 2026-06-06" bold index={6}>
+        <Row label="Caixa Final de 2026-06-06" bold index={7}>
           <span className="text-green-700">$ 3.369,00</span>
         </Row>
-        <Row label="Ganho" bold index={7}>
+        <Row label="Ganho" bold index={8}>
           <span className="text-green-700">$ 3.630,00</span>
         </Row>
       </div>
