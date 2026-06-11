@@ -1620,7 +1620,6 @@ function RelatóriosContent() {
 
         <Card icon={PAID} title="CLIENTES QUE PAGARAM">
           <Sel opts={parc} />
-          <div style={{ textAlign: "center", fontSize: 11, fontWeight: 700, color: "#374151", padding: "3px 0 6px" }}>NA SEMANA</div>
         </Card>
 
         <Card icon={MONEY} title="CRÉDITOS ACIMA DE R$">
