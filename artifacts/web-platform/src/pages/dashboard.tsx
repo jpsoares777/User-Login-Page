@@ -2881,142 +2881,155 @@ const resumoRow = {
 function ResumoContent() {
   const [fechaIni, setFechaIni] = useState("2026-03-06");
   const [fechaFin, setFechaFin] = useState("2026-06-11");
-  const [buscar, setBuscar]     = useState("");
+  const [buscar,   setBuscar]   = useState("");
 
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
   const fmt = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 
-  const cols: { label: string; key: keyof typeof resumoRow; num?: boolean }[] = [
-    { label: "Vendedor",            key: "vendedor" },
-    { label: "Fecha Inicial",       key: "fechaInicial" },
-    { label: "Fecha Final",         key: "fechaFinal" },
-    { label: "Nº Clientes",         key: "nClientes",           num: true },
-    { label: "Nº Cierres",          key: "nCierres",            num: true },
-    { label: "Caja Inicial",        key: "cajaInicial",         num: true },
-    { label: "Carteira últ. dia",   key: "carteira",            num: true },
-    { label: "Recaudo",             key: "recaudo",             num: true },
-    { label: "Promedio Recaudo",    key: "promedio",            num: true },
-    { label: "Recaudo Pretendido",  key: "recaudoPretendido",   num: true },
-    { label: "Num. Ventas",         key: "numVentas",           num: true },
-    { label: "Total Ventas",        key: "totalVentas",         num: true },
-    { label: "Total Int.",          key: "totalInt",            num: true },
-    { label: "Retiros",             key: "retiros",             num: true },
-    { label: "Egresos",             key: "egresos",             num: true },
-    { label: "Ingresos",            key: "ingresos",            num: true },
-    { label: "Caja Final",          key: "cajaFinal",           num: true },
-    { label: "Sanción Cobrada",     key: "sancao",              num: true },
+  const cols: { label: string; key: keyof typeof resumoRow; align: "left"|"center"|"right" }[] = [
+    { label: "Vendedor",            key: "vendedor",          align: "left"   },
+    { label: "Fecha Inicial",       key: "fechaInicial",      align: "center" },
+    { label: "Fecha Final",         key: "fechaFinal",        align: "center" },
+    { label: "Nº Clientes",         key: "nClientes",         align: "center" },
+    { label: "Nº Cierres",          key: "nCierres",          align: "center" },
+    { label: "Caja Inicial",        key: "cajaInicial",       align: "right"  },
+    { label: "Carteira últ. dia",   key: "carteira",          align: "right"  },
+    { label: "Recaudo",             key: "recaudo",           align: "right"  },
+    { label: "Promedio Recaudo",    key: "promedio",          align: "right"  },
+    { label: "Recaudo Pretendido",  key: "recaudoPretendido", align: "right"  },
+    { label: "Num. Ventas",         key: "numVentas",         align: "center" },
+    { label: "Total Ventas",        key: "totalVentas",       align: "right"  },
+    { label: "Total Int.",          key: "totalInt",          align: "right"  },
+    { label: "Retiros",             key: "retiros",           align: "right"  },
+    { label: "Egresos",             key: "egresos",           align: "right"  },
+    { label: "Ingresos",            key: "ingresos",          align: "right"  },
+    { label: "Caja Final",          key: "cajaFinal",         align: "right"  },
+    { label: "Sanción Cobrada",     key: "sancao",            align: "right"  },
   ];
 
-  const cellVal = (key: keyof typeof resumoRow, forTotal = false) => {
-    if (forTotal && (key === "fechaInicial" || key === "fechaFinal" || key === "nCierres" || key === "promedio")) return "";
+  const OMIT_TOTAL = new Set<keyof typeof resumoRow>(["fechaInicial","fechaFinal","nCierres","promedio"]);
+
+  const cellVal = (key: keyof typeof resumoRow, forTotal = false): string => {
+    if (forTotal && OMIT_TOTAL.has(key)) return "";
     const v = resumoRow[key];
     if (typeof v === "number") return fmt(v);
     return v as string;
   };
 
   // ── Exports ────────────────────────────────────────────────────────────────
-  const buildCsvLines = () => {
-    const header = cols.map(c => c.label).join(",");
-    const dataRow = cols.map(c => cellVal(c.key)).join(",");
-    const totalRow = ["ZZ_TOTAL", ...cols.slice(1).map(c => cellVal(c.key, true))].join(",");
-    return [header, dataRow, totalRow].join("\n");
+  const buildCsv = () => {
+    const hdr  = cols.map(c => c.label).join(",");
+    const data = cols.map(c => cellVal(c.key)).join(",");
+    const tot  = ["ZZ_TOTAL", ...cols.slice(1).map(c => cellVal(c.key, true))].join(",");
+    return [hdr, data, tot].join("\n");
   };
 
-  const downloadCsv = (ext: string) => {
-    const blob = new Blob([buildCsvLines()], { type: "text/csv;charset=utf-8;" });
+  const download = (ext: string) => {
+    const blob = new Blob([buildCsv()], { type: "text/csv;charset=utf-8;" });
     const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
-    a.href = url; a.download = `resumo_${fechaIni}_${fechaFin}.${ext}`; a.click();
-    URL.revokeObjectURL(url);
+    const a    = Object.assign(document.createElement("a"), { href: url, download: `resumo_${fechaIni}_${fechaFin}.${ext}` });
+    a.click(); URL.revokeObjectURL(url);
   };
 
-  const sendWhatsApp = () => {
-    const lines = [
-      `*RESUMO ${fechaIni} → ${fechaFin}*`,
+  const whatsApp = () => {
+    const txt = [
+      `*RESUMO DO PERÍODO: ${fechaIni} a ${fechaFin}*`,
       `Vendedor: ${resumoRow.vendedor}`,
-      `Clientes: ${resumoRow.nClientes}   Cierres: ${resumoRow.nCierres}`,
-      `Recaudo: $ ${fmt(resumoRow.recaudo)}`,
-      `Total Ventas: $ ${fmt(resumoRow.totalVentas)}`,
-      `Total Int.: $ ${fmt(resumoRow.totalInt)}`,
-      `Retiros: $ ${fmt(resumoRow.retiros)}   Egresos: $ ${fmt(resumoRow.egresos)}`,
-      `Ingresos: $ ${fmt(resumoRow.ingresos)}`,
+      `Clientes: ${resumoRow.nClientes} | Cierres: ${resumoRow.nCierres}`,
+      `Recaudo: $ ${fmt(resumoRow.recaudo)} | Pretendido: $ ${fmt(resumoRow.recaudoPretendido)}`,
+      `Total Ventas: $ ${fmt(resumoRow.totalVentas)} | Juros: $ ${fmt(resumoRow.totalInt)}`,
+      `Retiros: $ ${fmt(resumoRow.retiros)} | Egresos: $ ${fmt(resumoRow.egresos)} | Ingresos: $ ${fmt(resumoRow.ingresos)}`,
       `Caja Final: $ ${fmt(resumoRow.cajaFinal)}`,
-    ];
-    window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
+    ].join("\n");
+    window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, "_blank");
   };
 
-  const exportPdf = () => window.print();
-
-  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700";
-
-  const thStyle: React.CSSProperties = {
-    padding: "7px 10px", fontSize: 12, fontWeight: 700, color: "#fff",
-    background: "#3d6e8e", whiteSpace: "nowrap", borderRight: "1px solid #4a7fa0",
-    textAlign: "center", position: "sticky", top: 0,
+  const thS: React.CSSProperties = {
+    padding: "7px 8px", fontSize: 13, fontWeight: 700, color: "#e2e8f0",
+    background: "#3d6e8e", whiteSpace: "nowrap", letterSpacing: "0.02em",
+    borderRight: "1px solid #4a7fa0", position: "sticky", top: 0, zIndex: 1,
   };
-  const tdStyle = (num?: boolean): React.CSSProperties => ({
-    padding: "7px 10px", fontSize: 12, color: "#374151", whiteSpace: "nowrap",
-    borderBottom: "1px solid #e9ecef", textAlign: num ? "right" : "left",
-    borderRight: "1px solid #f0f0f0",
+  const tdS = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "6px 8px", fontSize: 13, color: "#374151", whiteSpace: "nowrap",
+    textAlign: align, borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0", ...extra,
   });
-  const tdTotal = (num?: boolean): React.CSSProperties => ({
-    ...tdStyle(num), fontWeight: 700, background: "#f1f5f9", color: "#1e3a5f",
-  });
+  const tdT = (align: "left"|"center"|"right"): React.CSSProperties =>
+    tdS(align, { fontWeight: 700, background: "#3d6e8e", color: "#fff", borderRight: "1px solid #4a7fa0", borderBottom: "none" });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#f8fafc" }}>
+    <div className="flex-1 flex flex-col overflow-hidden">
 
       {/* ── Barra de filtros ── */}
-      <div style={{ padding: "8px 14px", background: "#fff", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Fecha Inicial :</span>
-        <input type="date" value={fechaIni} onChange={e => setFechaIni(e.target.value)} className={inputCls} style={{ width: 130 }} />
-        <span style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Final</span>
-        <input type="date" value={fechaFin} onChange={e => setFechaFin(e.target.value)} className={inputCls} style={{ width: 130 }} />
-        <span style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Buscar:</span>
-        <input value={buscar} onChange={e => setBuscar(e.target.value)} placeholder="" className={inputCls} style={{ width: 160 }} />
+      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data Inicial</label>
+          <input type="date" value={fechaIni} onChange={e => setFechaIni(e.target.value)} className={`${inputCls} w-36`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data Final</label>
+          <input type="date" value={fechaFin} onChange={e => setFechaFin(e.target.value)} className={`${inputCls} w-36`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Vendedor</label>
+          <input value={buscar} onChange={e => setBuscar(e.target.value)} placeholder="Buscar vendedor…" className={`${inputCls} w-44`} />
+        </div>
+        <button className="h-7 px-4 rounded text-xs font-bold text-white" style={{ background: "#2563eb", border: "none", cursor: "pointer", alignSelf: "flex-end" }}>
+          🔍 Pesquisar
+        </button>
 
-        <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
-          {[
-            { label: "Imprimir", bg: "#64748b", fn: exportPdf },
-            { label: "Excel",    bg: "#16a34a", fn: () => downloadCsv("xls") },
-            { label: "CSV",      bg: "#0ea5e9", fn: () => downloadCsv("csv") },
-            { label: "📄 PDF",   bg: "#dc2626", fn: exportPdf },
-            { label: "💬 WhatsApp", bg: "#25d366", fn: sendWhatsApp },
-          ].map(b => (
+        <div className="flex-1" />
+
+        {/* ── Botões de exportação ── */}
+        <div className="flex items-end gap-1.5">
+          {([
+            { label: "Imprimir", icon: "🖨️", fn: () => window.print(),        bg: "#64748b" },
+            { label: "Excel",    icon: "📊", fn: () => download("xls"),        bg: "#16a34a" },
+            { label: "CSV",      icon: "📋", fn: () => download("csv"),        bg: "#0284c7" },
+            { label: "PDF",      icon: "📄", fn: () => window.print(),         bg: "#dc2626" },
+            { label: "WhatsApp", icon: "💬", fn: whatsApp,                     bg: "#25d366" },
+          ] as { label: string; icon: string; fn: () => void; bg: string }[]).map(b => (
             <button key={b.label} onClick={b.fn}
-              style={{ padding: "5px 12px", background: b.bg, color: "#fff", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
-              {b.label}
+              style={{ height: 28, padding: "0 10px", background: b.bg, border: "none", borderRadius: 5, fontSize: 11, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: 13 }}>{b.icon}</span>{b.label}
             </button>
           ))}
         </div>
       </div>
 
+      {/* ── Contador ── */}
+      <div className="shrink-0 px-3 py-1" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb" }}>
+        <span className="text-xs text-gray-500">1 registro encontrado</span>
+      </div>
+
       {/* ── Tabela ── */}
-      <div style={{ flex: 1, overflowX: "auto", overflowY: "auto" }}>
+      <div className="flex-1 overflow-auto">
         <table style={{ borderCollapse: "collapse", minWidth: "100%" }}>
           <thead>
             <tr>
-              {cols.map(c => <th key={c.key} style={thStyle}>{c.label}</th>)}
+              {cols.map(c => (
+                <th key={c.key} style={{ ...thS, textAlign: c.align }}>{c.label}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {/* Linha de dados */}
             <tr style={{ background: "#fff" }}>
               {cols.map(c => (
-                <td key={c.key} style={tdStyle(c.num)}>
+                <td key={c.key} style={tdS(c.align)}>
                   {cellVal(c.key)}
                 </td>
               ))}
             </tr>
-            {/* ZZ_TOTAL */}
+          </tbody>
+          <tfoot>
             <tr>
-              <td style={tdTotal()}>ZZ_TOTAL</td>
+              <td style={tdT("left")}>ZZ_TOTAL</td>
               {cols.slice(1).map(c => (
-                <td key={c.key} style={tdTotal(c.num)}>
+                <td key={c.key} style={tdT(c.align)}>
                   {cellVal(c.key, true)}
                 </td>
               ))}
             </tr>
-          </tbody>
+          </tfoot>
         </table>
       </div>
     </div>
