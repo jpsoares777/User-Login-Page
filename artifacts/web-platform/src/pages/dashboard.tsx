@@ -2864,6 +2864,165 @@ function LiqPeriodosClientesContent() {
   );
 }
 
+// ── Resumo ────────────────────────────────────────────────────────────────────
+
+const resumoRow = {
+  vendedor: "Rota Cred Bank -",
+  fechaInicial: "2026-03-06",
+  fechaFinal:   "2026-06-11",
+  nClientes: 31, nCierres: 23,
+  cajaInicial: 0.00, carteira: 12170.00, recaudo: 17420.00,
+  promedio: 757.39, recaudoPretendido: 9940.00,
+  numVentas: 31, totalVentas: 21200.00, totalInt: 8390.00,
+  retiros: 351.00, egresos: 2241.00, ingresos: 9390.00,
+  cajaFinal: 3369.00, sancao: 0.00,
+};
+
+function ResumoContent() {
+  const [fechaIni, setFechaIni] = useState("2026-03-06");
+  const [fechaFin, setFechaFin] = useState("2026-06-11");
+  const [buscar, setBuscar]     = useState("");
+
+  const fmt = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+
+  const cols: { label: string; key: keyof typeof resumoRow; num?: boolean }[] = [
+    { label: "Vendedor",            key: "vendedor" },
+    { label: "Fecha Inicial",       key: "fechaInicial" },
+    { label: "Fecha Final",         key: "fechaFinal" },
+    { label: "Nº Clientes",         key: "nClientes",           num: true },
+    { label: "Nº Cierres",          key: "nCierres",            num: true },
+    { label: "Caja Inicial",        key: "cajaInicial",         num: true },
+    { label: "Carteira últ. dia",   key: "carteira",            num: true },
+    { label: "Recaudo",             key: "recaudo",             num: true },
+    { label: "Promedio Recaudo",    key: "promedio",            num: true },
+    { label: "Recaudo Pretendido",  key: "recaudoPretendido",   num: true },
+    { label: "Num. Ventas",         key: "numVentas",           num: true },
+    { label: "Total Ventas",        key: "totalVentas",         num: true },
+    { label: "Total Int.",          key: "totalInt",            num: true },
+    { label: "Retiros",             key: "retiros",             num: true },
+    { label: "Egresos",             key: "egresos",             num: true },
+    { label: "Ingresos",            key: "ingresos",            num: true },
+    { label: "Caja Final",          key: "cajaFinal",           num: true },
+    { label: "Sanción Cobrada",     key: "sancao",              num: true },
+  ];
+
+  const cellVal = (key: keyof typeof resumoRow, forTotal = false) => {
+    if (forTotal && (key === "fechaInicial" || key === "fechaFinal" || key === "nCierres" || key === "promedio")) return "";
+    const v = resumoRow[key];
+    if (typeof v === "number") return fmt(v);
+    return v as string;
+  };
+
+  // ── Exports ────────────────────────────────────────────────────────────────
+  const buildCsvLines = () => {
+    const header = cols.map(c => c.label).join(",");
+    const dataRow = cols.map(c => cellVal(c.key)).join(",");
+    const totalRow = ["ZZ_TOTAL", ...cols.slice(1).map(c => cellVal(c.key, true))].join(",");
+    return [header, dataRow, totalRow].join("\n");
+  };
+
+  const downloadCsv = (ext: string) => {
+    const blob = new Blob([buildCsvLines()], { type: "text/csv;charset=utf-8;" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = `resumo_${fechaIni}_${fechaFin}.${ext}`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const sendWhatsApp = () => {
+    const lines = [
+      `*RESUMO ${fechaIni} → ${fechaFin}*`,
+      `Vendedor: ${resumoRow.vendedor}`,
+      `Clientes: ${resumoRow.nClientes}   Cierres: ${resumoRow.nCierres}`,
+      `Recaudo: $ ${fmt(resumoRow.recaudo)}`,
+      `Total Ventas: $ ${fmt(resumoRow.totalVentas)}`,
+      `Total Int.: $ ${fmt(resumoRow.totalInt)}`,
+      `Retiros: $ ${fmt(resumoRow.retiros)}   Egresos: $ ${fmt(resumoRow.egresos)}`,
+      `Ingresos: $ ${fmt(resumoRow.ingresos)}`,
+      `Caja Final: $ ${fmt(resumoRow.cajaFinal)}`,
+    ];
+    window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
+  };
+
+  const exportPdf = () => window.print();
+
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700";
+
+  const thStyle: React.CSSProperties = {
+    padding: "7px 10px", fontSize: 12, fontWeight: 700, color: "#fff",
+    background: "#3d6e8e", whiteSpace: "nowrap", borderRight: "1px solid #4a7fa0",
+    textAlign: "center", position: "sticky", top: 0,
+  };
+  const tdStyle = (num?: boolean): React.CSSProperties => ({
+    padding: "7px 10px", fontSize: 12, color: "#374151", whiteSpace: "nowrap",
+    borderBottom: "1px solid #e9ecef", textAlign: num ? "right" : "left",
+    borderRight: "1px solid #f0f0f0",
+  });
+  const tdTotal = (num?: boolean): React.CSSProperties => ({
+    ...tdStyle(num), fontWeight: 700, background: "#f1f5f9", color: "#1e3a5f",
+  });
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#f8fafc" }}>
+
+      {/* ── Barra de filtros ── */}
+      <div style={{ padding: "8px 14px", background: "#fff", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Fecha Inicial :</span>
+        <input type="date" value={fechaIni} onChange={e => setFechaIni(e.target.value)} className={inputCls} style={{ width: 130 }} />
+        <span style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Final</span>
+        <input type="date" value={fechaFin} onChange={e => setFechaFin(e.target.value)} className={inputCls} style={{ width: 130 }} />
+        <span style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Buscar:</span>
+        <input value={buscar} onChange={e => setBuscar(e.target.value)} placeholder="" className={inputCls} style={{ width: 160 }} />
+
+        <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+          {[
+            { label: "Imprimir", bg: "#64748b", fn: exportPdf },
+            { label: "Excel",    bg: "#16a34a", fn: () => downloadCsv("xls") },
+            { label: "CSV",      bg: "#0ea5e9", fn: () => downloadCsv("csv") },
+            { label: "📄 PDF",   bg: "#dc2626", fn: exportPdf },
+            { label: "💬 WhatsApp", bg: "#25d366", fn: sendWhatsApp },
+          ].map(b => (
+            <button key={b.label} onClick={b.fn}
+              style={{ padding: "5px 12px", background: b.bg, color: "#fff", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+              {b.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Tabela ── */}
+      <div style={{ flex: 1, overflowX: "auto", overflowY: "auto" }}>
+        <table style={{ borderCollapse: "collapse", minWidth: "100%" }}>
+          <thead>
+            <tr>
+              {cols.map(c => <th key={c.key} style={thStyle}>{c.label}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {/* Linha de dados */}
+            <tr style={{ background: "#fff" }}>
+              {cols.map(c => (
+                <td key={c.key} style={tdStyle(c.num)}>
+                  {cellVal(c.key)}
+                </td>
+              ))}
+            </tr>
+            {/* ZZ_TOTAL */}
+            <tr>
+              <td style={tdTotal()}>ZZ_TOTAL</td>
+              {cols.slice(1).map(c => (
+                <td key={c.key} style={tdTotal(c.num)}>
+                  {cellVal(c.key, true)}
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
   if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView />;
   if (activeSub === "Pagamentos")          return <LiqPeriodosPagamentosContent />;
@@ -2871,6 +3030,7 @@ function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
   if (activeSub === "Rendimentos")         return <RendimentosContent />;
   if (activeSub === "Despesas")            return <DespesasContent />;
   if (activeSub === "Clientes")            return <LiqPeriodosClientesContent />;
+  if (activeSub === "Resumo")              return <ResumoContent />;
   return (
     <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
       <p className="text-gray-400 text-sm">{activeSub} — em desenvolvimento</p>
