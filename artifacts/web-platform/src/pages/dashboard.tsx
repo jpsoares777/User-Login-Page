@@ -2433,25 +2433,19 @@ function LiqPeriodosPagamentosContent() {
                 </tr>
               );
             })}
-            {/* Total row */}
-            <tr style={{ background: "#e8edf2" }}>
-              <td colSpan={7} style={{ ...tdP("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
-                TOTAL RECEBIDO DO PERÍODO:
-              </td>
-              <td style={tdP("right", { fontWeight: 700, color: "#15803d" })}>
-                {fmtR(totalRecebido)}
-                <span style={{ marginLeft: 6, fontSize: 11, color: "#6b7280", fontWeight: 600 }}>
-                  ({taxaPct.toFixed(1)}%)
-                </span>
-              </td>
-              <td colSpan={4} style={tdP("center")} />
-            </tr>
           </tbody>
         </table>
       </div>
 
-      {/* ── Footer (padrão) ── */}
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+      {/* ── Floating total footer (always visible) ── */}
+      <div className="shrink-0 flex items-center justify-end gap-6 px-4 py-2" style={{ background: "#e8edf2", borderTop: "2px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.05em" }}>
+          TOTAL RECEBIDO
+        </span>
+        <span style={{ fontSize: 14, fontWeight: 800, color: "#15803d", minWidth: 70, textAlign: "right" }}>
+          {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+        </span>
+      </div>
 
     </div>
   );
