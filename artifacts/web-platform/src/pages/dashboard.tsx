@@ -2410,10 +2410,10 @@ function LiqPeriodosPagamentosContent() {
         </table>
       </div>
 
-      {/* ── Footer total ── */}
-      <div className="shrink-0 flex items-center justify-end gap-4 px-4 py-2" style={{ background: "#f0f2f5", borderTop: "2px solid #e0e0e0" }}>
-        <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Total Recebido</span>
-        <span className="text-sm font-extrabold text-green-700">
+      {/* ── Footer total (blue sticky bar) ── */}
+      <div className="shrink-0 flex items-center justify-end gap-6 px-6 py-2.5" style={{ background: "#3d6e8e", boxShadow: "0 -2px 6px rgba(0,0,0,0.18)" }}>
+        <span className="text-xs font-bold text-blue-100 uppercase tracking-widest">Total Recebido</span>
+        <span className="text-sm font-extrabold text-white">
           {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
         </span>
       </div>
