@@ -1313,6 +1313,7 @@ const clientesRows: ClienteRow[] = [
 function ClientesContent() {
   const [selectedCliente, setSelectedCliente] = useState<ClienteRow | null>(null);
   const [showParcelas, setShowParcelas] = useState(false);
+  const [selectedHistoricoEmp, setSelectedHistoricoEmp] = useState<ClienteRow["historico"][0] | null>(null);
 
   const cols = [
     { label: "Nro.",               w: "4%",  align: "center" as const },
@@ -1571,7 +1572,11 @@ function ClientesContent() {
                     </thead>
                     <tbody>
                       {c.historico.map((h, idx) => (
-                        <tr key={idx} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
+                        <tr key={idx}
+                          onClick={() => setSelectedHistoricoEmp(h)}
+                          style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9", cursor: "pointer" }}
+                          onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
+                          onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = idx % 2 === 0 ? "#fff" : "#f5f7f9"}>
                           <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0" }}>{h.data}</td>
                           <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0", fontWeight: 600 }}>{fmtM(h.valor)}</td>
                           <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0", fontWeight: 600 }}>{fmtM(h.total)}</td>
@@ -1662,6 +1667,81 @@ function ClientesContent() {
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#6b7280" }}>{p.num}</td>
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{p.vencimento}</td>
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: p.pago ? "#15803d" : "#9ca3af", fontWeight: p.pago ? 600 : 400 }}>{p.pagamento}</td>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 600, color: "#111827" }}>{fmtM(p.valor)}</td>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0" }}>
+                              <TipoBadge tipo="PARC." />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* ── Historico loan parcelas sub-modal ── */}
+          {selectedHistoricoEmp && (() => {
+            const emp = selectedHistoricoEmp;
+            const isAtivo = emp.status === "ACTIVO";
+            const pagasCount = isAtivo ? c.pagas : emp.cuotas;
+            const startDate = new Date(emp.data + "T00:00:00");
+            const parcs = Array.from({ length: emp.cuotas }, (_, i) => {
+              const due = new Date(startDate);
+              due.setDate(due.getDate() + i + 1);
+              const pago = i < pagasCount;
+              return {
+                num: i + 1,
+                vencimento: due.toISOString().slice(0, 10),
+                pagamento: pago ? due.toISOString().slice(0, 10) : "—",
+                valor: emp.total / emp.cuotas,
+                pago,
+              };
+            });
+            const totalPago = parcs.filter(p => p.pago).reduce((a, p) => a + p.valor, 0);
+            const pagasParcs = parcs.filter(p => p.pago);
+            return (
+              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center" }}
+                onClick={() => setSelectedHistoricoEmp(null)}>
+                <div style={{ background: "#fff", borderRadius: 8, width: 580, maxHeight: "85vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column" }}
+                  onClick={e => e.stopPropagation()}>
+
+                  {/* Header */}
+                  <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>
+                        PARCELAS — {emp.status === "QUITADO" ? "EMPRÉSTIMO QUITADO" : "EMPRÉSTIMO ATIVO"}
+                      </div>
+                      <div style={{ color: "#93c5fd", fontSize: 11, marginTop: 2 }}>{c.nome} · {emp.data}</div>
+                    </div>
+                    <button onClick={() => setSelectedHistoricoEmp(null)} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+                  </div>
+
+                  {/* Summary bar */}
+                  <div style={{ background: "#f0f4f8", borderBottom: "1px solid #e0e0e0", padding: "10px 18px", display: "flex", gap: 24, fontSize: 12, flexWrap: "wrap" }}>
+                    <div><span style={{ color: "#6b7280" }}>Empréstimo: </span><b style={{ color: "#111827" }}>{fmtM(emp.valor)}</b></div>
+                    <div><span style={{ color: "#6b7280" }}>Total: </span><b style={{ color: "#111827" }}>{fmtM(emp.total)}</b></div>
+                    <div><span style={{ color: "#6b7280" }}>Pagas: </span><b style={{ color: "#15803d" }}>{pagasCount}/{emp.cuotas}</b></div>
+                    <div><span style={{ color: "#6b7280" }}>Total pago: </span><b style={{ color: "#15803d" }}>{fmtM(totalPago)}</b></div>
+                  </div>
+
+                  {/* Table */}
+                  <div style={{ padding: "0 0 16px" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                      <thead>
+                        <tr>
+                          {["Nº", "Vencimento", "Pagamento", "Valor", "Situação"].map(hd => (
+                            <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "7px 12px", textAlign: hd === "Nº" ? "center" : hd === "Valor" ? "right" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0 }}>{hd}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pagasParcs.map((p, idx) => (
+                          <tr key={p.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#6b7280" }}>{p.num}</td>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{p.vencimento}</td>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: "#15803d", fontWeight: 600 }}>{p.pagamento}</td>
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 600, color: "#111827" }}>{fmtM(p.valor)}</td>
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0" }}>
                               <TipoBadge tipo="PARC." />
