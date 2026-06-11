@@ -1358,7 +1358,7 @@ function AgendadosContent() {
     <div className="flex-1 flex flex-col overflow-hidden" style={{ position: "relative" }}>
 
       {/* ── Standard title bar ── */}
-      <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+      <div className="shrink-0 flex items-center gap-2 px-3" style={{ height: 34, background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
           $ Agendados do Dia
@@ -1367,7 +1367,7 @@ function AgendadosContent() {
         <div style={{ position: "relative" }}>
           <button
             onClick={() => { setTempDate(filterDate); setShowFilter(v => !v); }}
-            style={{ height: 26, padding: "0 10px", borderRadius: 4, border: "none", background: "#4a7fa0", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+            style={{ height: 22, padding: "0 8px", borderRadius: 4, border: "none", background: "#4a7fa0", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
             <svg viewBox="0 0 24 24" style={{ width: 12, height: 12, fill: "#fff" }}><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
             {filterDate ? filterDate : "Filtrar dia"}
             {filterDate && (
