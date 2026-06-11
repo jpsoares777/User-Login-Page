@@ -1357,22 +1357,25 @@ function AgendadosContent() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ position: "relative" }}>
 
-      {/* Minimal top bar — only "Filtrar dia" button in the corner */}
-      <div className="shrink-0 flex items-center px-3" style={{ height: 38, background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+      {/* ── Standard title bar ── */}
+      <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
+          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          $ Agendados do Dia
+        </span>
         <div className="flex-1" />
         <div style={{ position: "relative" }}>
           <button
             onClick={() => { setTempDate(filterDate); setShowFilter(v => !v); }}
-            style={{ height: 28, padding: "0 10px", borderRadius: 5, border: "none", background: "#4a7fa0", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
-            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+            style={{ height: 26, padding: "0 10px", borderRadius: 4, border: "none", background: "#4a7fa0", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+            <svg viewBox="0 0 24 24" style={{ width: 12, height: 12, fill: "#fff" }}><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
             {filterDate ? filterDate : "Filtrar dia"}
             {filterDate && (
               <span onClick={e => { e.stopPropagation(); setFilterDate(""); }} style={{ marginLeft: 2, fontWeight: 700, opacity: 0.8 }}>✕</span>
             )}
           </button>
-
           {showFilter && (
-            <div style={{ position: "absolute", top: 34, right: 0, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", border: "1px solid #e0e0e0", width: 260, padding: 16 }}>
+            <div style={{ position: "absolute", top: 32, right: 0, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", border: "1px solid #e0e0e0", width: 260, padding: 16 }}>
               <div style={{ fontWeight: 700, fontSize: 13, color: "#2d5474", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span>Filtrar por Data</span>
                 <button onClick={() => setShowFilter(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 16, fontWeight: 700 }}>✕</button>
@@ -1382,17 +1385,14 @@ function AgendadosContent() {
                 style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "6px 10px", fontSize: 13, color: "#374151", marginBottom: 14, boxSizing: "border-box" }} />
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={() => { setFilterDate(""); setTempDate(""); setShowFilter(false); }}
-                  style={{ flex: 1, background: "#f3f4f6", color: "#6b7280", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                  Limpar
-                </button>
+                  style={{ flex: 1, background: "#f3f4f6", color: "#6b7280", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Limpar</button>
                 <button onClick={() => { setFilterDate(tempDate); setShowFilter(false); }}
-                  style={{ flex: 1, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                  Aplicar
-                </button>
+                  style={{ flex: 1, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Aplicar</button>
               </div>
             </div>
           )}
         </div>
+        <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: 2026-05-25</span>
       </div>
 
       {/* Table */}
@@ -1453,7 +1453,9 @@ function AgendadosContent() {
         </table>
       </div>
 
-      {/* Add modal */}
+      {/* ── Blue footer ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5" style={{ background: "#3d6e8e" }} />
+
       {showAddModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }}
           onClick={() => setShowAddModal(false)}>
