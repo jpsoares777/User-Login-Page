@@ -1665,43 +1665,45 @@ function ClientesContent() {
               return (
                 <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex, display: "flex", alignItems: "center", justifyContent: "center" }}
                   onClick={onClose}>
-                  <div style={{ background: "#fff", borderRadius: 8, width: 660, maxHeight: "88vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column" }}
+                  <div style={{ background: "#fff", borderRadius: 8, width: 660, maxHeight: "82vh", boxShadow: "0 24px 64px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", overflow: "hidden" }}
                     onClick={e => e.stopPropagation()}>
-                    {/* Header */}
-                    <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    {/* Header — fixed */}
+                    <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
                       <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Histórico de Pagamentos</span>
                       <button onClick={onClose} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
                     </div>
-                    {/* Client + loan number */}
-                    <div style={{ padding: "10px 18px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 10 }}>
+                    {/* Client + loan number — fixed */}
+                    <div style={{ padding: "10px 18px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
                       <span style={{ fontSize: 14 }}>👤</span>
                       <span style={{ fontWeight: 800, fontSize: 13, color: "#e07b39", letterSpacing: "0.02em" }}>{c.nome.toUpperCase()}</span>
                       <span style={{ color: "#6b7280", fontSize: 12 }}>Empréstimo #{empNro}</span>
                     </div>
-                    {/* Table */}
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                      <thead>
-                        <tr>
-                          {["Nro.", "Cliente", "Tipo", "Valor", "Fecha", "Observações"].map(hd => (
-                            <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "8px 12px", textAlign: hd === "Valor" ? "right" : hd === "Nro." ? "center" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0, whiteSpace: "nowrap" }}>{hd}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {rowsDesc.map((r, idx) => (
-                          <tr key={r.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
-                            <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{r.num}</td>
-                            <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#2563eb", fontWeight: 500 }}>{nomeShort.toUpperCase()}</td>
-                            <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}><TipoBadge tipo={r.tipo} /></td>
-                            <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: r.valor > 0 ? "#111827" : "#9ca3af" }}>R$ {r.valor.toFixed(2).replace(".", ",")}</td>
-                            <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151", whiteSpace: "nowrap" }}>{r.fecha}</td>
-                            <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#6b7280", fontSize: 11 }}>{r.obs}</td>
+                    {/* Table — scrollable */}
+                    <div style={{ flex: 1, overflowY: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                        <thead>
+                          <tr>
+                            {["Nro.", "Cliente", "Tipo", "Valor", "Fecha", "Observações"].map(hd => (
+                              <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "8px 12px", textAlign: hd === "Valor" ? "right" : hd === "Nro." ? "center" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0, zIndex: 1, whiteSpace: "nowrap" }}>{hd}</th>
+                            ))}
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {/* Footer */}
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 16px", background: "#f8f9fa", borderTop: "1px solid #e0e0e0" }}>
+                        </thead>
+                        <tbody>
+                          {rowsDesc.map((r, idx) => (
+                            <tr key={r.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
+                              <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{r.num}</td>
+                              <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#2563eb", fontWeight: 500 }}>{nomeShort.toUpperCase()}</td>
+                              <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}><TipoBadge tipo={r.tipo} /></td>
+                              <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: r.valor > 0 ? "#111827" : "#9ca3af" }}>R$ {r.valor.toFixed(2).replace(".", ",")}</td>
+                              <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151", whiteSpace: "nowrap" }}>{r.fecha}</td>
+                              <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#6b7280", fontSize: 11 }}>{r.obs}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* Footer — fixed */}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 16px", background: "#f8f9fa", borderTop: "1px solid #e0e0e0", flexShrink: 0 }}>
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>TOTAL PAGOS: <span style={{ color: "#2563eb" }}>R$ {totalPago.toFixed(2).replace(".", ",")}</span></span>
                       <button onClick={onClose} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Cancelar</button>
                     </div>
