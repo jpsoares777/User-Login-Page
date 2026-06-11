@@ -8,7 +8,7 @@ import {
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
 const SUB_TABS = ["Relatório Diário", "Pagamentos", "Novos Empréstimos", "Despesas", "Rendimentos", "Clientes", "Agendados", "Relatórios"];
-const LIQ_PERIODOS_TABS = ["Liquidação", "Pagamentos", "Vendas por Períodos", "Receitas", "Despesas", "Clientes", "Resumo"];
+const LIQ_PERIODOS_TABS = ["Liquidação", "Pagamentos", "Empr. por Períodos", "Receitas", "Despesas", "Clientes", "Resumo"];
 
 // ── Helper components ─────────────────────────────────────────────────────────
 
@@ -2626,7 +2626,7 @@ function VendasPorPeriodosContent() {
 function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
   if (activeSub === "Liquidação")        return <LiqPeriodosLiquidacaoView />;
   if (activeSub === "Pagamentos")        return <LiqPeriodosPagamentosContent />;
-  if (activeSub === "Vendas por Períodos") return <VendasPorPeriodosContent />;
+  if (activeSub === "Empr. por Períodos") return <VendasPorPeriodosContent />;
   return (
     <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
       <p className="text-gray-400 text-sm">{activeSub} — em desenvolvimento</p>
