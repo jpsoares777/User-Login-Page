@@ -2243,8 +2243,8 @@ function LiqPeriodosLiquidacaoView() {
           <span className="text-gray-400 text-[11px] ml-0.5">%</span>
         </Row>
         <Row label="Retirada de Caixa" index={3}>
-          <span className="text-gray-500 font-bold text-sm">−</span>
-          <span className="font-semibold text-gray-600">351,00</span>
+          <span className="text-red-600 font-bold text-sm">−</span>
+          <span className="font-semibold text-red-600">351,00</span>
         </Row>
         <Row label="Despesas" index={4}>
           <span className="text-gray-500 font-bold text-sm">−</span>
