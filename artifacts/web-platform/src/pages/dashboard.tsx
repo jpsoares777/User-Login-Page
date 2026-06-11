@@ -1664,14 +1664,7 @@ function ClientesContent() {
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: p.pago ? "#15803d" : "#9ca3af", fontWeight: p.pago ? 600 : 400 }}>{p.pagamento}</td>
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 600, color: "#111827" }}>{fmtM(p.valor)}</td>
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0" }}>
-                              <span style={{
-                                fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 3,
-                                color: p.pago ? "#15803d" : "#b91c1c",
-                                background: p.pago ? "#dcfce7" : "#fee2e2",
-                                border: `1px solid ${p.pago ? "#86efac" : "#fca5a5"}`,
-                              }}>
-                                {p.pago ? "PAGO" : "PENDENTE"}
-                              </span>
+                              <TipoBadge tipo="PARC." />
                             </td>
                           </tr>
                         ))}
