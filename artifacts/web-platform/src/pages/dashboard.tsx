@@ -1553,13 +1553,10 @@ function RelatóriosContent() {
     </div>
   );
 
-  const Card = ({ icon, symbol, title, children }: { icon?: string; symbol?: string; title: string; children: React.ReactNode }) => (
+  const Card = ({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) => (
     <div style={{ background: "#fff", borderRadius: 7, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #e9edf0", display: "flex", gap: 0, overflow: "hidden" }}>
       <div style={{ width: 56, minWidth: 56, background: "#3d6e8e", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        {symbol
-          ? <span style={{ color: "#fff", fontSize: 24, fontWeight: 800, lineHeight: 1 }}>{symbol}</span>
-          : <svg viewBox="0 0 24 24" style={{ width: 26, height: 26, fill: "#fff" }}><path d={icon} /></svg>
-        }
+        <svg viewBox="0 0 24 24" style={{ width: 26, height: 26, fill: "#fff" }}><path d={icon} /></svg>
       </div>
       <div style={{ flex: 1, padding: "8px 10px" }}>
         <div style={{ fontWeight: 800, fontSize: 11, color: "#111827", letterSpacing: "0.04em", marginBottom: 5 }}>{title}</div>
@@ -1630,7 +1627,7 @@ function RelatóriosContent() {
           <input type="number" placeholder="0,00" style={inpStyle} />
         </Card>
 
-        <Card symbol="%" title="RELATÓRIO POR JUROS">
+        <Card icon={PERCENT} title="RELATÓRIO POR JUROS">
           <Sel opts={juro} />
           <span style={lblStyle}>Valor dos Juros %</span>
           <input type="number" placeholder="0,00" min="0" step="0.01" style={inpStyle} />
