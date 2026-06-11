@@ -8,7 +8,7 @@ import {
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
 const SUB_TABS = ["Relatório Diário", "Pagamentos", "Novos Empréstimos", "Despesas", "Rendimentos", "Clientes", "Agendados", "Relatórios"];
-const LIQ_PERIODOS_TABS = ["Liquidação", "Pagos", "Ventas por Períodos", "Ingressos", "Egresos", "Clientes", "Resumen"];
+const LIQ_PERIODOS_TABS = ["Liquidação", "Pagamentos", "Vendas por Períodos", "Receitas", "Despesas", "Clientes", "Resumo"];
 
 // ── Helper components ─────────────────────────────────────────────────────────
 
@@ -2200,10 +2200,10 @@ function LiqPeriodosLiquidacaoView() {
           <strong className="text-gray-800">Rota Cred Bank -</strong>
           <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
         </Row>
-        <Row label="Fecha de Inicial" index={1}>
+        <Row label="Data Inicial" index={1}>
           <CalIcon /><span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">2026-02-06</span>
         </Row>
-        <Row label="Fecha Final" index={2}>
+        <Row label="Data Final" index={2}>
           <CalIcon /><span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">2026-06-06</span>
         </Row>
         <Row label="Dias" index={3}>
@@ -2214,53 +2214,53 @@ function LiqPeriodosLiquidacaoView() {
         <Row label="Total de Clientes" index={0}>
           <PersonIcon /> <strong className="text-gray-800">31</strong>
         </Row>
-        <Row label="Clientes Nuevos/Renovados" index={1}>
+        <Row label="Clientes Novos/Renovados" index={1}>
           <PersonIcon /> <strong className="text-gray-800">31</strong>
           <span className="text-gray-400 text-[11px]">( 21/10 )</span>
         </Row>
-        <Row label="Promedio" index={2}>
+        <Row label="Média" index={2}>
           <span className="font-semibold text-gray-800">$ 757,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
         </Row>
-        <Row label="Recaudo Pretendido" index={3}>
+        <Row label="Recebimento Previsto" index={3}>
           <span className="font-semibold text-gray-800">$ 0,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( 100% )</span>
         </Row>
 
         <SectionHeader title="Financeiro" color="#7c3aed" />
-        <Row label="Recaudo" index={0}>
+        <Row label="Recebimento" index={0}>
           <span className="font-semibold text-gray-800">$ 17.420,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
         </Row>
-        <Row label="Ventas" index={1}>
+        <Row label="Vendas" index={1}>
           <span className="font-semibold text-gray-800">$ 21.200,00</span>
           <span className="text-gray-400 text-[11px] ml-1">(</span>
           <span className="text-orange-500 text-xs">🔥</span>
-          <span className="text-gray-500 text-[11px]">Interes</span>
+          <span className="text-gray-500 text-[11px]">Juros</span>
           <span className="font-semibold text-gray-800">8.390,00</span>
           <span className="text-gray-400 text-[11px]">)</span>
         </Row>
-        <Row label="Retiros" index={2}>
+        <Row label="Retiradas" index={2}>
           <span className="text-gray-500 font-bold text-sm">−</span>
           <span className="font-semibold text-gray-600">351,00</span>
         </Row>
-        <Row label="Egresos" index={3}>
+        <Row label="Despesas" index={3}>
           <span className="text-gray-500 font-bold text-sm">−</span>
           <span className="font-semibold text-gray-600">1.890,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( 10,85% )</span>
           <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
         </Row>
-        <Row label="Ingresos" index={4}>
+        <Row label="Receitas" index={4}>
           <span className="text-blue-600 font-bold text-sm">+</span>
           <span className="font-semibold text-blue-700">9.390,00</span>
         </Row>
-        <Row label="Caja Inicial del 2026-02-06" index={5}>
+        <Row label="Caixa Inicial de 2026-02-06" index={5}>
           <span className="font-semibold text-gray-800">$ 0,00</span>
         </Row>
-        <Row label="Caja Final del 2026-06-06" bold index={6}>
+        <Row label="Caixa Final de 2026-06-06" bold index={6}>
           <span className="text-green-700">$ 3.369,00</span>
         </Row>
-        <Row label="Ganância" bold index={7}>
+        <Row label="Ganho" bold index={7}>
           <span className="text-green-700">$ 3.630,00</span>
         </Row>
       </div>
@@ -2273,7 +2273,7 @@ function LiqPeriodosLiquidacaoView() {
           "👥 Lista Clientes",
           "🔒 Bloquear Unidade",
           "🔑 Código Aprovações",
-          "📈 Ganância ( $3.630,00 )",
+          "📈 Ganho ( $3.630,00 )",
         ].map((label) => (
           <button key={label}
             className="w-full text-left px-3 py-2 text-xs font-medium rounded text-white hover:opacity-90"
