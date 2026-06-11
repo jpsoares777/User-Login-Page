@@ -8,7 +8,7 @@ import {
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
 const SUB_TABS = ["Relatório Diário", "Pagamentos", "Novos Empréstimos", "Despesas", "Rendimentos", "Clientes", "Agendados", "Relatórios"];
-const LIQ_PERIODOS_TABS = ["Liquidação", "Pagamentos", "Empr. por Períodos", "Receitas", "Despesas", "Clientes", "Resumo"];
+const LIQ_PERIODOS_TABS = ["Liquidação", "Pagamentos", "Empr. por Períodos", "Rendimentos", "Despesas", "Clientes", "Resumo"];
 
 // ── Helper components ─────────────────────────────────────────────────────────
 
