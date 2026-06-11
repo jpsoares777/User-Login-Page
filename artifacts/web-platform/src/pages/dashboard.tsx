@@ -402,24 +402,6 @@ const pagamentosData = [
   { id:10, status: "bom",   consecutivo: "4700627022", cliente: "KLEITON VIANA GONÇALVES",         obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.170,00", sancao: "0,00", saldo: "420,00",  restantes: "4.7",  visitas: 23, freq: "Diario" },
   { id:11, status: "medio", consecutivo: "4700627027", cliente: "ANTÔNIO LEITE NETO",              obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "800,00",  sancao: "0,00", saldo: "750,00",  restantes: "12.5", visitas: 21, freq: "Diario" },
   { id:12, status: "medio", consecutivo: "4700627025", cliente: "BIANCA DE ARAÚJO ALVES",          obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "420,00",  sancao: "0,00", saldo: "420,00",  restantes: "14.0", visitas: 3,  freq: "Diario" },
-  { id:13, status: "ruim",  consecutivo: "4700627031", cliente: "CARLOS HENRIQUE SOUZA LIMA",        obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "650,00",  sancao: "0,00", saldo: "590,00",  restantes: "11.0", visitas: 7,  freq: "Diario" },
-  { id:14, status: "bom",   consecutivo: "4700627044", cliente: "FERNANDA CRISTINA MOURA",           obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "980,00",  sancao: "0,00", saldo: "840,00",  restantes: "8.0",  visitas: 15, freq: "Diario" },
-  { id:15, status: "medio", consecutivo: "4700627052", cliente: "JOSÉ WELLINGTON PEREIRA NUNES",     obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.260,00", sancao: "0,00", saldo: "1.120,00",restantes: "16.0", visitas: 6,  freq: "Semanal" },
-  { id:16, status: "ruim",  consecutivo: "4700627061", cliente: "LUCIANA APARECIDA FERREIRA",        obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "700,00",  sancao: "0,00", saldo: "630,00",  restantes: "9.0",  visitas: 11, freq: "Diario" },
-  { id:17, status: "bom",   consecutivo: "4700627073", cliente: "MARCOS VINÍCIUS ALMEIDA COSTA",     obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "840,00",  sancao: "0,00", saldo: "350,00",  restantes: "5.0",  visitas: 19, freq: "Diario" },
-  { id:18, status: "ruim",  consecutivo: "4700627081", cliente: "NATALIA RODRIGUES DA SILVA",        obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "560,00",  sancao: "0,00", saldo: "560,00",  restantes: "14.0", visitas: 2,  freq: "Diario" },
-  { id:19, status: "medio", consecutivo: "4700627092", cliente: "PEDRO HENRIQUE BARBOSA SANTOS",     obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.400,00", sancao: "0,00", saldo: "980,00",  restantes: "10.0", visitas: 8,  freq: "Quinzenal" },
-  { id:20, status: "bom",   consecutivo: "4700627103", cliente: "ROSANGELA MATOS DE OLIVEIRA",       obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "490,00",  sancao: "0,00", saldo: "210,00",  restantes: "3.0",  visitas: 22, freq: "Diario" },
-  { id:21, status: "ruim",  consecutivo: "4700627115", cliente: "SANDRA FÁTIMA CAVALCANTE",          obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.120,00", sancao: "0,00", saldo: "1.050,00",restantes: "15.0", visitas: 4,  freq: "Diario" },
-  { id:22, status: "medio", consecutivo: "4700627128", cliente: "TIAGO AUGUSTO REZENDE SILVA",       obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Transferência", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "770,00",  sancao: "0,00", saldo: "630,00",  restantes: "9.0",  visitas: 14, freq: "Semanal" },
-  { id:23, status: "bom",   consecutivo: "4700627136", cliente: "VALDETE SOUSA NASCIMENTO",          obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "350,00",  sancao: "0,00", saldo: "140,00",  restantes: "2.0",  visitas: 20, freq: "Diario" },
-  { id:24, status: "ruim",  consecutivo: "4700627147", cliente: "WELLINGTON COSTA BRAGA",            obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "910,00",  sancao: "0,00", saldo: "870,00",  restantes: "13.0", visitas: 5,  freq: "Diario" },
-  { id:25, status: "bom",   consecutivo: "4700627159", cliente: "ANA CLÁUDIA MEDEIROS FURTADO",      obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "630,00",  sancao: "0,00", saldo: "270,00",  restantes: "4.0",  visitas: 18, freq: "Diario" },
-  { id:26, status: "medio", consecutivo: "4700627168", cliente: "BRUNA LETÍCIA PINHEIRO TELES",      obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Transferência", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.050,00", sancao: "0,00", saldo: "910,00",  restantes: "13.0", visitas: 9,  freq: "Quinzenal" },
-  { id:27, status: "ruim",  consecutivo: "4700627174", cliente: "CÍCERO RAIMUNDO ARAÚJO FILHO",       obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "840,00",  sancao: "0,00", saldo: "770,00",  restantes: "11.0", visitas: 6,  freq: "Diario" },
-  { id:28, status: "bom",   consecutivo: "4700627183", cliente: "DÉBORA CRISTINA LEAL SOUSA",        obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "490,00",  sancao: "0,00", saldo: "140,00",  restantes: "2.0",  visitas: 24, freq: "Diario" },
-  { id:29, status: "ruim",  consecutivo: "4700627191", cliente: "EDVALDO PEREIRA DOS SANTOS",         obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.330,00", sancao: "0,00", saldo: "1.260,00",restantes: "18.0", visitas: 3,  freq: "Diario" },
-  { id:30, status: "medio", consecutivo: "4700627202", cliente: "FLÁVIA GONÇALVES MONTEIRO",         obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "700,00",  sancao: "0,00", saldo: "490,00",  restantes: "7.0",  visitas: 12, freq: "Semanal" },
 ];
 
 type PagRow = typeof pagamentosData[0];
@@ -631,7 +613,7 @@ function PagamentosContent() {
       </div>
 
       {/* ── Table ── */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-auto">
         <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
@@ -2392,7 +2374,7 @@ function LiqPeriodosPagamentosContent() {
       </div>
 
       {/* ── Table ── */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-auto">
         <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
@@ -2437,15 +2419,16 @@ function LiqPeriodosPagamentosContent() {
         </table>
       </div>
 
-      {/* ── Floating total footer (always visible) ── */}
-      <div className="shrink-0 flex items-center justify-end gap-6 px-4 py-2" style={{ background: "#e8edf2", borderTop: "2px solid #d1d5db" }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.05em" }}>
-          TOTAL RECEBIDO
-        </span>
-        <span style={{ fontSize: 14, fontWeight: 800, color: "#15803d", minWidth: 70, textAlign: "right" }}>
+      {/* ── Total row ── */}
+      <div className="shrink-0 flex items-center justify-end gap-4 px-4 py-2 border-t" style={{ background: "#f0f2f5" }}>
+        <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Total Recebido</span>
+        <span className="text-sm font-extrabold text-green-700">
           {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
         </span>
       </div>
+
+      {/* ── Blue footer bar (padrão) ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
 
     </div>
   );
