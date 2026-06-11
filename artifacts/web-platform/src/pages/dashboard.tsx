@@ -1286,20 +1286,33 @@ function RendimentosContent() {
 }
 
 // ── Clientes data ─────────────────────────────────────────────────────────────
-const clientesRows = [
-  { id:1,  consec:"4700627026", status:"ACTIVO", visitas:5,  nome:"Andreia de Jesus Costa Araújo",   tel1:"91633427315",  tel2:"98985014328",  freq:"Diário", valorVenda:1500.00, pctJuros:40, total:2100.00, cuotas:20, atrasadas:0,  pagas:12, restantes:8,  vlrCuota:105, saldo:800.00  },
-  { id:2,  consec:"4700627080", status:"ACTIVO", visitas:14, nome:"Luciana Alves Da Silva",           tel1:"559988345767", tel2:"03270213301",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:14, pagas:0,  restantes:14, vlrCuota:50,  saldo:700.00  },
-  { id:3,  consec:"4700627079", status:"ACTIVO", visitas:0,  nome:"Ana Paula Marques De Oliveira",    tel1:"989896248424", tel2:"85259284372",  freq:"Diário", valorVenda:500.00,  pctJuros:20, total:600.00,  cuotas:20, atrasadas:0,  pagas:0,  restantes:20, vlrCuota:30,  saldo:600.00  },
-  { id:4,  consec:"4700627078", status:"ACTIVO", visitas:4,  nome:"Mariana Beatriz Rabelo Barbosa",   tel1:"98985721207",  tel2:"985721297",    freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:4,  pagas:0,  restantes:14, vlrCuota:100, saldo:1400.00 },
-  { id:5,  consec:"4700627077", status:"ACTIVO", visitas:14, nome:"Natanael Dos Santos Mendes",       tel1:"5511971269742",tel2:"11971269742",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:13, pagas:1,  restantes:13, vlrCuota:50,  saldo:650.00  },
-  { id:6,  consec:"4700627058", status:"ACTIVO", visitas:1,  nome:"Aline Lima De Alencar",            tel1:"98985678901",  tel2:"98985678902",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:1,  restantes:13, vlrCuota:80,  saldo:1040.00 },
-  { id:7,  consec:"4700627145", status:"ACTIVO", visitas:2,  nome:"Bores Viana De Souza",             tel1:"98984321100",  tel2:"98984321101",  freq:"Diário", valorVenda:560.00,  pctJuros:40, total:784.00,  cuotas:14, atrasadas:2,  pagas:0,  restantes:12, vlrCuota:40,  saldo:480.00  },
-  { id:8,  consec:"4700627024", status:"ACTIVO", visitas:11, nome:"Anny Briane Pires Belfort",        tel1:"98987654321",  tel2:"98987654322",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:11, restantes:3,  vlrCuota:80,  saldo:210.00  },
-  { id:9,  consec:"4700627090", status:"ACTIVO", visitas:5,  nome:"Daniele Texeira Lindoso",          tel1:"559899687036", tel2:"99687036",     freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:5,  pagas:5,  restantes:9,  vlrCuota:100, saldo:900.00  },
-  { id:10, consec:"4700627023", status:"ACTIVO", visitas:9,  nome:"Elaira Kisley Conceição Lopes",    tel1:"98986543210",  tel2:"98986543211",  freq:"Diário", valorVenda:540.00,  pctJuros:40, total:756.00,  cuotas:14, atrasadas:9,  pagas:0,  restantes:9,  vlrCuota:54,  saldo:540.00  },
+type ClienteRow = {
+  id: number; consec: string; status: string; visitas: number; nome: string;
+  tel1: string; tel2: string; freq: string; valorVenda: number; pctJuros: number;
+  total: number; cuotas: number; atrasadas: number; pagas: number; restantes: number;
+  vlrCuota: number; saldo: number;
+  documento: string; dataNasc: string; endereco: string; bairro: string; cidade: string;
+  estadoVerif: string; nroSeguro: string; valorSeguro: number;
+  nomeCodedor: string; telCodedor: string; dirCodedor: string; observacoes: string;
+  dataEmprestimo: string;
+  historico: { data: string; valor: number; total: number; cuotas: number; status: string }[];
+};
+const clientesRows: ClienteRow[] = [
+  { id:1,  consec:"4700627026", status:"ACTIVO", visitas:5,  nome:"Andreia de Jesus Costa Araújo",   tel1:"91633427315",  tel2:"98985014328",  freq:"Diário", valorVenda:1500.00, pctJuros:40, total:2100.00, cuotas:20, atrasadas:0,  pagas:12, restantes:8,  vlrCuota:105, saldo:800.00,  documento:"012.345.678-90", dataNasc:"1985-03-12", endereco:"Rua Gama Lobo, nº 10, Quarto", bairro:"Centro", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Cliente pontual. Prefere contato pelo WhatsApp.", dataEmprestimo:"2026-04-08", historico:[{data:"2025-10-01",valor:800,total:1120,cuotas:14,status:"QUITADO"},{data:"2026-04-08",valor:1500,total:2100,cuotas:20,status:"ACTIVO"}] },
+  { id:2,  consec:"4700627080", status:"ACTIVO", visitas:14, nome:"Luciana Alves Da Silva",           tel1:"559988345767", tel2:"03270213301",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:14, pagas:0,  restantes:14, vlrCuota:50,  saldo:700.00,  documento:"098.765.432-11", dataNasc:"1992-07-22", endereco:"Av. Principal, 455, Apto 3", bairro:"Jardim América", cidade:"São Paulo - SP", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Muitas visitas sem pagamento. Atenção redobrada.", dataEmprestimo:"2026-05-01", historico:[{data:"2026-05-01",valor:500,total:700,cuotas:14,status:"ACTIVO"}] },
+  { id:3,  consec:"4700627079", status:"ACTIVO", visitas:0,  nome:"Ana Paula Marques De Oliveira",    tel1:"989896248424", tel2:"85259284372",  freq:"Diário", valorVenda:500.00,  pctJuros:20, total:600.00,  cuotas:20, atrasadas:0,  pagas:0,  restantes:20, vlrCuota:30,  saldo:600.00,  documento:"111.222.333-44", dataNasc:"1990-11-05", endereco:"Rua das Flores, 22", bairro:"Nova Esperança", cidade:"Fortaleza - CE", estadoVerif:"Verificado", nroSeguro:"SEG-001", valorSeguro:150.00, nomeCodedor:"José Marques", telCodedor:"85259284371", dirCodedor:"Rua das Flores, 22", observacoes:"", dataEmprestimo:"2026-05-10", historico:[{data:"2026-05-10",valor:500,total:600,cuotas:20,status:"ACTIVO"}] },
+  { id:4,  consec:"4700627078", status:"ACTIVO", visitas:4,  nome:"Mariana Beatriz Rabelo Barbosa",   tel1:"98985721207",  tel2:"985721297",    freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:4,  pagas:0,  restantes:14, vlrCuota:100, saldo:1400.00, documento:"222.333.444-55", dataNasc:"1988-01-30", endereco:"Trav. São João, 78", bairro:"Cohab", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Dificuldade de localização.", dataEmprestimo:"2026-05-05", historico:[{data:"2025-08-15",valor:500,total:700,cuotas:14,status:"QUITADO"},{data:"2026-05-05",valor:1000,total:1400,cuotas:14,status:"ACTIVO"}] },
+  { id:5,  consec:"4700627077", status:"ACTIVO", visitas:14, nome:"Natanael Dos Santos Mendes",       tel1:"5511971269742",tel2:"11971269742",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:13, pagas:1,  restantes:13, vlrCuota:50,  saldo:650.00,  documento:"333.444.555-66", dataNasc:"1983-06-18", endereco:"Rua 7 de Setembro, 101", bairro:"Vila Nova", cidade:"São Paulo - SP", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Muitas visitas. Considerar negativação.", dataEmprestimo:"2026-04-20", historico:[{data:"2026-04-20",valor:500,total:700,cuotas:14,status:"ACTIVO"}] },
+  { id:6,  consec:"4700627058", status:"ACTIVO", visitas:1,  nome:"Aline Lima De Alencar",            tel1:"98985678901",  tel2:"98985678902",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:1,  restantes:13, vlrCuota:80,  saldo:1040.00, documento:"444.555.666-77", dataNasc:"1995-09-14", endereco:"Conj. Habitacional, Bl. B, 203", bairro:"Tirirical", cidade:"São Luís - MA", estadoVerif:"Verificado", nroSeguro:"SEG-002", valorSeguro:200.00, nomeCodedor:"Carlos Alencar", telCodedor:"98985678903", dirCodedor:"Conj. Habitacional, Bl. A, 101", observacoes:"Boa pagadora.", dataEmprestimo:"2026-05-15", historico:[{data:"2025-11-01",valor:560,total:784,cuotas:14,status:"QUITADO"},{data:"2026-05-15",valor:1120,total:1568,cuotas:14,status:"ACTIVO"}] },
+  { id:7,  consec:"4700627145", status:"ACTIVO", visitas:2,  nome:"Bores Viana De Souza",             tel1:"98984321100",  tel2:"98984321101",  freq:"Diário", valorVenda:560.00,  pctJuros:40, total:784.00,  cuotas:14, atrasadas:2,  pagas:0,  restantes:12, vlrCuota:40,  saldo:480.00,  documento:"555.666.777-88", dataNasc:"1979-04-02", endereco:"Rua Barão de Codó, 55", bairro:"Renascença", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"", dataEmprestimo:"2026-05-18", historico:[{data:"2026-05-18",valor:560,total:784,cuotas:14,status:"ACTIVO"}] },
+  { id:8,  consec:"4700627024", status:"ACTIVO", visitas:11, nome:"Anny Briane Pires Belfort",        tel1:"98987654321",  tel2:"98987654322",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:11, restantes:3,  vlrCuota:80,  saldo:210.00,  documento:"666.777.888-99", dataNasc:"1991-12-25", endereco:"Rua dos Lirios, 88", bairro:"São Francisco", cidade:"São Luís - MA", estadoVerif:"Verificado", nroSeguro:"SEG-003", valorSeguro:100.00, nomeCodedor:"Pedro Belfort", telCodedor:"98987654323", dirCodedor:"Rua dos Lirios, 90", observacoes:"Ótima cliente. Quase quitando.", dataEmprestimo:"2026-02-01", historico:[{data:"2025-06-01",valor:500,total:700,cuotas:14,status:"QUITADO"},{data:"2025-10-15",valor:800,total:1120,cuotas:14,status:"QUITADO"},{data:"2026-02-01",valor:1120,total:1568,cuotas:14,status:"ACTIVO"}] },
+  { id:9,  consec:"4700627090", status:"ACTIVO", visitas:5,  nome:"Daniele Texeira Lindoso",          tel1:"559899687036", tel2:"99687036",     freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:5,  pagas:5,  restantes:9,  vlrCuota:100, saldo:900.00,  documento:"777.888.999-00", dataNasc:"1987-08-09", endereco:"Av. dos Holandeses, 200, Apto 12", bairro:"Ponta do Farol", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Atrasada. Última visita sem sucesso.", dataEmprestimo:"2026-04-15", historico:[{data:"2026-04-15",valor:1000,total:1400,cuotas:14,status:"ACTIVO"}] },
+  { id:10, consec:"4700627023", status:"ACTIVO", visitas:9,  nome:"Elaira Kisley Conceição Lopes",    tel1:"98986543210",  tel2:"98986543211",  freq:"Diário", valorVenda:540.00,  pctJuros:40, total:756.00,  cuotas:14, atrasadas:9,  pagas:0,  restantes:9,  vlrCuota:54,  saldo:540.00,  documento:"888.999.000-11", dataNasc:"1993-02-17", endereco:"Rua do Sol, 33", bairro:"Cohab Anil", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Muitos atrasos. Análise de renegociação.", dataEmprestimo:"2026-04-10", historico:[{data:"2026-04-10",valor:540,total:756,cuotas:14,status:"ACTIVO"}] },
 ];
 
 function ClientesContent() {
+  const [selectedCliente, setSelectedCliente] = useState<ClienteRow | null>(null);
+
   const cols = [
     { label: "Nro.",               w: "4%",  align: "center" as const },
     { label: "Consecutivo",        w: "9%",  align: "left"   as const },
@@ -1402,6 +1415,7 @@ function ClientesContent() {
               const saldoColor = r.atrasadas === 0 ? "#15803d" : r.atrasadas >= 5 ? "#b91c1c" : "#d97706";
               return (
                 <tr key={r.id} style={{ cursor: "pointer" }}
+                  onClick={() => setSelectedCliente(r)}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
 
@@ -1476,6 +1490,121 @@ function ClientesContent() {
       {/* Footer */}
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }}>
       </div>
+
+      {/* ── Cliente detail modal ─────────────────────────────────────── */}
+      {selectedCliente && (() => {
+        const c = selectedCliente;
+        const fmtM = (v: number) => `$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+        const nameColor = c.atrasadas === 0 ? "#15803d" : c.atrasadas >= 5 ? "#b91c1c" : "#b45309";
+        const initials = c.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setSelectedCliente(null)}>
+            <div style={{ background: "#fff", borderRadius: 8, width: 700, maxHeight: "90vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", display: "flex", flexDirection: "column" }}
+              onClick={e => e.stopPropagation()}>
+
+              {/* Modal header */}
+              <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.03em" }}>FICHA DO CLIENTE</span>
+                <button onClick={() => setSelectedCliente(null)} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 15, fontWeight: 700, lineHeight: 1 }}>✕</button>
+              </div>
+
+              <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
+
+                {/* Top: photo + basic info + inactivate btn */}
+                <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                  {/* Avatar */}
+                  <div style={{ flexShrink: 0, width: 80, height: 80, borderRadius: "50%", background: "#e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, color: "#3d6e8e", border: "3px solid #4a7fa0" }}>
+                    {initials}
+                  </div>
+                  {/* Name + status + consec */}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 17, fontWeight: 800, color: nameColor, marginBottom: 4 }}>{c.nome}</div>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "2px 7px" }}>{c.status}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "2px 7px" }}>{c.consec}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 3, padding: "2px 7px" }}>{c.freq}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: "#6b7280" }}>Doc: <b style={{ color: "#374151" }}>{c.documento}</b> &nbsp;|&nbsp; Nasc.: <b style={{ color: "#374151" }}>{c.dataNasc}</b></div>
+                  </div>
+                  {/* Inactivate button */}
+                  <button style={{ flexShrink: 0, background: "#b91c1c", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", letterSpacing: "0.02em" }}
+                    onClick={() => { alert(`Cliente ${c.nome} marcado como INACTIVO.`); setSelectedCliente(null); }}>
+                    🚫 Inativar Cliente
+                  </button>
+                </div>
+
+                {/* Divider */}
+                <div style={{ borderTop: "1px solid #e5e7eb" }} />
+
+                {/* Contact + address */}
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Contato e Endereço</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 16px", fontSize: 12 }}>
+                    <div><span style={{ color: "#9ca3af" }}>Tel 1:</span> <b style={{ color: "#111827" }}>{c.tel1}</b></div>
+                    <div><span style={{ color: "#9ca3af" }}>Tel 2:</span> <b style={{ color: "#111827" }}>{c.tel2}</b></div>
+                    <div style={{ gridColumn: "1/-1" }}><span style={{ color: "#9ca3af" }}>Endereço:</span> <b style={{ color: "#111827" }}>{c.endereco}, {c.bairro} – {c.cidade}</b></div>
+                    <div><span style={{ color: "#9ca3af" }}>Verificação:</span> <b style={{ color: c.estadoVerif === "Verificado" ? "#15803d" : "#d97706" }}>{c.estadoVerif}</b></div>
+                  </div>
+                </div>
+
+                {/* Security / co-debtor */}
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Seguro e Codeudor</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 16px", fontSize: 12 }}>
+                    <div><span style={{ color: "#9ca3af" }}>Nº Seguro:</span> <b style={{ color: "#111827" }}>{c.nroSeguro || "—"}</b></div>
+                    <div><span style={{ color: "#9ca3af" }}>Valor Seguro:</span> <b style={{ color: "#111827" }}>{fmtM(c.valorSeguro)}</b></div>
+                    <div><span style={{ color: "#9ca3af" }}>Nome Codeudor:</span> <b style={{ color: "#111827" }}>{c.nomeCodedor || "—"}</b></div>
+                    <div><span style={{ color: "#9ca3af" }}>Tel. Codeudor:</span> <b style={{ color: "#111827" }}>{c.telCodedor || "—"}</b></div>
+                    {c.dirCodedor && <div style={{ gridColumn: "1/-1" }}><span style={{ color: "#9ca3af" }}>Endereço Codeudor:</span> <b style={{ color: "#111827" }}>{c.dirCodedor}</b></div>}
+                  </div>
+                </div>
+
+                {/* Loan history */}
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Histórico de Empréstimos</div>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                    <thead>
+                      <tr>
+                        {["Data", "Valor", "Total", "Cuotas", "Situação"].map(h => (
+                          <th key={h} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "6px 10px", textAlign: "left", fontWeight: 700, fontSize: 11 }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {c.historico.map((h, idx) => (
+                        <tr key={idx} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
+                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0" }}>{h.data}</td>
+                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0", fontWeight: 600 }}>{fmtM(h.valor)}</td>
+                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0", fontWeight: 600 }}>{fmtM(h.total)}</td>
+                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>{h.cuotas}</td>
+                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0" }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 3,
+                              color: h.status === "QUITADO" ? "#15803d" : "#1d4ed8",
+                              background: h.status === "QUITADO" ? "#dcfce7" : "#eff6ff",
+                              border: `1px solid ${h.status === "QUITADO" ? "#86efac" : "#bfdbfe"}` }}>
+                              {h.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Observações */}
+                {c.observacoes && (
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Observações</div>
+                    <div style={{ background: "#fefce8", border: "1px solid #fde68a", borderRadius: 5, padding: "10px 12px", fontSize: 12, color: "#713f12", lineHeight: 1.6 }}>{c.observacoes}</div>
+                  </div>
+                )}
+
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
