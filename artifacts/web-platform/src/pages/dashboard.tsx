@@ -1603,19 +1603,23 @@ function RelatóriosContent() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, alignItems: "stretch" }}>
 
         <Card icon={PEOPLE} title="CLIENTES ATIVOS">
-          <Sel opts={vend} />
+          <span style={lblStyle}>Informe a Rota</span>
+          <input type="text" placeholder="Rota" style={inpStyle} />
         </Card>
 
         <Card icon={BLOCK} title="CLIENTES INATIVOS">
-          <Sel opts={vend} />
+          <span style={lblStyle}>Informe a Rota</span>
+          <input type="text" placeholder="Rota" style={inpStyle} />
         </Card>
 
         <Card icon={RENEW} title="CLIENTES SEM RENOVAR">
-          <Sel opts={vend} />
+          <span style={lblStyle}>Informe a Rota</span>
+          <input type="text" placeholder="Rota" style={inpStyle} />
         </Card>
 
         <Card icon={LATE} title="CLIENTES ATRASADOS">
-          <Sel opts={vend} />
+          <span style={lblStyle}>Informe a Rota</span>
+          <input type="text" placeholder="Rota" style={inpStyle} />
         </Card>
 
         <Card icon={PAID} title="CLIENTES QUE PAGARAM">
@@ -1634,15 +1638,18 @@ function RelatóriosContent() {
         </Card>
 
         <Card icon={CARD} title="CLIENTES VENCIDOS / A VENCER">
-          <Sel opts={vend} />
+          <span style={lblStyle}>Informe a Rota</span>
+          <input type="text" placeholder="Rota" style={inpStyle} />
         </Card>
 
         <Card icon={HIST} title="HISTÓRICO DE CLIENTES">
-          <Sel opts={vend} />
+          <span style={lblStyle}>Informe a Rota</span>
+          <input type="text" placeholder="Rota" style={inpStyle} />
         </Card>
 
         <Card icon={CANCEL} title="CLIENTES CANCELADOS">
-          <Sel opts={vend} />
+          <span style={lblStyle}>Informe a Rota</span>
+          <input type="text" placeholder="Rota" style={inpStyle} />
         </Card>
 
       </div>
