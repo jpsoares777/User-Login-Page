@@ -2236,11 +2236,10 @@ function LiqPeriodosLiquidacaoView() {
         </Row>
         <Row label="Total Empréstimo" index={1}>
           <span className="font-semibold text-gray-800">$ 21.200,00</span>
-          <span className="text-gray-400 text-[11px] ml-1">(</span>
+        </Row>
+        <Row label="Juros" index={2}>
           <span className="text-orange-500 text-xs">🔥</span>
-          <span className="text-gray-500 text-[11px]">Juros</span>
           <span className="font-semibold text-gray-800">8.390,00</span>
-          <span className="text-gray-400 text-[11px]">)</span>
         </Row>
         <Row label="Retiradas" index={3}>
           <span className="text-gray-500 font-bold text-sm">−</span>
