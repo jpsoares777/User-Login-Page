@@ -2652,90 +2652,90 @@ function LiqPeriodosClientesContent() {
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
 
   const cols = [
-    { label: "Vendedor",    w: "8%",  align: "left"   as const },
-    { label: "Fec. Venta",  w: "7%",  align: "center" as const },
-    { label: "Consec.",     w: "13%", align: "left"   as const },
-    { label: "Cliente",     w: "13%", align: "left"   as const },
-    { label: "Id Venta",    w: "7%",  align: "left"   as const },
-    { label: "Móvil",       w: "8%",  align: "left"   as const },
-    { label: "Direc.",      w: "10%", align: "left"   as const },
-    { label: "Cuotas",      w: "4%",  align: "center" as const },
-    { label: "Cuo. Pag.",   w: "4%",  align: "center" as const },
-    { label: "Cuo. Falt.",  w: "4%",  align: "center" as const },
-    { label: "Saldo",       w: "4%",  align: "right"  as const },
-    { label: "Int.",        w: "3%",  align: "center" as const },
-    { label: "Valor Prod.", w: "5%",  align: "right"  as const },
-    { label: "Vr Cuota",   w: "5%",  align: "right"  as const },
-    { label: "Visitas",     w: "4%",  align: "center" as const },
-    { label: "Frecuencia",  w: "5%",  align: "center" as const },
+    { label: "Vendedor",      w: "8%",  align: "left"   as const },
+    { label: "Data Venda",    w: "7%",  align: "center" as const },
+    { label: "Consec.",       w: "13%", align: "left"   as const },
+    { label: "Cliente",       w: "13%", align: "left"   as const },
+    { label: "Id Venda",      w: "7%",  align: "left"   as const },
+    { label: "Celular",       w: "8%",  align: "left"   as const },
+    { label: "Endereço",      w: "10%", align: "left"   as const },
+    { label: "Parcelas",      w: "4%",  align: "center" as const },
+    { label: "Parc. Pag.",    w: "4%",  align: "center" as const },
+    { label: "Parc. Rest.",   w: "4%",  align: "center" as const },
+    { label: "Saldo",         w: "4%",  align: "right"  as const },
+    { label: "Int.",          w: "3%",  align: "center" as const },
+    { label: "Valor Prod.",   w: "5%",  align: "right"  as const },
+    { label: "Vl. Parcela",  w: "5%",  align: "right"  as const },
+    { label: "Visitas",       w: "4%",  align: "center" as const },
+    { label: "Frequência",    w: "5%",  align: "center" as const },
   ];
 
   const tdC = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "5px 7px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
-    fontSize: 12, textAlign: align, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", ...extra,
+    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    fontSize: 13, textAlign: align, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", ...extra,
   });
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
 
-      {/* ── Filter bar ── */}
+      {/* ── Barra de filtros ── */}
       <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Consecutivo</label>
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Consecutivo</label>
           <input placeholder="Consecutivo" className={`${inputCls} w-28`} />
         </div>
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Nombres</label>
-          <input placeholder="Nombres" className={`${inputCls} w-28`} />
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Nomes</label>
+          <input placeholder="Nomes" className={`${inputCls} w-28`} />
         </div>
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Apellidos</label>
-          <input placeholder="Apellidos" className={`${inputCls} w-28`} />
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Sobrenomes</label>
+          <input placeholder="Sobrenomes" className={`${inputCls} w-28`} />
         </div>
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Documento</label>
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Documento</label>
           <input placeholder="Documento" className={`${inputCls} w-28`} />
         </div>
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Status</label>
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Status</label>
           <select className={`${inputCls} w-24`}>
             <option>Todos</option>
-            <option>Activo</option>
+            <option>Ativo</option>
             <option>Cancelado</option>
           </select>
         </div>
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Fecha Venta</label>
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Data Venda</label>
           <input type="date" className={`${inputCls} w-32`} />
         </div>
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Fecha Cancelación</label>
-          <input type="date" className={`${inputCls} w-32`} />
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Data Cancelamento</label>
+          <input type="date" className={`${inputCls} w-36`} />
         </div>
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Frecuencia</label>
-          <select className={`${inputCls} w-28`}>
-            <option value="">Seleccione Frecuencia</option>
-            <option>DIARIO</option>
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Frequência</label>
+          <select className={`${inputCls} w-32`}>
+            <option value="">Selecione Frequência</option>
+            <option>DIÁRIO</option>
             <option>SEMANAL</option>
           </select>
         </div>
         <div className="flex gap-1.5 pb-0.5">
           <button className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90" style={{ background: "#2563eb" }}>
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            Buscar
+            Pesquisar
           </button>
         </div>
       </div>
 
-      {/* ── Count bar ── */}
+      {/* ── Barra de contagem ── */}
       <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs text-gray-500">
           <span className="font-bold text-gray-800">{liqPerClientesData.length}</span> registros encontrados
         </span>
       </div>
 
-      {/* ── Table ── */}
+      {/* ── Tabela ── */}
       <div className="flex-1 overflow-auto">
         <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
@@ -2743,7 +2743,7 @@ function LiqPeriodosClientesContent() {
             <tr>
               {cols.map(c => (
                 <th key={c.label} style={{
-                  padding: "7px 7px", textAlign: c.align, fontSize: 12, fontWeight: 700,
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
                   color: "#e2e8f0", background: "#3d6e8e", borderRight: "1px solid #4a7fa0",
                   letterSpacing: "0.02em", position: "sticky", top: 0, zIndex: 1, whiteSpace: "nowrap",
                 }}>{c.label}</th>
@@ -2753,26 +2753,26 @@ function LiqPeriodosClientesContent() {
           <tbody>
             {liqPerClientesData.map((r, i) => {
               const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
-              const isActivo = r.status === "Activo";
-              const consecColor = isActivo ? "#d97706" : "#dc2626";
+              const isAtivo = r.status === "Activo";
+              const consecColor = isAtivo ? "#d97706" : "#dc2626";
               return (
                 <tr key={r.id} style={{ background: rowBg, cursor: "pointer" }}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
-                  <td style={tdC("left", { color: "#374151", fontSize: 11 })}>{r.id}. {r.vendedor}</td>
+                  <td style={tdC("left", { color: "#374151", fontSize: 12 })}>{r.id}. {r.vendedor}</td>
                   <td style={tdC("center", { color: "#6b7280" })}>{r.fechaVenta}</td>
                   <td style={tdC("left")}>
-                    <span style={{ color: consecColor, fontWeight: 700, borderBottom: `1px dashed ${consecColor}`, fontSize: 11 }}>{r.consec}</span>
-                    <span style={{ color: consecColor, fontSize: 10, marginLeft: 3 }}>
-                      ({isActivo ? "Activo" : `Cancelado${r.cancelDate ? "-" + r.cancelDate : ""}`})
+                    <span style={{ color: consecColor, fontWeight: 700, borderBottom: `1px dashed ${consecColor}`, fontSize: 12 }}>{r.consec}</span>
+                    <span style={{ color: consecColor, fontSize: 11, marginLeft: 3 }}>
+                      ({isAtivo ? "Ativo" : `Cancelado${r.cancelDate ? "-" + r.cancelDate : ""}`})
                     </span>
                   </td>
                   <td style={tdC("left", { color: "#374151", fontWeight: 500 })}>{r.cliente}</td>
-                  <td style={tdC("left", { color: "#2563eb", fontWeight: 700, fontSize: 11 })}>
+                  <td style={tdC("left", { color: "#2563eb", fontWeight: 700, fontSize: 12 })}>
                     <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.idVenta}</span>
                   </td>
                   <td style={tdC("left", { color: "#6b7280" })}>{r.movel}</td>
-                  <td style={tdC("left", { color: "#9ca3af", fontStyle: r.direc ? "normal" : "italic", fontSize: 11 })}>{r.direc || "—"}</td>
+                  <td style={tdC("left", { color: "#9ca3af", fontStyle: r.direc ? "normal" : "italic", fontSize: 12 })}>{r.direc || "—"}</td>
                   <td style={tdC("center", { color: "#374151" })}>{r.cuotas}</td>
                   <td style={tdC("center", { color: "#374151" })}>{r.cuoPag}</td>
                   <td style={tdC("center", { color: r.cuoFalt > 0 ? "#374151" : "#9ca3af", fontWeight: r.cuoFalt > 0 ? 600 : 400 })}>{r.cuoFalt}</td>
@@ -2781,7 +2781,7 @@ function LiqPeriodosClientesContent() {
                   <td style={tdC("right", { fontWeight: 700, color: "#374151" })}>{r.valorProd}</td>
                   <td style={tdC("right", { fontWeight: 600, color: "#374151" })}>{r.vrCuota}</td>
                   <td style={tdC("center", { color: "#374151" })}>{r.visitas}</td>
-                  <td style={tdC("center", { color: "#6b7280", fontSize: 11 })}>{r.freq}</td>
+                  <td style={tdC("center", { color: "#6b7280", fontSize: 12 })}>{r.freq}</td>
                 </tr>
               );
             })}
@@ -2789,13 +2789,13 @@ function LiqPeriodosClientesContent() {
         </table>
       </div>
 
-      {/* ── Total flutuante ── */}
+      {/* ── Total ── */}
       <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL CLIENTES</span>
         <span style={{ fontSize: 13, fontWeight: 800, color: "#1d4ed8" }}>{liqPerClientesData.length}</span>
       </div>
 
-      {/* ── Blue footer bar ── */}
+      {/* ── Barra azul rodapé ── */}
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
     </div>
   );
