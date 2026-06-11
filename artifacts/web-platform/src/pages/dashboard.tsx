@@ -1332,25 +1332,13 @@ const statusAgendColor: Record<string, { bg: string; color: string; border: stri
 };
 
 function AgendadosContent() {
-  const [fCliente,  setFCliente]  = useState("");
-  const [fTipo,     setFTipo]     = useState("");
-  const [fStatus,   setFStatus]   = useState("");
-  const [fData,     setFData]     = useState("");
+  const [filterDate, setFilterDate] = useState("");
+  const [tempDate,   setTempDate]   = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newForm, setNewForm] = useState({ vendedor: "Rota Cred Bank -", cliente: "", tipo: "Visita", data: "2026-06-11", hora: "", obs: "" });
 
-  const [applied, setApplied] = useState({ cliente: "", tipo: "", status: "", data: "" });
-
-  const filtered = agendadosData.filter(r =>
-    (!applied.cliente || r.cliente.toLowerCase().includes(applied.cliente.toLowerCase())) &&
-    (!applied.tipo    || r.tipo === applied.tipo) &&
-    (!applied.status  || r.status === applied.status) &&
-    (!applied.data    || r.data === applied.data)
-  );
-
-  const handleBuscar = () => setApplied({ cliente: fCliente, tipo: fTipo, status: fStatus, data: fData });
-  const handleLimpar = () => { setFCliente(""); setFTipo(""); setFStatus(""); setFData(""); setApplied({ cliente: "", tipo: "", status: "", data: "" }); };
+  const filtered = agendadosData.filter(r => !filterDate || r.data === filterDate);
 
   const cols = [
     { label: "Nro.",        w: "4%",  align: "center" as const },
@@ -1362,8 +1350,6 @@ function AgendadosContent() {
     { label: "Status",      w: "12%", align: "center" as const },
   ];
 
-  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
-
   const tdA = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
     padding: "11px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
     textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
@@ -1372,82 +1358,35 @@ function AgendadosContent() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ position: "relative" }}>
 
-      {/* Filter bar — same style as Clientes */}
-      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Cliente</label>
-          <input placeholder="Nome do cliente" value={fCliente} onChange={e => setFCliente(e.target.value)}
-            className={`${inputCls} w-44`} />
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Tipo</label>
-          <select value={fTipo} onChange={e => setFTipo(e.target.value)} className={`${inputCls} w-36`}>
-            <option value="">-- Todos --</option>
-            <option>Visita</option>
-            <option>Ligação</option>
-            <option>Renegociação</option>
-          </select>
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Status</label>
-          <select value={fStatus} onChange={e => setFStatus(e.target.value)} className={`${inputCls} w-32`}>
-            <option value="">-- Todos --</option>
-            <option>Pendente</option>
-            <option>Concluído</option>
-            <option>Cancelado</option>
-          </select>
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data</label>
-          <input type="date" value={fData} onChange={e => setFData(e.target.value)} className={`${inputCls} w-36`} />
-        </div>
-        <div className="flex gap-1.5 pb-0.5">
-          <button onClick={handleLimpar}
-            className="h-7 px-3 rounded text-xs font-semibold border border-gray-300 text-gray-600 bg-white hover:bg-gray-50">
-            Limpar
-          </button>
-          <button onClick={handleBuscar}
-            className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90"
-            style={{ background: "#2563eb" }}>
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            Buscar
-          </button>
-          <button onClick={() => setShowAddModal(true)}
-            className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90"
-            style={{ background: "#16a34a" }}>
-            + Agendar
-          </button>
-        </div>
+      {/* Minimal top bar — only "Filtrar dia" button in the corner */}
+      <div className="shrink-0 flex items-center px-3" style={{ height: 38, background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
         <div className="flex-1" />
-
-        {/* Floating filter trigger */}
         <div style={{ position: "relative" }}>
-          <button onClick={() => setShowFilter(v => !v)}
-            className="h-7 px-2.5 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90 pb-0.5"
-            style={{ background: "#4a7fa0" }}>
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-            Filtrar dia
+          <button
+            onClick={() => { setTempDate(filterDate); setShowFilter(v => !v); }}
+            style={{ height: 28, padding: "0 10px", borderRadius: 5, border: "none", background: "#4a7fa0", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+            {filterDate ? filterDate : "Filtrar dia"}
+            {filterDate && (
+              <span onClick={e => { e.stopPropagation(); setFilterDate(""); }} style={{ marginLeft: 2, fontWeight: 700, opacity: 0.8 }}>✕</span>
+            )}
           </button>
 
-          {/* Floating date filter panel */}
           {showFilter && (
-            <div style={{ position: "absolute", top: 34, right: 0, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", border: "1px solid #e0e0e0", width: 268, padding: 16 }}>
+            <div style={{ position: "absolute", top: 34, right: 0, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", border: "1px solid #e0e0e0", width: 260, padding: 16 }}>
               <div style={{ fontWeight: 700, fontSize: 13, color: "#2d5474", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#2d5474" }}><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-                  Filtrar por Data
-                </span>
+                <span>Filtrar por Data</span>
                 <button onClick={() => setShowFilter(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 16, fontWeight: 700 }}>✕</button>
               </div>
               <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>Data do Agendamento</label>
-              <input type="date" value={fData} onChange={e => setFData(e.target.value)}
+              <input type="date" value={tempDate} onChange={e => setTempDate(e.target.value)}
                 style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "6px 10px", fontSize: 13, color: "#374151", marginBottom: 14, boxSizing: "border-box" }} />
               <div style={{ display: "flex", gap: 8 }}>
-                <button onClick={() => { setFData(""); setApplied(a => ({ ...a, data: "" })); setShowFilter(false); }}
+                <button onClick={() => { setFilterDate(""); setTempDate(""); setShowFilter(false); }}
                   style={{ flex: 1, background: "#f3f4f6", color: "#6b7280", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
                   Limpar
                 </button>
-                <button onClick={() => { setApplied(a => ({ ...a, data: fData })); setShowFilter(false); }}
+                <button onClick={() => { setFilterDate(tempDate); setShowFilter(false); }}
                   style={{ flex: 1, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                   Aplicar
                 </button>
@@ -1455,15 +1394,6 @@ function AgendadosContent() {
             </div>
           )}
         </div>
-
-        <span className="text-xs text-gray-400 font-medium pb-0.5">DATA DE REFERÊNCIA: 2026-06-11</span>
-      </div>
-
-      {/* Count bar */}
-      <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
-        <span className="text-xs text-gray-500">
-          <span className="font-bold text-gray-800">{filtered.length}</span> registro{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
-        </span>
       </div>
 
       {/* Table */}
