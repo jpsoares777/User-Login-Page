@@ -8,6 +8,7 @@ import {
 
 const MAIN_TABS = ["Desempenho", "Liq. Diária", "Liq. Períodos", "Consolidados"];
 const SUB_TABS = ["Relatório Diário", "Pagamentos", "Novos Empréstimos", "Despesas", "Rendimentos", "Clientes", "Agendados", "Relatórios"];
+const LIQ_PERIODOS_TABS = ["Liquidação", "Pagos", "Ventas por Períodos", "Ingressos", "Egresos", "Clientes", "Resumen"];
 
 // ── Helper components ─────────────────────────────────────────────────────────
 
@@ -2169,12 +2170,221 @@ function ClientesContent() {
   );
 }
 
+// ── Liq. Períodos ─────────────────────────────────────────────────────────────
+
+function LiqPeriodosLiquidacaoView() {
+  const XLSIcon = () => (
+    <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
+  );
+  const rows: { label: string; value: React.ReactNode }[] = [
+    {
+      label: "Vendedor:",
+      value: (
+        <span className="flex items-center gap-1">
+          <PersonIcon />
+          <span className="text-gray-800 font-medium">(Rota Cred Bank -)</span>
+          <XLSIcon />
+        </span>
+      ),
+    },
+    {
+      label: "Fecha de Inicial:",
+      value: (
+        <span className="flex items-center gap-1">
+          <CalIcon />
+          <span>2026-02-06</span>
+        </span>
+      ),
+    },
+    {
+      label: "Fecha Final:",
+      value: (
+        <span className="flex items-center gap-1">
+          <CalIcon />
+          <span>2026-06-06</span>
+        </span>
+      ),
+    },
+    {
+      label: "Total de Clientes :",
+      value: (
+        <span className="flex items-center gap-1">
+          <PersonIcon />
+          <span>31</span>
+        </span>
+      ),
+    },
+    {
+      label: "Clientes Nuevos/Renovados:",
+      value: (
+        <span className="flex items-center gap-1">
+          <PersonIcon />
+          <span>31 <span className="text-gray-400 font-normal">(21/10)</span></span>
+        </span>
+      ),
+    },
+    {
+      label: "Dias :",
+      value: (
+        <span className="flex items-center gap-1">
+          <CalIcon />
+          <span>21</span>
+        </span>
+      ),
+    },
+    {
+      label: "Promedio :",
+      value: (
+        <span className="flex items-center gap-1">
+          <span>$ 757.00</span>
+          <span className="text-gray-400 font-normal">( INF% )</span>
+        </span>
+      ),
+    },
+    {
+      label: "Recaudo Pretendido :",
+      value: (
+        <span className="flex items-center gap-1">
+          <span>$ 0.00</span>
+          <span className="text-gray-400 font-normal">( 100% )</span>
+        </span>
+      ),
+    },
+    {
+      label: "Recaudo:",
+      value: (
+        <span className="flex items-center gap-1">
+          <span>$ 17,420.00</span>
+          <span className="text-gray-400 font-normal">( INF% )</span>
+        </span>
+      ),
+    },
+    {
+      label: "Ventas:",
+      value: (
+        <span className="flex items-center gap-1">
+          <span>$ 21,200.00</span>
+          <span className="text-gray-400 font-normal">(</span>
+          <span className="text-orange-500">🔥</span>
+          <span className="text-gray-400 font-normal">Interes</span>
+          <span>8,390.00</span>
+          <span className="text-gray-400 font-normal">)</span>
+        </span>
+      ),
+    },
+    {
+      label: "Retiros:",
+      value: <span className="text-red-600 font-medium">— 351.00</span>,
+    },
+    {
+      label: "Egresos:",
+      value: (
+        <span className="flex items-center gap-1">
+          <span className="text-red-600 font-medium">— 1,890.00</span>
+          <span className="text-gray-400 font-normal">( 10.85% )</span>
+          <XLSIcon />
+        </span>
+      ),
+    },
+    {
+      label: "Ingresos:",
+      value: <span className="text-green-700 font-medium">+ 9,390.00</span>,
+    },
+    {
+      label: "Caja inicial del 2026-02-06:",
+      value: <span>$ 0.00</span>,
+    },
+    {
+      label: "Caja Final del 2026-06-06:",
+      value: <span>$ 3,369.00</span>,
+    },
+    {
+      label: "Ganancia",
+      value: (
+        <button className="flex items-center gap-1 px-3 h-7 text-sm font-bold rounded"
+          style={{ background: "#2563eb", color: "#fff" }}>
+          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          $3,630.00
+        </button>
+      ),
+    },
+  ];
+
+  return (
+    <div className="flex flex-1 overflow-hidden">
+      {/* LEFT: buttons + tree */}
+      <div className="w-64 shrink-0 border-r border-gray-200 bg-white flex flex-col overflow-hidden">
+        {/* Action buttons */}
+        <div className="flex items-center gap-2 px-3 py-2 shrink-0" style={{ borderBottom: "1px solid #e5e7eb" }}>
+          <button className="px-3 h-7 text-xs font-medium rounded border"
+            style={{ background: "#fff", color: "#374151", borderColor: "#d1d5db" }}>
+            Todos
+          </button>
+          <button className="px-3 h-7 text-xs font-medium rounded border"
+            style={{ background: "#fff", color: "#374151", borderColor: "#d1d5db" }}>
+            Ninguém
+          </button>
+          <div className="flex-1" />
+          <button className="px-4 h-7 text-xs font-bold rounded"
+            style={{ background: "#2563eb", color: "#fff" }}>
+            Liquidar
+          </button>
+        </div>
+        {/* Tree */}
+        <div className="flex-1 overflow-y-auto">
+          {/* BRASIL */}
+          <div className="flex items-center gap-1 px-3 py-1.5 cursor-pointer hover:bg-gray-50 text-sm font-bold text-gray-800"
+            style={{ borderBottom: "1px solid #f0f0f0" }}>
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M19 13H5v-2h14v2z"/></svg>
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-blue-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            BRASIL
+          </div>
+          {/* SAO LUIS */}
+          <div className="flex items-center gap-1 px-5 py-1.5 cursor-pointer hover:bg-gray-50 text-sm font-semibold text-gray-700"
+            style={{ borderBottom: "1px solid #f0f0f0" }}>
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M19 13H5v-2h14v2z"/></svg>
+            <input type="checkbox" defaultChecked className="w-3.5 h-3.5 shrink-0 accent-blue-600" readOnly />
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            SAO LUIS
+          </div>
+          {/* Rota Cred Bank */}
+          <div className="flex items-center gap-1 px-10 py-1.5 cursor-pointer hover:bg-blue-50 text-sm text-gray-700"
+            style={{ borderBottom: "1px solid #f0f0f0", background: "#eff6ff" }}>
+            <input type="checkbox" defaultChecked className="w-3.5 h-3.5 shrink-0 accent-blue-600" readOnly />
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-blue-500 shrink-0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            Rota Cred Bank -
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT: data rows */}
+      <div className="flex-1 overflow-y-auto" style={{ background: "#f8fafc" }}>
+        {rows.map(({ label, value }, i) => (
+          <Row key={label} label={label} index={i}>
+            {value}
+          </Row>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
+  if (activeSub === "Liquidação") return <LiqPeriodosLiquidacaoView />;
+  return (
+    <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
+      <p className="text-gray-400 text-sm">{activeSub} — em desenvolvimento</p>
+    </div>
+  );
+}
+
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
   const [, navigate] = useLocation();
   const [activeMain, setActiveMain] = useState("Liq. Diária");
   const [activeSub, setActiveSub] = useState("Relatório Diário");
+  const [activeSubPeriodos, setActiveSubPeriodos] = useState("Liquidação");
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
@@ -2224,7 +2434,7 @@ export default function DashboardPage() {
       <div style={{ height: "2px", background: "#2563eb" }} className="shrink-0" />
 
       {/* ── SUB TABS ROW (hidden on Desempenho) ── */}
-      {!isDesempenho && (
+      {!isDesempenho && activeMain === "Liq. Diária" && (
         <div className="flex items-center gap-1 px-2 py-1 shrink-0" style={{ background: "#e8edf2" }}>
           {SUB_TABS.map((tab) => (
             <button key={tab} onClick={() => setActiveSub(tab)}
@@ -2239,10 +2449,25 @@ export default function DashboardPage() {
           ))}
         </div>
       )}
+      {!isDesempenho && activeMain === "Liq. Períodos" && (
+        <div className="flex items-center gap-1 px-2 py-1 shrink-0" style={{ background: "#e8edf2" }}>
+          {LIQ_PERIODOS_TABS.map((tab) => (
+            <button key={tab} onClick={() => setActiveSubPeriodos(tab)}
+              className="px-4 h-9 text-sm font-medium transition-all rounded"
+              style={{
+                background: activeSubPeriodos === tab ? "#2563eb" : "#fff",
+                color: activeSubPeriodos === tab ? "#fff" : "#444",
+                border: activeSubPeriodos === tab ? "1px solid #2563eb" : "1px solid #cdd3da",
+              }}>
+              {tab}
+            </button>
+          ))}
+        </div>
+      )}
 
 
-      {/* ── FILTER BAR (hidden on Desempenho, sub-pages and Agendados) ── */}
-      {!isDesempenho && !showPagamentos && !showEmprestimos && !showDespesas && !showRendimentos && !showClientes && !showAgendados && !showRelatorios && (
+      {/* ── FILTER BAR (only on Liq. Diária → Relatório Diário) ── */}
+      {activeMain === "Liq. Diária" && !showPagamentos && !showEmprestimos && !showDespesas && !showRendimentos && !showClientes && !showAgendados && !showRelatorios && (
         <div className="flex items-center h-11 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
@@ -2268,6 +2493,12 @@ export default function DashboardPage() {
       <div className="flex-1 overflow-hidden flex">
         {isDesempenho ? (
           <DesempenhoContent />
+        ) : activeMain === "Liq. Períodos" ? (
+          <LiqPeriodosContent activeSub={activeSubPeriodos} />
+        ) : activeMain === "Consolidados" ? (
+          <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
+            <p className="text-gray-400 text-sm">Consolidados — em desenvolvimento</p>
+          </div>
         ) : showPagamentos ? (
           <PagamentosContent />
         ) : showEmprestimos ? (
