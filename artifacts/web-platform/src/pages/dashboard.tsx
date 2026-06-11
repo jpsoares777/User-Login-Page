@@ -1312,6 +1312,7 @@ const clientesRows: ClienteRow[] = [
 
 function ClientesContent() {
   const [selectedCliente, setSelectedCliente] = useState<ClienteRow | null>(null);
+  const [showParcelas, setShowParcelas] = useState(false);
 
   const cols = [
     { label: "Nro.",               w: "4%",  align: "center" as const },
@@ -1497,7 +1498,7 @@ function ClientesContent() {
         const fmtM = (v: number) => `$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
         const nameColor = c.atrasadas === 0 ? "#15803d" : c.atrasadas >= 5 ? "#b91c1c" : "#b45309";
         const initials = c.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
-        return (
+        return (<>
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
             onClick={() => setSelectedCliente(null)}>
             <div style={{ background: "#fff", borderRadius: 8, width: 700, maxHeight: "90vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", display: "flex", flexDirection: "column" }}
@@ -1548,16 +1549,13 @@ function ClientesContent() {
                   </div>
                 </div>
 
-                {/* Security / co-debtor */}
+                {/* Ver parcelas button */}
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Seguro e Codeudor</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 16px", fontSize: 12 }}>
-                    <div><span style={{ color: "#9ca3af" }}>Nº Seguro:</span> <b style={{ color: "#111827" }}>{c.nroSeguro || "—"}</b></div>
-                    <div><span style={{ color: "#9ca3af" }}>Valor Seguro:</span> <b style={{ color: "#111827" }}>{fmtM(c.valorSeguro)}</b></div>
-                    <div><span style={{ color: "#9ca3af" }}>Nome Codeudor:</span> <b style={{ color: "#111827" }}>{c.nomeCodedor || "—"}</b></div>
-                    <div><span style={{ color: "#9ca3af" }}>Tel. Codeudor:</span> <b style={{ color: "#111827" }}>{c.telCodedor || "—"}</b></div>
-                    {c.dirCodedor && <div style={{ gridColumn: "1/-1" }}><span style={{ color: "#9ca3af" }}>Endereço Codeudor:</span> <b style={{ color: "#111827" }}>{c.dirCodedor}</b></div>}
-                  </div>
+                  <button
+                    onClick={() => setShowParcelas(true)}
+                    style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "9px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
+                    <span style={{ fontSize: 15 }}>📋</span> Ver Parcelas Pagas — Empréstimo Ativo
+                  </button>
                 </div>
 
                 {/* Loan history */}
@@ -1603,7 +1601,88 @@ function ClientesContent() {
               </div>
             </div>
           </div>
-        );
+
+          {/* ── Parcelas sub-modal ── */}
+          {showParcelas && (() => {
+            const activeEmp = c.historico.find(h => h.status === "ACTIVO");
+            if (!activeEmp) return null;
+            const startDate = new Date(c.dataEmprestimo + "T00:00:00");
+            const parcelas = Array.from({ length: activeEmp.cuotas }, (_, i) => {
+              const due = new Date(startDate);
+              due.setDate(due.getDate() + i + 1);
+              const pago = i < c.pagas;
+              const pagDate = new Date(due);
+              pagDate.setDate(pagDate.getDate() + (pago && c.atrasadas === 0 ? 0 : pago ? Math.floor(Math.random() * 3) : 0));
+              return {
+                num: i + 1,
+                vencimento: due.toISOString().slice(0, 10),
+                pagamento: pago ? pagDate.toISOString().slice(0, 10) : "—",
+                valor: c.vlrCuota,
+                pago,
+              };
+            });
+            const totalPago = parcelas.filter(p => p.pago).reduce((a, p) => a + p.valor, 0);
+            return (
+              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center" }}
+                onClick={() => setShowParcelas(false)}>
+                <div style={{ background: "#fff", borderRadius: 8, width: 580, maxHeight: "85vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column" }}
+                  onClick={e => e.stopPropagation()}>
+
+                  {/* Header */}
+                  <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>PARCELAS — EMPRÉSTIMO ATIVO</div>
+                      <div style={{ color: "#93c5fd", fontSize: 11, marginTop: 2 }}>{c.nome} · {c.consec}</div>
+                    </div>
+                    <button onClick={() => setShowParcelas(false)} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+                  </div>
+
+                  {/* Summary bar */}
+                  <div style={{ background: "#f0f4f8", borderBottom: "1px solid #e0e0e0", padding: "10px 18px", display: "flex", gap: 24, fontSize: 12 }}>
+                    <div><span style={{ color: "#6b7280" }}>Empréstimo: </span><b style={{ color: "#111827" }}>{fmtM(activeEmp.valor)}</b></div>
+                    <div><span style={{ color: "#6b7280" }}>Total: </span><b style={{ color: "#111827" }}>{fmtM(activeEmp.total)}</b></div>
+                    <div><span style={{ color: "#6b7280" }}>Pagas: </span><b style={{ color: "#15803d" }}>{c.pagas}/{activeEmp.cuotas}</b></div>
+                    <div><span style={{ color: "#6b7280" }}>Total pago: </span><b style={{ color: "#15803d" }}>{fmtM(totalPago)}</b></div>
+                    <div><span style={{ color: "#6b7280" }}>Saldo: </span><b style={{ color: c.atrasadas >= 5 ? "#b91c1c" : "#d97706" }}>{fmtM(c.saldo)}</b></div>
+                  </div>
+
+                  {/* Table */}
+                  <div style={{ padding: "0 0 16px" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                      <thead>
+                        <tr>
+                          {["Nº", "Vencimento", "Pagamento", "Valor", "Situação"].map(h => (
+                            <th key={h} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "7px 12px", textAlign: h === "Nº" ? "center" : h === "Valor" ? "right" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0 }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {parcelas.map((p, idx) => (
+                          <tr key={p.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#6b7280" }}>{p.num}</td>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{p.vencimento}</td>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: p.pago ? "#15803d" : "#9ca3af", fontWeight: p.pago ? 600 : 400 }}>{p.pagamento}</td>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 600, color: "#111827" }}>{fmtM(p.valor)}</td>
+                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0" }}>
+                              <span style={{
+                                fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 3,
+                                color: p.pago ? "#15803d" : "#b91c1c",
+                                background: p.pago ? "#dcfce7" : "#fee2e2",
+                                border: `1px solid ${p.pago ? "#86efac" : "#fca5a5"}`,
+                              }}>
+                                {p.pago ? "PAGO" : "PENDENTE"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </>);
       })()}
     </div>
   );
