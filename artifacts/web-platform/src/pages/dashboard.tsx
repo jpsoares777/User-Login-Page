@@ -1560,8 +1560,8 @@ function ClientesContent() {
                   </button>
                   <button
                     onClick={() => setShowDocumentos(true)}
-                    style={{ background: "#4a7fa0", color: "#fff", border: "none", borderRadius: 5, padding: "9px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
-                    <span style={{ fontSize: 15 }}>📷</span> Ver Documentos
+                    style={{ background: "#f1f5f9", color: "#475569", border: "1px solid #cbd5e1", borderRadius: 5, padding: "6px 13px", fontSize: 11, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+                    <span style={{ fontSize: 12 }}>📷</span> Documentos
                   </button>
                 </div>
 
