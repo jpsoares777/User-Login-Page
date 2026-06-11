@@ -1674,7 +1674,7 @@ function ClientesContent() {
     { label: "Nome e Sobrenome",   w: "18%", align: "left"   as const },
     { label: "Telefones",          w: "11%", align: "left"   as const },
     { label: "Frequência",         w: "7%",  align: "center" as const },
-    { label: "Valor Venda",        w: "8%",  align: "right"  as const },
+    { label: "Valor Empr.",        w: "8%",  align: "right"  as const },
     { label: "Juros / Total",      w: "10%", align: "center" as const },
     { label: "Cuotas",             w: "5%",  align: "center" as const },
     { label: "Atrasadas / Pagas",  w: "13%", align: "left"   as const },
