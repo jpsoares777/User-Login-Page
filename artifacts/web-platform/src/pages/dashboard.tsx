@@ -1619,7 +1619,8 @@ function RelatóriosContent() {
         </Card>
 
         <Card icon={PAID} title="CLIENTES QUE PAGARAM">
-          <Sel opts={parc} />
+          <span style={lblStyle}>Informe a Parcela</span>
+          <input type="number" placeholder="0" min="1" step="1" style={inpStyle} />
         </Card>
 
         <Card icon={MONEY} title="CRÉDITOS ACIMA DE R$">
