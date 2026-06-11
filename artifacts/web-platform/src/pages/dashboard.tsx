@@ -1514,6 +1514,126 @@ function AgendadosContent() {
   );
 }
 
+// ── Relatórios ────────────────────────────────────────────────────────────────
+function RelatóriosContent() {
+  const vendedorOpts = ["Rota Cred Bank -"];
+  const cuotaOpts    = ["Menos: 1 Cuota", "Menos: 2 Cuotas", "Menos: 3 Cuotas"];
+  const jurosOpts    = ["INTERES MENOR A %", "INTERES MAIOR A %"];
+
+  const iconBg = "#00b5d8";
+
+  const CardIcon = ({ path }: { path: string }) => (
+    <div style={{ width: 62, height: 62, minWidth: 62, background: iconBg, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg viewBox="0 0 24 24" style={{ width: 34, height: 34, fill: "#fff" }}><path d={path} /></svg>
+    </div>
+  );
+
+  const MasOpciones = () => (
+    <button style={{ background: "none", border: "none", cursor: "pointer", color: "#555", fontSize: 11, fontWeight: 600, display: "flex", alignItems: "center", gap: 3, padding: 0, marginBottom: 6 }}>
+      <svg viewBox="0 0 24 24" style={{ width: 11, height: 11, fill: "#555" }}><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A1 1 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
+      Mas Opciones
+    </button>
+  );
+
+  const Sel = ({ opts, style }: { opts: string[]; style?: React.CSSProperties }) => (
+    <select style={{ width: "100%", border: "1px solid #ccc", borderRadius: 3, padding: "4px 6px", fontSize: 12, color: "#333", marginBottom: 6, ...style }}>
+      {opts.map(o => <option key={o}>{o}</option>)}
+    </select>
+  );
+
+  const Inp = ({ label }: { label: string }) => (
+    <div style={{ marginBottom: 4 }}>
+      <div style={{ fontSize: 10, fontWeight: 600, color: "#888", textAlign: "center", marginBottom: 2 }}>{label}</div>
+      <input type="date" style={{ width: "100%", border: "1px solid #ccc", borderRadius: 3, padding: "3px 6px", fontSize: 12, color: "#555", boxSizing: "border-box" }} />
+    </div>
+  );
+
+  const GenBtn = () => (
+    <button style={{ width: "100%", background: "#22c55e", color: "#fff", border: "none", borderRadius: 4, padding: "6px 0", fontSize: 12, fontWeight: 700, cursor: "pointer", marginTop: 4 }}>
+      Generar
+    </button>
+  );
+
+  const Card = ({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) => (
+    <div style={{ background: "#fff", border: "1px solid #dde3ea", borderRadius: 6, padding: "10px 12px", display: "flex", gap: 10, alignItems: "flex-start", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+      <CardIcon path={icon} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontWeight: 800, fontSize: 12, color: "#222", marginBottom: 3, letterSpacing: "0.02em" }}>{title}</div>
+        <MasOpciones />
+        {children}
+        <GenBtn />
+      </div>
+    </div>
+  );
+
+  const ICON_PEOPLE    = "M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z";
+  const ICON_BLOCK     = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z";
+  const ICON_PERSON_X  = "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z";
+  const ICON_LATE      = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z";
+  const ICON_WARN      = "M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z";
+  const ICON_CART      = "M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.9 18 9 18h12v-2H9.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.43 5H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z";
+  const ICON_PERCENT   = "M12.36 6l.4 2H18v7h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z";
+  const ICON_VENCIDO   = "M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z";
+  const ICON_HIST      = "M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z";
+  const ICON_CANCEL    = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z";
+
+  return (
+    <div className="flex-1 overflow-auto" style={{ background: "#f0f2f5", padding: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, maxWidth: 1060 }}>
+
+        <Card icon={ICON_PEOPLE} title="CLIENTES ACTIVOS">
+          <Sel opts={vendedorOpts} />
+        </Card>
+
+        <Card icon={ICON_BLOCK} title="CLIENTES INACTIVOS">
+          <Sel opts={vendedorOpts} />
+        </Card>
+
+        <Card icon={ICON_PERSON_X} title="CLIENTES SIN RENOVAR">
+          <Sel opts={vendedorOpts} />
+        </Card>
+
+        <Card icon={ICON_LATE} title="CLIENTES ATRASADOS">
+          <Sel opts={vendedorOpts} />
+        </Card>
+
+        <Card icon={ICON_WARN} title="CLIENTES QUE PAGARON">
+          <Sel opts={cuotaOpts} />
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#222", textAlign: "center", marginBottom: 6 }}>EN LA SEMANA</div>
+        </Card>
+
+        <Card icon={ICON_CART} title="CREDITOS SUPERIORES A $">
+          <div style={{ marginBottom: 6 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: "#888", textAlign: "center", marginBottom: 2 }}>INGRESE EL VALOR $</div>
+            <input type="number" placeholder="0.00" style={{ width: "100%", border: "1px solid #ccc", borderRadius: 3, padding: "4px 6px", fontSize: 12, color: "#333", boxSizing: "border-box" }} />
+          </div>
+        </Card>
+
+        <Card icon={ICON_PERCENT} title="REPORTE POR INTERES">
+          <Sel opts={jurosOpts} />
+        </Card>
+
+        <Card icon={ICON_VENCIDO} title="CLIENTES VENCIDOS O POR VENCER">
+          <Sel opts={vendedorOpts} />
+        </Card>
+
+        <Card icon={ICON_HIST} title="CLIENTES HISTORICOS">
+          <Sel opts={vendedorOpts} />
+          <Inp label="Fecha Inicial" />
+          <Inp label="Fecha Final" />
+        </Card>
+
+        <Card icon={ICON_CANCEL} title="CLIENTES CANCELADOS">
+          <Sel opts={vendedorOpts} />
+          <Inp label="Fecha Inicial" />
+          <Inp label="Fecha Final" />
+        </Card>
+
+      </div>
+    </div>
+  );
+}
+
 function ClientesContent() {
   const [selectedCliente, setSelectedCliente] = useState<ClienteRow | null>(null);
   const [showParcelas, setShowParcelas] = useState(false);
@@ -2132,6 +2252,8 @@ export default function DashboardPage() {
           <ClientesContent />
         ) : showAgendados ? (
           <AgendadosContent />
+        ) : showRelatorios ? (
+          <RelatóriosContent />
         ) : showContent ? (
           <>
             {/* LEFT: Tree */}
