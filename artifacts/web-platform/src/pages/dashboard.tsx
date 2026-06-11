@@ -2252,7 +2252,7 @@ function LiqPeriodosLiquidacaoView() {
           <span className="text-gray-400 text-[11px] ml-1">( 10,85% )</span>
           <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
         </Row>
-        <Row label="Receitas" index={5}>
+        <Row label="Ingressos" index={5}>
           <span className="text-blue-600 font-bold text-sm">+</span>
           <span className="font-semibold text-blue-700">9.390,00</span>
         </Row>
