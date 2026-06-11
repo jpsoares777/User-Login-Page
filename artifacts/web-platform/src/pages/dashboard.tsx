@@ -1342,11 +1342,10 @@ function AgendadosContent() {
 
   const cols = [
     { label: "Nro.",        w: "4%",  align: "center" as const },
-    { label: "Cliente",     w: "28%", align: "left"   as const },
-    { label: "Tipo",        w: "11%", align: "center" as const },
-    { label: "Data",        w: "10%", align: "center" as const },
-    { label: "Hora",        w: "7%",  align: "center" as const },
-    { label: "Observações", w: "28%", align: "left"   as const },
+    { label: "Cliente",     w: "35%", align: "left"   as const },
+    { label: "Data",        w: "11%", align: "center" as const },
+    { label: "Hora",        w: "8%",  align: "center" as const },
+    { label: "Observações", w: "30%", align: "left"   as const },
     { label: "Status",      w: "12%", align: "center" as const },
   ];
 
@@ -1424,7 +1423,6 @@ function AgendadosContent() {
                 </td>
               </tr>
             ) : filtered.map((r, i) => {
-              const tipo = tipoAgendColor[r.tipo]  ?? tipoAgendColor["Visita"];
               const stat = statusAgendColor[r.status] ?? statusAgendColor["Pendente"];
               const rowBg = i % 2 === 0 ? "#fff" : "#f5f7f9";
               return (
@@ -1433,9 +1431,6 @@ function AgendadosContent() {
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
                   <td style={tdA("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
                   <td style={tdA("left",   { color: "#111827", fontWeight: 600 })}>{r.cliente}</td>
-                  <td style={tdA("center")}>
-                    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20, background: tipo.bg, color: tipo.color, border: `1px solid ${tipo.border}` }}>{r.tipo}</span>
-                  </td>
                   <td style={tdA("center", { color: "#374151" })}>{r.data}</td>
                   <td style={tdA("center", { fontWeight: 700, color: "#2d5474" })}>{r.hora}</td>
                   <td style={tdA("left",   { color: "#6b7280", fontSize: 12, overflow: "hidden", textOverflow: "ellipsis" })}>{r.obs || "—"}</td>
