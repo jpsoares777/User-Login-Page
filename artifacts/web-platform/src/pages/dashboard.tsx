@@ -2270,23 +2270,6 @@ function LiqPeriodosLiquidacaoView() {
         </div>
       </div>
 
-      {/* RIGHT: Action buttons */}
-      <div className="w-48 shrink-0 bg-gray-50 flex flex-col gap-3 p-2 overflow-y-auto">
-        {[
-          "⚙ Configurações",
-          "📊 Relatório Monitor",
-          "👥 Lista Clientes",
-          "🔒 Bloquear Unidade",
-          "🔑 Código Aprovações",
-          "📈 Ganho ( $3.630,00 )",
-        ].map((label) => (
-          <button key={label}
-            className="w-full text-left px-3 py-2 text-xs font-medium rounded text-white hover:opacity-90"
-            style={{ background: "#6b7280" }}>
-            {label}
-          </button>
-        ))}
-      </div>
     </>
   );
 }
