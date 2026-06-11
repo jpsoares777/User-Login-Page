@@ -2293,27 +2293,30 @@ function LiqPeriodosPagamentosContent() {
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
 
   const cols = [
-    { label: "Vendedor",        w: "12%", align: "left"   as const },
+    { label: "Vendedor",        w: "11%", align: "left"   as const },
     { label: "Nro.",            w: "4%",  align: "center" as const },
     { label: "Consecutivo",     w: "9%",  align: "left"   as const },
-    { label: "Cliente",         w: "18%", align: "left"   as const },
+    { label: "Cliente",         w: "17%", align: "left"   as const },
     { label: "# Parcela",       w: "6%",  align: "center" as const },
     { label: "Tipo",            w: "6%",  align: "center" as const },
     { label: "Forma de Pgto.",  w: "8%",  align: "left"   as const },
     { label: "Valor",           w: "7%",  align: "right"  as const },
     { label: "Data",            w: "8%",  align: "center" as const },
     { label: "Valor Prod.",     w: "8%",  align: "right"  as const },
-    { label: "Saldo",           w: "7%",  align: "right"  as const },
-    { label: "Parc. Restantes", w: "7%",  align: "center" as const },
+    { label: "Saldo",           w: "8%",  align: "right"  as const },
+    { label: "Parc. Restantes", w: "8%",  align: "center" as const },
   ];
-
-  const tdP = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "5px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
-    textAlign: align, fontSize: 12, whiteSpace: "nowrap", ...extra,
-  });
 
   const parseVal = (s: string) => parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
   const totalRecebido = liqPerPagData.reduce((a, r) => a + parseVal(r.valor), 0);
+  const totalProd = liqPerPagData.reduce((a, r) => a + parseVal(r.valorProd), 0);
+  const taxaPct = totalProd > 0 ? (totalRecebido / totalProd) * 100 : 0;
+  const fmtR = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+
+  const tdP = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+  });
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -2322,11 +2325,11 @@ function LiqPeriodosPagamentosContent() {
       <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
         <div className="flex flex-col gap-0.5">
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Consecutivo</label>
-          <input placeholder="Consecutivo" className={`${inputCls} w-32`} />
+          <input placeholder="Ex: 4700627089" className={`${inputCls} w-32`} />
         </div>
         <div className="flex flex-col gap-0.5">
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Nome</label>
-          <input placeholder="Nome" className={`${inputCls} w-36`} />
+          <input placeholder="Nome do cliente" className={`${inputCls} w-36`} />
         </div>
         <div className="flex flex-col gap-0.5">
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Sobrenome</label>
@@ -2337,9 +2340,9 @@ function LiqPeriodosPagamentosContent() {
           <input placeholder="CPF / RG" className={`${inputCls} w-28`} />
         </div>
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Pgto. Parcela</label>
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Forma de Pag.</label>
           <select className={`${inputCls} w-32`}>
-            <option value="">Pgto. Parcela</option>
+            <option value="">-- Todas --</option>
             <option>Dinheiro</option>
             <option>Transferência</option>
           </select>
@@ -2347,21 +2350,24 @@ function LiqPeriodosPagamentosContent() {
         <div className="flex flex-col gap-0.5">
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Tipo</label>
           <select className={`${inputCls} w-28`}>
-            <option value="">-- Selecione --</option>
+            <option value="">-- Todas --</option>
             <option>Parcela</option>
             <option>Extra</option>
           </select>
         </div>
         <div className="flex gap-1.5 pb-0.5">
+          <button className="h-7 px-3 rounded text-xs font-semibold border border-gray-300 text-gray-600 bg-white hover:bg-gray-50">Limpar</button>
           <button className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90" style={{ background: "#2563eb" }}>
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             Buscar
           </button>
         </div>
+        <div className="flex-1" />
+        <span className="text-xs text-gray-400 font-medium pb-0.5">DATA DE REFERÊNCIA: 2026-06-06</span>
       </div>
 
       {/* ── Count bar ── */}
-      <div className="shrink-0 flex items-center px-3 py-1" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+      <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs text-gray-500">
           <span className="font-bold text-gray-800">{liqPerPagData.length}</span> registros encontrados
         </span>
@@ -2375,9 +2381,10 @@ function LiqPeriodosPagamentosContent() {
             <tr>
               {cols.map(c => (
                 <th key={c.label} style={{
-                  padding: "7px 8px", textAlign: c.align, fontSize: 12, fontWeight: 700,
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
                   whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
-                  borderRight: "1px solid #4a7fa0", position: "sticky", top: 0, zIndex: 1,
+                  borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
+                  position: "sticky", top: 0, zIndex: 1,
                 }}>{c.label}</th>
               ))}
             </tr>
@@ -2389,36 +2396,43 @@ function LiqPeriodosPagamentosContent() {
                 <tr key={r.nro} style={{ cursor: "pointer" }}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = "#eff6ff"))}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = rowBg))}>
-                  <td style={tdP("left", { background: rowBg, color: "#374151", fontSize: 11 })}>Rota Cred Bank -</td>
-                  <td style={tdP("center", { background: rowBg, color: "#6b7280", fontWeight: 700 })}>{r.nro}</td>
-                  <td style={tdP("left", { background: rowBg })}>
-                    <span style={{ color: r.linkColor, fontWeight: 600, borderBottom: `1px dashed ${r.linkColor}`, cursor: "pointer" }}>{r.consecutivo}</span>
+                  <td style={tdP("left",   { color: "#374151", fontSize: 12 })}>Rota Cred Bank -</td>
+                  <td style={tdP("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.nro}</td>
+                  <td style={tdP("left")}>
+                    <span style={{ color: r.linkColor, fontWeight: 700, borderBottom: `1px dashed ${r.linkColor}`, cursor: "pointer" }}>{r.consecutivo}</span>
                   </td>
-                  <td style={tdP("left", { background: rowBg, color: r.clienteColor, fontWeight: 500 })}>{r.cliente}</td>
-                  <td style={tdP("center", { background: rowBg, color: "#374151" })}>{r.parcela}</td>
-                  <td style={tdP("center", { background: rowBg, color: "#374151" })}>{r.tipo}</td>
-                  <td style={tdP("left",   { background: rowBg, color: "#374151" })}>{r.formaPgto}</td>
-                  <td style={tdP("right",  { background: rowBg, color: "#374151", fontWeight: 600 })}>{r.valor}</td>
-                  <td style={tdP("center", { background: rowBg, color: "#374151" })}>{r.data}</td>
-                  <td style={tdP("right",  { background: rowBg, color: "#374151" })}>{r.valorProd}</td>
-                  <td style={tdP("right",  { background: rowBg, color: r.saldo !== "0,00" ? "#dc2626" : "#374151", fontWeight: r.saldo !== "0,00" ? 600 : 400 })}>{r.saldo}</td>
-                  <td style={tdP("center", { background: rowBg, color: "#374151" })}>{r.restantes}</td>
+                  <td style={tdP("left", { color: r.clienteColor, fontWeight: 600 })}>
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", display: "block" }}>{r.cliente}</span>
+                  </td>
+                  <td style={tdP("center")}>{r.parcela}</td>
+                  <td style={tdP("center")}>{r.tipo}</td>
+                  <td style={tdP("left")}>{r.formaPgto}</td>
+                  <td style={tdP("right",  { fontWeight: 600, color: "#111827" })}>{r.valor}</td>
+                  <td style={tdP("center", { color: "#4b5563" })}>{r.data}</td>
+                  <td style={tdP("right",  { fontWeight: 600, color: "#111827" })}>{r.valorProd}</td>
+                  <td style={tdP("right",  { fontWeight: 700, color: r.saldo !== "0,00" ? "#059669" : "#374151" })}>{r.saldo}</td>
+                  <td style={tdP("center")}>{r.restantes}</td>
                 </tr>
               );
             })}
+            {/* Total row */}
+            <tr style={{ background: "#e8edf2" }}>
+              <td colSpan={7} style={{ ...tdP("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
+                TOTAL RECEBIDO DO PERÍODO:
+              </td>
+              <td style={tdP("right", { fontWeight: 700, color: "#15803d" })}>
+                {fmtR(totalRecebido)}
+                <span style={{ marginLeft: 6, fontSize: 11, color: "#6b7280", fontWeight: 600 }}>
+                  ({taxaPct.toFixed(1)}%)
+                </span>
+              </td>
+              <td colSpan={4} style={tdP("center")} />
+            </tr>
           </tbody>
         </table>
       </div>
 
-      {/* ── Total row ── */}
-      <div className="shrink-0 flex items-center justify-end gap-4 px-4 py-2 border-t" style={{ background: "#f0f2f5" }}>
-        <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Total Recebido</span>
-        <span className="text-sm font-extrabold text-green-700">
-          {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-        </span>
-      </div>
-
-      {/* ── Blue footer bar (padrão) ── */}
+      {/* ── Footer (padrão) ── */}
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
 
     </div>
