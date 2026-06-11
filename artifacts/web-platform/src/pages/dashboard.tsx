@@ -1516,117 +1516,143 @@ function AgendadosContent() {
 
 // ── Relatórios ────────────────────────────────────────────────────────────────
 function RelatóriosContent() {
-  const vendedorOpts = ["Rota Cred Bank -"];
-  const cuotaOpts    = ["Menos: 1 Cuota", "Menos: 2 Cuotas", "Menos: 3 Cuotas"];
-  const jurosOpts    = ["INTERES MENOR A %", "INTERES MAIOR A %"];
+  const inputCls: React.CSSProperties = {
+    width: "100%", border: "1px solid #c8d5de", borderRadius: 4,
+    padding: "5px 8px", fontSize: 12, color: "#374151", boxSizing: "border-box",
+    background: "#fff", marginBottom: 6,
+  };
+  const labelCls: React.CSSProperties = {
+    fontSize: 10, fontWeight: 700, color: "#6b7280", textTransform: "uppercase",
+    letterSpacing: "0.05em", display: "block", marginBottom: 3,
+  };
 
-  const iconBg = "#00b5d8";
-
-  const CardIcon = ({ path }: { path: string }) => (
-    <div style={{ width: 62, height: 62, minWidth: 62, background: iconBg, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <svg viewBox="0 0 24 24" style={{ width: 34, height: 34, fill: "#fff" }}><path d={path} /></svg>
-    </div>
-  );
-
-  const MasOpciones = () => (
-    <button style={{ background: "none", border: "none", cursor: "pointer", color: "#555", fontSize: 11, fontWeight: 600, display: "flex", alignItems: "center", gap: 3, padding: 0, marginBottom: 6 }}>
-      <svg viewBox="0 0 24 24" style={{ width: 11, height: 11, fill: "#555" }}><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A1 1 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
-      Mas Opciones
-    </button>
-  );
-
-  const Sel = ({ opts, style }: { opts: string[]; style?: React.CSSProperties }) => (
-    <select style={{ width: "100%", border: "1px solid #ccc", borderRadius: 3, padding: "4px 6px", fontSize: 12, color: "#333", marginBottom: 6, ...style }}>
+  const Sel = ({ opts }: { opts: string[] }) => (
+    <select style={inputCls}>
       {opts.map(o => <option key={o}>{o}</option>)}
     </select>
   );
-
-  const Inp = ({ label }: { label: string }) => (
+  const DateField = ({ label }: { label: string }) => (
     <div style={{ marginBottom: 4 }}>
-      <div style={{ fontSize: 10, fontWeight: 600, color: "#888", textAlign: "center", marginBottom: 2 }}>{label}</div>
-      <input type="date" style={{ width: "100%", border: "1px solid #ccc", borderRadius: 3, padding: "3px 6px", fontSize: 12, color: "#555", boxSizing: "border-box" }} />
+      <span style={labelCls}>{label}</span>
+      <input type="date" style={inputCls} />
     </div>
   );
-
-  const GenBtn = () => (
-    <button style={{ width: "100%", background: "#22c55e", color: "#fff", border: "none", borderRadius: 4, padding: "6px 0", fontSize: 12, fontWeight: 700, cursor: "pointer", marginTop: 4 }}>
-      Generar
+  const GerarBtn = () => (
+    <button style={{
+      width: "100%", background: "#2d5474", color: "#fff", border: "none",
+      borderRadius: 4, padding: "7px 0", fontSize: 12, fontWeight: 700,
+      cursor: "pointer", letterSpacing: "0.03em", marginTop: 6,
+      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+    }}>
+      <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      Gerar Relatório
     </button>
   );
 
-  const Card = ({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) => (
-    <div style={{ background: "#fff", border: "1px solid #dde3ea", borderRadius: 6, padding: "10px 12px", display: "flex", gap: 10, alignItems: "flex-start", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
-      <CardIcon path={icon} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 800, fontSize: 12, color: "#222", marginBottom: 3, letterSpacing: "0.02em" }}>{title}</div>
-        <MasOpciones />
+  const Card = ({ icon, title, tag, children }: { icon: string; title: string; tag?: string; children: React.ReactNode }) => (
+    <div style={{ background: "#fff", borderRadius: 7, overflow: "hidden", boxShadow: "0 2px 8px rgba(45,84,116,0.10)", border: "1px solid #dae4ec" }}>
+      <div style={{ background: "#3d6e8e", padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 36, height: 36, minWidth: 36, background: "rgba(255,255,255,0.18)", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff" }}><path d={icon} /></svg>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 800, fontSize: 12, color: "#fff", letterSpacing: "0.04em", lineHeight: 1.2 }}>{title}</div>
+          {tag && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.7)", marginTop: 1 }}>{tag}</div>}
+        </div>
+        <button style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 4, color: "#fff", fontSize: 10, fontWeight: 600, padding: "2px 8px", cursor: "pointer", display: "flex", alignItems: "center", gap: 3 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 10, height: 10, fill: "#fff" }}><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A1 1 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
+          Opções
+        </button>
+      </div>
+      <div style={{ padding: "12px 14px" }}>
         {children}
-        <GenBtn />
+        <GerarBtn />
       </div>
     </div>
   );
 
-  const ICON_PEOPLE    = "M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z";
-  const ICON_BLOCK     = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z";
-  const ICON_PERSON_X  = "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z";
-  const ICON_LATE      = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z";
-  const ICON_WARN      = "M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z";
-  const ICON_CART      = "M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.9 18 9 18h12v-2H9.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.43 5H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z";
-  const ICON_PERCENT   = "M12.36 6l.4 2H18v7h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z";
-  const ICON_VENCIDO   = "M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z";
-  const ICON_HIST      = "M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z";
-  const ICON_CANCEL    = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z";
+  const ICON_PEOPLE   = "M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z";
+  const ICON_BLOCK    = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z";
+  const ICON_RENEW    = "M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z";
+  const ICON_LATE     = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z";
+  const ICON_PAID     = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z";
+  const ICON_MONEY    = "M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z";
+  const ICON_PERCENT  = "M7.5 11C9.43 11 11 9.43 11 7.5S9.43 4 7.5 4 4 5.57 4 7.5 5.57 11 7.5 11zm0-5C8.33 6 9 6.67 9 7.5S8.33 9 7.5 9 6 8.33 6 7.5 6.67 6 7.5 6zM16.5 13c-1.93 0-3.5 1.57-3.5 3.5S14.57 20 16.5 20s3.5-1.57 3.5-3.5S18.43 13 16.5 13zm0 5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm2.17-13.17l1.17 1.17L5.17 19.5 4 18.33z";
+  const ICON_VENCIDO  = "M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z";
+  const ICON_HIST     = "M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z";
+  const ICON_CANCEL   = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z";
+
+  const vendedor = ["Rota Cred Bank -"];
+  const parcelas = ["Menos de 1 Parcela", "Menos de 2 Parcelas", "Menos de 3 Parcelas"];
+  const juros    = ["Juros menor que %", "Juros maior que %"];
 
   return (
-    <div className="flex-1 overflow-auto" style={{ background: "#f0f2f5", padding: 16 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, maxWidth: 1060 }}>
+    <div className="flex-1 overflow-auto" style={{ background: "#eef1f5", padding: "16px 20px" }}>
 
-        <Card icon={ICON_PEOPLE} title="CLIENTES ACTIVOS">
-          <Sel opts={vendedorOpts} />
+      {/* Page header */}
+      <div style={{ marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 4, height: 22, background: "#3d6e8e", borderRadius: 2 }} />
+        <span style={{ fontSize: 15, fontWeight: 800, color: "#2d5474", letterSpacing: "0.02em" }}>Relatórios</span>
+        <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}>— Selecione um relatório e clique em Gerar</span>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
+
+        <Card icon={ICON_PEOPLE} title="Clientes Ativos" tag="Listagem completa de clientes ativos">
+          <span style={labelCls}>Vendedor</span>
+          <Sel opts={vendedor} />
         </Card>
 
-        <Card icon={ICON_BLOCK} title="CLIENTES INACTIVOS">
-          <Sel opts={vendedorOpts} />
+        <Card icon={ICON_BLOCK} title="Clientes Inativos" tag="Clientes sem movimentação">
+          <span style={labelCls}>Vendedor</span>
+          <Sel opts={vendedor} />
         </Card>
 
-        <Card icon={ICON_PERSON_X} title="CLIENTES SIN RENOVAR">
-          <Sel opts={vendedorOpts} />
+        <Card icon={ICON_RENEW} title="Clientes Sem Renovar" tag="Clientes com empréstimo encerrado">
+          <span style={labelCls}>Vendedor</span>
+          <Sel opts={vendedor} />
         </Card>
 
-        <Card icon={ICON_LATE} title="CLIENTES ATRASADOS">
-          <Sel opts={vendedorOpts} />
+        <Card icon={ICON_LATE} title="Clientes em Atraso" tag="Clientes com parcelas vencidas">
+          <span style={labelCls}>Vendedor</span>
+          <Sel opts={vendedor} />
         </Card>
 
-        <Card icon={ICON_WARN} title="CLIENTES QUE PAGARON">
-          <Sel opts={cuotaOpts} />
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#222", textAlign: "center", marginBottom: 6 }}>EN LA SEMANA</div>
-        </Card>
-
-        <Card icon={ICON_CART} title="CREDITOS SUPERIORES A $">
-          <div style={{ marginBottom: 6 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, color: "#888", textAlign: "center", marginBottom: 2 }}>INGRESE EL VALOR $</div>
-            <input type="number" placeholder="0.00" style={{ width: "100%", border: "1px solid #ccc", borderRadius: 3, padding: "4px 6px", fontSize: 12, color: "#333", boxSizing: "border-box" }} />
+        <Card icon={ICON_PAID} title="Clientes que Pagaram" tag="Pagamentos realizados na semana">
+          <span style={labelCls}>Parcelas pagas</span>
+          <Sel opts={parcelas} />
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textAlign: "center", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 4, padding: "4px 0", marginBottom: 4 }}>
+            NA SEMANA
           </div>
         </Card>
 
-        <Card icon={ICON_PERCENT} title="REPORTE POR INTERES">
-          <Sel opts={jurosOpts} />
+        <Card icon={ICON_MONEY} title="Créditos Acima de R$" tag="Filtrar empréstimos por valor mínimo">
+          <span style={labelCls}>Valor mínimo (R$)</span>
+          <input type="number" placeholder="0,00" style={inputCls} />
         </Card>
 
-        <Card icon={ICON_VENCIDO} title="CLIENTES VENCIDOS O POR VENCER">
-          <Sel opts={vendedorOpts} />
+        <Card icon={ICON_PERCENT} title="Relatório por Juros" tag="Filtrar por faixa de juros">
+          <span style={labelCls}>Condição de juros</span>
+          <Sel opts={juros} />
         </Card>
 
-        <Card icon={ICON_HIST} title="CLIENTES HISTORICOS">
-          <Sel opts={vendedorOpts} />
-          <Inp label="Fecha Inicial" />
-          <Inp label="Fecha Final" />
+        <Card icon={ICON_VENCIDO} title="Clientes Vencidos / A Vencer" tag="Controle de vencimentos">
+          <span style={labelCls}>Vendedor</span>
+          <Sel opts={vendedor} />
         </Card>
 
-        <Card icon={ICON_CANCEL} title="CLIENTES CANCELADOS">
-          <Sel opts={vendedorOpts} />
-          <Inp label="Fecha Inicial" />
-          <Inp label="Fecha Final" />
+        <Card icon={ICON_HIST} title="Histórico de Clientes" tag="Clientes em período selecionado">
+          <span style={labelCls}>Vendedor</span>
+          <Sel opts={vendedor} />
+          <DateField label="Data Inicial" />
+          <DateField label="Data Final" />
+        </Card>
+
+        <Card icon={ICON_CANCEL} title="Clientes Cancelados" tag="Cancelamentos no período">
+          <span style={labelCls}>Vendedor</span>
+          <Sel opts={vendedor} />
+          <DateField label="Data Inicial" />
+          <DateField label="Data Final" />
         </Card>
 
       </div>
