@@ -1332,88 +1332,153 @@ const statusAgendColor: Record<string, { bg: string; color: string; border: stri
 };
 
 function AgendadosContent() {
-  const [filterDate, setFilterDate] = useState("2026-06-11");
+  const [fCliente,  setFCliente]  = useState("");
+  const [fTipo,     setFTipo]     = useState("");
+  const [fStatus,   setFStatus]   = useState("");
+  const [fData,     setFData]     = useState("");
   const [showFilter, setShowFilter] = useState(false);
-  const [tempDate, setTempDate] = useState(filterDate);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newForm, setNewForm] = useState({ cliente: "", tipo: "Visita", data: filterDate, hora: "", obs: "" });
+  const [newForm, setNewForm] = useState({ vendedor: "Rota Cred Bank -", cliente: "", tipo: "Visita", data: "2026-06-11", hora: "", obs: "" });
 
-  const filtered = agendadosData.filter(r => !filterDate || r.data === filterDate);
+  const [applied, setApplied] = useState({ cliente: "", tipo: "", status: "", data: "" });
+
+  const filtered = agendadosData.filter(r =>
+    (!applied.cliente || r.cliente.toLowerCase().includes(applied.cliente.toLowerCase())) &&
+    (!applied.tipo    || r.tipo === applied.tipo) &&
+    (!applied.status  || r.status === applied.status) &&
+    (!applied.data    || r.data === applied.data)
+  );
+
+  const handleBuscar = () => setApplied({ cliente: fCliente, tipo: fTipo, status: fStatus, data: fData });
+  const handleLimpar = () => { setFCliente(""); setFTipo(""); setFStatus(""); setFData(""); setApplied({ cliente: "", tipo: "", status: "", data: "" }); };
 
   const cols = [
-    { label: "Nro.",        w: 50,  align: "center" as const },
-    { label: "Cliente",     w: 220, align: "left"   as const },
-    { label: "Tipo",        w: 120, align: "center" as const },
-    { label: "Data",        w: 110, align: "center" as const },
-    { label: "Hora",        w: 80,  align: "center" as const },
-    { label: "Observações", w: 280, align: "left"   as const },
-    { label: "Status",      w: 110, align: "center" as const },
+    { label: "Nro.",        w: "4%",  align: "center" as const },
+    { label: "Cliente",     w: "28%", align: "left"   as const },
+    { label: "Tipo",        w: "11%", align: "center" as const },
+    { label: "Data",        w: "10%", align: "center" as const },
+    { label: "Hora",        w: "7%",  align: "center" as const },
+    { label: "Observações", w: "28%", align: "left"   as const },
+    { label: "Status",      w: "12%", align: "center" as const },
   ];
 
-  const td = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
+
+  const tdA = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "11px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
     textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
   });
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ position: "relative" }}>
 
-      {/* Filter bar */}
-      <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", display: "flex", alignItems: "center", gap: 6 }}>
-          <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#3d6e8e" }}><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-          Agendamentos
-        </span>
-        {filterDate && (
-          <span style={{ background: "#e0f2fe", color: "#0369a1", border: "1px solid #7dd3fc", borderRadius: 4, padding: "2px 10px", fontSize: 11, fontWeight: 600 }}>
-            📅 {filterDate}
-            <button onClick={() => setFilterDate("")} style={{ marginLeft: 6, background: "none", border: "none", cursor: "pointer", color: "#0369a1", fontWeight: 700, padding: 0, fontSize: 12 }}>✕</button>
-          </span>
-        )}
-        <div style={{ flex: 1 }} />
-        <button
-          onClick={() => setShowAddModal(true)}
-          style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "5px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
-          + Agendar
-        </button>
-        <button
-          onClick={() => { setTempDate(filterDate); setShowFilter(v => !v); }}
-          style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "5px 10px", cursor: "pointer", display: "flex", alignItems: "center" }}>
-          <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A1 1 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
-        </button>
+      {/* Filter bar — same style as Clientes */}
+      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Cliente</label>
+          <input placeholder="Nome do cliente" value={fCliente} onChange={e => setFCliente(e.target.value)}
+            className={`${inputCls} w-44`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Tipo</label>
+          <select value={fTipo} onChange={e => setFTipo(e.target.value)} className={`${inputCls} w-36`}>
+            <option value="">-- Todos --</option>
+            <option>Visita</option>
+            <option>Ligação</option>
+            <option>Renegociação</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Status</label>
+          <select value={fStatus} onChange={e => setFStatus(e.target.value)} className={`${inputCls} w-32`}>
+            <option value="">-- Todos --</option>
+            <option>Pendente</option>
+            <option>Concluído</option>
+            <option>Cancelado</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data</label>
+          <input type="date" value={fData} onChange={e => setFData(e.target.value)} className={`${inputCls} w-36`} />
+        </div>
+        <div className="flex gap-1.5 pb-0.5">
+          <button onClick={handleLimpar}
+            className="h-7 px-3 rounded text-xs font-semibold border border-gray-300 text-gray-600 bg-white hover:bg-gray-50">
+            Limpar
+          </button>
+          <button onClick={handleBuscar}
+            className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90"
+            style={{ background: "#2563eb" }}>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            Buscar
+          </button>
+          <button onClick={() => setShowAddModal(true)}
+            className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90"
+            style={{ background: "#16a34a" }}>
+            + Agendar
+          </button>
+        </div>
+        <div className="flex-1" />
+
+        {/* Floating filter trigger */}
+        <div style={{ position: "relative" }}>
+          <button onClick={() => setShowFilter(v => !v)}
+            className="h-7 px-2.5 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90 pb-0.5"
+            style={{ background: "#4a7fa0" }}>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+            Filtrar dia
+          </button>
+
+          {/* Floating date filter panel */}
+          {showFilter && (
+            <div style={{ position: "absolute", top: 34, right: 0, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", border: "1px solid #e0e0e0", width: 268, padding: 16 }}>
+              <div style={{ fontWeight: 700, fontSize: 13, color: "#2d5474", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#2d5474" }}><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+                  Filtrar por Data
+                </span>
+                <button onClick={() => setShowFilter(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 16, fontWeight: 700 }}>✕</button>
+              </div>
+              <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>Data do Agendamento</label>
+              <input type="date" value={fData} onChange={e => setFData(e.target.value)}
+                style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "6px 10px", fontSize: 13, color: "#374151", marginBottom: 14, boxSizing: "border-box" }} />
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={() => { setFData(""); setApplied(a => ({ ...a, data: "" })); setShowFilter(false); }}
+                  style={{ flex: 1, background: "#f3f4f6", color: "#6b7280", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                  Limpar
+                </button>
+                <button onClick={() => { setApplied(a => ({ ...a, data: fData })); setShowFilter(false); }}
+                  style={{ flex: 1, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                  Aplicar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <span className="text-xs text-gray-400 font-medium pb-0.5">DATA DE REFERÊNCIA: 2026-06-11</span>
       </div>
 
-      {/* Floating date filter */}
-      {showFilter && (
-        <div style={{ position: "absolute", top: 46, right: 12, zIndex: 100, background: "#fff", borderRadius: 8, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", border: "1px solid #e0e0e0", width: 280, padding: 18 }}>
-          <div style={{ fontWeight: 700, fontSize: 13, color: "#2d5474", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span>📅 Filtrar por Data</span>
-            <button onClick={() => setShowFilter(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 16, fontWeight: 700 }}>✕</button>
-          </div>
-          <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>Data do Agendamento</label>
-          <input type="date" value={tempDate} onChange={e => setTempDate(e.target.value)}
-            style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "6px 10px", fontSize: 13, color: "#374151", marginBottom: 14, boxSizing: "border-box" }} />
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => { setFilterDate(""); setTempDate(""); setShowFilter(false); }}
-              style={{ flex: 1, background: "#f3f4f6", color: "#6b7280", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-              Limpar
-            </button>
-            <button onClick={() => { setFilterDate(tempDate); setShowFilter(false); }}
-              style={{ flex: 1, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-              Aplicar
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Count bar */}
+      <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs text-gray-500">
+          <span className="font-bold text-gray-800">{filtered.length}</span> registro{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
+        </span>
+      </div>
 
       {/* Table */}
       <div className="flex-1 overflow-auto">
-        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 980 }}>
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
             <tr>
               {cols.map(c => (
-                <th key={c.label} style={{ padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700, color: "#e2e8f0", background: "#3d6e8e", borderRight: "1px solid #4a7fa0", position: "sticky", top: 0, zIndex: 1, whiteSpace: "nowrap" }}>{c.label}</th>
+                <th key={c.label} style={{
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
+                  borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
+                  position: "sticky", top: 0, zIndex: 1,
+                }}>{c.label}</th>
               ))}
             </tr>
           </thead>
@@ -1423,27 +1488,28 @@ function AgendadosContent() {
                 <td colSpan={cols.length} style={{ textAlign: "center", padding: "60px 0", color: "#9ca3af", fontSize: 13 }}>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                     <svg viewBox="0 0 24 24" style={{ width: 40, height: 40, fill: "#d1d5db" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-                    <span>Nenhum agendamento para os filtros selecionados.</span>
-                    <span style={{ fontSize: 11, color: "#d1d5db" }}>Selecione uma data ou ajuste os filtros acima.</span>
+                    <span>Nenhum agendamento encontrado.</span>
+                    <span style={{ fontSize: 11, color: "#d1d5db" }}>Ajuste os filtros e clique em Buscar.</span>
                   </div>
                 </td>
               </tr>
             ) : filtered.map((r, i) => {
-              const tipo  = tipoAgendColor[r.tipo]  ?? tipoAgendColor["Visita"];
-              const stat  = statusAgendColor[r.status] ?? statusAgendColor["Pendente"];
+              const tipo = tipoAgendColor[r.tipo]  ?? tipoAgendColor["Visita"];
+              const stat = statusAgendColor[r.status] ?? statusAgendColor["Pendente"];
+              const rowBg = i % 2 === 0 ? "#fff" : "#f5f7f9";
               return (
-                <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}
-                  onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
-                  onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = i % 2 === 0 ? "#fff" : "#f9fafb"}>
-                  <td style={td("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
-                  <td style={td("left",   { color: "#111827", fontWeight: 600 })}>{r.cliente}</td>
-                  <td style={td("center")}>
+                <tr key={r.id} style={{ cursor: "default" }}
+                  onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
+                  onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
+                  <td style={tdA("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdA("left",   { color: "#111827", fontWeight: 600 })}>{r.cliente}</td>
+                  <td style={tdA("center")}>
                     <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20, background: tipo.bg, color: tipo.color, border: `1px solid ${tipo.border}` }}>{r.tipo}</span>
                   </td>
-                  <td style={td("center", { color: "#374151" })}>{r.data}</td>
-                  <td style={td("center", { fontWeight: 700, color: "#2d5474" })}>{r.hora}</td>
-                  <td style={td("left",   { color: "#6b7280", fontSize: 12 })}>{r.obs || "—"}</td>
-                  <td style={td("center")}>
+                  <td style={tdA("center", { color: "#374151" })}>{r.data}</td>
+                  <td style={tdA("center", { fontWeight: 700, color: "#2d5474" })}>{r.hora}</td>
+                  <td style={tdA("left",   { color: "#6b7280", fontSize: 12, overflow: "hidden", textOverflow: "ellipsis" })}>{r.obs || "—"}</td>
+                  <td style={tdA("center")}>
                     <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20, background: stat.bg, color: stat.color, border: `1px solid ${stat.border}` }}>{r.status}</span>
                   </td>
                 </tr>
@@ -1464,29 +1530,30 @@ function AgendadosContent() {
 
       {/* Add modal */}
       {showAddModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }}
           onClick={() => setShowAddModal(false)}>
-          <div style={{ background: "#fff", borderRadius: 8, width: 480, boxShadow: "0 24px 64px rgba(0,0,0,0.35)", overflow: "hidden" }}
+          <div style={{ background: "#fff", borderRadius: 8, width: 500, boxShadow: "0 24px 64px rgba(0,0,0,0.35)", overflow: "hidden" }}
             onClick={e => e.stopPropagation()}>
             <div style={{ background: "#2d5474", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>📅 Agendar Visita / Nota</span>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Agendar Visita / Nota</span>
               <button onClick={() => setShowAddModal(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>✕</button>
             </div>
             <div style={{ padding: "20px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
               <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Vendedor</label>
-                <select style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151" }}>
+                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Vendedor</label>
+                <select value={newForm.vendedor} onChange={e => setNewForm(f => ({ ...f, vendedor: e.target.value }))}
+                  style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151" }}>
                   <option>Rota Cred Bank -</option>
                 </select>
               </div>
               <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Cliente</label>
+                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Cliente</label>
                 <input type="text" placeholder="Nome do cliente" value={newForm.cliente} onChange={e => setNewForm(f => ({ ...f, cliente: e.target.value }))}
                   style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151", boxSizing: "border-box" }} />
               </div>
               <div style={{ display: "flex", gap: 12 }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Tipo</label>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Tipo</label>
                   <select value={newForm.tipo} onChange={e => setNewForm(f => ({ ...f, tipo: e.target.value }))}
                     style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151" }}>
                     <option>Visita</option>
@@ -1495,18 +1562,18 @@ function AgendadosContent() {
                   </select>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Data</label>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Data</label>
                   <input type="date" value={newForm.data} onChange={e => setNewForm(f => ({ ...f, data: e.target.value }))}
                     style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151", boxSizing: "border-box" }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Hora</label>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Hora</label>
                   <input type="time" value={newForm.hora} onChange={e => setNewForm(f => ({ ...f, hora: e.target.value }))}
                     style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151", boxSizing: "border-box" }} />
                 </div>
               </div>
               <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Descrição / Observações</label>
+                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Descrição / Observações</label>
                 <textarea rows={4} value={newForm.obs} onChange={e => setNewForm(f => ({ ...f, obs: e.target.value }))}
                   style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151", resize: "vertical", boxSizing: "border-box" }} />
               </div>
