@@ -1558,9 +1558,10 @@ function RelatóriosContent() {
       <div style={{ width: 56, minWidth: 56, background: "#3d6e8e", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <svg viewBox="0 0 24 24" style={{ width: 26, height: 26, fill: "#fff" }}><path d={icon} /></svg>
       </div>
-      <div style={{ flex: 1, padding: "8px 10px" }}>
+      <div style={{ flex: 1, padding: "8px 10px", display: "flex", flexDirection: "column" }}>
         <div style={{ fontWeight: 800, fontSize: 11, color: "#111827", letterSpacing: "0.04em", marginBottom: 5 }}>{title}</div>
         {children}
+        <div style={{ flex: 1 }} />
         <DateRange />
         <Gerar />
       </div>
