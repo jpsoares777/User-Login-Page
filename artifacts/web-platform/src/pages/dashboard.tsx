@@ -1561,38 +1561,69 @@ function ClientesContent() {
 
                 {/* Loan history */}
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Histórico de Empréstimos</div>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                    <thead>
-                      <tr>
-                        {["Data", "Valor", "Total", "Cuotas", "Situação"].map(h => (
-                          <th key={h} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "6px 10px", textAlign: "left", fontWeight: 700, fontSize: 11 }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {c.historico.map((h, idx) => (
-                        <tr key={idx}
-                          onClick={() => setSelectedHistoricoEmp(h)}
-                          style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9", cursor: "pointer" }}
-                          onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
-                          onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = idx % 2 === 0 ? "#fff" : "#f5f7f9"}>
-                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0" }}>{h.data}</td>
-                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0", fontWeight: 600 }}>{fmtM(h.valor)}</td>
-                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0", fontWeight: 600 }}>{fmtM(h.total)}</td>
-                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>{h.cuotas}</td>
-                          <td style={{ padding: "7px 10px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 3,
-                              color: h.status === "QUITADO" ? "#15803d" : "#1d4ed8",
-                              background: h.status === "QUITADO" ? "#dcfce7" : "#eff6ff",
-                              border: `1px solid ${h.status === "QUITADO" ? "#86efac" : "#bfdbfe"}` }}>
-                              {h.status}
-                            </span>
-                          </td>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                    👤 {c.nome.toUpperCase()} &nbsp;<span style={{ color: "#9ca3af", fontWeight: 400 }}>#{c.consec}</span>
+                  </div>
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, minWidth: 700 }}>
+                      <thead>
+                        <tr>
+                          {["Nro.", "Data do Emp.", "Estado", "Parc.", "Pagas", "Falt.", "Saldo", "Valor Empr.", "Freq.", "Vr. Parcela", "Visitas", "% Juros"].map(hd => (
+                            <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "6px 8px", textAlign: "center", fontWeight: 700, fontSize: 10, whiteSpace: "nowrap" }}>{hd}</th>
+                          ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {[...c.historico].reverse().map((h, idx) => {
+                          const isAtivo = h.status === "ACTIVO";
+                          const pagasH = isAtivo ? c.pagas : h.cuotas;
+                          const faltH  = isAtivo ? c.restantes : 0;
+                          const saldoH = isAtivo ? c.saldo : 0;
+                          const vrParc = h.total / h.cuotas;
+                          const pctJurosH = Math.round((h.total / h.valor - 1) * 100);
+                          const nro = c.historico.length - idx;
+                          const bg = idx % 2 === 0 ? "#fff" : "#f5f7f9";
+                          return (
+                            <tr key={idx}
+                              onClick={() => setSelectedHistoricoEmp(h)}
+                              style={{ cursor: "pointer", background: bg }}
+                              onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
+                              onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = bg}>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{nro}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#374151" }}>{h.data}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>
+                                <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 20,
+                                  color: isAtivo ? "#1d4ed8" : "#15803d",
+                                  background: isAtivo ? "#eff6ff" : "#dcfce7",
+                                  border: `1px solid ${isAtivo ? "#bfdbfe" : "#86efac"}` }}>
+                                  {isAtivo ? "Activo" : "Quitado"}
+                                </span>
+                              </td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>{h.cuotas}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#15803d", fontWeight: 600 }}>{pagasH}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: faltH > 0 ? "#b91c1c" : "#6b7280", fontWeight: faltH > 0 ? 700 : 400 }}>{faltH}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: saldoH > 0 ? "#b91c1c" : "#15803d" }}>{fmtM(saldoH)}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: "#2563eb" }}>{fmtM(h.total)}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#6b7280" }}>{c.freq}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", color: "#374151" }}>{fmtM(vrParc)}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#374151" }}>{c.visitas}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#15803d" }}>{pctJurosH}%</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  {/* Total + Cancelar */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 4px 0" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>
+                      TOTAL EMPRÉSTIMOS:&nbsp;
+                      <span style={{ color: "#2563eb" }}>{fmtM(c.historico.reduce((a, h) => a + h.total, 0))}</span>
+                    </span>
+                    <button onClick={() => setSelectedCliente(null)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                      Cancelar
+                    </button>
+                  </div>
                 </div>
 
                 {/* Observações */}
@@ -1607,74 +1638,69 @@ function ClientesContent() {
             </div>
           </div>
 
-          {/* ── Parcelas sub-modal ── */}
+          {/* ── Parcelas sub-modal (active loan button) ── */}
           {showParcelas && (() => {
-            const activeEmp = c.historico.find(h => h.status === "ACTIVO");
-            if (!activeEmp) return null;
+            const emp = c.historico.find(h => h.status === "ACTIVO");
+            if (!emp) return null;
+            const pagasCount = c.pagas;
+            const vrParc = c.vlrCuota;
             const startDate = new Date(c.dataEmprestimo + "T00:00:00");
-            const parcelas = Array.from({ length: activeEmp.cuotas }, (_, i) => {
-              const due = new Date(startDate);
-              due.setDate(due.getDate() + i + 1);
-              const pago = i < c.pagas;
-              const pagDate = new Date(due);
-              pagDate.setDate(pagDate.getDate() + (pago && c.atrasadas === 0 ? 0 : pago ? Math.floor(Math.random() * 3) : 0));
-              return {
-                num: i + 1,
-                vencimento: due.toISOString().slice(0, 10),
-                pagamento: pago ? pagDate.toISOString().slice(0, 10) : "—",
-                valor: c.vlrCuota,
-                pago,
-              };
-            });
-            const totalPago = parcelas.filter(p => p.pago).reduce((a, p) => a + p.valor, 0);
+            const parcs = Array.from({ length: emp.cuotas }, (_, i) => {
+              const due = new Date(startDate); due.setDate(due.getDate() + i + 1);
+              return { num: i + 1, vencimento: due.toISOString().slice(0, 10), pagamento: due.toISOString().slice(0, 10), valor: vrParc, pago: i < pagasCount };
+            }).filter(p => p.pago);
+            const totalPago = parcs.reduce((a, p) => a + p.valor, 0);
+            const pctJ = Math.round((emp.total / emp.valor - 1) * 100);
             return (
               <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center" }}
                 onClick={() => setShowParcelas(false)}>
-                <div style={{ background: "#fff", borderRadius: 8, width: 580, maxHeight: "85vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column" }}
+                <div style={{ background: "#fff", borderRadius: 8, width: 620, maxHeight: "88vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column" }}
                   onClick={e => e.stopPropagation()}>
-
-                  {/* Header */}
-                  <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
-                      <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>PARCELAS — EMPRÉSTIMO ATIVO</div>
-                      <div style={{ color: "#93c5fd", fontSize: 11, marginTop: 2 }}>{c.nome} · {c.consec}</div>
+                      <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Parcelas do Empréstimo</div>
+                      <div style={{ color: "#93c5fd", fontSize: 11, marginTop: 2 }}>👤 {c.nome.toUpperCase()} &nbsp;#{c.consec}</div>
                     </div>
-                    <button onClick={() => setShowParcelas(false)} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+                    <button onClick={() => setShowParcelas(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
                   </div>
-
-                  {/* Summary bar */}
-                  <div style={{ background: "#f0f4f8", borderBottom: "1px solid #e0e0e0", padding: "10px 18px", display: "flex", gap: 24, fontSize: 12 }}>
-                    <div><span style={{ color: "#6b7280" }}>Empréstimo: </span><b style={{ color: "#111827" }}>{fmtM(activeEmp.valor)}</b></div>
-                    <div><span style={{ color: "#6b7280" }}>Total: </span><b style={{ color: "#111827" }}>{fmtM(activeEmp.total)}</b></div>
-                    <div><span style={{ color: "#6b7280" }}>Pagas: </span><b style={{ color: "#15803d" }}>{c.pagas}/{activeEmp.cuotas}</b></div>
-                    <div><span style={{ color: "#6b7280" }}>Total pago: </span><b style={{ color: "#15803d" }}>{fmtM(totalPago)}</b></div>
-                    <div><span style={{ color: "#6b7280" }}>Saldo: </span><b style={{ color: c.atrasadas >= 5 ? "#b91c1c" : "#d97706" }}>{fmtM(c.saldo)}</b></div>
+                  <div style={{ display: "flex", gap: 0, background: "#f0f4f8", borderBottom: "2px solid #3d6e8e", fontSize: 11 }}>
+                    {[
+                      ["Data Emp.", emp.data],
+                      ["Estado", emp.status === "ACTIVO" ? "Activo" : "Quitado"],
+                      ["Parc.", String(emp.cuotas)],
+                      ["Pagas", String(pagasCount)],
+                      ["Falt.", String(c.restantes)],
+                      ["Vlr. Empréstimo", fmtM(emp.total)],
+                      ["Vr. Parcela", fmtM(vrParc)],
+                      ["% Juros", `${pctJ}%`],
+                    ].map(([label, val]) => (
+                      <div key={label} style={{ flex: 1, padding: "8px 10px", borderRight: "1px solid #dde3ea", textAlign: "center" }}>
+                        <div style={{ color: "#6b7280", fontSize: 10, marginBottom: 2 }}>{label}</div>
+                        <div style={{ fontWeight: 700, color: label === "% Juros" ? "#15803d" : label === "Estado" ? "#1d4ed8" : label === "Falt." && c.restantes > 0 ? "#b91c1c" : "#111827" }}>{val}</div>
+                      </div>
+                    ))}
                   </div>
-
-                  {/* Table */}
-                  <div style={{ padding: "0 0 16px" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                      <thead>
-                        <tr>
-                          {["Nº", "Vencimento", "Pagamento", "Valor", "Situação"].map(h => (
-                            <th key={h} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "7px 12px", textAlign: h === "Nº" ? "center" : h === "Valor" ? "right" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0 }}>{h}</th>
-                          ))}
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                    <thead>
+                      <tr>{["Nro.", "Data Venc.", "Data Pag.", "Vlr. Parcela", "Situação"].map(hd => (
+                        <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "7px 12px", textAlign: hd === "Nro." ? "center" : hd === "Vlr. Parcela" ? "right" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0 }}>{hd}</th>
+                      ))}</tr>
+                    </thead>
+                    <tbody>
+                      {parcs.map((p, idx) => (
+                        <tr key={p.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{p.num}</td>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{p.vencimento}</td>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#15803d", fontWeight: 600 }}>{p.pagamento}</td>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 600, color: "#111827" }}>{fmtM(p.valor)}</td>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}><TipoBadge tipo="PARC." /></td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {parcelas.filter(p => p.pago).map((p, idx) => (
-                          <tr key={p.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#6b7280" }}>{p.num}</td>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{p.vencimento}</td>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: p.pago ? "#15803d" : "#9ca3af", fontWeight: p.pago ? 600 : 400 }}>{p.pagamento}</td>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 600, color: "#111827" }}>{fmtM(p.valor)}</td>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0" }}>
-                              <TipoBadge tipo="PARC." />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", background: "#f8f9fa", borderTop: "1px solid #e0e0e0" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>TOTAL PAGO: <span style={{ color: "#15803d" }}>{fmtM(totalPago)}</span></span>
+                    <button onClick={() => setShowParcelas(false)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Cancelar</button>
                   </div>
                 </div>
               </div>
@@ -1686,70 +1712,65 @@ function ClientesContent() {
             const emp = selectedHistoricoEmp;
             const isAtivo = emp.status === "ACTIVO";
             const pagasCount = isAtivo ? c.pagas : emp.cuotas;
+            const faltCount  = isAtivo ? c.restantes : 0;
+            const vrParc = emp.total / emp.cuotas;
+            const pctJ = Math.round((emp.total / emp.valor - 1) * 100);
             const startDate = new Date(emp.data + "T00:00:00");
             const parcs = Array.from({ length: emp.cuotas }, (_, i) => {
-              const due = new Date(startDate);
-              due.setDate(due.getDate() + i + 1);
-              const pago = i < pagasCount;
-              return {
-                num: i + 1,
-                vencimento: due.toISOString().slice(0, 10),
-                pagamento: pago ? due.toISOString().slice(0, 10) : "—",
-                valor: emp.total / emp.cuotas,
-                pago,
-              };
-            });
-            const totalPago = parcs.filter(p => p.pago).reduce((a, p) => a + p.valor, 0);
-            const pagasParcs = parcs.filter(p => p.pago);
+              const due = new Date(startDate); due.setDate(due.getDate() + i + 1);
+              return { num: i + 1, vencimento: due.toISOString().slice(0, 10), pagamento: due.toISOString().slice(0, 10), valor: vrParc, pago: i < pagasCount };
+            }).filter(p => p.pago);
+            const totalPago = parcs.reduce((a, p) => a + p.valor, 0);
             return (
               <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center" }}
                 onClick={() => setSelectedHistoricoEmp(null)}>
-                <div style={{ background: "#fff", borderRadius: 8, width: 580, maxHeight: "85vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column" }}
+                <div style={{ background: "#fff", borderRadius: 8, width: 620, maxHeight: "88vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column" }}
                   onClick={e => e.stopPropagation()}>
-
-                  {/* Header */}
-                  <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
-                      <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>
-                        PARCELAS — {emp.status === "QUITADO" ? "EMPRÉSTIMO QUITADO" : "EMPRÉSTIMO ATIVO"}
-                      </div>
-                      <div style={{ color: "#93c5fd", fontSize: 11, marginTop: 2 }}>{c.nome} · {emp.data}</div>
+                      <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Parcelas do Empréstimo</div>
+                      <div style={{ color: "#93c5fd", fontSize: 11, marginTop: 2 }}>👤 {c.nome.toUpperCase()} &nbsp;#{c.consec}</div>
                     </div>
-                    <button onClick={() => setSelectedHistoricoEmp(null)} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+                    <button onClick={() => setSelectedHistoricoEmp(null)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
                   </div>
-
-                  {/* Summary bar */}
-                  <div style={{ background: "#f0f4f8", borderBottom: "1px solid #e0e0e0", padding: "10px 18px", display: "flex", gap: 24, fontSize: 12, flexWrap: "wrap" }}>
-                    <div><span style={{ color: "#6b7280" }}>Empréstimo: </span><b style={{ color: "#111827" }}>{fmtM(emp.valor)}</b></div>
-                    <div><span style={{ color: "#6b7280" }}>Total: </span><b style={{ color: "#111827" }}>{fmtM(emp.total)}</b></div>
-                    <div><span style={{ color: "#6b7280" }}>Pagas: </span><b style={{ color: "#15803d" }}>{pagasCount}/{emp.cuotas}</b></div>
-                    <div><span style={{ color: "#6b7280" }}>Total pago: </span><b style={{ color: "#15803d" }}>{fmtM(totalPago)}</b></div>
+                  <div style={{ display: "flex", gap: 0, background: "#f0f4f8", borderBottom: "2px solid #3d6e8e", fontSize: 11 }}>
+                    {[
+                      ["Data Emp.", emp.data],
+                      ["Estado", isAtivo ? "Activo" : "Quitado"],
+                      ["Parc.", String(emp.cuotas)],
+                      ["Pagas", String(pagasCount)],
+                      ["Falt.", String(faltCount)],
+                      ["Vlr. Empréstimo", fmtM(emp.total)],
+                      ["Vr. Parcela", fmtM(vrParc)],
+                      ["% Juros", `${pctJ}%`],
+                    ].map(([label, val]) => (
+                      <div key={label} style={{ flex: 1, padding: "8px 10px", borderRight: "1px solid #dde3ea", textAlign: "center" }}>
+                        <div style={{ color: "#6b7280", fontSize: 10, marginBottom: 2 }}>{label}</div>
+                        <div style={{ fontWeight: 700, color: label === "% Juros" ? "#15803d" : label === "Estado" ? (isAtivo ? "#1d4ed8" : "#15803d") : label === "Falt." && faltCount > 0 ? "#b91c1c" : "#111827" }}>{val}</div>
+                      </div>
+                    ))}
                   </div>
-
-                  {/* Table */}
-                  <div style={{ padding: "0 0 16px" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                      <thead>
-                        <tr>
-                          {["Nº", "Vencimento", "Pagamento", "Valor", "Situação"].map(hd => (
-                            <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "7px 12px", textAlign: hd === "Nº" ? "center" : hd === "Valor" ? "right" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0 }}>{hd}</th>
-                          ))}
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                    <thead>
+                      <tr>{["Nro.", "Data Venc.", "Data Pag.", "Vlr. Parcela", "Situação"].map(hd => (
+                        <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "7px 12px", textAlign: hd === "Nro." ? "center" : hd === "Vlr. Parcela" ? "right" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0 }}>{hd}</th>
+                      ))}</tr>
+                    </thead>
+                    <tbody>
+                      {parcs.map((p, idx) => (
+                        <tr key={p.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{p.num}</td>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{p.vencimento}</td>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#15803d", fontWeight: 600 }}>{p.pagamento}</td>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 600, color: "#111827" }}>{fmtM(p.valor)}</td>
+                          <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}><TipoBadge tipo="PARC." /></td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {pagasParcs.map((p, idx) => (
-                          <tr key={p.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#6b7280" }}>{p.num}</td>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{p.vencimento}</td>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: "#15803d", fontWeight: 600 }}>{p.pagamento}</td>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 600, color: "#111827" }}>{fmtM(p.valor)}</td>
-                            <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0" }}>
-                              <TipoBadge tipo="PARC." />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", background: "#f8f9fa", borderTop: "1px solid #e0e0e0" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>TOTAL PAGO: <span style={{ color: "#15803d" }}>{fmtM(totalPago)}</span></span>
+                    <button onClick={() => setSelectedHistoricoEmp(null)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Cancelar</button>
                   </div>
                 </div>
               </div>
