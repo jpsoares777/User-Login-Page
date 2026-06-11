@@ -2624,9 +2624,11 @@ function VendasPorPeriodosContent() {
 }
 
 function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
-  if (activeSub === "Liquidação")        return <LiqPeriodosLiquidacaoView />;
-  if (activeSub === "Pagamentos")        return <LiqPeriodosPagamentosContent />;
-  if (activeSub === "Empr. por Períodos") return <VendasPorPeriodosContent />;
+  if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView />;
+  if (activeSub === "Pagamentos")          return <LiqPeriodosPagamentosContent />;
+  if (activeSub === "Empr. por Períodos")  return <VendasPorPeriodosContent />;
+  if (activeSub === "Rendimentos")         return <RendimentosContent />;
+  if (activeSub === "Despesas")            return <DespesasContent />;
   return (
     <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
       <p className="text-gray-400 text-sm">{activeSub} — em desenvolvimento</p>
