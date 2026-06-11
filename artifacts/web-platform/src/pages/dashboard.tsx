@@ -2629,7 +2629,13 @@ function VendasPorPeriodosContent() {
 
 
 // ── Liq. Períodos – Clientes data ─────────────────────────────────────────────
-const liqPerClientesData = [
+interface LiqPerClienteRow {
+  id: number; vendedor: string; fechaVenta: string; consec: string; status: string;
+  cancelDate: string; cliente: string; idVenta: string; movel: string; direc: string;
+  cuotas: number; cuoPag: number; cuoFalt: number; saldo: number; int: number;
+  valorProd: number; vrCuota: number; visitas: number; freq: string;
+}
+const liqPerClientesData: LiqPerClienteRow[] = [
   { id:1,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-25", consec:"4700627058", status:"Cancelado", cancelDate:"2026-04-15", cliente:"Aline Lima De Alencar",           idVenta:"4700627058", movel:"98982381007",   direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:1120, vrCuota:80,  visitas:15, freq:"DIARIO" },
   { id:2,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-15", consec:"4700627058", status:"Activo",    cancelDate:"",           cliente:"Aline Lima De Alencar",           idVenta:"4700627067", movel:"98982381007",   direc:"",                                        cuotas:14.0, cuoPag:1.0,  cuoFalt:13.0, saldo:1040, int:40, valorProd:1120, vrCuota:80,  visitas:3,  freq:"DIARIO" },
   { id:3,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-24", consec:"4700627049", status:"Cancelado", cancelDate:"2026-04-08", cliente:"Ana Flávia Pereira Moraes",       idVenta:"4700627049", movel:"98991571405",   direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:700,  vrCuota:50,  visitas:16, freq:"DIARIO" },
@@ -2648,7 +2654,27 @@ const liqPerClientesData = [
   { id:16, vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-09", consec:"4700627073", status:"Activo",    cancelDate:"",           cliente:"Marcos Vinícius Almeida Costa",   idVenta:"4700627073", movel:"98984321100",   direc:"",                                        cuotas:14.0, cuoPag:9.0,  cuoFalt:5.0,  saldo:350,  int:40, valorProd:1176, vrCuota:84,  visitas:5,  freq:"SEMANAL" },
 ];
 
+function gerarHistorico(r: LiqPerClienteRow) {
+  const entries: { nro: number; tipo: string; valor: number; fecha: string; obs: string }[] = [];
+  const base = new Date(r.fechaVenta);
+  const step = r.freq === "SEMANAL" ? 7 : 1;
+  const total = Math.round(r.cuotas);
+  const pagos = Math.round(r.cuoPag);
+  for (let i = 1; i <= total; i++) {
+    const d = new Date(base);
+    d.setDate(d.getDate() + (i - 1) * step);
+    const fecha = d.toISOString().split("T")[0];
+    if (i <= pagos) {
+      entries.push({ nro: i, tipo: "PARC.", valor: r.vrCuota, fecha, obs: "Cuota" });
+    } else {
+      entries.push({ nro: i, tipo: "S/PAG.", valor: 0, fecha, obs: "Operacion Masiva" });
+    }
+  }
+  return entries.reverse();
+}
+
 function LiqPeriodosClientesContent() {
+  const [clienteSel, setClienteSel] = useState<LiqPerClienteRow | null>(null);
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
 
   const cols = [
@@ -2757,6 +2783,7 @@ function LiqPeriodosClientesContent() {
               const consecColor = isAtivo ? "#d97706" : "#dc2626";
               return (
                 <tr key={r.id} style={{ background: rowBg, cursor: "pointer" }}
+                  onClick={() => setClienteSel(r)}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
                   <td style={tdC("left", { color: "#374151", fontSize: 13 })}>{r.id}. {r.vendedor}</td>
@@ -2797,6 +2824,88 @@ function LiqPeriodosClientesContent() {
 
       {/* ── Barra azul rodapé ── */}
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+
+      {/* ── Modal Histórico de Pagamentos ── */}
+      {clienteSel && (() => {
+        const sel = clienteSel as LiqPerClienteRow;
+        const hist = gerarHistorico(sel);
+        const totalPago = hist.filter(h => h.tipo === "PARC.").reduce((a, h) => a + h.valor, 0);
+        const tipoTag = (tipo: string) => {
+          if (tipo === "PARC.")   return { bg: "#dcfce7", color: "#15803d", border: "#86efac" };
+          if (tipo === "S/PAG.")  return { bg: "#fee2e2", color: "#dc2626", border: "#fca5a5" };
+          return                         { bg: "#fef9c3", color: "#d97706", border: "#fde047" };
+        };
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setClienteSel(null)}>
+            <div style={{ background: "#fff", borderRadius: 8, width: 720, maxWidth: "95vw", maxHeight: "85vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.35)" }}
+              onClick={e => e.stopPropagation()}>
+
+              {/* Título */}
+              <div style={{ background: "#3d6e8e", borderRadius: "8px 8px 0 0", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.03em" }}>Histórico de Pagamentos</span>
+                <button onClick={() => setClienteSel(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 20, lineHeight: 1, padding: "0 4px" }}>✕</button>
+              </div>
+
+              {/* Cabeçalho cliente */}
+              <div style={{ padding: "10px 16px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 10, background: "#f8fafc" }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#3d6e8e", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#fff" }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                </div>
+                <div>
+                  <span style={{ fontWeight: 800, fontSize: 13, color: "#1e3a5f", letterSpacing: "0.04em", textTransform: "uppercase" }}>{sel.cliente}</span>
+                  <span style={{ marginLeft: 10, fontSize: 12, color: "#6b7280" }}>#{sel.idVenta}</span>
+                </div>
+              </div>
+
+              {/* Tabela histórico */}
+              <div style={{ flex: 1, overflowY: "auto" }}>
+                <table style={{ borderCollapse: "collapse", width: "100%" }}>
+                  <thead>
+                    <tr style={{ background: "#f1f5f9" }}>
+                      {["Nro.", "Cliente", "Tipo", "Valor", "Data", "Observações"].map(h => (
+                        <th key={h} style={{ padding: "8px 12px", textAlign: h === "Valor" ? "right" : "left", fontSize: 12, fontWeight: 700, color: "#374151", borderBottom: "2px solid #e2e8f0", whiteSpace: "nowrap" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {hist.map((h, i) => {
+                      const tag = tipoTag(h.tipo);
+                      const bg = i % 2 === 0 ? "#fff" : "#f9fafb";
+                      return (
+                        <tr key={h.nro} style={{ background: bg }}>
+                          <td style={{ padding: "7px 12px", fontSize: 13, color: "#6b7280", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>{h.nro}</td>
+                          <td style={{ padding: "7px 12px", fontSize: 13, color: "#374151", fontWeight: 500, borderBottom: "1px solid #f0f0f0" }}>{sel.cliente}</td>
+                          <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>
+                            <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: tag.bg, color: tag.color, border: `1px solid ${tag.border}` }}>{h.tipo}</span>
+                          </td>
+                          <td style={{ padding: "7px 12px", fontSize: 13, fontWeight: 700, color: h.valor > 0 ? "#15803d" : "#9ca3af", textAlign: "right", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>
+                            R$ {h.valor.toFixed(2).replace(".", ",")}
+                          </td>
+                          <td style={{ padding: "7px 12px", fontSize: 12, color: "#6b7280", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>{h.fecha}</td>
+                          <td style={{ padding: "7px 12px", fontSize: 12, color: "#9ca3af", borderBottom: "1px solid #f0f0f0" }}>{h.obs}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Rodapé */}
+              <div style={{ padding: "12px 16px", borderTop: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f8fafc" }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#374151" }}>
+                  TOTAL PAGOS:{" "}
+                  <span style={{ color: "#1d4ed8", fontSize: 15 }}>R$ {totalPago.toFixed(2).replace(".", ",")}</span>
+                </span>
+                <button onClick={() => setClienteSel(null)}
+                  style={{ padding: "6px 20px", background: "#fff", border: "1px solid #d1d5db", borderRadius: 6, fontSize: 13, fontWeight: 600, color: "#374151", cursor: "pointer" }}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
