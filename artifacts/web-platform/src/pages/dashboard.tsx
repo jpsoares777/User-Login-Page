@@ -1310,6 +1310,218 @@ const clientesRows: ClienteRow[] = [
   { id:10, consec:"4700627023", status:"ACTIVO", visitas:9,  nome:"Elaira Kisley Conceição Lopes",    tel1:"98986543210",  tel2:"98986543211",  freq:"Diário", valorVenda:540.00,  pctJuros:40, total:756.00,  cuotas:14, atrasadas:9,  pagas:0,  restantes:9,  vlrCuota:54,  saldo:540.00,  documento:"888.999.000-11", dataNasc:"1993-02-17", endereco:"Rua do Sol, 33", bairro:"Cohab Anil", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Muitos atrasos. Análise de renegociação.", dataEmprestimo:"2026-04-10", historico:[{data:"2026-04-10",valor:540,total:756,cuotas:14,status:"ACTIVO"}] },
 ];
 
+// ── Agendados data ────────────────────────────────────────────────────────────
+const agendadosData = [
+  { id:1,  cliente:"Andreia de Jesus Costa Araújo", tipo:"Visita",        data:"2026-06-11", hora:"09:00", obs:"Cobrar parcela atrasada",  status:"Pendente"   },
+  { id:2,  cliente:"Geílson Eduardo Rosa de Jesus", tipo:"Ligação",       data:"2026-06-11", hora:"10:30", obs:"Confirmar endereço",        status:"Concluído"  },
+  { id:3,  cliente:"Andrela de Jesus Costa Araújo", tipo:"Visita",        data:"2026-06-11", hora:"14:00", obs:"Novo empréstimo",           status:"Pendente"   },
+  { id:4,  cliente:"S. De Oliveira",                tipo:"Renegociação",  data:"2026-06-12", hora:"08:00", obs:"Proposta de parcelamento",  status:"Pendente"   },
+  { id:5,  cliente:"Barbosa",                       tipo:"Ligação",       data:"2026-06-12", hora:"11:00", obs:"",                          status:"Cancelado"  },
+  { id:6,  cliente:"Dos Mendes",                    tipo:"Visita",        data:"2026-06-13", hora:"09:30", obs:"Verificar documentos",      status:"Pendente"   },
+];
+
+const tipoAgendColor: Record<string, { bg: string; color: string; border: string }> = {
+  "Visita":       { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
+  "Ligação":      { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0" },
+  "Renegociação": { bg: "#fffbeb", color: "#b45309", border: "#fde68a" },
+};
+const statusAgendColor: Record<string, { bg: string; color: string; border: string }> = {
+  "Pendente":  { bg: "#fffbeb", color: "#b45309", border: "#fde68a" },
+  "Concluído": { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0" },
+  "Cancelado": { bg: "#fef2f2", color: "#b91c1c", border: "#fecaca" },
+};
+
+function AgendadosContent() {
+  const [filterDate, setFilterDate] = useState("2026-06-11");
+  const [showFilter, setShowFilter] = useState(false);
+  const [tempDate, setTempDate] = useState(filterDate);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newForm, setNewForm] = useState({ cliente: "", tipo: "Visita", data: filterDate, hora: "", obs: "" });
+
+  const filtered = agendadosData.filter(r => !filterDate || r.data === filterDate);
+
+  const cols = [
+    { label: "Nro.",        w: 50,  align: "center" as const },
+    { label: "Cliente",     w: 220, align: "left"   as const },
+    { label: "Tipo",        w: 120, align: "center" as const },
+    { label: "Data",        w: 110, align: "center" as const },
+    { label: "Hora",        w: 80,  align: "center" as const },
+    { label: "Observações", w: 280, align: "left"   as const },
+    { label: "Status",      w: 110, align: "center" as const },
+  ];
+
+  const td = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+  });
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden" style={{ position: "relative" }}>
+
+      {/* Filter bar */}
+      <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", display: "flex", alignItems: "center", gap: 6 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#3d6e8e" }}><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          Agendamentos
+        </span>
+        {filterDate && (
+          <span style={{ background: "#e0f2fe", color: "#0369a1", border: "1px solid #7dd3fc", borderRadius: 4, padding: "2px 10px", fontSize: 11, fontWeight: 600 }}>
+            📅 {filterDate}
+            <button onClick={() => setFilterDate("")} style={{ marginLeft: 6, background: "none", border: "none", cursor: "pointer", color: "#0369a1", fontWeight: 700, padding: 0, fontSize: 12 }}>✕</button>
+          </span>
+        )}
+        <div style={{ flex: 1 }} />
+        <button
+          onClick={() => setShowAddModal(true)}
+          style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "5px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+          + Agendar
+        </button>
+        <button
+          onClick={() => { setTempDate(filterDate); setShowFilter(v => !v); }}
+          style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "5px 10px", cursor: "pointer", display: "flex", alignItems: "center" }}>
+          <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A1 1 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
+        </button>
+      </div>
+
+      {/* Floating date filter */}
+      {showFilter && (
+        <div style={{ position: "absolute", top: 46, right: 12, zIndex: 100, background: "#fff", borderRadius: 8, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", border: "1px solid #e0e0e0", width: 280, padding: 18 }}>
+          <div style={{ fontWeight: 700, fontSize: 13, color: "#2d5474", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span>📅 Filtrar por Data</span>
+            <button onClick={() => setShowFilter(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 16, fontWeight: 700 }}>✕</button>
+          </div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>Data do Agendamento</label>
+          <input type="date" value={tempDate} onChange={e => setTempDate(e.target.value)}
+            style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "6px 10px", fontSize: 13, color: "#374151", marginBottom: 14, boxSizing: "border-box" }} />
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={() => { setFilterDate(""); setTempDate(""); setShowFilter(false); }}
+              style={{ flex: 1, background: "#f3f4f6", color: "#6b7280", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+              Limpar
+            </button>
+            <button onClick={() => { setFilterDate(tempDate); setShowFilter(false); }}
+              style={{ flex: 1, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+              Aplicar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Table */}
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 980 }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>
+              {cols.map(c => (
+                <th key={c.label} style={{ padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700, color: "#e2e8f0", background: "#3d6e8e", borderRight: "1px solid #4a7fa0", position: "sticky", top: 0, zIndex: 1, whiteSpace: "nowrap" }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={cols.length} style={{ textAlign: "center", padding: "60px 0", color: "#9ca3af", fontSize: 13 }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                    <svg viewBox="0 0 24 24" style={{ width: 40, height: 40, fill: "#d1d5db" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                    <span>Nenhum agendamento para os filtros selecionados.</span>
+                    <span style={{ fontSize: 11, color: "#d1d5db" }}>Selecione uma data ou ajuste os filtros acima.</span>
+                  </div>
+                </td>
+              </tr>
+            ) : filtered.map((r, i) => {
+              const tipo  = tipoAgendColor[r.tipo]  ?? tipoAgendColor["Visita"];
+              const stat  = statusAgendColor[r.status] ?? statusAgendColor["Pendente"];
+              return (
+                <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}
+                  onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
+                  onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = i % 2 === 0 ? "#fff" : "#f9fafb"}>
+                  <td style={td("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={td("left",   { color: "#111827", fontWeight: 600 })}>{r.cliente}</td>
+                  <td style={td("center")}>
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20, background: tipo.bg, color: tipo.color, border: `1px solid ${tipo.border}` }}>{r.tipo}</span>
+                  </td>
+                  <td style={td("center", { color: "#374151" })}>{r.data}</td>
+                  <td style={td("center", { fontWeight: 700, color: "#2d5474" })}>{r.hora}</td>
+                  <td style={td("left",   { color: "#6b7280", fontSize: 12 })}>{r.obs || "—"}</td>
+                  <td style={td("center")}>
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20, background: stat.bg, color: stat.color, border: `1px solid ${stat.border}` }}>{r.status}</span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          {filtered.length > 0 && (
+            <tfoot>
+              <tr>
+                <td colSpan={cols.length} style={{ padding: "6px 10px", background: "#3d6e8e", color: "#e2e8f0", fontSize: 12, fontWeight: 700, textAlign: "right", borderTop: "2px solid #2d5474" }}>
+                  {filtered.length} agendamento{filtered.length !== 1 ? "s" : ""}
+                </td>
+              </tr>
+            </tfoot>
+          )}
+        </table>
+      </div>
+
+      {/* Add modal */}
+      {showAddModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowAddModal(false)}>
+          <div style={{ background: "#fff", borderRadius: 8, width: 480, boxShadow: "0 24px 64px rgba(0,0,0,0.35)", overflow: "hidden" }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ background: "#2d5474", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>📅 Agendar Visita / Nota</span>
+              <button onClick={() => setShowAddModal(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>✕</button>
+            </div>
+            <div style={{ padding: "20px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Vendedor</label>
+                <select style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151" }}>
+                  <option>Rota Cred Bank -</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Cliente</label>
+                <input type="text" placeholder="Nome do cliente" value={newForm.cliente} onChange={e => setNewForm(f => ({ ...f, cliente: e.target.value }))}
+                  style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151", boxSizing: "border-box" }} />
+              </div>
+              <div style={{ display: "flex", gap: 12 }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Tipo</label>
+                  <select value={newForm.tipo} onChange={e => setNewForm(f => ({ ...f, tipo: e.target.value }))}
+                    style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151" }}>
+                    <option>Visita</option>
+                    <option>Ligação</option>
+                    <option>Renegociação</option>
+                  </select>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Data</label>
+                  <input type="date" value={newForm.data} onChange={e => setNewForm(f => ({ ...f, data: e.target.value }))}
+                    style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151", boxSizing: "border-box" }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Hora</label>
+                  <input type="time" value={newForm.hora} onChange={e => setNewForm(f => ({ ...f, hora: e.target.value }))}
+                    style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151", boxSizing: "border-box" }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>Descrição / Observações</label>
+                <textarea rows={4} value={newForm.obs} onChange={e => setNewForm(f => ({ ...f, obs: e.target.value }))}
+                  style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151", resize: "vertical", boxSizing: "border-box" }} />
+              </div>
+            </div>
+            <div style={{ padding: "12px 18px", borderTop: "1px solid #e5e7eb", display: "flex", justifyContent: "flex-end", gap: 10 }}>
+              <button onClick={() => setShowAddModal(false)} style={{ background: "#f3f4f6", color: "#374151", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Cancelar</button>
+              <button onClick={() => setShowAddModal(false)} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "7px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Guardar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ClientesContent() {
   const [selectedCliente, setSelectedCliente] = useState<ClienteRow | null>(null);
   const [showParcelas, setShowParcelas] = useState(false);
@@ -1830,7 +2042,8 @@ export default function DashboardPage() {
   const showEmprestimos = activeMain === "Liq. Diária" && activeSub === "Novos Empréstimos";
   const showDespesas = activeMain === "Liq. Diária" && activeSub === "Despesas";
   const showRendimentos = activeMain === "Liq. Diária" && activeSub === "Rendimentos";
-  const showClientes = activeMain === "Liq. Diária" && activeSub === "Clientes";
+  const showClientes   = activeMain === "Liq. Diária" && activeSub === "Clientes";
+  const showAgendados  = activeMain === "Liq. Diária" && activeSub === "Agendados";
 
   useEffect(() => {
     const vp = document.getElementById("vp") as HTMLMetaElement | null;
@@ -1923,6 +2136,8 @@ export default function DashboardPage() {
           <RendimentosContent />
         ) : showClientes ? (
           <ClientesContent />
+        ) : showAgendados ? (
+          <AgendadosContent />
         ) : showContent ? (
           <>
             {/* LEFT: Tree */}
