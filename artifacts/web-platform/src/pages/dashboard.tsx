@@ -2240,6 +2240,7 @@ function LiqPeriodosLiquidacaoView() {
         <Row label="Juros" index={2}>
           <span className="text-orange-500 text-xs">🔥</span>
           <span className="font-semibold text-gray-800">8.390,00</span>
+          <span className="text-gray-400 text-[11px] ml-0.5">%</span>
         </Row>
         <Row label="Retiradas" index={3}>
           <span className="text-gray-500 font-bold text-sm">−</span>
