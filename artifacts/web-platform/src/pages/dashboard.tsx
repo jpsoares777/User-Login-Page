@@ -1113,23 +1113,19 @@ function EmprestimosNovosContent() {
                 <td style={tdE("right", { color: r.saldo > 0 ? "#374151" : "#9ca3af" })}>{fmt(r.saldo)}</td>
               </tr>
             ))}
-            {/* Total row */}
-            <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
-              <td colSpan={5} style={{ ...tdE("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
-                TOTAL EMPRÉSTIMOS DO DIA:
-              </td>
-              <td style={tdE("right", { fontWeight: 700, color: "#1d4ed8" })}>$ {fmt(totalValorProd)}</td>
-              <td style={tdE("center")} />
-              <td style={tdE("center", { fontWeight: 700, color: "#15803d" })}>({fmt(totalJuros)})</td>
-              <td colSpan={4} style={tdE("center")} />
-            </tr>
           </tbody>
         </table>
       </div>
 
-      {/* Footer */}
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }}>
+      {/* ── Total flutuante ── */}
+      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL EMPRÉSTIMOS</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#1d4ed8" }}>$ {fmt(totalValorProd)}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#15803d" }}>Juros: {fmt(totalJuros)}</span>
       </div>
+
+      {/* Footer */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
       {selectedEmp && <HistorialVendasModal row={selectedEmp} onClose={() => setSelectedEmp(null)} />}
     </div>
   );
@@ -1223,19 +1219,17 @@ function DespesasContent() {
                 </tr>
               );
             })}
-            <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
-              <td colSpan={3} style={{ ...tdD("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
-                TOTAL DE DESPESAS DO DIA:
-              </td>
-              <td style={tdD("right", { fontWeight: 700, color: "#b91c1c" })}>{fmt(total)}</td>
-              <td colSpan={4} style={tdD("center")} />
-            </tr>
           </tbody>
         </table>
       </div>
 
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }}>
+      {/* ── Total flutuante ── */}
+      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL DESPESAS</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#b91c1c" }}>{fmt(total)}</span>
       </div>
+
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
     </div>
   );
 }
@@ -1326,20 +1320,17 @@ function RendimentosContent() {
                 </tr>
               );
             })}
-            <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
-              <td colSpan={3} style={{ ...tdR("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
-                TOTAL DE RENDIMENTOS DO DIA:
-              </td>
-              <td style={tdR("right", { fontWeight: 700, color: "#15803d" })}>{fmt(total)}</td>
-              <td colSpan={4} style={tdR("center")} />
-            </tr>
           </tbody>
         </table>
       </div>
 
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }}>
-      
+      {/* ── Total flutuante ── */}
+      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL RENDIMENTOS</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>{fmt(total)}</span>
       </div>
+
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
     </div>
   );
 }
@@ -1498,15 +1489,14 @@ function AgendadosContent() {
                 </tr>
               );
             })}
-            {filtered.length > 0 && (
-              <tr style={{ background: "#e8edf2", fontWeight: 700 }}>
-                <td colSpan={cols.length} style={{ padding: "6px 10px", color: "#374151", fontWeight: 700, fontSize: 12, textAlign: "right", borderTop: "1px solid #d1d5db" }}>
-                  TOTAL DE AGENDAMENTOS: {filtered.length}
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
+      </div>
+
+      {/* ── Total flutuante ── */}
+      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL AGENDAMENTOS</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#2d5474" }}>{filtered.length}</span>
       </div>
 
       {/* ── Blue footer ── */}
@@ -1890,20 +1880,18 @@ function ClientesContent() {
                 </tr>
               );
             })}
-            {/* Total row */}
-            <tr style={{ background: "#e8edf2" }}>
-              <td colSpan={10} style={{ ...tdC("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
-                TOTAL CLIENTES:
-              </td>
-              <td style={tdC("right", { fontWeight: 700, color: "#15803d" })}>{fmt(totalSaldo)}</td>
-            </tr>
           </tbody>
         </table>
       </div>
 
-      {/* Footer */}
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }}>
+      {/* ── Total flutuante ── */}
+      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL SALDO CLIENTES</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>{fmt(totalSaldo)}</span>
       </div>
+
+      {/* Footer */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
 
       {/* ── Cliente detail modal ─────────────────────────────────────── */}
       {selectedCliente && (() => {
