@@ -2966,6 +2966,206 @@ function ResumoContent() {
   );
 }
 
+// ── Consolidados ──────────────────────────────────────────────────────────────
+const consolidadosData = [
+  {
+    pais: "BRASIL", cidade: "SAO LUIS", fechaCaja: "2026-04-15",
+    vendedor: "Rota Cred Bank -", totalClientes: 19,
+    cajaFinal: 2689.00, cartera: 12670.00, acumulado: 0.00,
+  },
+];
+
+function CoinIcon() {
+  return (
+    <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#d97706", display: "inline", verticalAlign: "middle", marginRight: 3, flexShrink: 0 }}>
+      <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+    </svg>
+  );
+}
+
+function ConsolidadosContent() {
+  const [showModal, setShowModal] = useState(false);
+  const [fechaCaja, setFechaCaja] = useState("2026-04-15");
+  const [vendedor,  setVendedor]  = useState("Rota Cred Bank -");
+  const [pais,      setPais]      = useState("BRASIL");
+  const [cidade,    setCidade]    = useState("SAO LUIS");
+
+  const inputCls  = "border border-gray-300 rounded px-2 text-sm bg-white outline-none focus:border-blue-400 text-gray-700";
+  const labelCls  = { fontSize: 11, fontWeight: 700 as const, color: "#6b7280", display: "block" as const, marginBottom: 4, textTransform: "uppercase" as const, letterSpacing: "0.04em" };
+  const fmt       = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+
+  const cols = [
+    { label: "País",                   w: "8%",  align: "left"   as const },
+    { label: "Cidade",                 w: "9%",  align: "left"   as const },
+    { label: "Fecha Caja",             w: "10%", align: "center" as const },
+    { label: "Vendedor",               w: "18%", align: "left"   as const },
+    { label: "Total de Clientes",      w: "11%", align: "center" as const },
+    { label: "Caja Final",             w: "11%", align: "right"  as const },
+    { label: "Cartera",                w: "11%", align: "right"  as const },
+    { label: "Acumulado Caja Seguros", w: "22%", align: "right"  as const },
+  ];
+
+  const totCaja     = consolidadosData.reduce((a, r) => a + r.cajaFinal,  0);
+  const totCartera  = consolidadosData.reduce((a, r) => a + r.cartera,    0);
+  const totAcum     = consolidadosData.reduce((a, r) => a + r.acumulado,  0);
+
+  const thS: React.CSSProperties = {
+    padding: "7px 8px", fontSize: 13, fontWeight: 700, color: "#e2e8f0",
+    background: "#3d6e8e", whiteSpace: "nowrap", letterSpacing: "0.02em",
+    borderRight: "1px solid #4a7fa0", position: "sticky", top: 0, zIndex: 1,
+  };
+  const tdS = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "6px 8px", fontSize: 13, color: "#374151", whiteSpace: "nowrap",
+    textAlign: align, borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0", ...extra,
+  });
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+
+      {/* ── Action bar ── */}
+      <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <button onClick={() => setShowModal(true)}
+          style={{ height: 28, padding: "0 12px", background: "#2d5474", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96a7.01 7.01 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.04.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          Opções
+        </button>
+      </div>
+
+      {/* ── Tabela ── */}
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>{cols.map(c => <th key={c.label} style={{ ...thS, textAlign: c.align }}>{c.label}</th>)}</tr>
+          </thead>
+          <tbody>
+            {consolidadosData.map((r, i) => (
+              <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb", cursor: "pointer" }}
+                onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = "#eff6ff"))}
+                onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = i % 2 === 0 ? "#fff" : "#f9fafb"))}>
+                <td style={tdS("left",   { fontWeight: 600 })}>{r.pais}</td>
+                <td style={tdS("left",   { color: "#4b5563" })}>{r.cidade}</td>
+                <td style={tdS("center")}>
+                  <span style={{ background: "#f97316", color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4 }}>{r.fechaCaja}</span>
+                </td>
+                <td style={tdS("left")}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#9ca3af", flexShrink: 0 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    {r.vendedor}
+                  </span>
+                </td>
+                <td style={tdS("center")}>
+                  <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>
+                    <CoinIcon /><span style={{ fontWeight: 700 }}>{r.totalClientes}</span>
+                  </span>
+                </td>
+                <td style={tdS("right")}>
+                  <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
+                    <CoinIcon /><span style={{ fontWeight: 600 }}>{fmt(r.cajaFinal)}</span>
+                  </span>
+                </td>
+                <td style={tdS("right")}>
+                  <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
+                    <CoinIcon /><span style={{ fontWeight: 600 }}>{fmt(r.cartera)}</span>
+                  </span>
+                </td>
+                <td style={tdS("right")}>
+                  <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
+                    <CoinIcon /><span style={{ fontWeight: 600 }}>{fmt(r.acumulado)}</span>
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── Totales row ── */}
+      <div className="shrink-0 flex items-center px-3 py-1.5 border-t gap-6" style={{ background: "#f0f2f5", borderColor: "#e0e0e0" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", minWidth: 60 }}>Totales:</span>
+        <span style={{ fontSize: 12, color: "#6b7280" }}>Caja Final:&nbsp;
+          <span style={{ fontWeight: 700, color: "#111827" }}>
+            <CoinIcon />{fmt(totCaja)}
+          </span>
+        </span>
+        <span style={{ fontSize: 12, color: "#6b7280" }}>Cartera:&nbsp;
+          <span style={{ fontWeight: 700, color: "#111827" }}>
+            <CoinIcon />{fmt(totCartera)}
+          </span>
+        </span>
+        <span style={{ fontSize: 12, color: "#6b7280" }}>Acumulado:&nbsp;
+          <span style={{ fontWeight: 700, color: "#111827" }}>
+            <CoinIcon />{fmt(totAcum)}&nbsp;
+          </span>
+          <span style={{ fontSize: 11, color: "#6b7280" }}>- Total Retiros (250,00)= 250,00</span>
+        </span>
+      </div>
+
+      {/* ── Blue footer bar ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+
+      {/* ── Modal ── */}
+      {showModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 400, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowModal(false)}>
+          <div style={{ background: "#fff", borderRadius: 8, width: 420, boxShadow: "0 24px 64px rgba(0,0,0,0.3)", overflow: "hidden" }}
+            onClick={e => e.stopPropagation()}>
+
+            {/* title bar */}
+            <div style={{ background: "#3d6e8e", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.01em" }}>Consolidados</span>
+              <button onClick={() => setShowModal(false)}
+                style={{ width: 26, height: 26, background: "rgba(255,255,255,0.18)", border: "none", color: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 15, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+            </div>
+
+            {/* body */}
+            <div style={{ padding: "20px 20px 16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 16px" }}>
+              <div>
+                <label style={labelCls}>Fecha Caja</label>
+                <input type="date" value={fechaCaja} onChange={e => setFechaCaja(e.target.value)}
+                  className={inputCls} style={{ width: "100%", padding: "7px 10px", boxSizing: "border-box" as const }} />
+              </div>
+              <div>
+                <label style={labelCls}>Vendedor</label>
+                <select value={vendedor} onChange={e => setVendedor(e.target.value)}
+                  className={inputCls} style={{ width: "100%", padding: "7px 10px", boxSizing: "border-box" as const }}>
+                  <option>Rota Cred Bank -</option>
+                </select>
+              </div>
+              <div>
+                <label style={labelCls}>País</label>
+                <select value={pais} onChange={e => setPais(e.target.value)}
+                  className={inputCls} style={{ width: "100%", padding: "7px 10px", boxSizing: "border-box" as const }}>
+                  <option>BRASIL</option>
+                </select>
+              </div>
+              <div>
+                <label style={labelCls}>Ciudad</label>
+                <select value={cidade} onChange={e => setCidade(e.target.value)}
+                  className={inputCls} style={{ width: "100%", padding: "7px 10px", boxSizing: "border-box" as const }}>
+                  <option>SAO LUIS</option>
+                </select>
+              </div>
+            </div>
+
+            {/* footer */}
+            <div style={{ padding: "10px 20px 16px", display: "flex", justifyContent: "flex-end", gap: 8 }}>
+              <button onClick={() => setShowModal(false)}
+                style={{ padding: "7px 18px", background: "#fff", border: "1px solid #2563eb", color: "#2563eb", borderRadius: 6, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                Cancelar
+              </button>
+              <button onClick={() => setShowModal(false)}
+                style={{ padding: "7px 22px", background: "#2563eb", border: "none", color: "#fff", borderRadius: 6, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
   if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView />;
   if (activeSub === "Pagamentos")          return <LiqPeriodosPagamentosContent />;
@@ -3118,9 +3318,7 @@ export default function DashboardPage() {
         ) : activeMain === "Liq. Períodos" ? (
           <LiqPeriodosContent activeSub={activeSubPeriodos} />
         ) : activeMain === "Consolidados" ? (
-          <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
-            <p className="text-gray-400 text-sm">Consolidados — em desenvolvimento</p>
-          </div>
+          <ConsolidadosContent />
         ) : showPagamentos ? (
           <PagamentosContent />
         ) : showEmprestimos ? (
