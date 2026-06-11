@@ -2274,8 +2274,157 @@ function LiqPeriodosLiquidacaoView() {
   );
 }
 
+const liqPerPagData = [
+  { nro: 1,  consecutivo: "4700627021", linkColor: "#2563eb",  cliente: "Pedro Vinicius Oliveira Paiva",   clienteColor: "#374151", parcela: 2,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "105,00",  data: "2026-03-14", valorProd: "1.500,00", saldo: "0,00",   restantes: "0"    },
+  { nro: 2,  consecutivo: "4700627021", linkColor: "#2563eb",  cliente: "Pedro Vinicius Oliveira Paiva",   clienteColor: "#374151", parcela: 5,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "105,00",  data: "2026-03-23", valorProd: "1.500,00", saldo: "0,00",   restantes: "0"    },
+  { nro: 3,  consecutivo: "4700627021", linkColor: "#2563eb",  cliente: "Pedro Vinicius Oliveira Paiva",   clienteColor: "#374151", parcela: 7,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "840,00",  data: "2026-03-25", valorProd: "1.500,00", saldo: "0,00",   restantes: "0"    },
+  { nro: 4,  consecutivo: "4700627022", linkColor: "#d97706",  cliente: "Kleiton Viana Gonçalves",         clienteColor: "#374151", parcela: 16, tipo: "Parcela", formaPgto: "Dinheiro", valor: "90,00",   data: "2026-04-06", valorProd: "900,00",   saldo: "420,00", restantes: "4,67" },
+  { nro: 5,  consecutivo: "4700627025", linkColor: "#2563eb",  cliente: "Bianca de Araujo Alves",          clienteColor: "#dc2626", parcela: 9,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "50,00",   data: "2026-03-30", valorProd: "500,00",   saldo: "0,00",   restantes: "0"    },
+  { nro: 6,  consecutivo: "4700627025", linkColor: "#2563eb",  cliente: "Bianca de Araujo Alves",          clienteColor: "#dc2626", parcela: 10, tipo: "Parcela", formaPgto: "Dinheiro", valor: "50,00",   data: "2026-03-31", valorProd: "500,00",   saldo: "0,00",   restantes: "0"    },
+  { nro: 7,  consecutivo: "4700627025", linkColor: "#2563eb",  cliente: "Bianca de Araujo Alves",          clienteColor: "#dc2626", parcela: 15, tipo: "Parcela", formaPgto: "Dinheiro", valor: "50,00",   data: "2026-04-06", valorProd: "500,00",   saldo: "0,00",   restantes: "0"    },
+  { nro: 8,  consecutivo: "4700627025", linkColor: "#2563eb",  cliente: "Bianca de Araujo Alves",          clienteColor: "#dc2626", parcela: 17, tipo: "Parcela", formaPgto: "Dinheiro", valor: "100,00",  data: "2026-04-08", valorProd: "500,00",   saldo: "0,00",   restantes: "0"    },
+  { nro: 9,  consecutivo: "4700627026", linkColor: "#dc2626",  cliente: "Andreia de Jesus Costa Araújo",   clienteColor: "#dc2626", parcela: 1,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "60,00",   data: "2026-03-16", valorProd: "600,00",   saldo: "0,00",   restantes: "0"    },
+  { nro: 10, consecutivo: "4700627026", linkColor: "#dc2626",  cliente: "Andreia de Jesus Costa Araújo",   clienteColor: "#dc2626", parcela: 2,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "60,00",   data: "2026-03-18", valorProd: "600,00",   saldo: "0,00",   restantes: "0"    },
+  { nro: 11, consecutivo: "4700627026", linkColor: "#dc2626",  cliente: "Andreia de Jesus Costa Araújo",   clienteColor: "#dc2626", parcela: 3,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "300,00",  data: "2026-03-23", valorProd: "600,00",   saldo: "0,00",   restantes: "0"    },
+  { nro: 12, consecutivo: "4700627026", linkColor: "#dc2626",  cliente: "Andreia de Jesus Costa Araújo",   clienteColor: "#dc2626", parcela: 5,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "60,00",   data: "2026-03-25", valorProd: "600,00",   saldo: "0,00",   restantes: "0"    },
+];
+
+function LiqPeriodosPagamentosContent() {
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
+
+  const cols = [
+    { label: "Vendedor",        w: "12%", align: "left"   as const },
+    { label: "Nro.",            w: "4%",  align: "center" as const },
+    { label: "Consecutivo",     w: "9%",  align: "left"   as const },
+    { label: "Cliente",         w: "18%", align: "left"   as const },
+    { label: "# Parcela",       w: "6%",  align: "center" as const },
+    { label: "Tipo",            w: "6%",  align: "center" as const },
+    { label: "Forma de Pgto.",  w: "8%",  align: "left"   as const },
+    { label: "Valor",           w: "7%",  align: "right"  as const },
+    { label: "Data",            w: "8%",  align: "center" as const },
+    { label: "Valor Prod.",     w: "8%",  align: "right"  as const },
+    { label: "Saldo",           w: "7%",  align: "right"  as const },
+    { label: "Parc. Restantes", w: "7%",  align: "center" as const },
+  ];
+
+  const tdP = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "5px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    textAlign: align, fontSize: 12, whiteSpace: "nowrap", ...extra,
+  });
+
+  const parseVal = (s: string) => parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
+  const totalRecebido = liqPerPagData.reduce((a, r) => a + parseVal(r.valor), 0);
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+
+      {/* ── Filter bar ── */}
+      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Consecutivo</label>
+          <input placeholder="Consecutivo" className={`${inputCls} w-32`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Nome</label>
+          <input placeholder="Nome" className={`${inputCls} w-36`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Sobrenome</label>
+          <input placeholder="Sobrenome" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Documento</label>
+          <input placeholder="CPF / RG" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Pgto. Parcela</label>
+          <select className={`${inputCls} w-32`}>
+            <option value="">Pgto. Parcela</option>
+            <option>Dinheiro</option>
+            <option>Transferência</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Tipo</label>
+          <select className={`${inputCls} w-28`}>
+            <option value="">-- Selecione --</option>
+            <option>Parcela</option>
+            <option>Extra</option>
+          </select>
+        </div>
+        <div className="flex gap-1.5 pb-0.5">
+          <button className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90" style={{ background: "#2563eb" }}>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            Buscar
+          </button>
+        </div>
+      </div>
+
+      {/* ── Count bar ── */}
+      <div className="shrink-0 flex items-center px-3 py-1" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs text-gray-500">
+          <span className="font-bold text-gray-800">{liqPerPagData.length}</span> registros encontrados
+        </span>
+      </div>
+
+      {/* ── Table ── */}
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>
+              {cols.map(c => (
+                <th key={c.label} style={{
+                  padding: "7px 8px", textAlign: c.align, fontSize: 12, fontWeight: 700,
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
+                  borderRight: "1px solid #4a7fa0", position: "sticky", top: 0, zIndex: 1,
+                }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {liqPerPagData.map((r, i) => {
+              const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
+              return (
+                <tr key={r.nro} style={{ cursor: "pointer" }}
+                  onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = "#eff6ff"))}
+                  onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = rowBg))}>
+                  <td style={tdP("left", { background: rowBg, color: "#374151", fontSize: 11 })}>Rota Cred Bank -</td>
+                  <td style={tdP("center", { background: rowBg, color: "#6b7280", fontWeight: 700 })}>{r.nro}</td>
+                  <td style={tdP("left", { background: rowBg })}>
+                    <span style={{ color: r.linkColor, fontWeight: 600, borderBottom: `1px dashed ${r.linkColor}`, cursor: "pointer" }}>{r.consecutivo}</span>
+                  </td>
+                  <td style={tdP("left", { background: rowBg, color: r.clienteColor, fontWeight: 500 })}>{r.cliente}</td>
+                  <td style={tdP("center", { background: rowBg, color: "#374151" })}>{r.parcela}</td>
+                  <td style={tdP("center", { background: rowBg, color: "#374151" })}>{r.tipo}</td>
+                  <td style={tdP("left",   { background: rowBg, color: "#374151" })}>{r.formaPgto}</td>
+                  <td style={tdP("right",  { background: rowBg, color: "#374151", fontWeight: 600 })}>{r.valor}</td>
+                  <td style={tdP("center", { background: rowBg, color: "#374151" })}>{r.data}</td>
+                  <td style={tdP("right",  { background: rowBg, color: "#374151" })}>{r.valorProd}</td>
+                  <td style={tdP("right",  { background: rowBg, color: r.saldo !== "0,00" ? "#dc2626" : "#374151", fontWeight: r.saldo !== "0,00" ? 600 : 400 })}>{r.saldo}</td>
+                  <td style={tdP("center", { background: rowBg, color: "#374151" })}>{r.restantes}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── Footer total ── */}
+      <div className="shrink-0 flex items-center justify-end gap-4 px-4 py-2" style={{ background: "#f0f2f5", borderTop: "2px solid #e0e0e0" }}>
+        <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Total Recebido</span>
+        <span className="text-sm font-extrabold text-green-700">
+          {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+        </span>
+      </div>
+
+    </div>
+  );
+}
+
 function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
-  if (activeSub === "Liquidação") return <LiqPeriodosLiquidacaoView />;
+  if (activeSub === "Liquidação")  return <LiqPeriodosLiquidacaoView />;
+  if (activeSub === "Pagamentos")  return <LiqPeriodosPagamentosContent />;
   return (
     <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
       <p className="text-gray-400 text-sm">{activeSub} — em desenvolvimento</p>
