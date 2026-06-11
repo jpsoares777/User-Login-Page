@@ -1392,7 +1392,6 @@ function AgendadosContent() {
             </div>
           )}
         </div>
-        <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: 2026-05-25</span>
       </div>
 
       {/* Table */}
