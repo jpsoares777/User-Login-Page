@@ -1164,6 +1164,7 @@ function DespesasContent() {
   ];
 
   const total = despesasData.reduce((a, r) => a + r.valor, 0);
+  const totalRetirada = despesasData.filter(r => r.categoria === "Retirada de Caixa").reduce((a, r) => a + r.valor, 0);
   const fmt = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 
   const tdD = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
@@ -1224,7 +1225,10 @@ function DespesasContent() {
       </div>
 
       {/* ── Total flutuante ── */}
-      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+      <div className="shrink-0 flex items-center justify-end gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>RETIRADA DE CAIXA</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#7c3aed" }}>{fmt(totalRetirada)}</span>
+        <span style={{ color: "#d1d5db", fontSize: 16, fontWeight: 300 }}>|</span>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL DESPESAS</span>
         <span style={{ fontSize: 13, fontWeight: 800, color: "#b91c1c" }}>{fmt(total)}</span>
       </div>
