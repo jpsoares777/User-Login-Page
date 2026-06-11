@@ -1536,7 +1536,7 @@ function RelatóriosContent() {
     </div>
   );
   const Gerar = () => (
-    <button style={{ width: "100%", background: "#16a34a", color: "#fff", border: "none", borderRadius: 3, padding: "5px 0", fontSize: 11, fontWeight: 700, cursor: "pointer", marginTop: 5, letterSpacing: "0.02em" }}>
+    <button style={{ width: "100%", background: "#6b9e80", color: "#fff", border: "none", borderRadius: 3, padding: "5px 0", fontSize: 11, fontWeight: 700, cursor: "pointer", marginTop: 5, letterSpacing: "0.02em" }}>
       Gerar
     </button>
   );
