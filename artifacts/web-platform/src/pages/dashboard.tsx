@@ -2234,11 +2234,7 @@ function LiqPeriodosLiquidacaoView() {
           <span className="font-semibold text-gray-800">$ 17.420,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
         </Row>
-        <Row label="Recebimento" index={1}>
-          <span className="font-semibold text-gray-800">$ 17.420,00</span>
-          <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
-        </Row>
-        <Row label="Vendas" index={2}>
+        <Row label="Vendas" index={1}>
           <span className="font-semibold text-gray-800">$ 21.200,00</span>
           <span className="text-gray-400 text-[11px] ml-1">(</span>
           <span className="text-orange-500 text-xs">🔥</span>
