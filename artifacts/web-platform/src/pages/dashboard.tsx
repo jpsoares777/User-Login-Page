@@ -2628,12 +2628,186 @@ function VendasPorPeriodosContent() {
 }
 
 
+// ── Liq. Períodos – Clientes data ─────────────────────────────────────────────
+const liqPerClientesData = [
+  { id:1,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-25", consec:"4700627058", status:"Cancelado", cancelDate:"2026-04-15", cliente:"Aline Lima De Alencar",           idVenta:"4700627058", movel:"98982381007",   direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:1120, vrCuota:80,  visitas:15, freq:"DIARIO" },
+  { id:2,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-15", consec:"4700627058", status:"Activo",    cancelDate:"",           cliente:"Aline Lima De Alencar",           idVenta:"4700627067", movel:"98982381007",   direc:"",                                        cuotas:14.0, cuoPag:1.0,  cuoFalt:13.0, saldo:1040, int:40, valorProd:1120, vrCuota:80,  visitas:3,  freq:"DIARIO" },
+  { id:3,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-24", consec:"4700627049", status:"Cancelado", cancelDate:"2026-04-08", cliente:"Ana Flávia Pereira Moraes",       idVenta:"4700627049", movel:"98991571405",   direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:700,  vrCuota:50,  visitas:16, freq:"DIARIO" },
+  { id:4,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-08", consec:"4700627049", status:"Activo",    cancelDate:"",           cliente:"Ana Flávia Pereira Moraes",       idVenta:"4700627066", movel:"98991571405",   direc:"",                                        cuotas:14.0, cuoPag:5.0,  cuoFalt:9.0,  saldo:450,  int:40, valorProd:700,  vrCuota:50,  visitas:4,  freq:"DIARIO" },
+  { id:5,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-28", consec:"4700627079", status:"Cancelado", cancelDate:"2026-06-25", cliente:"Ana Paula Marques De Oliveira",   idVenta:"4700627079", movel:"98986248424",   direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:700,  vrCuota:50,  visitas:13, freq:"DIARIO" },
+  { id:6,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-14", consec:"4700627026", status:"Cancelado", cancelDate:"2026-01-30", cliente:"Andreia de Jesus Costa Araújo",   idVenta:"4700627026", movel:"98985014328",   direc:"Rua gama lobon número 10 quarto",         cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:840,  vrCuota:60,  visitas:20, freq:"DIARIO" },
+  { id:7,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-30", consec:"4700627026", status:"Cancelado", cancelDate:"",           cliente:"Andreia de Jesus Costa Araújo",   idVenta:"4700627081", movel:"98985014328",   direc:"Rua gama lobon número 10 quarto",         cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:1120, vrCuota:80,  visitas:12, freq:"DIARIO" },
+  { id:8,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-08", consec:"4700627026", status:"Activo",    cancelDate:"",           cliente:"Andreia de Jesus Costa Araújo",   idVenta:"4700627065", movel:"98985014328",   direc:"Rua gama lobon número 10 quarto",         cuotas:20.0, cuoPag:12.4, cuoFalt:7.6,  saldo:800,  int:40, valorProd:2100, vrCuota:105, visitas:4,  freq:"DIARIO" },
+  { id:9,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-13", consec:"4700627024", status:"Activo",    cancelDate:"",           cliente:"Anny Briane Pires Belfort",       idVenta:"4700627024", movel:"559883156178",  direc:"",                                        cuotas:14.0, cuoPag:11.4, cuoFalt:2.6,  saldo:210,  int:40, valorProd:1120, vrCuota:80,  visitas:22, freq:"DIARIO" },
+  { id:10, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-14", consec:"4700627027", status:"Activo",    cancelDate:"",           cliente:"Antônio Leite Neto",              idVenta:"4700627027", movel:"5598984643699", direc:"Rua frei Lauro número 7 conj. COHAB",     cuotas:14.0, cuoPag:1.5,  cuoFalt:12.5, saldo:750,  int:40, valorProd:840,  vrCuota:60,  visitas:20, freq:"DIARIO" },
+  { id:11, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-13", consec:"4700627025", status:"Cancelado", cancelDate:"2026-04-11", cliente:"Bianca de Araújo Alves",          idVenta:"4700627025", movel:"9898330893",    direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:700,  vrCuota:50,  visitas:21, freq:"DIARIO" },
+  { id:12, vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-16", consec:"4700627025", status:"Activo",    cancelDate:"",           cliente:"Bianca de Araújo Alves",          idVenta:"4700627070", movel:"9898330893",    direc:"",                                        cuotas:14.0, cuoPag:0.0,  cuoFalt:14.0, saldo:420,  int:40, valorProd:420,  vrCuota:30,  visitas:2,  freq:"DIARIO" },
+  { id:13, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-20", consec:"4700627023", status:"Activo",    cancelDate:"",           cliente:"Elaira Kisley Conceição Lopes",   idVenta:"4700627023", movel:"98986543210",   direc:"",                                        cuotas:14.0, cuoPag:5.0,  cuoFalt:9.0,  saldo:540,  int:40, valorProd:840,  vrCuota:60,  visitas:9,  freq:"DIARIO" },
+  { id:14, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-22", consec:"4700627031", status:"Activo",    cancelDate:"",           cliente:"Carlos Henrique Souza Lima",      idVenta:"4700627031", movel:"98982345678",   direc:"",                                        cuotas:14.0, cuoPag:3.0,  cuoFalt:11.0, saldo:590,  int:40, valorProd:910,  vrCuota:65,  visitas:11, freq:"DIARIO" },
+  { id:15, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-28", consec:"4700627044", status:"Activo",    cancelDate:"",           cliente:"Fernanda Cristina Moura",         idVenta:"4700627044", movel:"98985678901",   direc:"",                                        cuotas:14.0, cuoPag:6.0,  cuoFalt:8.0,  saldo:840,  int:40, valorProd:1372, vrCuota:98,  visitas:8,  freq:"DIARIO" },
+  { id:16, vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-09", consec:"4700627073", status:"Activo",    cancelDate:"",           cliente:"Marcos Vinícius Almeida Costa",   idVenta:"4700627073", movel:"98984321100",   direc:"",                                        cuotas:14.0, cuoPag:9.0,  cuoFalt:5.0,  saldo:350,  int:40, valorProd:1176, vrCuota:84,  visitas:5,  freq:"SEMANAL" },
+];
+
+function LiqPeriodosClientesContent() {
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
+
+  const cols = [
+    { label: "Vendedor",    w: "8%",  align: "left"   as const },
+    { label: "Fec. Venta",  w: "7%",  align: "center" as const },
+    { label: "Consec.",     w: "13%", align: "left"   as const },
+    { label: "Cliente",     w: "13%", align: "left"   as const },
+    { label: "Id Venta",    w: "7%",  align: "left"   as const },
+    { label: "Móvil",       w: "8%",  align: "left"   as const },
+    { label: "Direc.",      w: "10%", align: "left"   as const },
+    { label: "Cuotas",      w: "4%",  align: "center" as const },
+    { label: "Cuo. Pag.",   w: "4%",  align: "center" as const },
+    { label: "Cuo. Falt.",  w: "4%",  align: "center" as const },
+    { label: "Saldo",       w: "4%",  align: "right"  as const },
+    { label: "Int.",        w: "3%",  align: "center" as const },
+    { label: "Valor Prod.", w: "5%",  align: "right"  as const },
+    { label: "Vr Cuota",   w: "5%",  align: "right"  as const },
+    { label: "Visitas",     w: "4%",  align: "center" as const },
+    { label: "Frecuencia",  w: "5%",  align: "center" as const },
+  ];
+
+  const tdC = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "5px 7px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    fontSize: 12, textAlign: align, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", ...extra,
+  });
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+
+      {/* ── Filter bar ── */}
+      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Consecutivo</label>
+          <input placeholder="Consecutivo" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Nombres</label>
+          <input placeholder="Nombres" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Apellidos</label>
+          <input placeholder="Apellidos" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Documento</label>
+          <input placeholder="Documento" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Status</label>
+          <select className={`${inputCls} w-24`}>
+            <option>Todos</option>
+            <option>Activo</option>
+            <option>Cancelado</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Fecha Venta</label>
+          <input type="date" className={`${inputCls} w-32`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Fecha Cancelación</label>
+          <input type="date" className={`${inputCls} w-32`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Frecuencia</label>
+          <select className={`${inputCls} w-28`}>
+            <option value="">Seleccione Frecuencia</option>
+            <option>DIARIO</option>
+            <option>SEMANAL</option>
+          </select>
+        </div>
+        <div className="flex gap-1.5 pb-0.5">
+          <button className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90" style={{ background: "#2563eb" }}>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            Buscar
+          </button>
+        </div>
+      </div>
+
+      {/* ── Count bar ── */}
+      <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs text-gray-500">
+          <span className="font-bold text-gray-800">{liqPerClientesData.length}</span> registros encontrados
+        </span>
+      </div>
+
+      {/* ── Table ── */}
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>
+              {cols.map(c => (
+                <th key={c.label} style={{
+                  padding: "7px 7px", textAlign: c.align, fontSize: 12, fontWeight: 700,
+                  color: "#e2e8f0", background: "#3d6e8e", borderRight: "1px solid #4a7fa0",
+                  letterSpacing: "0.02em", position: "sticky", top: 0, zIndex: 1, whiteSpace: "nowrap",
+                }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {liqPerClientesData.map((r, i) => {
+              const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
+              const isActivo = r.status === "Activo";
+              const consecColor = isActivo ? "#d97706" : "#dc2626";
+              return (
+                <tr key={r.id} style={{ background: rowBg, cursor: "pointer" }}
+                  onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
+                  onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
+                  <td style={tdC("left", { color: "#374151", fontSize: 11 })}>{r.id}. {r.vendedor}</td>
+                  <td style={tdC("center", { color: "#6b7280" })}>{r.fechaVenta}</td>
+                  <td style={tdC("left")}>
+                    <span style={{ color: consecColor, fontWeight: 700, borderBottom: `1px dashed ${consecColor}`, fontSize: 11 }}>{r.consec}</span>
+                    <span style={{ color: consecColor, fontSize: 10, marginLeft: 3 }}>
+                      ({isActivo ? "Activo" : `Cancelado${r.cancelDate ? "-" + r.cancelDate : ""}`})
+                    </span>
+                  </td>
+                  <td style={tdC("left", { color: "#374151", fontWeight: 500 })}>{r.cliente}</td>
+                  <td style={tdC("left", { color: "#2563eb", fontWeight: 700, fontSize: 11 })}>
+                    <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.idVenta}</span>
+                  </td>
+                  <td style={tdC("left", { color: "#6b7280" })}>{r.movel}</td>
+                  <td style={tdC("left", { color: "#9ca3af", fontStyle: r.direc ? "normal" : "italic", fontSize: 11 })}>{r.direc || "—"}</td>
+                  <td style={tdC("center", { color: "#374151" })}>{r.cuotas}</td>
+                  <td style={tdC("center", { color: "#374151" })}>{r.cuoPag}</td>
+                  <td style={tdC("center", { color: r.cuoFalt > 0 ? "#374151" : "#9ca3af", fontWeight: r.cuoFalt > 0 ? 600 : 400 })}>{r.cuoFalt}</td>
+                  <td style={tdC("right", { fontWeight: 700, color: r.saldo > 0 ? "#15803d" : "#9ca3af" })}>{r.saldo}</td>
+                  <td style={tdC("center", { color: "#374151" })}>{r.int}</td>
+                  <td style={tdC("right", { fontWeight: 700, color: "#374151" })}>{r.valorProd}</td>
+                  <td style={tdC("right", { fontWeight: 600, color: "#374151" })}>{r.vrCuota}</td>
+                  <td style={tdC("center", { color: "#374151" })}>{r.visitas}</td>
+                  <td style={tdC("center", { color: "#6b7280", fontSize: 11 })}>{r.freq}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── Total flutuante ── */}
+      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL CLIENTES</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#1d4ed8" }}>{liqPerClientesData.length}</span>
+      </div>
+
+      {/* ── Blue footer bar ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+    </div>
+  );
+}
+
 function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
   if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView />;
   if (activeSub === "Pagamentos")          return <LiqPeriodosPagamentosContent />;
   if (activeSub === "Empr. por Períodos")  return <VendasPorPeriodosContent />;
   if (activeSub === "Rendimentos")         return <RendimentosContent />;
   if (activeSub === "Despesas")            return <DespesasContent />;
+  if (activeSub === "Clientes")            return <LiqPeriodosClientesContent />;
   return (
     <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
       <p className="text-gray-400 text-sm">{activeSub} — em desenvolvimento</p>
