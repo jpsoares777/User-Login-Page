@@ -2492,9 +2492,141 @@ function LiqPeriodosPagamentosContent() {
   );
 }
 
+// ── Vendas por Períodos data ───────────────────────────────────────────────────
+const vendasPeriodosData = [
+  { id:1,  vendedor:"Rota Cred Bank -", consec:"4700627058", freq:"DIARIO", valorAnt:0,    idVenta:"47006270158", cliente:"Aline Lima De Alencar",            tag:"Nuevo",               documento:"034.286.733-44", movel:"98982381007",    valorProd:800,  cuotas:14, pctInt:40, cuota:80,  fecha:"2026-03-25", cuotRest:0,    saldo:0    },
+  { id:2,  vendedor:"Rota Cred Bank -", consec:"4700627058", freq:"DIARIO", valorAnt:800,  idVenta:"47006270167", cliente:"Aline Lima De Alencar",            tag:"Renovado Igual Valor",documento:"034.286.733-44", movel:"98982381007",    valorProd:800,  cuotas:14, pctInt:40, cuota:80,  fecha:"2026-04-15", cuotRest:13,   saldo:1040 },
+  { id:3,  vendedor:"Rota Cred Bank -", consec:"4700627049", freq:"DIARIO", valorAnt:500,  idVenta:"47006270166", cliente:"Ana Flávia Pereira Moraes",        tag:"Renovado Igual Valor",documento:"61538186302",    movel:"98991571405",    valorProd:500,  cuotas:14, pctInt:40, cuota:50,  fecha:"2026-04-08", cuotRest:9,    saldo:450  },
+  { id:4,  vendedor:"Rota Cred Bank -", consec:"4700627049", freq:"DIARIO", valorAnt:0,    idVenta:"47006270149", cliente:"Ana Flávia Pereira Moraes",        tag:"Nuevo",               documento:"61538186302",    movel:"98991571405",    valorProd:500,  cuotas:14, pctInt:40, cuota:50,  fecha:"2026-03-24", cuotRest:0,    saldo:0    },
+  { id:5,  vendedor:"Rota Cred Bank -", consec:"4700627079", freq:"DIARIO", valorAnt:0,    idVenta:"47006270179", cliente:"Ana Paula Marques De Oliveira",    tag:"Nuevo",               documento:"85259284372",    movel:"98986248424",    valorProd:500,  cuotas:14, pctInt:40, cuota:60,  fecha:"2026-03-28", cuotRest:0,    saldo:0    },
+  { id:6,  vendedor:"Rota Cred Bank -", consec:"4700627026", freq:"DIARIO", valorAnt:600,  idVenta:"47006270181", cliente:"Andreia de Jesus Costa Araújo",    tag:"Renovado Mayor Valor",documento:"91633427315",    movel:"98985014328",    valorProd:800,  cuotas:14, pctInt:40, cuota:80,  fecha:"2026-03-30", cuotRest:0,    saldo:0    },
+  { id:7,  vendedor:"Rota Cred Bank -", consec:"4700627026", freq:"DIARIO", valorAnt:800,  idVenta:"47006270165", cliente:"Andreia de Jesus Costa Araújo",    tag:"Renovado Mayor Valor",documento:"91633427315",    movel:"98985014328",    valorProd:1500, cuotas:20, pctInt:40, cuota:105, fecha:"2026-04-08", cuotRest:7.62, saldo:800  },
+  { id:8,  vendedor:"Rota Cred Bank -", consec:"4700627026", freq:"DIARIO", valorAnt:0,    idVenta:"47006270126", cliente:"Andreia de Jesus Costa Araújo",    tag:"Nuevo",               documento:"91633427315",    movel:"98985014328",    valorProd:600,  cuotas:14, pctInt:40, cuota:60,  fecha:"2026-03-14", cuotRest:0,    saldo:0    },
+  { id:9,  vendedor:"Rota Cred Bank -", consec:"4700627024", freq:"DIARIO", valorAnt:0,    idVenta:"47006270224", cliente:"Anny Briane Pires Belfort",        tag:"Nuevo",               documento:"55983315617",    movel:"98985014328",    valorProd:800,  cuotas:14, pctInt:40, cuota:60,  fecha:"2026-03-28", cuotRest:2.62, saldo:210  },
+  { id:10, vendedor:"Rota Cred Bank -", consec:"4700627027", freq:"DIARIO", valorAnt:0,    idVenta:"47006270127", cliente:"Antônio Leite Neto",               tag:"Nuevo",               documento:"005234678355",   movel:"5598984643699",  valorProd:600,  cuotas:14, pctInt:40, cuota:60,  fecha:"2026-03-14", cuotRest:12.5, saldo:750  },
+  { id:11, vendedor:"Rota Cred Bank -", consec:"4700627025", freq:"DIARIO", valorAnt:0,    idVenta:"47006270125", cliente:"Bianca de Araújo Alves",           tag:"Nuevo",               documento:"60974118397",    movel:"9988330893",     valorProd:500,  cuotas:14, pctInt:40, cuota:50,  fecha:"2026-03-13", cuotRest:0,    saldo:0    },
+  { id:12, vendedor:"Rota Cred Bank -", consec:"4700627025", freq:"DIARIO", valorAnt:500,  idVenta:"47006270170", cliente:"Bianca de Araújo Alves",           tag:"Renovado Menor Valor",documento:"60974118397",    movel:"9988330893",     valorProd:300,  cuotas:14, pctInt:40, cuota:30,  fecha:"2026-04-16", cuotRest:14,   saldo:420  },
+  { id:13, vendedor:"Rota Cred Bank -", consec:"4700627023", freq:"DIARIO", valorAnt:0,    idVenta:"47006270123", cliente:"Elaira Kisley Conceição Lopes",    tag:"Nuevo",               documento:"88899900011",    movel:"98986543210",    valorProd:540,  cuotas:14, pctInt:40, cuota:54,  fecha:"2026-03-20", cuotRest:9,    saldo:540  },
+  { id:14, vendedor:"Rota Cred Bank -", consec:"4700627031", freq:"DIARIO", valorAnt:0,    idVenta:"47006270131", cliente:"Carlos Henrique Souza Lima",       tag:"Nuevo",               documento:"11122233344",    movel:"98982345678",    valorProd:650,  cuotas:14, pctInt:40, cuota:65,  fecha:"2026-03-22", cuotRest:11,   saldo:590  },
+  { id:15, vendedor:"Rota Cred Bank -", consec:"4700627044", freq:"DIARIO", valorAnt:0,    idVenta:"47006270144", cliente:"Fernanda Cristina Moura",          tag:"Nuevo",               documento:"22233344455",    movel:"98985678901",    valorProd:980,  cuotas:14, pctInt:40, cuota:98,  fecha:"2026-03-28", cuotRest:8,    saldo:840  },
+  { id:16, vendedor:"Rota Cred Bank -", consec:"4700627073", freq:"SEMANAL", valorAnt:500, idVenta:"47006270173", cliente:"Marcos Vinícius Almeida Costa",    tag:"Renovado Mayor Valor",documento:"33344455566",    movel:"98984321100",    valorProd:840,  cuotas:14, pctInt:40, cuota:84,  fecha:"2026-04-09", cuotRest:5,    saldo:350  },
+];
+
+function VendasPorPeriodosContent() {
+  const tdV = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
+    padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    fontSize: 13, textAlign: align, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", ...extra,
+  });
+
+  const tagStyle = (tag: string): React.CSSProperties => {
+    if (tag === "Nuevo")               return { color: "#15803d", fontWeight: 700 };
+    if (tag === "Renovado Igual Valor")return { color: "#d97706", fontWeight: 700 };
+    if (tag === "Renovado Mayor Valor")return { color: "#2563eb", fontWeight: 700 };
+    if (tag === "Renovado Menor Valor")return { color: "#dc2626", fontWeight: 700 };
+    return { color: "#6b7280", fontWeight: 600 };
+  };
+
+  const cols = [
+    { label: "Vendedor",       w: "9%",  align: "left"   as const },
+    { label: "Consec.",        w: "7%",  align: "left"   as const },
+    { label: "Frec.",          w: "5%",  align: "center" as const },
+    { label: "Valor Ant.",     w: "5%",  align: "right"  as const },
+    { label: "Id Venta",       w: "8%",  align: "left"   as const },
+    { label: "Cliente",        w: "21%", align: "left"   as const },
+    { label: "Documento",      w: "8%",  align: "left"   as const },
+    { label: "Móvel",          w: "8%",  align: "left"   as const },
+    { label: "Valor Produto",  w: "6%",  align: "right"  as const },
+    { label: "Cuotas",         w: "4%",  align: "center" as const },
+    { label: "%Int",           w: "4%",  align: "center" as const },
+    { label: "Cuota",          w: "4%",  align: "right"  as const },
+    { label: "Fecha",          w: "7%",  align: "center" as const },
+    { label: "Cuot. Rest.",    w: "5%",  align: "center" as const },
+    { label: "Saldo",          w: "5%",  align: "right"  as const },
+  ];
+
+  const totalVendas = vendasPeriodosData.reduce((a, r) => a + r.valorProd, 0);
+  const fmtV = (v: number) => `$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 0 })}`;
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+
+      {/* ── Count bar ── */}
+      <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+        <span className="text-xs text-gray-500">
+          <span className="font-bold text-gray-800">{vendasPeriodosData.length}</span> registros encontrados
+        </span>
+      </div>
+
+      {/* ── Table ── */}
+      <div className="flex-1 overflow-auto">
+        <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
+          <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
+          <thead>
+            <tr>
+              {cols.map(c => (
+                <th key={c.label} style={{
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
+                  borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
+                  position: "sticky", top: 0, zIndex: 1,
+                }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {vendasPeriodosData.map((r, i) => {
+              const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
+              return (
+                <tr key={r.id}
+                  onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
+                  onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
+                  <td style={tdV("left",   { color: "#374151", fontSize: 12 })}>{r.vendedor}</td>
+                  <td style={tdV("left",   { color: "#2563eb", fontWeight: 700 })}>
+                    <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.consec}</span>
+                  </td>
+                  <td style={tdV("center", { color: "#6b7280", fontSize: 12 })}>{r.freq}</td>
+                  <td style={tdV("right",  { color: r.valorAnt > 0 ? "#374151" : "#9ca3af", fontWeight: r.valorAnt > 0 ? 600 : 400 })}>
+                    {r.valorAnt > 0 ? fmtV(r.valorAnt) : "$ 0"}
+                  </td>
+                  <td style={tdV("left",   { color: "#6b7280", fontSize: 12 })}>{r.idVenta}</td>
+                  <td style={tdV("left")}>
+                    <span style={{ color: "#374151", fontWeight: 500, marginRight: 4, overflow: "hidden", textOverflow: "ellipsis" }}>{r.cliente}</span>
+                    <span style={{ fontSize: 11, ...tagStyle(r.tag) }}>&gt;&gt;&gt; {r.tag}</span>
+                  </td>
+                  <td style={tdV("left",   { color: "#6b7280", fontSize: 12 })}>{r.documento}</td>
+                  <td style={tdV("left",   { color: "#6b7280", fontSize: 12 })}>{r.movel}</td>
+                  <td style={tdV("right",  { fontWeight: 700, color: "#111827" })}>{fmtV(r.valorProd)}</td>
+                  <td style={tdV("center", { color: "#374151" })}>{r.cuotas}</td>
+                  <td style={tdV("center", { color: "#374151" })}>{r.pctInt}%</td>
+                  <td style={tdV("right",  { fontWeight: 600, color: "#374151" })}>{r.cuota}</td>
+                  <td style={tdV("center", { color: "#4b5563" })}>{r.fecha}</td>
+                  <td style={tdV("center", { color: r.cuotRest > 0 ? "#374151" : "#9ca3af", fontWeight: r.cuotRest > 0 ? 600 : 400 })}>{r.cuotRest}</td>
+                  <td style={tdV("right",  { fontWeight: 700, color: r.saldo > 0 ? "#15803d" : "#9ca3af" })}>
+                    {r.saldo > 0 ? r.saldo.toLocaleString("pt-BR") : "0"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── Total flutuante ── */}
+      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL VENTAS</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#1d4ed8" }}>{totalVendas.toLocaleString("pt-BR")}</span>
+      </div>
+
+      {/* ── Blue footer bar (padrão) ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+    </div>
+  );
+}
+
 function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
-  if (activeSub === "Liquidação")  return <LiqPeriodosLiquidacaoView />;
-  if (activeSub === "Pagamentos")  return <LiqPeriodosPagamentosContent />;
+  if (activeSub === "Liquidação")        return <LiqPeriodosLiquidacaoView />;
+  if (activeSub === "Pagamentos")        return <LiqPeriodosPagamentosContent />;
+  if (activeSub === "Vendas por Períodos") return <VendasPorPeriodosContent />;
   return (
     <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
       <p className="text-gray-400 text-sm">{activeSub} — em desenvolvimento</p>
