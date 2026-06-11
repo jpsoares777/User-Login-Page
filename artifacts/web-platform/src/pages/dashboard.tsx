@@ -1647,8 +1647,8 @@ function RelatóriosContent() {
       </div>
       </div>
 
-      {/* ── Thin blue footer ── */}
-      <div className="shrink-0" style={{ background: "#3d6e8e", height: 10 }} />
+      {/* ── Blue footer ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5" style={{ background: "#3d6e8e" }} />
 
     </div>
   );
