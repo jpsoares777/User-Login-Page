@@ -2214,15 +2214,17 @@ function LiqPeriodosLiquidacaoView() {
         <Row label="Total de Clientes" index={0}>
           <PersonIcon /> <strong className="text-gray-800">31</strong>
         </Row>
-        <Row label="Clientes Novos/Renovados" index={1}>
-          <PersonIcon /> <strong className="text-gray-800">31</strong>
-          <span className="text-gray-400 text-[11px]">( 21/10 )</span>
+        <Row label="Clientes Novos" index={1}>
+          <PersonIcon /> <strong className="text-gray-800">21</strong>
         </Row>
-        <Row label="Média" index={2}>
+        <Row label="Clientes Renovados" index={2}>
+          <PersonIcon /> <strong className="text-gray-800">10</strong>
+        </Row>
+        <Row label="Média" index={3}>
           <span className="font-semibold text-gray-800">$ 757,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
         </Row>
-        <Row label="Recebimento Previsto" index={3}>
+        <Row label="Recebimento Previsto" index={4}>
           <span className="font-semibold text-gray-800">$ 0,00</span>
           <span className="text-gray-400 text-[11px] ml-1">( 100% )</span>
         </Row>
