@@ -2513,6 +2513,8 @@ const vendasPeriodosData = [
 ];
 
 function VendasPorPeriodosContent() {
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
+
   const tdV = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
     padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
     fontSize: 13, textAlign: align, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", ...extra,
@@ -2550,6 +2552,49 @@ function VendasPorPeriodosContent() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
 
+      {/* ── Filter bar ── */}
+      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Consecutivo</label>
+          <input placeholder="Ex: 4700627058" className={`${inputCls} w-32`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Nome</label>
+          <input placeholder="Nome do cliente" className={`${inputCls} w-36`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Documento</label>
+          <input placeholder="CPF / RG" className={`${inputCls} w-28`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Tipo</label>
+          <select className={`${inputCls} w-36`}>
+            <option value="">-- Todos --</option>
+            <option>Nuevo</option>
+            <option>Renovado Igual Valor</option>
+            <option>Renovado Mayor Valor</option>
+            <option>Renovado Menor Valor</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Frec.</label>
+          <select className={`${inputCls} w-24`}>
+            <option value="">-- Todas --</option>
+            <option>DIARIO</option>
+            <option>SEMANAL</option>
+          </select>
+        </div>
+        <div className="flex gap-1.5 pb-0.5">
+          <button className="h-7 px-3 rounded text-xs font-semibold border border-gray-300 text-gray-600 bg-white hover:bg-gray-50">Limpar</button>
+          <button className="h-7 px-3 rounded text-xs font-semibold text-white flex items-center gap-1 hover:opacity-90" style={{ background: "#2563eb" }}>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            Buscar
+          </button>
+        </div>
+        <div className="flex-1" />
+        <span className="text-xs text-gray-400 font-medium pb-0.5">DATA DE REFERÊNCIA: 2026-06-06</span>
+      </div>
+
       {/* ── Count bar ── */}
       <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs text-gray-500">
@@ -2577,7 +2622,7 @@ function VendasPorPeriodosContent() {
             {vendasPeriodosData.map((r, i) => {
               const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
               return (
-                <tr key={r.id}
+                <tr key={r.id} style={{ background: rowBg, cursor: "pointer" }}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
                   <td style={tdV("left",   { color: "#374151", fontSize: 12 })}>{r.vendedor}</td>
