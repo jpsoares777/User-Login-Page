@@ -613,7 +613,7 @@ function PagamentosContent() {
       </div>
 
       {/* ── Table ── */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-y-auto">
         <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
@@ -2374,7 +2374,7 @@ function LiqPeriodosPagamentosContent() {
       </div>
 
       {/* ── Table ── */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-y-auto">
         <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
