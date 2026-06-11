@@ -625,7 +625,7 @@ function PagamentosContent() {
       </div>
 
       {/* ── Table ── */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-y-auto">
         <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
@@ -690,26 +690,22 @@ function PagamentosContent() {
                 </tr>
               );
             })}
-            {/* Total row */}
-            <tr style={{ background: "#e8edf2" }}>
-              <td colSpan={7} style={{ ...tdP("right"), color: "#374151", fontWeight: 700, fontSize: 12, paddingRight: 12 }}>
-                TOTAL RECEBIMENTO DO DIA:
-              </td>
-              <td style={tdP("right", { fontWeight: 700, color: "#15803d" })}>
-                {fmtR(totalRecebimento)}
-                <span style={{ marginLeft: 6, fontSize: 11, color: "#6b7280", fontWeight: 600 }}>
-                  ({taxaPct.toFixed(1)}%)
-                </span>
-              </td>
-              <td colSpan={7} style={tdP("center")} />
-            </tr>
           </tbody>
         </table>
       </div>
 
-      {/* ── Footer ── */}
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }}>
+      {/* ── Total flutuante ── */}
+      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>
+          TOTAL RECAUDO
+        </span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#15803d", minWidth: 80, textAlign: "right" }}>
+          {fmtR(totalRecebimento)}
+        </span>
       </div>
+
+      {/* ── Footer (padrão) ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
 
       {selectedRow && <HistorialModal row={selectedRow} onClose={() => setSelectedRow(null)} />}
     </div>
