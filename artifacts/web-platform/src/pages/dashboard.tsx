@@ -1539,11 +1539,19 @@ function RelatóriosContent() {
       Gerar
     </button>
   );
-  const MaisOpcoes = () => (
-    <button style={{ display: "flex", alignItems: "center", gap: 3, background: "none", border: "none", padding: "0 0 6px", cursor: "pointer", color: "#6b7280", fontSize: 11, fontWeight: 600 }}>
-      <svg viewBox="0 0 24 24" style={{ width: 10, height: 10, fill: "#6b7280" }}><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A1 1 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
-      Mais Opções
-    </button>
+  const DateRange = () => (
+    <div style={{ marginBottom: 4 }}>
+      <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ flex: 1 }}>
+          <span style={lblStyle}>Data Inicial</span>
+          <input type="date" style={inpStyle} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <span style={lblStyle}>Data Final</span>
+          <input type="date" style={inpStyle} />
+        </div>
+      </div>
+    </div>
   );
 
   const Card = ({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) => (
@@ -1552,9 +1560,9 @@ function RelatóriosContent() {
         <svg viewBox="0 0 24 24" style={{ width: 32, height: 32, fill: "#fff" }}><path d={icon} /></svg>
       </div>
       <div style={{ flex: 1, padding: "10px 12px" }}>
-        <div style={{ fontWeight: 800, fontSize: 12, color: "#111827", letterSpacing: "0.04em", marginBottom: 2 }}>{title}</div>
-        <MaisOpcoes />
+        <div style={{ fontWeight: 800, fontSize: 12, color: "#111827", letterSpacing: "0.04em", marginBottom: 6 }}>{title}</div>
         {children}
+        <DateRange />
         <Gerar />
       </div>
     </div>
@@ -1615,14 +1623,10 @@ function RelatóriosContent() {
 
         <Card icon={HIST} title="HISTÓRICO DE CLIENTES">
           <Sel opts={vend} />
-          <Date label="Data Inicial" />
-          <Date label="Data Final" />
         </Card>
 
         <Card icon={CANCEL} title="CLIENTES CANCELADOS">
           <Sel opts={vend} />
-          <Date label="Data Inicial" />
-          <Date label="Data Final" />
         </Card>
 
       </div>
