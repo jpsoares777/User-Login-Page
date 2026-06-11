@@ -3056,8 +3056,11 @@ function ConsolidadosContent() {
 
         <div className="flex flex-col gap-0.5">
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Cobrador</label>
-          <input value={buscarCobrador} onChange={e => setBuscarCobrador(e.target.value)}
-            placeholder="Nome do cobrador…" className={`${inputCls} w-44`} />
+          <select value={buscarCobrador} onChange={e => setBuscarCobrador(e.target.value)}
+            className={`${inputCls} w-44`}>
+            <option value="">-- Todas as rotas --</option>
+            <option value="Rota Cred Bank -">Rota Cred Bank -</option>
+          </select>
         </div>
         <div className="flex flex-col gap-0.5">
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data</label>
