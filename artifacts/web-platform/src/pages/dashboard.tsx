@@ -1596,6 +1596,9 @@ function RelatóriosContent() {
         <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: 2026-05-25</span>
       </div>
 
+      {/* ── Blue sub-header (table-header style) ── */}
+      <div className="shrink-0 px-4 py-2" style={{ background: "#3d6e8e" }} />
+
       <div className="flex-1 overflow-auto" style={{ background: "#f0f2f5", padding: "14px 16px" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
 
@@ -1644,15 +1647,8 @@ function RelatóriosContent() {
       </div>
       </div>
 
-      {/* ── Page footer bar ── */}
-      <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderTop: "1px solid #e0e0e0" }}>
-        <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5l4-4h10v4z"/></svg>
-          $ Relatórios do Dia
-        </span>
-        <div className="flex-1" />
-        <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: 2026-05-25</span>
-      </div>
+      {/* ── Thin blue footer ── */}
+      <div className="shrink-0 px-4 py-2" style={{ background: "#3d6e8e" }} />
 
     </div>
   );
