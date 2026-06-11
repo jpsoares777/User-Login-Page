@@ -3135,11 +3135,13 @@ export default function DashboardPage() {
                 <span className="text-green-700">$ 3.179,00</span>
                 <span className="text-red-400 text-sm cursor-pointer ml-1" title="Detalhes do cálculo">❓</span>
               </Row>
-              <Row label="Carteira Final" bold index={10}>
-                <span className="text-green-700">$ 12.460,00</span>
-                <span className="text-[11px] text-gray-500 ml-1">( Sanção: 0,00 )</span>
-                <span className="text-red-400 text-sm cursor-pointer ml-1" title="Detalhes do cálculo">❓</span>
-              </Row>
+              <div className="flex items-center mx-2 mt-0.5 mb-1.5 rounded px-3 py-2"
+                style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderLeftWidth: 4, borderLeftColor: "#16a34a" }}>
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Carteira Final</span>
+                <span className="text-[11px] text-gray-400 ml-2">( Sanção: 0,00 )</span>
+                <div className="flex-1" />
+                <span className="text-base font-bold text-green-700">$ 12.460,00</span>
+              </div>
             </div>
 
             {/* RIGHT: Action buttons + Micro Seguro */}
