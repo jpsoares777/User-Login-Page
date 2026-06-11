@@ -1597,7 +1597,7 @@ function RelatóriosContent() {
       </div>
 
       {/* ── Blue sub-header (table-header style) ── */}
-      <div className="shrink-0" style={{ background: "#3d6e8e", height: 10 }} />
+      <div className="shrink-0" style={{ background: "#3d6e8e", height: 34 }} />
 
       <div className="flex-1 overflow-auto" style={{ background: "#f0f2f5", padding: "14px 16px" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
