@@ -1313,6 +1313,7 @@ const clientesRows: ClienteRow[] = [
 function ClientesContent() {
   const [selectedCliente, setSelectedCliente] = useState<ClienteRow | null>(null);
   const [showParcelas, setShowParcelas] = useState(false);
+  const [showDocumentos, setShowDocumentos] = useState(false);
   const [selectedHistoricoEmp, setSelectedHistoricoEmp] = useState<ClienteRow["historico"][0] | null>(null);
 
   const cols = [
@@ -1550,12 +1551,17 @@ function ClientesContent() {
                   </div>
                 </div>
 
-                {/* Ver parcelas button */}
-                <div>
+                {/* Buttons row */}
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                   <button
                     onClick={() => setShowParcelas(true)}
                     style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "9px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
                     <span style={{ fontSize: 15 }}>📋</span> Ver Parcelas Pagas — Empréstimo Ativo
+                  </button>
+                  <button
+                    onClick={() => setShowDocumentos(true)}
+                    style={{ background: "#4a7fa0", color: "#fff", border: "none", borderRadius: 5, padding: "9px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
+                    <span style={{ fontSize: 15 }}>📷</span> Ver Documentos
                   </button>
                 </div>
 
@@ -1733,6 +1739,77 @@ function ClientesContent() {
                   const vrParc = emp.total / emp.cuotas;
                   return renderHistPagModal(emp, empNro, pagasCount, atrasadasCount, vrParc, 10001, () => setSelectedHistoricoEmp(null));
                 })()}
+
+                {/* ── Documentos sub-modal ── */}
+                {showDocumentos && (
+                  <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 10002, display: "flex", alignItems: "center", justifyContent: "center" }}
+                    onClick={() => setShowDocumentos(false)}>
+                    <div style={{ background: "#fff", borderRadius: 8, width: 680, maxHeight: "82vh", boxShadow: "0 24px 64px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", overflow: "hidden" }}
+                      onClick={e => e.stopPropagation()}>
+
+                      {/* Header */}
+                      <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                          <span style={{ fontSize: 17 }}>📷</span>
+                          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Documentos do Cliente</span>
+                        </div>
+                        <button onClick={() => setShowDocumentos(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+                      </div>
+
+                      {/* Client info strip */}
+                      <div style={{ padding: "10px 18px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                        <span style={{ fontSize: 14 }}>👤</span>
+                        <span style={{ fontWeight: 800, fontSize: 13, color: "#e07b39" }}>{c.nome.toUpperCase()}</span>
+                        <span style={{ color: "#9ca3af", fontSize: 12 }}>#{c.consec}</span>
+                        <span style={{ marginLeft: "auto", fontSize: 11, color: "#6b7280" }}>Doc: {c.documento}</span>
+                      </div>
+
+                      {/* Document types */}
+                      <div style={{ flex: 1, overflowY: "auto", padding: "16px 18px", display: "flex", flexDirection: "column", gap: 16 }}>
+                        {[
+                          { label: "Documento de Identidade (Frente)", icon: "🪪" },
+                          { label: "Documento de Identidade (Verso)", icon: "🪪" },
+                          { label: "Comprovante de Residência", icon: "🏠" },
+                          { label: "Selfie com Documento", icon: "🤳" },
+                          { label: "Outros", icon: "📎" },
+                        ].map(doc => (
+                          <div key={doc.label} style={{ border: "1.5px dashed #cbd5e1", borderRadius: 8, padding: "16px 18px", display: "flex", alignItems: "center", gap: 14, background: "#f8fafc" }}>
+                            <span style={{ fontSize: 28 }}>{doc.icon}</span>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontWeight: 700, fontSize: 12, color: "#374151", marginBottom: 4 }}>{doc.label}</div>
+                              <div style={{ fontSize: 11, color: "#9ca3af" }}>Nenhuma foto anexada</div>
+                            </div>
+                            <label style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                              📤 Anexar
+                              <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onload = ev => {
+                                    const img = ev.target?.result as string;
+                                    const el = e.target.closest("div[data-doc]") as HTMLElement | null;
+                                    if (el) {
+                                      const preview = el.querySelector("img") as HTMLImageElement | null;
+                                      if (preview) { preview.src = img; preview.style.display = "block"; }
+                                      const placeholder = el.querySelector("[data-placeholder]") as HTMLElement | null;
+                                      if (placeholder) placeholder.style.display = "none";
+                                    }
+                                  };
+                                  reader.readAsDataURL(file);
+                                }
+                              }} />
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Footer */}
+                      <div style={{ padding: "11px 18px", borderTop: "1px solid #e0e0e0", background: "#f8f9fa", flexShrink: 0, display: "flex", justifyContent: "flex-end" }}>
+                        <button onClick={() => setShowDocumentos(false)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Fechar</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             );
           })()}
