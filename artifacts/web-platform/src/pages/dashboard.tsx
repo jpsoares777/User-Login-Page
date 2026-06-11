@@ -1554,7 +1554,7 @@ function RelatóriosContent() {
   );
 
   const Card = ({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) => (
-    <div style={{ background: "#fff", borderRadius: 7, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #e9edf0", display: "flex", gap: 0, overflow: "hidden" }}>
+    <div style={{ background: "#fff", borderRadius: 7, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #e9edf0", display: "flex", gap: 0, overflow: "hidden", height: "100%" }}>
       <div style={{ width: 56, minWidth: 56, background: "#3d6e8e", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <svg viewBox="0 0 24 24" style={{ width: 26, height: 26, fill: "#fff" }}><path d={icon} /></svg>
       </div>
@@ -1599,7 +1599,7 @@ function RelatóriosContent() {
       <div className="shrink-0" style={{ background: "#3d6e8e", height: 34 }} />
 
       <div className="flex-1 overflow-auto" style={{ background: "#f0f2f5", padding: "14px 16px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, alignItems: "stretch" }}>
 
         <Card icon={PEOPLE} title="CLIENTES ATIVOS">
           <Sel opts={vend} />
