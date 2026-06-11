@@ -1604,22 +1604,22 @@ function RelatóriosContent() {
 
         <Card icon={PEOPLE} title="CLIENTES ATIVOS">
           <span style={lblStyle}>Informe a Rota</span>
-          <input type="text" placeholder="Rota" style={inpStyle} />
+          <Sel opts={vend} />
         </Card>
 
         <Card icon={BLOCK} title="CLIENTES INATIVOS">
           <span style={lblStyle}>Informe a Rota</span>
-          <input type="text" placeholder="Rota" style={inpStyle} />
+          <Sel opts={vend} />
         </Card>
 
         <Card icon={RENEW} title="CLIENTES SEM RENOVAR">
           <span style={lblStyle}>Informe a Rota</span>
-          <input type="text" placeholder="Rota" style={inpStyle} />
+          <Sel opts={vend} />
         </Card>
 
         <Card icon={LATE} title="CLIENTES ATRASADOS">
           <span style={lblStyle}>Informe a Rota</span>
-          <input type="text" placeholder="Rota" style={inpStyle} />
+          <Sel opts={vend} />
         </Card>
 
         <Card icon={PAID} title="CLIENTES QUE PAGARAM">
@@ -1639,17 +1639,17 @@ function RelatóriosContent() {
 
         <Card icon={CARD} title="CLIENTES VENCIDOS / A VENCER">
           <span style={lblStyle}>Informe a Rota</span>
-          <input type="text" placeholder="Rota" style={inpStyle} />
+          <Sel opts={vend} />
         </Card>
 
         <Card icon={HIST} title="HISTÓRICO DE CLIENTES">
           <span style={lblStyle}>Informe a Rota</span>
-          <input type="text" placeholder="Rota" style={inpStyle} />
+          <Sel opts={vend} />
         </Card>
 
         <Card icon={CANCEL} title="CLIENTES CANCELADOS">
           <span style={lblStyle}>Informe a Rota</span>
-          <input type="text" placeholder="Rota" style={inpStyle} />
+          <Sel opts={vend} />
         </Card>
 
       </div>
