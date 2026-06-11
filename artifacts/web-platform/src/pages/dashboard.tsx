@@ -1770,8 +1770,6 @@ function ClientesContent() {
                           { label: "Documento de Identidade (Frente)", icon: "🪪" },
                           { label: "Documento de Identidade (Verso)", icon: "🪪" },
                           { label: "Comprovante de Residência", icon: "🏠" },
-                          { label: "Selfie com Documento", icon: "🤳" },
-                          { label: "Outros", icon: "📎" },
                         ].map(doc => (
                           <div key={doc.label} style={{ border: "1.5px dashed #cbd5e1", borderRadius: 8, padding: "16px 18px", display: "flex", alignItems: "center", gap: 14, background: "#f8fafc" }}>
                             <span style={{ fontSize: 28 }}>{doc.icon}</span>
