@@ -1554,7 +1554,7 @@ function RelatóriosContent() {
   );
 
   const Card = ({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) => (
-    <div style={{ background: "#fff", borderRadius: 7, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #e9edf0", display: "flex", gap: 0, overflow: "hidden", height: 182 }}>
+    <div style={{ background: "#fff", borderRadius: 7, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #e9edf0", display: "flex", gap: 0, overflow: "hidden", height: 158 }}>
       <div style={{ width: 56, minWidth: 56, background: "#3d6e8e", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <svg viewBox="0 0 24 24" style={{ width: 26, height: 26, fill: "#fff" }}><path d={icon} /></svg>
       </div>
