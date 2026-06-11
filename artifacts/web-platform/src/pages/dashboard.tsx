@@ -2762,8 +2762,14 @@ function LiqPeriodosDespesasContent() {
       </div>
 
       {/* ── Total geral flutuante ── */}
-      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL DESPESAS</span>
+      <div className="shrink-0 flex items-center justify-end gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.05em" }}>TOTAL EGRESOS</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#b91c1c" }}>{fmt(totalEgresos)}</span>
+        <span style={{ color: "#d1d5db", fontSize: 16, fontWeight: 300 }}>|</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.05em" }}>TOTAL RETIROS</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#7c3aed" }}>{fmt(totalRetiros)}</span>
+        <span style={{ color: "#d1d5db", fontSize: 16, fontWeight: 300 }}>|</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.05em" }}>TOTAL DESPESAS</span>
         <span style={{ fontSize: 13, fontWeight: 800, color: "#b91c1c" }}>{fmt(totalEgresos + totalRetiros)}</span>
       </div>
 
