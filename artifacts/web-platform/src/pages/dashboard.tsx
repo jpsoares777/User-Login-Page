@@ -2959,6 +2959,9 @@ function ResumoContent() {
           </tfoot>
         </table>
       </div>
+
+      {/* ── Blue footer bar (padrão) ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
     </div>
   );
 }
