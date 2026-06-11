@@ -1517,14 +1517,14 @@ function AgendadosContent() {
 // ── Relatórios ────────────────────────────────────────────────────────────────
 function RelatóriosContent() {
   const selStyle: React.CSSProperties = {
-    width: "100%", border: "1px solid #d1d5db", borderRadius: 4,
-    padding: "5px 7px", fontSize: 12, color: "#374151",
-    background: "#f9fafb", marginBottom: 5, boxSizing: "border-box",
+    width: "100%", border: "1px solid #d1d5db", borderRadius: 3,
+    padding: "3px 6px", fontSize: 11, color: "#374151",
+    background: "#f9fafb", marginBottom: 4, boxSizing: "border-box",
   };
   const inpStyle: React.CSSProperties = { ...selStyle, background: "#fff" };
   const lblStyle: React.CSSProperties = {
-    display: "block", fontSize: 10, fontWeight: 700, color: "#9ca3af",
-    textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 3,
+    display: "block", fontSize: 9, fontWeight: 700, color: "#9ca3af",
+    textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2,
   };
 
   const Sel  = ({ opts }: { opts: string[] }) => <select style={selStyle}>{opts.map(o => <option key={o}>{o}</option>)}</select>;
@@ -1535,13 +1535,13 @@ function RelatóriosContent() {
     </div>
   );
   const Gerar = () => (
-    <button style={{ width: "100%", background: "#16a34a", color: "#fff", border: "none", borderRadius: 4, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer", marginTop: 8, letterSpacing: "0.02em" }}>
+    <button style={{ width: "100%", background: "#16a34a", color: "#fff", border: "none", borderRadius: 3, padding: "5px 0", fontSize: 11, fontWeight: 700, cursor: "pointer", marginTop: 5, letterSpacing: "0.02em" }}>
       Gerar
     </button>
   );
   const DateRange = () => (
-    <div style={{ marginBottom: 4 }}>
-      <div style={{ display: "flex", gap: 6 }}>
+    <div style={{ marginBottom: 3 }}>
+      <div style={{ display: "flex", gap: 5 }}>
         <div style={{ flex: 1 }}>
           <span style={lblStyle}>Data Inicial</span>
           <input type="date" style={inpStyle} />
@@ -1555,12 +1555,12 @@ function RelatóriosContent() {
   );
 
   const Card = ({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) => (
-    <div style={{ background: "#fff", borderRadius: 8, boxShadow: "0 1px 4px rgba(0,0,0,0.09)", border: "1px solid #e9edf0", display: "flex", gap: 0, overflow: "hidden" }}>
-      <div style={{ width: 70, minWidth: 70, background: "#06b6d4", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <svg viewBox="0 0 24 24" style={{ width: 32, height: 32, fill: "#fff" }}><path d={icon} /></svg>
+    <div style={{ background: "#fff", borderRadius: 7, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #e9edf0", display: "flex", gap: 0, overflow: "hidden" }}>
+      <div style={{ width: 56, minWidth: 56, background: "#06b6d4", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg viewBox="0 0 24 24" style={{ width: 26, height: 26, fill: "#fff" }}><path d={icon} /></svg>
       </div>
-      <div style={{ flex: 1, padding: "10px 12px" }}>
-        <div style={{ fontWeight: 800, fontSize: 12, color: "#111827", letterSpacing: "0.04em", marginBottom: 6 }}>{title}</div>
+      <div style={{ flex: 1, padding: "8px 10px" }}>
+        <div style={{ fontWeight: 800, fontSize: 11, color: "#111827", letterSpacing: "0.04em", marginBottom: 5 }}>{title}</div>
         {children}
         <DateRange />
         <Gerar />
