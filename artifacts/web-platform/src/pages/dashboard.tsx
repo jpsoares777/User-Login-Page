@@ -625,7 +625,7 @@ function PagamentosContent() {
       </div>
 
       {/* ── Table ── */}
-      <div className="flex-1 overflow-y-auto">
+      <div style={{ overflowY: "auto", maxHeight: 340 }}>
         <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
           <colgroup>{cols.map((c, i) => <col key={i} style={{ width: c.w }} />)}</colgroup>
           <thead>
