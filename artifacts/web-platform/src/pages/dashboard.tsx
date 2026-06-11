@@ -2830,60 +2830,72 @@ function LiqPeriodosClientesContent() {
         const sel = clienteSel as LiqPerClienteRow;
         const hist = gerarHistorico(sel);
         const totalPago = hist.filter(h => h.tipo === "PARC.").reduce((a, h) => a + h.valor, 0);
-        const tipoTag = (tipo: string) => {
-          if (tipo === "PARC.")   return { bg: "#dcfce7", color: "#15803d", border: "#86efac" };
-          if (tipo === "S/PAG.")  return { bg: "#fee2e2", color: "#dc2626", border: "#fca5a5" };
-          return                         { bg: "#fef9c3", color: "#d97706", border: "#fde047" };
+        const fmtValor = (v: number) => `R$ ${v.toFixed(2).replace(".", ",")}`;
+        const truncNome = (n: string) => n.length > 22 ? n.slice(0, 19) + "..." : n;
+        const tipoIcon = (tipo: string) => {
+          if (tipo === "PARC.")  return { circBg: "#16a34a", label: "PARC.",  txtColor: "#16a34a" };
+          if (tipo === "S/PAG.") return { circBg: "#dc2626", label: "S/PAG.", txtColor: "#dc2626" };
+          return                        { circBg: "#d97706", label: "ABONO",  txtColor: "#d97706" };
         };
         return (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
             onClick={() => setClienteSel(null)}>
-            <div style={{ background: "#fff", borderRadius: 8, width: 720, maxWidth: "95vw", maxHeight: "85vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.35)" }}
+            <div style={{ background: "#fff", borderRadius: 8, width: 760, maxWidth: "96vw", maxHeight: "88vh", display: "flex", flexDirection: "column", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}
               onClick={e => e.stopPropagation()}>
 
-              {/* Título */}
-              <div style={{ background: "#3d6e8e", borderRadius: "8px 8px 0 0", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.03em" }}>Histórico de Pagamentos</span>
-                <button onClick={() => setClienteSel(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 20, lineHeight: 1, padding: "0 4px" }}>✕</button>
+              {/* ── Barra título ── */}
+              <div style={{ background: "#3d6e8e", borderRadius: "8px 8px 0 0", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>Histórico de Pagamentos</span>
+                <button onClick={() => setClienteSel(null)} style={{ width: 28, height: 28, borderRadius: 4, background: "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", color: "#fff", fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>×</button>
               </div>
 
-              {/* Cabeçalho cliente */}
-              <div style={{ padding: "10px 16px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 10, background: "#f8fafc" }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#3d6e8e", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#fff" }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-                </div>
-                <div>
-                  <span style={{ fontWeight: 800, fontSize: 13, color: "#1e3a5f", letterSpacing: "0.04em", textTransform: "uppercase" }}>{sel.cliente}</span>
-                  <span style={{ marginLeft: 10, fontSize: 12, color: "#6b7280" }}>#{sel.idVenta}</span>
-                </div>
+              {/* ── Cabeçalho cliente ── */}
+              <div style={{ padding: "12px 18px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 12, background: "#fff" }}>
+                <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, fill: "#d97706", flexShrink: 0 }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                <span style={{ fontWeight: 800, fontSize: 14, color: "#d97706", letterSpacing: "0.05em", textTransform: "uppercase" }}>{sel.cliente}</span>
+                <span style={{ fontSize: 13, color: "#6b7280", marginLeft: 4 }}>Empréstimo #{sel.id}</span>
               </div>
 
-              {/* Tabela histórico */}
+              {/* ── Tabela ── */}
               <div style={{ flex: 1, overflowY: "auto" }}>
                 <table style={{ borderCollapse: "collapse", width: "100%" }}>
                   <thead>
-                    <tr style={{ background: "#f1f5f9" }}>
-                      {["Nro.", "Cliente", "Tipo", "Valor", "Data", "Observações"].map(h => (
-                        <th key={h} style={{ padding: "8px 12px", textAlign: h === "Valor" ? "right" : "left", fontSize: 12, fontWeight: 700, color: "#374151", borderBottom: "2px solid #e2e8f0", whiteSpace: "nowrap" }}>{h}</th>
+                    <tr>
+                      {[
+                        { l: "Nro.",        w: "7%",  a: "center" as const },
+                        { l: "Cliente",     w: "28%", a: "left"   as const },
+                        { l: "Tipo",        w: "14%", a: "left"   as const },
+                        { l: "Valor",       w: "14%", a: "right"  as const },
+                        { l: "Fecha",       w: "16%", a: "left"   as const },
+                        { l: "Observações", w: "21%", a: "left"   as const },
+                      ].map(c => (
+                        <th key={c.l} style={{ padding: "9px 14px", textAlign: c.a, fontSize: 13, fontWeight: 700, color: "#374151", background: "#e8edf2", borderBottom: "2px solid #cbd5e1", whiteSpace: "nowrap", width: c.w }}>{c.l}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {hist.map((h, i) => {
-                      const tag = tipoTag(h.tipo);
+                      const icon = tipoIcon(h.tipo);
                       const bg = i % 2 === 0 ? "#fff" : "#f9fafb";
                       return (
                         <tr key={h.nro} style={{ background: bg }}>
-                          <td style={{ padding: "7px 12px", fontSize: 13, color: "#6b7280", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>{h.nro}</td>
-                          <td style={{ padding: "7px 12px", fontSize: 13, color: "#374151", fontWeight: 500, borderBottom: "1px solid #f0f0f0" }}>{sel.cliente}</td>
-                          <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>
-                            <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: tag.bg, color: tag.color, border: `1px solid ${tag.border}` }}>{h.tipo}</span>
+                          <td style={{ padding: "8px 14px", textAlign: "center", fontSize: 14, fontWeight: 700, color: "#2563eb", borderBottom: "1px solid #f0f0f0" }}>{h.nro}</td>
+                          <td style={{ padding: "8px 14px", fontSize: 13, color: "#2563eb", fontWeight: 600, borderBottom: "1px solid #f0f0f0", overflow: "hidden", maxWidth: 0 }}>
+                            {truncNome(sel.cliente)}
                           </td>
-                          <td style={{ padding: "7px 12px", fontSize: 13, fontWeight: 700, color: h.valor > 0 ? "#15803d" : "#9ca3af", textAlign: "right", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>
-                            R$ {h.valor.toFixed(2).replace(".", ",")}
+                          <td style={{ padding: "8px 14px", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                              <span style={{ width: 18, height: 18, borderRadius: "50%", background: icon.circBg, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                <svg viewBox="0 0 24 24" style={{ width: 11, height: 11, fill: "#fff" }}><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                              </span>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: icon.txtColor }}>{icon.label}</span>
+                            </span>
                           </td>
-                          <td style={{ padding: "7px 12px", fontSize: 12, color: "#6b7280", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>{h.fecha}</td>
-                          <td style={{ padding: "7px 12px", fontSize: 12, color: "#9ca3af", borderBottom: "1px solid #f0f0f0" }}>{h.obs}</td>
+                          <td style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, color: "#374151", textAlign: "right", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>
+                            {fmtValor(h.valor)}
+                          </td>
+                          <td style={{ padding: "8px 14px", fontSize: 13, color: "#6b7280", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>{h.fecha}</td>
+                          <td style={{ padding: "8px 14px", fontSize: 12, color: "#9ca3af", borderBottom: "1px solid #f0f0f0" }}>{h.obs === "Cuota" ? "" : h.obs}</td>
                         </tr>
                       );
                     })}
@@ -2891,14 +2903,14 @@ function LiqPeriodosClientesContent() {
                 </table>
               </div>
 
-              {/* Rodapé */}
-              <div style={{ padding: "12px 16px", borderTop: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f8fafc" }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#374151" }}>
+              {/* ── Rodapé ── */}
+              <div style={{ padding: "13px 18px", borderTop: "2px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff" }}>
+                <span style={{ fontSize: 15, fontWeight: 800, color: "#1e293b" }}>
                   TOTAL PAGOS:{" "}
-                  <span style={{ color: "#1d4ed8", fontSize: 15 }}>R$ {totalPago.toFixed(2).replace(".", ",")}</span>
+                  <span style={{ color: "#2563eb" }}>{fmtValor(totalPago)}</span>
                 </span>
                 <button onClick={() => setClienteSel(null)}
-                  style={{ padding: "6px 20px", background: "#fff", border: "1px solid #d1d5db", borderRadius: 6, fontSize: 13, fontWeight: 600, color: "#374151", cursor: "pointer" }}>
+                  style={{ padding: "7px 24px", background: "#2563eb", border: "none", borderRadius: 6, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer" }}>
                   Cancelar
                 </button>
               </div>
