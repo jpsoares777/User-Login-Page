@@ -2971,6 +2971,8 @@ const consolidadosData = [
   {
     pais: "BRASIL", cidade: "SAO LUIS", fechaCaja: "2026-04-15",
     vendedor: "Rota Cred Bank -", totalClientes: 19,
+    cajaInicial: 0.00, recaudo: 0.00, ventas: 0.00,
+    egresos: 0.00, ingresos: 0.00,
     cajaFinal: 2689.00, cartera: 12670.00, acumulado: 0.00,
   },
 ];
@@ -2989,70 +2991,104 @@ function ConsolidadosContent() {
   const [vendedor,  setVendedor]  = useState("Rota Cred Bank -");
   const [pais,      setPais]      = useState("BRASIL");
   const [cidade,    setCidade]    = useState("SAO LUIS");
+  const [buscarCobrador, setBuscarCobrador] = useState("");
+  const [buscarData,     setBuscarData]     = useState("");
 
-  const inputCls = "border border-gray-300 rounded px-2 text-sm bg-white outline-none focus:border-blue-400 text-gray-700";
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
   const labelCls = { fontSize: 11, fontWeight: 700 as const, color: "#6b7280", display: "block" as const, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.04em" };
   const fmt      = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 
-  const totCaja    = consolidadosData.reduce((a, r) => a + r.cajaFinal, 0);
-  const totCartera = consolidadosData.reduce((a, r) => a + r.cartera,   0);
-  const totAcum    = consolidadosData.reduce((a, r) => a + r.acumulado, 0);
+  const totClientes  = consolidadosData.reduce((a, r) => a + r.totalClientes, 0);
+  const totIni       = consolidadosData.reduce((a, r) => a + r.cajaInicial,   0);
+  const totRecaudo   = consolidadosData.reduce((a, r) => a + r.recaudo,       0);
+  const totVentas    = consolidadosData.reduce((a, r) => a + r.ventas,        0);
+  const totEgresos   = consolidadosData.reduce((a, r) => a + r.egresos,       0);
+  const totIngresos  = consolidadosData.reduce((a, r) => a + r.ingresos,      0);
+  const totCaja      = consolidadosData.reduce((a, r) => a + r.cajaFinal,     0);
+  const totCartera   = consolidadosData.reduce((a, r) => a + r.cartera,       0);
+  const totAcum      = consolidadosData.reduce((a, r) => a + r.acumulado,     0);
 
+  /* shared cell styles */
   const thS: React.CSSProperties = {
-    padding: "9px 12px", fontSize: 12, fontWeight: 700, color: "#e2e8f0",
-    background: "#3d6e8e", whiteSpace: "nowrap", letterSpacing: "0.03em",
+    padding: "7px 8px", fontSize: 12, fontWeight: 700, color: "#e2e8f0",
+    background: "#3d6e8e", whiteSpace: "nowrap", letterSpacing: "0.02em",
     borderRight: "1px solid #4a7fa0", position: "sticky", top: 0, zIndex: 1,
-    textTransform: "uppercase",
   };
   const tdS = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "10px 12px", fontSize: 13, color: "#374151", whiteSpace: "nowrap",
+    padding: "6px 8px", fontSize: 13, color: "#374151", whiteSpace: "nowrap",
     textAlign: align, borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0", verticalAlign: "middle", ...extra,
   });
   const tdTot = (align: "left"|"center"|"right"): React.CSSProperties => ({
-    padding: "9px 12px", fontSize: 13, fontWeight: 700, color: "#fff",
+    padding: "6px 8px", fontSize: 13, fontWeight: 700, color: "#fff",
     background: "#3d6e8e", textAlign: align, borderRight: "1px solid #4a7fa0", whiteSpace: "nowrap",
   });
 
-  const moneyCell = (val: number, color = "#059669") => (
+  /* money cells with semantic icons */
+  const MoneyGreen = ({ v }: { v: number }) => (
+    <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
+      <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#16a34a", flexShrink: 0 }}><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+      <span style={{ fontWeight: 600, color: "#15803d" }}>{fmt(v)}</span>
+    </span>
+  );
+  const MoneyRed = ({ v }: { v: number }) => (
+    <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
+      <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#dc2626", flexShrink: 0 }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
+      <span style={{ fontWeight: 600, color: "#dc2626" }}>{fmt(v)}</span>
+    </span>
+  );
+  const MoneyAmber = ({ v }: { v: number }) => (
     <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
       <CoinIcon />
-      <span style={{ fontWeight: 700, fontSize: 13, color }}>{fmt(val)}</span>
+      <span style={{ fontWeight: 600, color: "#374151" }}>{fmt(v)}</span>
     </span>
   );
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
 
-      {/* ── Action bar ── */}
-      <div className="shrink-0 flex items-center gap-3 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+      {/* ── Action bar (Opções + search) ── */}
+      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
         <button onClick={() => setShowModal(true)}
-          style={{ height: 30, padding: "0 14px", background: "#2d5474", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-          <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96a7.01 7.01 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.04.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          style={{ height: 28, padding: "0 12px", background: "#2d5474", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, alignSelf: "flex-end" }}>
+          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96a7.01 7.01 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.04.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
           Opções
         </button>
-        {/* active filter pills */}
-        <div className="flex items-center gap-2">
-          <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 600 }}>Filtro ativo:</span>
-          <span style={{ fontSize: 11, background: "#e0f2fe", color: "#0369a1", padding: "2px 8px", borderRadius: 4, fontWeight: 600 }}>📅 {fechaCaja}</span>
-          <span style={{ fontSize: 11, background: "#f0fdf4", color: "#166534", padding: "2px 8px", borderRadius: 4, fontWeight: 600 }}>👤 {vendedor}</span>
-          <span style={{ fontSize: 11, background: "#fef3c7", color: "#92400e", padding: "2px 8px", borderRadius: 4, fontWeight: 600 }}>🌐 {pais} — {cidade}</span>
+
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Cobrador</label>
+          <input value={buscarCobrador} onChange={e => setBuscarCobrador(e.target.value)}
+            placeholder="Nome do cobrador…" className={`${inputCls} w-44`} />
         </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data</label>
+          <input type="date" value={buscarData} onChange={e => setBuscarData(e.target.value)}
+            className={`${inputCls} w-36`} />
+        </div>
+        <button className="h-7 px-4 rounded text-xs font-bold text-white" style={{ background: "#2563eb", border: "none", cursor: "pointer", alignSelf: "flex-end" }}>
+          🔍 Pesquisar
+        </button>
+
         <div className="flex-1" />
-        <span style={{ fontSize: 11, color: "#6b7280" }}>
-          <span style={{ fontWeight: 700, color: "#374151" }}>{consolidadosData.length}</span> registro(s)
+        <span className="text-xs text-gray-500" style={{ alignSelf: "flex-end" }}>
+          <span className="font-bold text-gray-800">{consolidadosData.length}</span> registro(s)
         </span>
       </div>
 
       {/* ── Tabela ── */}
       <div className="flex-1 overflow-auto">
-        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 900 }}>
+        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 1200 }}>
           <thead>
             <tr>
               <th style={{ ...thS, textAlign: "left"   }}>País</th>
-              <th style={{ ...thS, textAlign: "left"   }}>Cidade</th>
-              <th style={{ ...thS, textAlign: "center" }}>Fecha Caja</th>
-              <th style={{ ...thS, textAlign: "left"   }}>Vendedor</th>
-              <th style={{ ...thS, textAlign: "center" }}>Total Clientes</th>
+              <th style={{ ...thS, textAlign: "left"   }}>Cidade:</th>
+              <th style={{ ...thS, textAlign: "center" }}>Fecha Caja:</th>
+              <th style={{ ...thS, textAlign: "left"   }}>Vendedor:</th>
+              <th style={{ ...thS, textAlign: "center" }}>Total de Clientes:</th>
+              <th style={{ ...thS, textAlign: "right"  }}>Caja Inicial</th>
+              <th style={{ ...thS, textAlign: "right"  }}>Recaudo:</th>
+              <th style={{ ...thS, textAlign: "right"  }}>Ventas:</th>
+              <th style={{ ...thS, textAlign: "right"  }}>Egresos:</th>
+              <th style={{ ...thS, textAlign: "right"  }}>Ingresos:</th>
               <th style={{ ...thS, textAlign: "right"  }}>Caja Final</th>
               <th style={{ ...thS, textAlign: "right"  }}>Cartera</th>
               <th style={{ ...thS, textAlign: "right"  }}>Acumulado Caja Seguros</th>
@@ -3065,46 +3101,56 @@ function ConsolidadosContent() {
                 <tr key={i} style={{ background: bg, cursor: "pointer" }}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = "#eff6ff"))}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = bg))}>
-                  <td style={tdS("left", { fontWeight: 700, color: "#1e3a5f", fontSize: 13 })}>{r.pais}</td>
-                  <td style={tdS("left", { color: "#4b5563", fontWeight: 600 })}>{r.cidade}</td>
+                  <td style={tdS("left",   { fontWeight: 700, color: "#1e3a5f" })}>{r.pais}</td>
+                  <td style={tdS("left",   { color: "#4b5563" })}>{r.cidade}</td>
                   <td style={tdS("center")}>
-                    <span style={{ background: "#f97316", color: "#fff", fontSize: 12, fontWeight: 700, padding: "3px 10px", borderRadius: 5, letterSpacing: "0.03em" }}>{r.fechaCaja}</span>
+                    <span style={{ background: "#f97316", color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4 }}>{r.fechaCaja}</span>
                   </td>
                   <td style={tdS("left")}>
-                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#3d6e8e", flexShrink: 0 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                      <span style={{ fontWeight: 600, color: "#1f2937" }}>{r.vendedor}</span>
+                    <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#3d6e8e", flexShrink: 0 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                      <span style={{ fontWeight: 600 }}>{r.vendedor}</span>
                     </span>
                   </td>
                   <td style={tdS("center")}>
-                    <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: "50%", background: "#dbeafe", color: "#1d4ed8", fontWeight: 800, fontSize: 14 }}>
-                      {r.totalClientes}
+                    <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#3d6e8e", verticalAlign: "middle", marginRight: 3 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <span style={{ fontWeight: 700 }}>{r.totalClientes}</span>
+                  </td>
+                  <td style={tdS("right")}><MoneyAmber v={r.cajaInicial} /></td>
+                  <td style={tdS("right")}><MoneyGreen v={r.recaudo} /></td>
+                  <td style={tdS("right")}><MoneyGreen v={r.ventas} /></td>
+                  <td style={tdS("right")}><MoneyRed   v={r.egresos} /></td>
+                  <td style={tdS("right")}><MoneyGreen v={r.ingresos} /></td>
+                  <td style={tdS("right")}><MoneyAmber v={r.cajaFinal} /></td>
+                  <td style={tdS("right")}><MoneyAmber v={r.cartera} /></td>
+                  <td style={tdS("right")}>
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3, flexWrap: "nowrap" }}>
+                      <CoinIcon />
+                      <span style={{ fontWeight: 600, color: "#374151" }}>({fmt(r.acumulado)})</span>
+                      <span style={{ fontSize: 11, color: "#6b7280" }}>- Total Retiros (0,00)=0,00</span>
                     </span>
                   </td>
-                  <td style={tdS("right")}>{moneyCell(r.cajaFinal)}</td>
-                  <td style={tdS("right")}>{moneyCell(r.cartera, "#2563eb")}</td>
-                  <td style={tdS("right")}>{moneyCell(r.acumulado, r.acumulado > 0 ? "#059669" : "#6b7280")}</td>
                 </tr>
               );
             })}
           </tbody>
           <tfoot>
             <tr>
-              <td style={tdTot("left")} colSpan={4}>Totales</td>
+              <td style={tdTot("left")} colSpan={4}>Totales:</td>
               <td style={tdTot("center")}>
-                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.18)", fontWeight: 800, fontSize: 14 }}>
-                  {consolidadosData.reduce((a, r) => a + r.totalClientes, 0)}
-                </span>
+                <svg viewBox="0 0 24 24" style={{ width: 12, height: 12, fill: "#fff", verticalAlign: "middle", marginRight: 2 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                {totClientes}
               </td>
+              <td style={tdTot("right")}><CoinIcon />{fmt(totIni)}</td>
+              <td style={tdTot("right")}><CoinIcon />{fmt(totRecaudo)}</td>
+              <td style={tdTot("right")}><CoinIcon />{fmt(totVentas)}</td>
+              <td style={tdTot("right")}><CoinIcon />{fmt(totEgresos)}</td>
+              <td style={tdTot("right")}><CoinIcon />{fmt(totIngresos)}</td>
+              <td style={tdTot("right")}><CoinIcon />{fmt(totCaja)}</td>
+              <td style={tdTot("right")}><CoinIcon />{fmt(totCartera)}</td>
               <td style={tdTot("right")}>
-                <CoinIcon />{fmt(totCaja)}
-              </td>
-              <td style={tdTot("right")}>
-                <CoinIcon />{fmt(totCartera)}
-              </td>
-              <td style={tdTot("right")}>
-                <CoinIcon />{fmt(totAcum)}&nbsp;
-                <span style={{ fontSize: 11, fontWeight: 400, opacity: 0.8 }}>- Retiros (250,00)= 250,00</span>
+                <CoinIcon />({fmt(totAcum)})&nbsp;
+                <span style={{ fontSize: 11, fontWeight: 400, opacity: 0.85 }}>- Total Retiros (0,00)=0,00</span>
               </td>
             </tr>
           </tfoot>
@@ -3114,52 +3160,46 @@ function ConsolidadosContent() {
       {/* ── Blue footer bar ── */}
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
 
-      {/* ── Modal ── */}
+      {/* ── Modal Opções ── */}
       {showModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 400, display: "flex", alignItems: "center", justifyContent: "center" }}
           onClick={() => setShowModal(false)}>
           <div style={{ background: "#fff", borderRadius: 8, width: 440, boxShadow: "0 24px 64px rgba(0,0,0,0.3)", overflow: "hidden" }}
             onClick={e => e.stopPropagation()}>
-
-            {/* title bar */}
             <div style={{ background: "#3d6e8e", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.01em" }}>Consolidados</span>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Consolidados</span>
               <button onClick={() => setShowModal(false)}
                 style={{ width: 28, height: 28, background: "rgba(255,255,255,0.18)", border: "none", color: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 15, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
             </div>
-
-            {/* body */}
             <div style={{ padding: "22px 22px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 18px" }}>
               <div>
                 <label style={labelCls}>Fecha Caja</label>
                 <input type="date" value={fechaCaja} onChange={e => setFechaCaja(e.target.value)}
-                  className={inputCls} style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const }} />
+                  style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const, border: "1px solid #d1d5db", borderRadius: 5, fontSize: 13, color: "#374151" }} />
               </div>
               <div>
                 <label style={labelCls}>Vendedor</label>
                 <select value={vendedor} onChange={e => setVendedor(e.target.value)}
-                  className={inputCls} style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const }}>
+                  style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const, border: "1px solid #d1d5db", borderRadius: 5, fontSize: 13, color: "#374151" }}>
                   <option>Rota Cred Bank -</option>
                 </select>
               </div>
               <div>
                 <label style={labelCls}>País</label>
                 <select value={pais} onChange={e => setPais(e.target.value)}
-                  className={inputCls} style={{ width: "100%", padding: "7px 10px", boxSizing: "border-box" as const }}>
+                  style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const, border: "1px solid #d1d5db", borderRadius: 5, fontSize: 13, color: "#374151" }}>
                   <option>BRASIL</option>
                 </select>
               </div>
               <div>
                 <label style={labelCls}>Ciudad</label>
                 <select value={cidade} onChange={e => setCidade(e.target.value)}
-                  className={inputCls} style={{ width: "100%", padding: "7px 10px", boxSizing: "border-box" as const }}>
+                  style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const, border: "1px solid #d1d5db", borderRadius: 5, fontSize: 13, color: "#374151" }}>
                   <option>SAO LUIS</option>
                 </select>
               </div>
             </div>
-
-            {/* footer */}
-            <div style={{ padding: "10px 20px 16px", display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <div style={{ padding: "10px 22px 18px", display: "flex", justifyContent: "flex-end", gap: 8 }}>
               <button onClick={() => setShowModal(false)}
                 style={{ padding: "7px 18px", background: "#fff", border: "1px solid #2563eb", color: "#2563eb", borderRadius: 6, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                 Cancelar
