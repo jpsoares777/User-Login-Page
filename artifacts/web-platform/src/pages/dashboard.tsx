@@ -1657,7 +1657,7 @@ function ClientesContent() {
                         </tr>
                       </thead>
                       <tbody>
-                        {parcelas.map((p, idx) => (
+                        {parcelas.filter(p => p.pago).map((p, idx) => (
                           <tr key={p.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#6b7280" }}>{p.num}</td>
                             <td style={{ padding: "7px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{p.vencimento}</td>
