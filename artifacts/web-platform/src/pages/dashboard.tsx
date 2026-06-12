@@ -4008,18 +4008,8 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      {/* ── cancelar + editar + excluir ── */}
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                        <div style={{ display: "flex", gap: 6 }}>
-                          <button style={{ display: "flex", alignItems: "center", gap: 5, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "6px 12px", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
-                            <svg viewBox="0 0 24 24" style={{ width: 12, height: 12, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                            Editar Dados
-                          </button>
-                          <button style={{ display: "flex", alignItems: "center", gap: 5, background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, padding: "6px 12px", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
-                            <svg viewBox="0 0 24 24" style={{ width: 12, height: 12, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                            Excluir Cliente
-                          </button>
-                        </div>
+                      {/* ── cancelar ── */}
+                      <div style={{ display: "flex", justifyContent: "flex-end" }}>
                         <button onClick={() => setGcModalOpen(false)}
                           style={{ background: "#1e3a5f", color: "#fff", border: "none", borderRadius: 5, padding: "7px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                           Cancelar
