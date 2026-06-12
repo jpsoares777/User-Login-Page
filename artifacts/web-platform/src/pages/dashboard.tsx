@@ -3469,16 +3469,6 @@ function ConsolidadosContent() {
           </div>
         </div>
 
-        {/* ── Stat cards ── */}
-        <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" as const }}>
-          <StatCard icon="🏦" label="Caixa Inicial"        value={fmtR(r.cajaInicial)}         accent="#3d6e8e" bg="#eff6ff" />
-          <StatCard icon="💵" label="Receb. Previsto"      value={fmtR(r.recebimentoPrevisto)}  accent="#16a34a" bg="#f0fdf4" />
-          <StatCard icon="💰" label="Recebido Hoje"        value={fmtR(r.recaudo)}              accent="#f59e0b" bg="#fffbeb" />
-          <StatCard icon="📋" label="Carteira Final"       value={fmtR(r.cartera)}              accent="#2563eb" bg="#eff6ff" />
-          <StatCard icon="👥" label="Clientes Ativos"      value={String(r.totalClientes)}      accent="#0891b2" bg="#ecfeff" />
-          <StatCard icon="✅" label="Caixa Final"          value={fmtR(r.cajaFinal)}            accent="#16a34a" bg="#f0fdf4" />
-        </div>
-
         {/* ── Three-column grid ── */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, marginBottom: 14 }}>
 
