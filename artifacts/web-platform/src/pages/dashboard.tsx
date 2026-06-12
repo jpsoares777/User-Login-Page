@@ -3490,7 +3490,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenc. de despesas",          color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)" },
               { icon: null,  label: "Gerenc. de rendimentos",       color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
               { icon: null,  label: "Importar rota",                 color: "#7c3aed", img: iconImportarRota, imgSize: 24 },
-              { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 24, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)" },
+              { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 30, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)" },
               { icon: "📅", label: "Consultar gastos",              color: "#db2777" },
               { icon: "👤", label: "Caixa geral",                  color: "#6b7280" },
             ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string }) => (
