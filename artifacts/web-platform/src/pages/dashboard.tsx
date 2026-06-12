@@ -4217,24 +4217,6 @@ export default function DashboardPage() {
         {activeMain === "Importar Rotas" ? (
           <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f4f8" }}>
 
-            {/* ── Toolbar ── */}
-            <div className="shrink-0 flex items-center gap-1 px-3 py-2" style={{ background: "#e8edf2", borderBottom: "1px solid #d1d9e0" }}>
-              {[
-                { title: "Grade", path: "M3 3h7v7H3zm0 11h7v7H3zm11-11h7v7h-7zm0 11h7v7h-7z" },
-                { title: "Salvar", path: "M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" },
-                { title: "Pesquisar", path: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" },
-                { title: "Excluir", path: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" },
-                { title: "Imprimir", path: "M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" },
-              ].map(btn => (
-                <button key={btn.title} title={btn.title}
-                  style={{ width: 32, height: 32, background: "#fff", border: "1px solid #c9d4de", borderRadius: 4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "#dce8f5")}
-                  onMouseLeave={e => (e.currentTarget.style.background = "#fff")}>
-                  <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#334155" }}><path d={btn.path} /></svg>
-                </button>
-              ))}
-            </div>
-
             {/* ── Content ── */}
             <div className="flex-1 overflow-auto p-4">
               <div style={{ background: "#fff", borderRadius: 4, border: "1px solid #d1d9e0", overflow: "hidden" }}>
