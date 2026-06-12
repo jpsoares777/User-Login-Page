@@ -3493,7 +3493,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Importar rota",                 color: "#7c3aed", img: iconImportarRota, imgSize: 21 },
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)" },
               { icon: null,  label: "Gerenc. gastos períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)" },
-              { icon: null,  label: "Gerenciar rendimentos",        color: "#16a34a", img: iconDinheiro, imgSize: 24, useMask: true, imgTransform: "scaleY(-1)" },
+              { icon: null,  label: "Gerenc. rendimentos períodos", color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
               { icon: "👤", label: "Caixa geral",                  color: "#6b7280" },
             ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter, imgTransform, useMask }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string, imgTransform?: string, useMask?: boolean }) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
