@@ -3863,7 +3863,7 @@ export default function DashboardPage() {
               border: activeMain === "Gerenciar Despesas" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
               borderBottom: "none",
             }}>
-            Despesas
+            Gerenc. Despesas
             <span onClick={e => { e.stopPropagation(); setGerenciarDespesasOpen(false); if (activeMain === "Gerenciar Despesas") setActiveMain("Liq. Diária"); }}
               style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
           </button>
