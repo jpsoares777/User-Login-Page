@@ -3468,13 +3468,22 @@ export default function DashboardPage() {
   const [gcFecha, setGcFecha] = useState("");
   const [gcEstado, setGcEstado] = useState("Deve");
   const [gcRows] = useState([
-    { id: 1, vendedor: "Rota Cred Bank", consec: "4700627089", documento: "034.286.733-44", nome: "Aline Lima",        sobrenome: "De Alencar",         dataVenda: "2026-03-25", estado: "Deve" },
-    { id: 2, vendedor: "Rota Cred Bank", consec: "4700627049", documento: "61538186302",    nome: "Ana Flávia",       sobrenome: "Pereira Moraes",      dataVenda: "2026-04-08", estado: "Deve" },
-    { id: 3, vendedor: "Rota Cred Bank", consec: "4700627026", documento: "91633427315",    nome: "Andreia",          sobrenome: "Jesus Costa Araújo",  dataVenda: "2026-03-30", estado: "Quitado" },
-    { id: 4, vendedor: "Rota Cred Bank", consec: "4700627079", documento: "85259284372",    nome: "Ana Paula",        sobrenome: "Marques De Oliveira", dataVenda: "2026-03-28", estado: "Quitado" },
-    { id: 5, vendedor: "Rota Cred Bank", consec: "4700627027", documento: "005234678355",   nome: "Antônio",          sobrenome: "Leite Neto",          dataVenda: "2026-03-14", estado: "Deve" },
-    { id: 6, vendedor: "Rota Cred Bank", consec: "4700627025", documento: "60974118397",    nome: "Bianca",           sobrenome: "De Araújo Alves",     dataVenda: "2026-04-16", estado: "Deve" },
-    { id: 7, vendedor: "Rota Cred Bank", consec: "4700627023", documento: "88899900011",    nome: "Elaira Kisley",    sobrenome: "Conceição Lopes",     dataVenda: "2026-03-20", estado: "Deve" },
+    { id: 1,  vendedor: "Rota Cred Bank -", consec: "4700627058", documento: "034.286.733-44", cliente: "Aline Lima De Alencar",           valorVenda: 800,  saldoVenda: 1040, dataVenda: "2026-04-15", estado: "Ativo", historico: true  },
+    { id: 2,  vendedor: "Rota Cred Bank -", consec: "4700627049", documento: "61538186302",    cliente: "Ana Flávia Pereira Moraes",       valorVenda: 500,  saldoVenda: 450,  dataVenda: "2026-04-08", estado: "Ativo", historico: false },
+    { id: 3,  vendedor: "Rota Cred Bank -", consec: "4700627026", documento: "91633427515",    cliente: "Andreia de Jesus Costa Araújo",   valorVenda: 1500, saldoVenda: 800,  dataVenda: "2026-04-08", estado: "Ativo", historico: false },
+    { id: 4,  vendedor: "Rota Cred Bank -", consec: "4700627024", documento: "",               cliente: "Anny Briane Pires Belfort",       valorVenda: 800,  saldoVenda: 210,  dataVenda: "2026-02-13", estado: "Ativo", historico: true  },
+    { id: 5,  vendedor: "Rota Cred Bank -", consec: "4700627027", documento: "00523478355",    cliente: "Antônio Leite Neto",              valorVenda: 600,  saldoVenda: 750,  dataVenda: "2026-03-14", estado: "Ativo", historico: false },
+    { id: 6,  vendedor: "Rota Cred Bank -", consec: "4700627025", documento: "60974118397",    cliente: "Bianca de Araújo Alves",          valorVenda: 300,  saldoVenda: 420,  dataVenda: "2026-04-16", estado: "Ativo", historico: false },
+    { id: 7,  vendedor: "Rota Cred Bank -", consec: "4700627145", documento: "01487468320",    cliente: "Bores Viana De Souza",            valorVenda: 400,  saldoVenda: 480,  dataVenda: "2026-04-15", estado: "Ativo", historico: false },
+    { id: 8,  vendedor: "Rota Cred Bank -", consec: "4700627090", documento: "01148713379",    cliente: "Daniele Teixeira Lindoso",        valorVenda: 1000, saldoVenda: 900,  dataVenda: "2026-03-30", estado: "Ativo", historico: false },
+    { id: 9,  vendedor: "Rota Cred Bank -", consec: "4700627023", documento: "",               cliente: "Elaira Kisley Conceição Lopes",   valorVenda: 540,  saldoVenda: 0,    dataVenda: "2026-04-02", estado: "Ativo", historico: true  },
+    { id: 10, vendedor: "Rota Cred Bank -", consec: "4700627164", documento: "61348633390",    cliente: "Erick Pereira Santos",            valorVenda: 600,  saldoVenda: 780,  dataVenda: "2026-04-04", estado: "Ativo", historico: false },
+    { id: 11, vendedor: "Rota Cred Bank -", consec: "4700627089", documento: "00500307300",    cliente: "Geilson Eduardo Rosa de Jesus",   valorVenda: 700,  saldoVenda: 630,  dataVenda: "2026-03-30", estado: "Ativo", historico: false },
+    { id: 12, vendedor: "Rota Cred Bank -", consec: "4700627057", documento: "75408511391",    cliente: "José Francisco Chaves",           valorVenda: 500,  saldoVenda: 650,  dataVenda: "2026-03-25", estado: "Ativo", historico: false },
+    { id: 13, vendedor: "Rota Cred Bank -", consec: "4700627041", documento: "",               cliente: "João Felipe Pereira",             valorVenda: 300,  saldoVenda: 120,  dataVenda: "2026-03-23", estado: "Ativo", historico: false },
+    { id: 14, vendedor: "Rota Cred Bank -", consec: "4700627022", documento: "",               cliente: "Klailton Viana Gonçalves",        valorVenda: 900,  saldoVenda: 420,  dataVenda: "2026-03-13", estado: "Ativo", historico: false },
+    { id: 15, vendedor: "Rota Cred Bank -", consec: "4700627080", documento: "00270213301",    cliente: "Luciana Alves Da Silva",          valorVenda: 500,  saldoVenda: 700,  dataVenda: "2026-03-28", estado: "Ativo", historico: false },
+    { id: 16, vendedor: "Rota Cred Bank -", consec: "4700627078", documento: "073.604.383-73", cliente: "Marlana Beatriz Rabelo Barbosa",  valorVenda: 1000, saldoVenda: 1400, dataVenda: "2026-04-15", estado: "Ativo", historico: true  },
   ]);
   const [gaEmpresa, setGaEmpresa] = useState("CREDBANK");
   const [gaNome, setGaNome] = useState("");
@@ -3783,15 +3792,9 @@ export default function DashboardPage() {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ background: "#3d6e8e", color: "#fff" }}>
-                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>#</th>
-                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Vendedor</th>
-                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Consecutivo</th>
-                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Documento</th>
-                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Nome Cliente</th>
-                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Sobrenome Cliente</th>
-                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Data da Venda</th>
-                    <th style={{ padding: "9px 12px", textAlign: "center", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Estado</th>
-                    <th style={{ padding: "9px 12px", textAlign: "center", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Opções</th>
+                    {["Vendedor","Consecutivo","Documento","Cliente","Valor Venda","Saldo Venda","Data Venda","Estado","Opções"].map(h => (
+                      <th key={h} style={{ padding: "8px 10px", textAlign: h === "Valor Venda" || h === "Saldo Venda" || h === "Estado" || h === "Opções" ? "center" : "left", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap" }}>{h}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -3800,37 +3803,34 @@ export default function DashboardPage() {
                       style={{ borderBottom: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fff" : "#f8fafc", transition: "background 0.15s" }}
                       onMouseEnter={e => (e.currentTarget.style.background = "#eef4fb")}
                       onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f8fafc")}>
-                      <td style={{ padding: "8px 12px", color: "#94a3b8", fontWeight: 600, fontSize: 12 }}>{row.id}</td>
-                      <td style={{ padding: "8px 12px", color: "#1e293b", fontWeight: 600, whiteSpace: "nowrap" }}>{row.vendedor}</td>
-                      <td style={{ padding: "8px 12px" }}>
-                        <span style={{ fontFamily: "monospace", background: "#f1f5f9", color: "#2d5474", border: "1px solid #e2e8f0", borderRadius: 4, padding: "2px 6px", fontSize: 11, fontWeight: 700 }}>
-                          {row.consec}
-                        </span>
+                      <td style={{ padding: "6px 10px", color: "#374151", fontSize: 12, whiteSpace: "nowrap" }}>{row.vendedor}</td>
+                      <td style={{ padding: "6px 10px", fontSize: 12, whiteSpace: "nowrap" }}>
+                        <span style={{ fontFamily: "monospace", background: "#f1f5f9", color: "#2d5474", border: "1px solid #e2e8f0", borderRadius: 4, padding: "2px 5px", fontSize: 11, fontWeight: 700 }}>{row.consec}</span>
                       </td>
-                      <td style={{ padding: "8px 12px", color: "#374151", fontFamily: "monospace", fontSize: 12 }}>{row.documento}</td>
-                      <td style={{ padding: "8px 12px", color: "#1e293b", fontWeight: 600 }}>{row.nome}</td>
-                      <td style={{ padding: "8px 12px", color: "#374151" }}>{row.sobrenome}</td>
-                      <td style={{ padding: "8px 12px", color: "#374151", whiteSpace: "nowrap" }}>{row.dataVenda}</td>
-                      <td style={{ padding: "8px 12px", textAlign: "center" }}>
-                        <span style={{
-                          display: "inline-flex", alignItems: "center", gap: 4,
-                          background: row.estado === "Deve" ? "#fef2f2" : "#f0fdf4",
-                          color: row.estado === "Deve" ? "#dc2626" : "#16a34a",
-                          border: `1px solid ${row.estado === "Deve" ? "#fecaca" : "#bbf7d0"}`,
-                          borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700
-                        }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: row.estado === "Deve" ? "#dc2626" : "#16a34a", display: "inline-block" }} />
+                      <td style={{ padding: "6px 10px", color: "#374151", fontFamily: "monospace", fontSize: 11 }}>{row.documento}</td>
+                      <td style={{ padding: "6px 10px", color: "#1e293b", fontWeight: 600, fontSize: 12 }}>{row.cliente}</td>
+                      <td style={{ padding: "6px 10px", textAlign: "center", color: "#374151", fontSize: 12 }}>{row.valorVenda}</td>
+                      <td style={{ padding: "6px 10px", textAlign: "center", color: row.saldoVenda > 0 ? "#dc2626" : "#374151", fontWeight: row.saldoVenda > 0 ? 600 : 400, fontSize: 12 }}>{row.saldoVenda || ""}</td>
+                      <td style={{ padding: "6px 10px", color: "#374151", fontSize: 12, whiteSpace: "nowrap" }}>{row.dataVenda}</td>
+                      <td style={{ padding: "6px 10px", textAlign: "center" }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0", borderRadius: 20, padding: "2px 9px", fontSize: 11, fontWeight: 700 }}>
+                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#16a34a", display: "inline-block" }} />
                           {row.estado}
                         </span>
                       </td>
-                      <td style={{ padding: "7px 12px", textAlign: "center" }}>
-                        <div style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                          <button title="Editar" style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                      <td style={{ padding: "5px 10px", textAlign: "center" }}>
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          <button title="Editar" style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 4, width: 26, height: 26, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                           </button>
-                          <button title="Excluir" style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                          <button title="Excluir" style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 4, width: 26, height: 26, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                           </button>
+                          {row.historico && (
+                            <button style={{ background: "#0891b2", color: "#fff", border: "none", borderRadius: 4, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                              ⓘ Histórico
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
