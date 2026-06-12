@@ -3005,6 +3005,7 @@ function ResumoContent() {
       `Despesas: ${fmtR(r.egresos)}`,
       `Retiradas de Caixa: ${fmtR(r.retiros)}`,
       `Caixa Final: ${fmtR(r.cajaFinal)}`,
+      `Carteira Final: ${fmtR(r.carteira)}`,
       `Lucro: ${fmtR(lucro)}`,
       ``,
       `*🏦 CAIXA FINAL: ${fmtR(r.cajaFinal)}*`,
@@ -3093,6 +3094,7 @@ function ResumoContent() {
             <ListRow label="Despesas"                value={r.egresos}             valueColor={r.egresos > 0 ? "#dc2626" : "#6b7280"} />
             <ListRow label="Retiradas de Caixa"      value={r.retiros}             valueColor={r.retiros > 0 ? "#dc2626" : "#6b7280"} />
             <ListRow label="Caixa Final"             value={r.cajaFinal}           valueColor="#16a34a" bold />
+            <ListRow label="Carteira Final"          value={r.carteira}            valueColor="#2563eb" bold />
             <ListRow label="Lucro"                   value={lucro}                 valueColor="#7c3aed" bold border={false} />
           </Panel>
 
@@ -3227,7 +3229,8 @@ function ConsolidadosContent() {
         <div class="row"><span class="lbl">Despesas</span><span class="val r">${fmtR(r.egresos)}</span></div>
         <div class="row"><span class="lbl">Retirada de Caixa</span><span class="val r">${fmtR(r.retiradaCaixa)}</span></div>
         <div class="row"><span class="lbl"><strong>Caixa Final</strong></span><span class="val g"><strong>${fmtR(r.cajaFinal)}</strong></span></div>
-        <div class="row"><span class="lbl"><strong>Carteira Final</strong></span><span class="val b"><strong>${fmtR(r.cartera)}</strong></span></div>
+        <div class="row"><span class="lbl"><strong>Carteira Final</strong></span><span class="val b"><strong>${fmtR(r.carteira)}</strong></span></div>
+        <div class="row"><span class="lbl"><strong>Lucro</strong></span><span class="val p"><strong>${fmtR(lucro)}</strong></span></div>
       </div>
 
       <div class="vboxes">
