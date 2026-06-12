@@ -2986,329 +2986,239 @@ function CoinIcon() {
 }
 
 function ConsolidadosContent() {
-  const [showModal, setShowModal] = useState(false);
-  const [fechaCaja, setFechaCaja] = useState("2026-04-15");
-  const [vendedor,  setVendedor]  = useState("Rota Cred Bank -");
-  const [pais,      setPais]      = useState("BRASIL");
-  const [cidade,    setCidade]    = useState("SAO LUIS");
-  const [buscarCobrador, setBuscarCobrador] = useState("");
-  const [buscarData,     setBuscarData]     = useState("");
-  const [showResumo,     setShowResumo]     = useState(false);
+  const [cobrador,   setCobrador]   = useState("Rota Cred Bank -");
+  const [dataFiltro, setDataFiltro] = useState("2026-04-15");
 
-  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
-  const labelCls = { fontSize: 11, fontWeight: 700 as const, color: "#6b7280", display: "block" as const, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.04em" };
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700";
   const fmt      = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+  const fmtR     = (v: number) => `R$ ${fmt(v)}`;
 
-  const totClientes  = consolidadosData.reduce((a, r) => a + r.totalClientes, 0);
-  const totIni       = consolidadosData.reduce((a, r) => a + r.cajaInicial,   0);
-  const totRecaudo   = consolidadosData.reduce((a, r) => a + r.recaudo,       0);
-  const totVentas    = consolidadosData.reduce((a, r) => a + r.ventas,        0);
-  const totEgresos   = consolidadosData.reduce((a, r) => a + r.egresos,       0);
-  const totIngresos  = consolidadosData.reduce((a, r) => a + r.ingresos,      0);
-  const totCaja      = consolidadosData.reduce((a, r) => a + r.cajaFinal,     0);
-  const totCartera   = consolidadosData.reduce((a, r) => a + r.cartera,       0);
-  const totAcum      = consolidadosData.reduce((a, r) => a + r.acumulado,     0);
+  const r = consolidadosData[0];
 
-  /* shared cell styles */
-  const thS: React.CSSProperties = {
-    padding: "7px 8px", fontSize: 12, fontWeight: 700, color: "#e2e8f0",
-    background: "#3d6e8e", whiteSpace: "nowrap", letterSpacing: "0.02em",
-    borderRight: "1px solid #4a7fa0", position: "sticky", top: 0, zIndex: 1,
+  const handlePDF = () => {
+    const dateFmt = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<title>Consolidado Diário – ${cobrador} – ${dateFmt}</title>
+<style>
+  body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#111;}
+  .header{background:#2d5474;color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;text-align:center;}
+  .header h2{margin:0 0 4px;font-size:20px;}
+  .header p{margin:0;font-size:13px;opacity:.85;}
+  .badge{display:inline-block;background:#16a34a;color:#fff;padding:2px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-top:8px;}
+  .info-bar{background:#f1f5f9;padding:10px 24px;display:flex;gap:24px;font-size:13px;border-bottom:1px solid #e5e7eb;}
+  .info-bar span{color:#374151;}
+  .info-bar strong{color:#1e3a5f;}
+  .body{padding:20px 24px;}
+  .section-title{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;}
+  .card{background:#f9fafb;border-radius:8px;overflow:hidden;margin-bottom:4px;}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid #f3f4f6;}
+  .row:last-child{border-bottom:none;}
+  .row .label{font-size:14px;color:#4b5563;}
+  .row .value{font-size:14px;font-weight:600;color:#111827;}
+  .row .value.green{color:#16a34a;}
+  .row .value.blue{color:#2563eb;}
+  .row .value.red{color:#dc2626;}
+  .final{background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+  .final .fl{font-size:16px;font-weight:700;color:#166534;}
+  .final .fv{font-size:18px;font-weight:800;color:#16a34a;}
+  .footer{text-align:center;font-size:11px;color:#9ca3af;padding:14px;border-top:1px solid #f3f4f6;}
+  @media print{body{padding:0;}button{display:none;}}
+</style></head><body>
+<div style="max-width:680px;margin:0 auto;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+  <div class="header">
+    <h2>📊 Consolidado Diário</h2>
+    <p>${cobrador} · Sistema de Cobrança</p>
+    <span class="badge">✓ Correto</span>
+  </div>
+  <div class="info-bar">
+    <span>📅 <strong>${dateFmt}</strong></span>
+    <span>🌍 <strong>${r.pais}</strong></span>
+    <span>🏙 <strong>${r.cidade}</strong></span>
+    <span>👥 Clientes: <strong>${r.totalClientes}</strong></span>
+  </div>
+  <div class="body">
+    <div class="section-title">🔥 Movimentação Financeira</div>
+    <div class="card">
+      <div class="row"><span class="label">Caja Inicial</span><span class="value">${fmtR(r.cajaInicial)}</span></div>
+      <div class="row"><span class="label">Novos Clientes</span><span class="value blue">${r.totalClientes}</span></div>
+      <div class="row"><span class="label">Renovação de Clientes</span><span class="value">0</span></div>
+      <div class="row"><span class="label">Total de Empréstimos</span><span class="value">${fmtR(r.ventas)}</span></div>
+      <div class="row"><span class="label">Retiradas de Caja</span><span class="value">R$ 0,00</span></div>
+      <div class="row"><span class="label">Despesas</span><span class="value red">${fmtR(r.egresos)}</span></div>
+      <div class="row"><span class="label">Rendimentos</span><span class="value green">${fmtR(r.ingresos)}</span></div>
+    </div>
+    <div class="section-title">💰 Cobranças</div>
+    <div class="card">
+      <div class="row"><span class="label">Total Cobrado (Recaudo)</span><span class="value green">${fmtR(r.recaudo)}</span></div>
+      <div class="row"><span class="label">Carteira</span><span class="value blue">${fmtR(r.cartera)}</span></div>
+      <div class="row"><span class="label">Acumulado Caja Seguros</span><span class="value">${fmtR(r.acumulado)}</span></div>
+    </div>
+    <div class="section-title">🟢 Saldo Final</div>
+    <div class="final">
+      <span class="fl">Caja Final</span>
+      <span class="fv">${fmtR(r.cajaFinal)}</span>
+    </div>
+  </div>
+  <div class="footer">Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança</div>
+</div>
+<script>window.onload=()=>{window.print();}<\/script>
+</body></html>`;
+    const w = window.open("", "_blank");
+    if (w) { w.document.write(html); w.document.close(); }
   };
-  const tdS = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "6px 8px", fontSize: 13, color: "#374151", whiteSpace: "nowrap",
-    textAlign: align, borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0", verticalAlign: "middle", ...extra,
-  });
-  const tdTot = (align: "left"|"center"|"right"): React.CSSProperties => ({
-    padding: "6px 8px", fontSize: 13, fontWeight: 700, color: "#fff",
-    background: "#3d6e8e", textAlign: align, borderRight: "1px solid #4a7fa0", whiteSpace: "nowrap",
-  });
 
-  /* money cells with semantic icons */
-  const MoneyGreen = ({ v }: { v: number }) => (
-    <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
-      <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#16a34a", flexShrink: 0 }}><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-      <span style={{ fontWeight: 600, color: "#15803d" }}>{fmt(v)}</span>
-    </span>
+  const handleWhatsApp = () => {
+    const dateFmt = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
+    const lines = [
+      `*📊 CONSOLIDADO DIÁRIO — ${dateFmt}*`,
+      `Rota: ${cobrador}`,
+      `País: ${r.pais} | Cidade: ${r.cidade}`,
+      ``,
+      `*🔥 Movimentação Financeira*`,
+      `Caja Inicial: ${fmtR(r.cajaInicial)}`,
+      `Novos Clientes: ${r.totalClientes}`,
+      `Renovação de Clientes: 0`,
+      `Total de Empréstimos: ${fmtR(r.ventas)}`,
+      `Retiradas de Caja: R$ 0,00`,
+      `Despesas: ${fmtR(r.egresos)}`,
+      `Rendimentos: ${fmtR(r.ingresos)}`,
+      ``,
+      `*💰 Cobranças*`,
+      `Total Cobrado: ${fmtR(r.recaudo)}`,
+      `Carteira: ${fmtR(r.cartera)}`,
+      `Acumulado: ${fmtR(r.acumulado)}`,
+      ``,
+      `*🟢 CAJA FINAL: ${fmtR(r.cajaFinal)}*`,
+      ``,
+      `_Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança_`,
+    ];
+    window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
+  };
+
+  /* ── Section header helper ── */
+  const SecHead = ({ icon, title }: { icon: string; title: string }) => (
+    <div style={{ display: "flex", alignItems: "center", gap: 7, margin: "22px 0 10px", paddingBottom: 8, borderBottom: "2px solid #e5e7eb" }}>
+      <span style={{ fontSize: 16 }}>{icon}</span>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{title}</span>
+    </div>
   );
-  const MoneyRed = ({ v }: { v: number }) => (
-    <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
-      <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#dc2626", flexShrink: 0 }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
-      <span style={{ fontWeight: 600, color: "#dc2626" }}>{fmt(v)}</span>
-    </span>
+
+  /* ── Report row helper ── */
+  const Row = ({
+    label, value, valueColor = "#111827", bold = false, isCount = false,
+  }: { label: string; value: string | number; valueColor?: string; bold?: boolean; isCount?: boolean }) => (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px", borderBottom: "1px solid #f3f4f6" }}>
+      <span style={{ fontSize: 14, color: "#4b5563" }}>{label}</span>
+      <span style={{ fontSize: 14, fontWeight: bold ? 700 : 500, color: valueColor }}>
+        {isCount ? value : (typeof value === "number" ? fmtR(value) : value)}
+      </span>
+    </div>
   );
-  const MoneyAmber = ({ v }: { v: number }) => (
-    <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
-      <CoinIcon />
-      <span style={{ fontWeight: 600, color: "#374151" }}>{fmt(v)}</span>
-    </span>
-  );
+
+  const dateFmt = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
 
-      {/* ── Action bar (Opções + search) ── */}
+      {/* ── Filter bar ── */}
       <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-        <button onClick={() => setShowModal(true)}
-          style={{ height: 28, padding: "0 12px", background: "#2d5474", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, alignSelf: "flex-end" }}>
-          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96a7.01 7.01 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.04.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-          Opções
-        </button>
-
         <div className="flex flex-col gap-0.5">
-          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Cobrador</label>
-          <select value={buscarCobrador} onChange={e => setBuscarCobrador(e.target.value)}
-            className={`${inputCls} w-44`}>
-            <option value="">-- Todas as rotas --</option>
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Cobrador (Rota)</label>
+          <select value={cobrador} onChange={e => setCobrador(e.target.value)} className={`${inputCls} w-48`}>
             <option value="Rota Cred Bank -">Rota Cred Bank -</option>
           </select>
         </div>
         <div className="flex flex-col gap-0.5">
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data</label>
-          <input type="date" value={buscarData} onChange={e => setBuscarData(e.target.value)}
-            className={`${inputCls} w-36`} />
+          <input type="date" value={dataFiltro} onChange={e => setDataFiltro(e.target.value)} className={`${inputCls} w-36`} />
         </div>
-        <button className="h-7 px-4 rounded text-xs font-bold text-white" style={{ background: "#2563eb", border: "none", cursor: "pointer", alignSelf: "flex-end" }}>
+        <button className="h-7 px-4 rounded text-xs font-bold text-white"
+          style={{ background: "#2563eb", border: "none", cursor: "pointer", alignSelf: "flex-end" }}>
           🔍 Pesquisar
-        </button>
-        <button onClick={() => setShowResumo(true)}
-          className="h-7 px-4 rounded text-xs font-bold text-white"
-          style={{ background: "#059669", border: "none", cursor: "pointer", alignSelf: "flex-end", display: "flex", alignItems: "center", gap: 5 }}>
-          📊 Resumo
         </button>
 
         <div className="flex-1" />
-        <span className="text-xs text-gray-500" style={{ alignSelf: "flex-end" }}>
-          <span className="font-bold text-gray-800">{consolidadosData.length}</span> registro(s)
-        </span>
+
+        {/* Export buttons */}
+        <button onClick={handlePDF}
+          style={{ height: 28, padding: "0 14px", background: "#dc2626", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, alignSelf: "flex-end" }}>
+          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>
+          PDF
+        </button>
+        <button onClick={handleWhatsApp}
+          style={{ height: 28, padding: "0 14px", background: "#25d366", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, alignSelf: "flex-end" }}>
+          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </button>
       </div>
 
-      {/* ── Tabela ── */}
-      <div className="flex-1 overflow-auto">
-        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 1200 }}>
-          <thead>
-            <tr>
-              <th style={{ ...thS, textAlign: "left"   }}>País</th>
-              <th style={{ ...thS, textAlign: "left"   }}>Cidade:</th>
-              <th style={{ ...thS, textAlign: "center" }}>Fecha Caja:</th>
-              <th style={{ ...thS, textAlign: "left"   }}>Vendedor:</th>
-              <th style={{ ...thS, textAlign: "center" }}>Total de Clientes:</th>
-              <th style={{ ...thS, textAlign: "right"  }}>Caja Inicial</th>
-              <th style={{ ...thS, textAlign: "right"  }}>Recaudo:</th>
-              <th style={{ ...thS, textAlign: "right"  }}>Ventas:</th>
-              <th style={{ ...thS, textAlign: "right"  }}>Egresos:</th>
-              <th style={{ ...thS, textAlign: "right"  }}>Ingresos:</th>
-              <th style={{ ...thS, textAlign: "right"  }}>Caja Final</th>
-              <th style={{ ...thS, textAlign: "right"  }}>Cartera</th>
-              <th style={{ ...thS, textAlign: "right"  }}>Acumulado Caja Seguros</th>
-            </tr>
-          </thead>
-          <tbody>
-            {consolidadosData.map((r, i) => {
-              const bg = i % 2 === 0 ? "#fff" : "#f9fafb";
-              return (
-                <tr key={i} style={{ background: bg, cursor: "pointer" }}
-                  onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = "#eff6ff"))}
-                  onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = bg))}>
-                  <td style={tdS("left",   { fontWeight: 700, color: "#1e3a5f" })}>{r.pais}</td>
-                  <td style={tdS("left",   { color: "#4b5563" })}>{r.cidade}</td>
-                  <td style={tdS("center")}>
-                    <span style={{ background: "#f97316", color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4 }}>{r.fechaCaja}</span>
-                  </td>
-                  <td style={tdS("left")}>
-                    <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#3d6e8e", flexShrink: 0 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                      <span style={{ fontWeight: 600 }}>{r.vendedor}</span>
-                    </span>
-                  </td>
-                  <td style={tdS("center")}>
-                    <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#3d6e8e", verticalAlign: "middle", marginRight: 3 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                    <span style={{ fontWeight: 700 }}>{r.totalClientes}</span>
-                  </td>
-                  <td style={tdS("right")}><MoneyAmber v={r.cajaInicial} /></td>
-                  <td style={tdS("right")}><MoneyGreen v={r.recaudo} /></td>
-                  <td style={tdS("right")}><MoneyGreen v={r.ventas} /></td>
-                  <td style={tdS("right")}><MoneyRed   v={r.egresos} /></td>
-                  <td style={tdS("right")}><MoneyGreen v={r.ingresos} /></td>
-                  <td style={tdS("right")}><MoneyAmber v={r.cajaFinal} /></td>
-                  <td style={tdS("right")}><MoneyAmber v={r.cartera} /></td>
-                  <td style={tdS("right")}>
-                    <span style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3, flexWrap: "nowrap" }}>
-                      <CoinIcon />
-                      <span style={{ fontWeight: 600, color: "#374151" }}>({fmt(r.acumulado)})</span>
-                      <span style={{ fontSize: 11, color: "#6b7280" }}>- Total Retiros (0,00)=0,00</span>
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td style={tdTot("left")} colSpan={4}>Totales:</td>
-              <td style={tdTot("center")}>
-                <svg viewBox="0 0 24 24" style={{ width: 12, height: 12, fill: "#fff", verticalAlign: "middle", marginRight: 2 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                {totClientes}
-              </td>
-              <td style={tdTot("right")}><CoinIcon />{fmt(totIni)}</td>
-              <td style={tdTot("right")}><CoinIcon />{fmt(totRecaudo)}</td>
-              <td style={tdTot("right")}><CoinIcon />{fmt(totVentas)}</td>
-              <td style={tdTot("right")}><CoinIcon />{fmt(totEgresos)}</td>
-              <td style={tdTot("right")}><CoinIcon />{fmt(totIngresos)}</td>
-              <td style={tdTot("right")}><CoinIcon />{fmt(totCaja)}</td>
-              <td style={tdTot("right")}><CoinIcon />{fmt(totCartera)}</td>
-              <td style={tdTot("right")}>
-                <CoinIcon />({fmt(totAcum)})&nbsp;
-                <span style={{ fontSize: 11, fontWeight: 400, opacity: 0.85 }}>- Total Retiros (0,00)=0,00</span>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+      {/* ── Report content ── */}
+      <div className="flex-1 overflow-auto" style={{ background: "#f1f5f9", padding: "24px 32px" }}>
+        <div style={{ maxWidth: 700, margin: "0 auto", background: "#fff", borderRadius: 12, boxShadow: "0 4px 24px rgba(0,0,0,0.08)", overflow: "hidden", border: "1px solid #e5e7eb" }}>
+
+          {/* Report header */}
+          <div style={{ background: "linear-gradient(135deg, #2d5474 0%, #3d6e8e 100%)", padding: "24px 28px", textAlign: "center", color: "#fff" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 4 }}>📊 Consolidado Diário</div>
+            <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 10 }}>{cobrador} · Sistema de Cobrança</div>
+            <span style={{ background: "#16a34a", color: "#fff", padding: "3px 14px", borderRadius: 20, fontSize: 12, fontWeight: 700 }}>✓ Correto</span>
+          </div>
+
+          {/* Info strip */}
+          <div style={{ background: "#f8fafc", padding: "12px 28px", display: "flex", gap: 28, flexWrap: "wrap" as const, borderBottom: "1px solid #e5e7eb" }}>
+            <span style={{ fontSize: 13, color: "#374151" }}>📅 <strong>{dateFmt}</strong></span>
+            <span style={{ fontSize: 13, color: "#374151" }}>🌍 <strong>{r.pais}</strong></span>
+            <span style={{ fontSize: 13, color: "#374151" }}>🏙 <strong>{r.cidade}</strong></span>
+            <span style={{ fontSize: 13, color: "#374151" }}>
+              <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#3d6e8e", verticalAlign: "middle", marginRight: 3 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              <strong>{r.totalClientes}</strong> clientes
+            </span>
+          </div>
+
+          {/* Body */}
+          <div style={{ padding: "8px 28px 28px" }}>
+
+            {/* Movimentação Financeira */}
+            <SecHead icon="🔥" title="Movimentação Financeira" />
+            <div style={{ background: "#f9fafb", borderRadius: 10, overflow: "hidden", border: "1px solid #f0f0f0" }}>
+              <Row label="Caja Inicial"           value={r.cajaInicial} />
+              <Row label="Novos Clientes"         value={r.totalClientes} isCount bold valueColor="#2563eb" />
+              <Row label="Renovação de Clientes"  value="0" />
+              <Row label="Total de Empréstimos"   value={r.ventas} />
+              <Row label="Retiradas de Caja"      value={0} />
+              <Row label="Despesas"               value={r.egresos} valueColor={r.egresos > 0 ? "#dc2626" : "#374151"} />
+              <Row label="Rendimentos"            value={r.ingresos} valueColor={r.ingresos > 0 ? "#16a34a" : "#374151"} />
+            </div>
+
+            {/* Cobranças */}
+            <SecHead icon="💰" title="Cobranças" />
+            <div style={{ background: "#f9fafb", borderRadius: 10, overflow: "hidden", border: "1px solid #f0f0f0" }}>
+              <Row label="Total Cobrado (Recaudo)" value={r.recaudo} valueColor="#16a34a" bold />
+              <Row label="Carteira"                value={r.cartera} valueColor="#2563eb" bold />
+            </div>
+
+            {/* Acumulado */}
+            <SecHead icon="📦" title="Acumulado" />
+            <div style={{ background: "#f9fafb", borderRadius: 10, overflow: "hidden", border: "1px solid #f0f0f0" }}>
+              <Row label="Acumulado Caja Seguros" value={r.acumulado} />
+            </div>
+
+            {/* Saldo Final */}
+            <SecHead icon="🟢" title="Saldo Final" />
+            <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 12, padding: "18px 22px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 16, fontWeight: 700, color: "#166534" }}>Caja Final</span>
+              <span style={{ fontSize: 20, fontWeight: 800, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</span>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div style={{ textAlign: "center", fontSize: 11, color: "#9ca3af", padding: "14px", borderTop: "1px solid #f3f4f6" }}>
+            Gerado em {new Date().toLocaleString("pt-BR")} · Sistema de Cobrança
+          </div>
+        </div>
       </div>
 
       {/* ── Blue footer bar ── */}
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
-
-      {/* ── Modal Resumo de Caixa ── */}
-      {showResumo && consolidadosData[0] && (() => {
-        const r = consolidadosData[0];
-        const fmtR = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-        const Row = ({ label, value, valueColor = "#111827", bold = false }: { label: string; value: string | number; valueColor?: string; bold?: boolean }) => (
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid #f3f4f6" }}>
-            <span style={{ fontSize: 14, color: "#4b5563" }}>{label}</span>
-            <span style={{ fontSize: 14, fontWeight: bold ? 700 : 500, color: valueColor }}>{typeof value === "number" ? fmtR(value) : value}</span>
-          </div>
-        );
-        const SectionHeader = ({ icon, title }: { icon: string; title: string }) => (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, margin: "16px 0 4px", paddingTop: 4 }}>
-            <span style={{ fontSize: 15 }}>{icon}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#374151", textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{title}</span>
-          </div>
-        );
-        return (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center" }}
-            onClick={() => setShowResumo(false)}>
-            <div style={{ background: "#fff", borderRadius: 12, width: 440, maxHeight: "90vh", overflowY: "auto", boxShadow: "0 32px 80px rgba(0,0,0,0.3)" }}
-              onClick={e => e.stopPropagation()}>
-
-              {/* ── Title bar ── */}
-              <div style={{ background: "#f8f9fa", borderBottom: "1px solid #e5e7eb", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "12px 12px 0 0" }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#374151", display: "flex", alignItems: "center", gap: 6 }}>
-                  <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#2563eb" }}><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
-                  Relatório Diário
-                </span>
-                <button onClick={() => setShowResumo(false)}
-                  style={{ width: 28, height: 28, background: "#e5e7eb", border: "none", color: "#374151", borderRadius: 6, cursor: "pointer", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
-              </div>
-
-              {/* ── Body ── */}
-              <div style={{ padding: "20px 24px 24px" }}>
-
-                {/* Heading */}
-                <div style={{ textAlign: "center", marginBottom: 20 }}>
-                  <div style={{ fontSize: 17, fontWeight: 800, color: "#111827", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
-                    <span>📊</span> Resumo de Caixa
-                  </div>
-                  <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>
-                    {r.vendedor} · Sistema de Cobrança
-                  </div>
-                </div>
-
-                {/* Info geral */}
-                <div style={{ background: "#f9fafb", borderRadius: 8, padding: "4px 16px", marginBottom: 4 }}>
-                  <Row label="Status de Liquidação" value="✓ Correto" valueColor="#16a34a" bold />
-                  <Row label="Sincronização" value={r.vendedor} bold />
-                  <Row label="Data" value={new Date(r.fechaCaja).toLocaleDateString("pt-BR")} />
-                </div>
-
-                {/* Movimentação Financeira */}
-                <SectionHeader icon="🔥" title="Movimentação Financeira" />
-                <div style={{ background: "#f9fafb", borderRadius: 8, padding: "4px 16px", marginBottom: 4 }}>
-                  <Row label="Caja Inicial"            value={r.cajaInicial} />
-                  <Row label="Novos Clientes"          value={r.totalClientes} valueColor="#2563eb" bold />
-                  <Row label="Renovação de Clientes"   value="0" />
-                  <Row label="Total de Empréstimos"    value={r.ventas} />
-                  <Row label="Retiradas de Caja"       value={0} />
-                  <Row label="Despesas"                value={r.egresos} />
-                  <Row label="Rendimentos"             value={r.ingresos} />
-                </div>
-
-                {/* Cobranças */}
-                <SectionHeader icon="💰" title="Cobranças" />
-                <div style={{ background: "#f9fafb", borderRadius: 8, padding: "4px 16px", marginBottom: 4 }}>
-                  <Row label="Total Cobrado (Recaudo)" value={r.recaudo} valueColor="#16a34a" bold />
-                  <Row label="Carteira"                value={r.cartera} valueColor="#2563eb" bold />
-                </div>
-
-                {/* Saldo Final */}
-                <SectionHeader icon="🟢" title="Saldo Final" />
-                <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: "#166534" }}>Caja Final</span>
-                  <span style={{ fontSize: 16, fontWeight: 800, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</span>
-                </div>
-
-                {/* Footer */}
-                <div style={{ textAlign: "center", fontSize: 11, color: "#9ca3af", borderTop: "1px solid #f3f4f6", paddingTop: 12 }}>
-                  Gerado em {new Date(r.fechaCaja).toLocaleDateString("pt-BR")}, {new Date().toLocaleTimeString("pt-BR")} · Sistema de Cobrança
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* ── Modal Opções ── */}
-      {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 400, display: "flex", alignItems: "center", justifyContent: "center" }}
-          onClick={() => setShowModal(false)}>
-          <div style={{ background: "#fff", borderRadius: 8, width: 440, boxShadow: "0 24px 64px rgba(0,0,0,0.3)", overflow: "hidden" }}
-            onClick={e => e.stopPropagation()}>
-            <div style={{ background: "#3d6e8e", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Consolidados</span>
-              <button onClick={() => setShowModal(false)}
-                style={{ width: 28, height: 28, background: "rgba(255,255,255,0.18)", border: "none", color: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 15, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
-            </div>
-            <div style={{ padding: "22px 22px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 18px" }}>
-              <div>
-                <label style={labelCls}>Fecha Caja</label>
-                <input type="date" value={fechaCaja} onChange={e => setFechaCaja(e.target.value)}
-                  style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const, border: "1px solid #d1d5db", borderRadius: 5, fontSize: 13, color: "#374151" }} />
-              </div>
-              <div>
-                <label style={labelCls}>Vendedor</label>
-                <select value={vendedor} onChange={e => setVendedor(e.target.value)}
-                  style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const, border: "1px solid #d1d5db", borderRadius: 5, fontSize: 13, color: "#374151" }}>
-                  <option>Rota Cred Bank -</option>
-                </select>
-              </div>
-              <div>
-                <label style={labelCls}>País</label>
-                <select value={pais} onChange={e => setPais(e.target.value)}
-                  style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const, border: "1px solid #d1d5db", borderRadius: 5, fontSize: 13, color: "#374151" }}>
-                  <option>BRASIL</option>
-                </select>
-              </div>
-              <div>
-                <label style={labelCls}>Ciudad</label>
-                <select value={cidade} onChange={e => setCidade(e.target.value)}
-                  style={{ width: "100%", padding: "8px 10px", boxSizing: "border-box" as const, border: "1px solid #d1d5db", borderRadius: 5, fontSize: 13, color: "#374151" }}>
-                  <option>SAO LUIS</option>
-                </select>
-              </div>
-            </div>
-            <div style={{ padding: "10px 22px 18px", display: "flex", justifyContent: "flex-end", gap: 8 }}>
-              <button onClick={() => setShowModal(false)}
-                style={{ padding: "7px 18px", background: "#fff", border: "1px solid #2563eb", color: "#2563eb", borderRadius: 6, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-                Cancelar
-              </button>
-              <button onClick={() => setShowModal(false)}
-                style={{ padding: "7px 22px", background: "#2563eb", border: "none", color: "#fff", borderRadius: 6, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-                Buscar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
