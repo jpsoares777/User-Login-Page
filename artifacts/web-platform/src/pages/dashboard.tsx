@@ -3446,6 +3446,8 @@ export default function DashboardPage() {
   const [activeMain, setActiveMain] = useState("Liq. Diária");
   const [activeSub, setActiveSub] = useState("Relatório Diário");
   const [activeSubPeriodos, setActiveSubPeriodos] = useState("Liquidação");
+  const [liqInicio, setLiqInicio] = useState(() => { const d = new Date(); d.setDate(1); return d.toISOString().slice(0,10); });
+  const [liqFim,    setLiqFim]    = useState(() => new Date().toISOString().slice(0,10));
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
@@ -3539,10 +3541,14 @@ export default function DashboardPage() {
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
           </button>
           <div className="flex-1" />
-          <button className="flex items-center gap-1.5 px-4 h-8 text-sm font-bold rounded"
-            style={{ background: "#2563eb", color: "#fff" }}>
-            Liquidar
-          </button>
+          <div className="flex items-center gap-2">
+            <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>De</span>
+            <input type="date" value={liqInicio} onChange={e => setLiqInicio(e.target.value)}
+              className="h-8 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" />
+            <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>Até</span>
+            <input type="date" value={liqFim} onChange={e => setLiqFim(e.target.value)}
+              className="h-8 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" />
+          </div>
         </div>
       )}
 
