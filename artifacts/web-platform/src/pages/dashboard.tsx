@@ -2879,88 +2879,257 @@ const resumoRow = {
 };
 
 function ResumoContent() {
-  const fmt = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+  const [cobrador,    setCobrador]    = useState(resumoRow.vendedor);
+  const [dataInicial, setDataInicial] = useState(resumoRow.fechaInicial);
+  const [dataFinal,   setDataFinal]   = useState(resumoRow.fechaFinal);
 
-  const cols: { label: string; key: keyof typeof resumoRow; align: "left"|"center"|"right" }[] = [
-    { label: "Vendedor",            key: "vendedor",          align: "left"   },
-    { label: "Fecha Inicial",       key: "fechaInicial",      align: "center" },
-    { label: "Fecha Final",         key: "fechaFinal",        align: "center" },
-    { label: "Nº Clientes",         key: "nClientes",         align: "center" },
-    { label: "Nº Cierres",          key: "nCierres",          align: "center" },
-    { label: "Caja Inicial",        key: "cajaInicial",       align: "right"  },
-    { label: "Carteira últ. dia",   key: "carteira",          align: "right"  },
-    { label: "Recaudo",             key: "recaudo",           align: "right"  },
-    { label: "Promedio Recaudo",    key: "promedio",          align: "right"  },
-    { label: "Recaudo Pretendido",  key: "recaudoPretendido", align: "right"  },
-    { label: "Num. Ventas",         key: "numVentas",         align: "center" },
-    { label: "Total Ventas",        key: "totalVentas",       align: "right"  },
-    { label: "Total Int.",          key: "totalInt",          align: "right"  },
-    { label: "Retiros",             key: "retiros",           align: "right"  },
-    { label: "Egresos",             key: "egresos",           align: "right"  },
-    { label: "Ingresos",            key: "ingresos",          align: "right"  },
-    { label: "Caja Final",          key: "cajaFinal",         align: "right"  },
-    { label: "Sanción Cobrada",     key: "sancao",            align: "right"  },
-  ];
+  const r   = resumoRow;
+  const fmt  = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+  const fmtR = (v: number) => `R$ ${fmt(v)}`;
+  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700";
 
-  const OMIT_TOTAL = new Set<keyof typeof resumoRow>(["fechaInicial","fechaFinal","nCierres","promedio"]);
+  const dIni = new Date(dataInicial + "T12:00:00").toLocaleDateString("pt-BR");
+  const dFin = new Date(dataFinal   + "T12:00:00").toLocaleDateString("pt-BR");
 
-  const cellVal = (key: keyof typeof resumoRow, forTotal = false): string => {
-    if (forTotal && OMIT_TOTAL.has(key)) return "";
-    const v = resumoRow[key];
-    if (typeof v === "number") return fmt(v);
-    return v as string;
+  const handlePDF = () => {
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<title>Resumo de Período – ${cobrador}</title>
+<style>
+  body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#111;}
+  .header{background:#2d5474;color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;text-align:center;}
+  .header h2{margin:0 0 4px;font-size:20px;}
+  .header p{margin:0;font-size:13px;opacity:.85;}
+  .info-bar{background:#f1f5f9;padding:10px 24px;display:flex;gap:24px;font-size:13px;border-bottom:1px solid #e5e7eb;flex-wrap:wrap;}
+  .body{padding:20px 24px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .section-title{font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;}
+  .card{background:#f9fafb;border-radius:8px;overflow:hidden;margin-bottom:4px;}
+  .row{display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #f3f4f6;font-size:13px;}
+  .row:last-child{border-bottom:none;}
+  .row .label{color:#6b7280;}
+  .row .value{font-weight:600;color:#111;}
+  .row .value.green{color:#16a34a;}
+  .row .value.blue{color:#2563eb;}
+  .row .value.red{color:#dc2626;}
+  .final{background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+  .footer{text-align:center;font-size:11px;color:#9ca3af;padding:14px;border-top:1px solid #f3f4f6;}
+  @media print{body{padding:0;}}
+</style></head><body>
+<div style="max-width:720px;margin:0 auto;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+  <div class="header">
+    <h2>📊 Resumo de Período</h2>
+    <p>${cobrador} · ${dIni} a ${dFin}</p>
+  </div>
+  <div class="info-bar">
+    <span>👥 Clientes: <strong>${r.nClientes}</strong></span>
+    <span>🔒 Cierres: <strong>${r.nCierres}</strong></span>
+    <span>🛒 Num. Ventas: <strong>${r.numVentas}</strong></span>
+  </div>
+  <div class="body">
+    <div class="grid">
+      <div>
+        <div class="section-title">📋 Clientes &amp; Vendas</div>
+        <div class="card">
+          <div class="row"><span class="label">Nº Clientes</span><span class="value blue">${r.nClientes}</span></div>
+          <div class="row"><span class="label">Nº Cierres</span><span class="value">${r.nCierres}</span></div>
+          <div class="row"><span class="label">Num. Ventas</span><span class="value">${r.numVentas}</span></div>
+          <div class="row"><span class="label">Total Ventas</span><span class="value">${fmtR(r.totalVentas)}</span></div>
+          <div class="row"><span class="label">Total Int.</span><span class="value">${fmtR(r.totalInt)}</span></div>
+          <div class="row"><span class="label">Caja Inicial</span><span class="value">${fmtR(r.cajaInicial)}</span></div>
+          <div class="row"><span class="label">Carteira últ. dia</span><span class="value blue">${fmtR(r.carteira)}</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">💰 Recaudo &amp; Movimentação</div>
+        <div class="card">
+          <div class="row"><span class="label">Recaudo</span><span class="value green">${fmtR(r.recaudo)}</span></div>
+          <div class="row"><span class="label">Recaudo Pretendido</span><span class="value">${fmtR(r.recaudoPretendido)}</span></div>
+          <div class="row"><span class="label">Promedio Recaudo</span><span class="value">${fmtR(r.promedio)}</span></div>
+          <div class="row"><span class="label">Retiros</span><span class="value red">${fmtR(r.retiros)}</span></div>
+          <div class="row"><span class="label">Egresos</span><span class="value red">${fmtR(r.egresos)}</span></div>
+          <div class="row"><span class="label">Ingresos</span><span class="value green">${fmtR(r.ingresos)}</span></div>
+          <div class="row"><span class="label">Sanción Cobrada</span><span class="value">${fmtR(r.sancao)}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="final">
+      <span style="font-size:16px;font-weight:700;color:#166534;">🟢 Caja Final</span>
+      <span style="font-size:20px;font-weight:800;color:#16a34a;">${fmtR(r.cajaFinal)}</span>
+    </div>
+  </div>
+  <div class="footer">Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança</div>
+</div>
+<script>window.onload=()=>{window.print();}<\/script>
+</body></html>`;
+    const w = window.open("", "_blank");
+    if (w) { w.document.write(html); w.document.close(); }
   };
 
-
-  const thS: React.CSSProperties = {
-    padding: "7px 8px", fontSize: 13, fontWeight: 700, color: "#e2e8f0",
-    background: "#3d6e8e", whiteSpace: "nowrap", letterSpacing: "0.02em",
-    borderRight: "1px solid #4a7fa0", position: "sticky", top: 0, zIndex: 1,
+  const handleWhatsApp = () => {
+    const lines = [
+      `*📊 RESUMO DE PERÍODO*`,
+      `Rota: ${cobrador}`,
+      `Período: ${dIni} a ${dFin}`,
+      ``,
+      `*📋 Clientes & Vendas*`,
+      `Nº Clientes: ${r.nClientes}`,
+      `Nº Cierres: ${r.nCierres}`,
+      `Num. Ventas: ${r.numVentas}`,
+      `Total Ventas: ${fmtR(r.totalVentas)}`,
+      `Total Int.: ${fmtR(r.totalInt)}`,
+      `Caja Inicial: ${fmtR(r.cajaInicial)}`,
+      `Carteira últ. dia: ${fmtR(r.carteira)}`,
+      ``,
+      `*💰 Recaudo & Movimentação*`,
+      `Recaudo: ${fmtR(r.recaudo)}`,
+      `Recaudo Pretendido: ${fmtR(r.recaudoPretendido)}`,
+      `Promedio Recaudo: ${fmtR(r.promedio)}`,
+      `Retiros: ${fmtR(r.retiros)}`,
+      `Egresos: ${fmtR(r.egresos)}`,
+      `Ingresos: ${fmtR(r.ingresos)}`,
+      `Sanción Cobrada: ${fmtR(r.sancao)}`,
+      ``,
+      `*🟢 CAJA FINAL: ${fmtR(r.cajaFinal)}*`,
+      ``,
+      `_Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança_`,
+    ];
+    window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
   };
-  const tdS = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "6px 8px", fontSize: 13, color: "#374151", whiteSpace: "nowrap",
-    textAlign: align, borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0", ...extra,
-  });
-  const tdT = (align: "left"|"center"|"right"): React.CSSProperties =>
-    tdS(align, { fontWeight: 700, background: "#3d6e8e", color: "#fff", borderRight: "1px solid #4a7fa0", borderBottom: "none" });
+
+  /* helpers */
+  const StatCard = ({ icon, label, value, accent, bg }: { icon: string; label: string; value: string; accent: string; bg: string }) => (
+    <div style={{ background: "#fff", border: `1px solid ${accent}22`, borderRadius: 10, padding: "14px 18px", flex: "1 1 130px", minWidth: 120, boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{icon}</div>
+        <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{label}</span>
+      </div>
+      <div style={{ fontSize: 17, fontWeight: 800, color: accent }}>{value}</div>
+    </div>
+  );
+
+  const ListRow = ({ label, value, valueColor = "#111827", bold = false, border = true }: {
+    label: string; value: string; valueColor?: string; bold?: boolean; border?: boolean;
+  }) => (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: border ? "1px solid #f3f4f6" : "none" }}>
+      <span style={{ fontSize: 13, color: "#6b7280" }}>{label}</span>
+      <span style={{ fontSize: 13, fontWeight: bold ? 700 : 500, color: valueColor }}>{value}</span>
+    </div>
+  );
+
+  const Panel = ({ title, icon, children, accent = "#e5e7eb" }: { title: string; icon: string; children: React.ReactNode; accent?: string }) => (
+    <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+      <div style={{ background: "#f8fafc", padding: "10px 16px", display: "flex", alignItems: "center", gap: 7, borderBottom: `2px solid ${accent}` }}>
+        <span style={{ fontSize: 15 }}>{icon}</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{title}</span>
+      </div>
+      <div style={{ padding: "4px 16px 8px" }}>{children}</div>
+    </div>
+  );
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
 
-
-      {/* ── Tabela ── */}
-      <div className="flex-1 overflow-auto">
-        <table style={{ borderCollapse: "collapse", minWidth: "100%" }}>
-          <thead>
-            <tr>
-              {cols.map(c => (
-                <th key={c.key} style={{ ...thS, textAlign: c.align }}>{c.label}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr style={{ background: "#fff" }}>
-              {cols.map(c => (
-                <td key={c.key} style={tdS(c.align)}>
-                  {cellVal(c.key)}
-                </td>
-              ))}
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td style={tdT("left")}>ZZ_TOTAL</td>
-              {cols.slice(1).map(c => (
-                <td key={c.key} style={tdT(c.align)}>
-                  {cellVal(c.key, true)}
-                </td>
-              ))}
-            </tr>
-          </tfoot>
-        </table>
+      {/* ── Filter bar ── */}
+      <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Cobrador (Rota)</label>
+          <select value={cobrador} onChange={e => setCobrador(e.target.value)} className={`${inputCls} w-48`}>
+            <option value="Rota Cred Bank -">Rota Cred Bank -</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data Inicial</label>
+          <input type="date" value={dataInicial} onChange={e => setDataInicial(e.target.value)} className={`${inputCls} w-36`} />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data Final</label>
+          <input type="date" value={dataFinal} onChange={e => setDataFinal(e.target.value)} className={`${inputCls} w-36`} />
+        </div>
+        <button className="h-7 px-4 rounded text-xs font-bold text-white"
+          style={{ background: "#2563eb", border: "none", cursor: "pointer", alignSelf: "flex-end" }}>
+          🔍 Pesquisar
+        </button>
+        <div className="flex-1" />
+        <button onClick={handlePDF}
+          style={{ height: 28, padding: "0 14px", background: "#dc2626", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, alignSelf: "flex-end" }}>
+          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>
+          PDF
+        </button>
+        <button onClick={handleWhatsApp}
+          style={{ height: 28, padding: "0 14px", background: "#25d366", border: "none", borderRadius: 5, fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, alignSelf: "flex-end" }}>
+          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </button>
       </div>
 
-      {/* ── Blue footer bar (padrão) ── */}
+      {/* ── Dashboard content ── */}
+      <div className="flex-1 overflow-auto" style={{ background: "#f1f5f9", padding: "20px 24px" }}>
+
+        {/* ── Top identity bar ── */}
+        <div style={{ background: "linear-gradient(135deg, #2d5474 0%, #3d6e8e 100%)", borderRadius: 10, padding: "14px 20px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" as const, gap: 12 }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 2 }}>📊 Resumo de Período</div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>{cobrador} · Sistema de Cobrança</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.85)" }}>📅 {dIni} → {dFin}</span>
+            <span style={{ background: "#16a34a", color: "#fff", padding: "3px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700 }}>✓ Correto</span>
+          </div>
+        </div>
+
+        {/* ── Stat cards row ── */}
+        <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" as const }}>
+          <StatCard icon="💳" label="Recaudo"         value={fmtR(r.recaudo)}      accent="#16a34a" bg="#f0fdf4" />
+          <StatCard icon="📋" label="Carteira"         value={fmtR(r.carteira)}     accent="#2563eb" bg="#eff6ff" />
+          <StatCard icon="🛒" label="Total Ventas"     value={fmtR(r.totalVentas)}  accent="#7c3aed" bg="#f5f3ff" />
+          <StatCard icon="👥" label="Clientes"         value={String(r.nClientes)}  accent="#0891b2" bg="#ecfeff" />
+          <StatCard icon="✅" label="Caja Final"       value={fmtR(r.cajaFinal)}   accent="#16a34a" bg="#f0fdf4" />
+        </div>
+
+        {/* ── Two-column grid ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+
+          {/* Left: Clientes & Vendas */}
+          <Panel icon="📋" title="Clientes & Vendas" accent="#0891b2">
+            <ListRow label="Nº Clientes"        value={String(r.nClientes)}    valueColor="#0891b2" bold />
+            <ListRow label="Nº Cierres"         value={String(r.nCierres)} />
+            <ListRow label="Num. Ventas"        value={String(r.numVentas)} />
+            <ListRow label="Total Ventas"       value={fmtR(r.totalVentas)}   valueColor="#7c3aed" bold />
+            <ListRow label="Total Int."         value={fmtR(r.totalInt)} />
+            <ListRow label="Caja Inicial"       value={fmtR(r.cajaInicial)} />
+            <ListRow label="Carteira últ. dia"  value={fmtR(r.carteira)}      valueColor="#2563eb" bold border={false} />
+          </Panel>
+
+          {/* Right: Recaudo + Movimentação + Saldo */}
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 12 }}>
+            <Panel icon="💰" title="Recaudo & Movimentação" accent="#16a34a">
+              <ListRow label="Recaudo"              value={fmtR(r.recaudo)}           valueColor="#16a34a" bold />
+              <ListRow label="Recaudo Pretendido"   value={fmtR(r.recaudoPretendido)} />
+              <ListRow label="Promedio Recaudo"     value={fmtR(r.promedio)} />
+              <ListRow label="Retiros"              value={fmtR(r.retiros)}            valueColor="#dc2626" />
+              <ListRow label="Egresos"              value={fmtR(r.egresos)}            valueColor="#dc2626" />
+              <ListRow label="Ingresos"             value={fmtR(r.ingresos)}           valueColor="#16a34a" />
+              <ListRow label="Sanción Cobrada"      value={fmtR(r.sancao)}            border={false} />
+            </Panel>
+
+            {/* Saldo Final highlight */}
+            <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "16px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 2 }}>🟢 Saldo Final</div>
+                <div style={{ fontSize: 12, color: "#4b7c59" }}>Caja Final do período</div>
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Footer timestamp ── */}
+        <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginTop: 16 }}>
+          Gerado em {new Date().toLocaleString("pt-BR")} · Sistema de Cobrança
+        </div>
+      </div>
+
+      {/* ── Blue footer bar ── */}
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
     </div>
   );
