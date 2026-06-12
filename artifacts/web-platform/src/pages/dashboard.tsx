@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
+import iconGerenciar from "@assets/ícone-linear-de-segurança-do-smartphone-verificação-usuário-t_1781283034370.webp";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, Label, Customized,
@@ -3230,8 +3231,8 @@ function ConsolidadosContent() {
         <div class="row"><span class="lbl">Despesas</span><span class="val r">${fmtR(r.egresos)}</span></div>
         <div class="row"><span class="lbl">Retirada de Caixa</span><span class="val r">${fmtR(r.retiradaCaixa)}</span></div>
         <div class="row"><span class="lbl"><strong>Caixa Final</strong></span><span class="val g"><strong>${fmtR(r.cajaFinal)}</strong></span></div>
-        <div class="row"><span class="lbl"><strong>Carteira Final</strong></span><span class="val b"><strong>${fmtR(r.carteira)}</strong></span></div>
-        <div class="row"><span class="lbl"><strong>Lucro</strong></span><span class="val p"><strong>${fmtR(lucro)}</strong></span></div>
+        <div class="row"><span class="lbl"><strong>Carteira Final</strong></span><span class="val b"><strong>${fmtR(r.cartera)}</strong></span></div>
+        <div class="row"><span class="lbl"><strong>Lucro</strong></span><span class="val p"><strong>${fmtR(r.juros + r.ingresos - r.egresos - r.retiradaCaixa)}</strong></span></div>
       </div>
 
       <div class="vboxes">
@@ -3480,7 +3481,7 @@ export default function DashboardPage() {
             onClick={e => e.stopPropagation()}>
             {[
               { icon: "📊", label: "Relatório diário",             color: "#f97316" },
-              { icon: "⚙️", label: "Gerenciar Aplicativo",         color: "#64748b" },
+              { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar },
               { icon: "💳", label: "Novos empréstimos",            color: "#2563eb" },
               { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
               { icon: "📈", label: "Gerenc. de rendimentos",       color: "#16a34a" },
@@ -3488,13 +3489,16 @@ export default function DashboardPage() {
               { icon: "🔗", label: "Sincronizar",                  color: "#0891b2" },
               { icon: "📅", label: "Empréstimo outras datas",      color: "#db2777" },
               { icon: "👤", label: "Clientes ausentes",            color: "#6b7280" },
-            ].map(({ icon, label, color }) => (
+            ].map(({ icon, label, color, img }: { icon: string | null, label: string, color: string, img?: string }) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", border: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
-                <span style={{ fontSize: 18, color }}>{icon}</span>
+                {img
+                  ? <img src={img} alt={label} style={{ width: 20, height: 20, objectFit: "contain" }} />
+                  : <span style={{ fontSize: 18, color }}>{icon}</span>
+                }
                 {label}
               </button>
             ))}
