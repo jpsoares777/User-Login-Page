@@ -3078,53 +3078,117 @@ function ResumoContent() {
         </div>
 
         {/* ── Stat cards row ── */}
-        <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" as const }}>
-          <StatCard icon="💳" label="Recaudo"         value={fmtR(r.recaudo)}      accent="#16a34a" bg="#f0fdf4" />
-          <StatCard icon="📋" label="Carteira"         value={fmtR(r.carteira)}     accent="#2563eb" bg="#eff6ff" />
-          <StatCard icon="🛒" label="Total Ventas"     value={fmtR(r.totalVentas)}  accent="#7c3aed" bg="#f5f3ff" />
-          <StatCard icon="👥" label="Clientes"         value={String(r.nClientes)}  accent="#0891b2" bg="#ecfeff" />
-          <StatCard icon="✅" label="Caja Final"       value={fmtR(r.cajaFinal)}   accent="#16a34a" bg="#f0fdf4" />
-        </div>
-
-        {/* ── Two-column grid ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-
-          {/* Left: Clientes & Vendas */}
-          <Panel icon="📋" title="Clientes & Vendas" accent="#0891b2">
-            <ListRow label="Nº Clientes"        value={String(r.nClientes)}    valueColor="#0891b2" bold />
-            <ListRow label="Nº Cierres"         value={String(r.nCierres)} />
-            <ListRow label="Num. Ventas"        value={String(r.numVentas)} />
-            <ListRow label="Total Ventas"       value={fmtR(r.totalVentas)}   valueColor="#7c3aed" bold />
-            <ListRow label="Total Int."         value={fmtR(r.totalInt)} />
-            <ListRow label="Caja Inicial"       value={fmtR(r.cajaInicial)} />
-            <ListRow label="Carteira últ. dia"  value={fmtR(r.carteira)}      valueColor="#2563eb" bold border={false} />
-          </Panel>
-
-          {/* Right: Recaudo + Movimentação + Saldo */}
-          <div style={{ display: "flex", flexDirection: "column" as const, gap: 12 }}>
-            <Panel icon="💰" title="Recaudo & Movimentação" accent="#16a34a">
-              <ListRow label="Recaudo"              value={fmtR(r.recaudo)}           valueColor="#16a34a" bold />
-              <ListRow label="Recaudo Pretendido"   value={fmtR(r.recaudoPretendido)} />
-              <ListRow label="Promedio Recaudo"     value={fmtR(r.promedio)} />
-              <ListRow label="Retiros"              value={fmtR(r.retiros)}            valueColor="#dc2626" />
-              <ListRow label="Egresos"              value={fmtR(r.egresos)}            valueColor="#dc2626" />
-              <ListRow label="Ingresos"             value={fmtR(r.ingresos)}           valueColor="#16a34a" />
-              <ListRow label="Sanción Cobrada"      value={fmtR(r.sancao)}            border={false} />
-            </Panel>
-
-            {/* Saldo Final highlight */}
-            <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "16px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 2 }}>🟢 Saldo Final</div>
-                <div style={{ fontSize: 12, color: "#4b7c59" }}>Caja Final do período</div>
+        {(() => {
+          const lucroLiquido = r.totalInt - r.retiros - r.egresos;
+          const receitaTotal = r.totalInt + r.ingresos;
+          return (
+            <>
+              <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" as const }}>
+                <StatCard icon="💳" label="Total Recebido"   value={fmtR(r.recaudo)}     accent="#16a34a" bg="#f0fdf4" />
+                <StatCard icon="📈" label="Juros Gerados"    value={fmtR(r.totalInt)}    accent="#7c3aed" bg="#f5f3ff" />
+                <StatCard icon="💵" label="Lucro Líquido"   value={fmtR(lucroLiquido)}  accent="#059669" bg="#ecfdf5" />
+                <StatCard icon="📋" label="Carteira"         value={fmtR(r.carteira)}    accent="#2563eb" bg="#eff6ff" />
+                <StatCard icon="🏦" label="Caja Final"       value={fmtR(r.cajaFinal)}  accent="#16a34a" bg="#f0fdf4" />
               </div>
-              <div style={{ fontSize: 22, fontWeight: 900, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</div>
-            </div>
-          </div>
-        </div>
+
+              {/* ── Two-column grid ── */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+
+                {/* Left: Clientes & Empréstimos */}
+                <Panel icon="📋" title="Clientes & Empréstimos" accent="#0891b2">
+                  <ListRow label="Clientes cadastrados"      value={String(r.nClientes)}   valueColor="#0891b2" bold />
+                  <ListRow label="Clientes finalizados/quit." value={String(r.nCierres)} />
+                  <ListRow label="Empréstimos realizados"    value={String(r.numVentas)} />
+                  <ListRow label="Total emprestado"          value={fmtR(r.totalVentas)}   valueColor="#7c3aed" bold />
+                  <ListRow label="Juros gerados"             value={fmtR(r.totalInt)}      valueColor="#7c3aed" />
+                  <ListRow label="Caixa inicial"             value={fmtR(r.cajaInicial)} />
+                  <ListRow label="Carteira (últ. dia)"       value={fmtR(r.carteira)}      valueColor="#2563eb" bold border={false} />
+                </Panel>
+
+                {/* Right: Recaudo & Movimentação */}
+                <Panel icon="💰" title="Recaudo & Movimentação" accent="#16a34a">
+                  <ListRow label="Total recebido (recaudo)"  value={fmtR(r.recaudo)}           valueColor="#16a34a" bold />
+                  <ListRow label="Deveria arrecadar"         value={fmtR(r.recaudoPretendido)} />
+                  <ListRow label="Média por cobrança"        value={fmtR(r.promedio)} />
+                  <ListRow label="Retiradas de caixa"        value={fmtR(r.retiros)}            valueColor="#dc2626" />
+                  <ListRow label="Despesas"                  value={fmtR(r.egresos)}            valueColor="#dc2626" />
+                  <ListRow label="Entradas extras"           value={fmtR(r.ingresos)}           valueColor="#16a34a" />
+                  <ListRow label="Multas cobradas"           value={fmtR(r.sancao)}            border={false} />
+                </Panel>
+              </div>
+
+              {/* ── Resultado Financeiro (full width) ── */}
+              <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", marginBottom: 14 }}>
+                <div style={{ background: "#f8fafc", padding: "10px 16px", display: "flex", alignItems: "center", gap: 7, borderBottom: "2px solid #f59e0b" }}>
+                  <span style={{ fontSize: 15 }}>📊</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Resultado Financeiro do Período</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 0 }}>
+                  {/* Receitas */}
+                  <div style={{ padding: "14px 18px", borderRight: "1px solid #f3f4f6" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 10 }}>📈 Receitas</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
+                      <span style={{ fontSize: 13, color: "#6b7280" }}>Juros gerados</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#7c3aed" }}>{fmtR(r.totalInt)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
+                      <span style={{ fontSize: 13, color: "#6b7280" }}>Entradas extras</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#16a34a" }}>{fmtR(r.ingresos)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "9px 0 0" }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>Receita total</span>
+                      <span style={{ fontSize: 14, fontWeight: 800, color: "#059669" }}>{fmtR(receitaTotal)}</span>
+                    </div>
+                  </div>
+                  {/* Despesas */}
+                  <div style={{ padding: "14px 18px", borderRight: "1px solid #f3f4f6" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#dc2626", textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 10 }}>📉 Despesas</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
+                      <span style={{ fontSize: 13, color: "#6b7280" }}>Retiradas</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#dc2626" }}>{fmtR(r.retiros)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
+                      <span style={{ fontSize: 13, color: "#6b7280" }}>Egresos</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#dc2626" }}>{fmtR(r.egresos)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "9px 0 0" }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>Total despesas</span>
+                      <span style={{ fontSize: 14, fontWeight: 800, color: "#dc2626" }}>{fmtR(r.retiros + r.egresos)}</span>
+                    </div>
+                  </div>
+                  {/* Lucro */}
+                  <div style={{ padding: "14px 18px", background: "#f0fdf4" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#059669", textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 10 }}>💵 Resultado</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #d1fae5" }}>
+                      <span style={{ fontSize: 13, color: "#4b7c59" }}>Receita juros</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#059669" }}>{fmtR(r.totalInt)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #d1fae5" }}>
+                      <span style={{ fontSize: 13, color: "#4b7c59" }}>− Retiros + Egresos</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#dc2626" }}>− {fmtR(r.retiros + r.egresos)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "9px 0 0", alignItems: "center" }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#166534" }}>Lucro líquido</span>
+                      <span style={{ fontSize: 18, fontWeight: 900, color: "#16a34a" }}>{fmtR(lucroLiquido)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Caja Final + footer */}
+              <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 2 }}>🟢 Saldo Final</div>
+                  <div style={{ fontSize: 12, color: "#4b7c59" }}>Dinheiro que ficou em caixa ao fim do período</div>
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 900, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</div>
+              </div>
+            </>
+          );
+        })()}
 
         {/* ── Footer timestamp ── */}
-        <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginTop: 16 }}>
+        <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginTop: 4 }}>
           Gerado em {new Date().toLocaleString("pt-BR")} · Sistema de Cobrança
         </div>
       </div>
