@@ -3503,7 +3503,7 @@ export default function DashboardPage() {
               >
                 {img
                   ? <span style={{ width: imgSize ?? 26, height: imgSize ?? 26, borderRadius: 6, background: imgBg ?? "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <img src={img} alt={label} style={{ width: imgSize ?? (imgBg ? 17 : 24), height: imgSize ?? (imgBg ? 17 : 24), objectFit: "contain", filter: imgFilter ?? (imgBg ? "brightness(0) invert(1)" : darkIcon ? "brightness(0) contrast(2)" : "none"), transform: imgTransform }} />
+                      <img src={img} alt={label} style={{ width: imgSize ?? (imgBg ? 17 : 24), height: imgSize ?? (imgBg ? 17 : 24), objectFit: "contain", filter: imgFilter ?? (imgBg ? "brightness(0) invert(1)" : darkIcon ? "brightness(0) contrast(2)" : "none"), transform: imgTransform, mixBlendMode: imgFilter && !imgBg ? "multiply" : "normal" }} />
                     </span>
                   : <span style={{ fontSize: 18, color }}>{icon}</span>
                 }
