@@ -3483,7 +3483,7 @@ export default function DashboardPage() {
             onClick={e => e.stopPropagation()}>
             {[
               { icon: "📊", label: "Relatório diário",             color: "#f97316" },
-              { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar, darkIcon: true },
+              { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
               { icon: "💳", label: "Novos empréstimos",            color: "#2563eb" },
               { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
