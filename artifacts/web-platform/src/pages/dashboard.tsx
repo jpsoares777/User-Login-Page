@@ -3685,6 +3685,21 @@ export default function DashboardPage() {
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
   const [gerenciarDespesasOpen, setGerenciarDespesasOpen] = useState(false);
   const [gerenciarRendimentosOpen, setGerenciarRendimentosOpen] = useState(false);
+  const [faturasOpen, setFaturasOpen] = useState(false);
+
+  // ── Faturas ──
+  type FaturaRow = { id: number; nro: string; data: string; iva: number; valorCop: number; valorUsd: number; meses: number; conceito: string; estado: "Pendente" | "Pago" | "Vencido"; vencimento: string; pais: string; };
+  const emptyFatura: Omit<FaturaRow, "id" | "nro"> = { data: new Date().toISOString().slice(0,10), iva: 0, valorCop: 0, valorUsd: 0, meses: 1, conceito: "", estado: "Pendente", vencimento: "", pais: "BR" };
+  const [faturaRows, setFaturaRows] = useState<FaturaRow[]>([
+    { id: 1, nro: "14768398", data: "2026-05-28", iva: 0, valorCop: 62000, valorUsd: 18, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pendente", vencimento: "2026-05-28", pais: "BR" },
+    { id: 2, nro: "14768401", data: "2026-04-28", iva: 0, valorCop: 62000, valorUsd: 18, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pago",     vencimento: "2026-04-28", pais: "BR" },
+    { id: 3, nro: "14768405", data: "2026-03-28", iva: 0, valorCop: 62000, valorUsd: 18, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pago",     vencimento: "2026-03-28", pais: "BR" },
+  ]);
+  const [faturaNovaOpen, setFaturaNovaOpen] = useState(false);
+  const [faturaDetalhesId, setFaturaDetalhesId] = useState<number | null>(null);
+  const [faturaDeleteId, setFaturaDeleteId] = useState<number | null>(null);
+  const [faturaForm, setFaturaForm] = useState<typeof emptyFatura>(emptyFatura);
+  const trmHoje = 3513;
 
   // ── Gerenciar Rendimentos ──
   type RendGRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; };
@@ -3801,7 +3816,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenc. despesas",             color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)", onClick: () => { setGerenciarDespesasOpen(true); setActiveMain("Gerenciar Despesas"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. rendimentos",          color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)", onClick: () => { setGerenciarRendimentosOpen(true); setActiveMain("Gerenciar Rendimentos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Importar rotas",                color: "#7c3aed", img: iconImportarRota, imgSize: 21 },
-              { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)" },
+              { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)", onClick: () => { setFaturasOpen(true); setActiveMain("Faturas"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. gastos períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)" },
               { icon: null,  label: "Gerenc. rendimentos períodos", color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
               { icon: null,  label: "Caixa geral",                  color: "#6b7280", img: iconCaixaGeral, imgSize: 34 },
@@ -3875,6 +3890,20 @@ export default function DashboardPage() {
             }}>
             Gerenciar Clientes
             <span onClick={e => { e.stopPropagation(); setGerenciarClientesOpen(false); if (activeMain === "Gerenciar Clientes") setActiveMain("Liq. Diária"); }}
+              style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
+          </button>
+        )}
+        {faturasOpen && (
+          <button onClick={() => setActiveMain("Faturas")}
+            className="flex items-center gap-2 px-4 h-10 text-sm font-medium transition-all rounded-t"
+            style={{
+              background: activeMain === "Faturas" ? "#2563eb" : "rgba(255,255,255,0.08)",
+              color: activeMain === "Faturas" ? "#fff" : "rgba(255,255,255,0.65)",
+              border: activeMain === "Faturas" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              borderBottom: "none",
+            }}>
+            Faturas
+            <span onClick={e => { e.stopPropagation(); setFaturasOpen(false); if (activeMain === "Faturas") setActiveMain("Liq. Diária"); }}
               style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
           </button>
         )}
@@ -4148,7 +4177,348 @@ export default function DashboardPage() {
 
       {/* ── CONTENT AREA ── */}
       <div className="flex-1 overflow-hidden flex">
-        {activeMain === "Gerenciar Rendimentos" ? (
+        {activeMain === "Faturas" ? (
+          <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f4f8" }}>
+
+            {/* ── Action bar ── */}
+            <div className="shrink-0 flex items-center gap-3 px-5 py-3" style={{ background: "#fff", borderBottom: "1px solid #e2e8f0" }}>
+              <button onClick={() => { setFaturaForm(emptyFatura); setFaturaNovaOpen(true); }}
+                style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#16a34a,#15803d)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(22,163,74,0.35)" }}>
+                <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Nova Fatura
+              </button>
+              <div style={{ flex: 1 }} />
+              {/* TRM card */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, background: "linear-gradient(135deg,#1e40af,#2563eb)", borderRadius: 10, padding: "8px 18px", boxShadow: "0 2px 10px rgba(37,99,235,0.3)" }}>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>TRM do Dólar Hoje</span>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#fff", letterSpacing: "0.02em" }}>$ {trmHoje.toLocaleString("pt-BR")}</span>
+                </div>
+                <div style={{ width: 36, height: 36, background: "rgba(255,255,255,0.15)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff" }}><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Table area ── */}
+            <div className="flex-1 overflow-auto px-5 py-4">
+              <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", overflow: "hidden" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ background: "#2d5474" }}>
+                      {[
+                        { label: "Nro",      w: 110, align: "left"   as const },
+                        { label: "Data",     w: 105, align: "center" as const },
+                        { label: "IVA",      w: 60,  align: "center" as const },
+                        { label: "Valor",    w: 180, align: "left"   as const },
+                        { label: "Meses",    w: 70,  align: "center" as const },
+                        { label: "Conceito",          align: "left"   as const },
+                        { label: "Estado",   w: 200, align: "left"   as const },
+                        { label: "País",     w: 60,  align: "center" as const },
+                        { label: "Pagar",    w: 110, align: "center" as const },
+                        { label: "Detalhes", w: 100, align: "center" as const },
+                        { label: "Excluir",  w: 75,  align: "center" as const },
+                      ].map(h => (
+                        <th key={h.label} style={{ padding: "11px 12px", textAlign: h.align, color: "#e2e8f0", fontWeight: 700, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap", width: h.w }}>
+                          {h.label}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {faturaRows.map((row, idx) => {
+                      const bg = idx % 2 === 0 ? "#fff" : "#f8fafc";
+                      const estadoBadge = {
+                        Pendente: { bg: "#fef3c7", text: "#92400e", border: "#fcd34d", dot: "#f59e0b" },
+                        Pago:     { bg: "#dcfce7", text: "#15803d", border: "#86efac", dot: "#22c55e" },
+                        Vencido:  { bg: "#fee2e2", text: "#b91c1c", border: "#fca5a5", dot: "#ef4444" },
+                      }[row.estado];
+                      return (
+                        <tr key={row.id} style={{ background: bg, transition: "background 0.15s" }}
+                          onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
+                          onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = bg}>
+
+                          {/* Nro */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9" }}>
+                            <span style={{ fontWeight: 800, color: "#1e40af", fontSize: 13, letterSpacing: "0.02em" }}>{row.nro}</span>
+                          </td>
+
+                          {/* Data */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center", color: "#64748b", fontSize: 12 }}>
+                            {row.data}
+                          </td>
+
+                          {/* IVA */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center", color: "#94a3b8", fontSize: 12, fontWeight: 600 }}>
+                            {row.iva}
+                          </td>
+
+                          {/* Valor */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9" }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                              <span style={{ fontWeight: 700, color: "#1e293b", fontSize: 13 }}>
+                                {row.valorCop.toLocaleString("pt-BR")} COP
+                              </span>
+                              <span style={{ fontSize: 11, color: "#64748b" }}>= {row.valorUsd} USD</span>
+                            </div>
+                          </td>
+
+                          {/* Meses */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center" }}>
+                            <span style={{ background: "#e0f2fe", color: "#0369a1", fontWeight: 700, fontSize: 11, padding: "2px 8px", borderRadius: 20, border: "1px solid #7dd3fc" }}>{row.meses}</span>
+                          </td>
+
+                          {/* Conceito */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", fontWeight: 600, color: "#334155", fontSize: 12 }}>
+                            {row.conceito}
+                          </td>
+
+                          {/* Estado */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9" }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: estadoBadge.bg, color: estadoBadge.text, border: `1px solid ${estadoBadge.border}`, borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700, width: "fit-content" }}>
+                                <span style={{ width: 6, height: 6, borderRadius: "50%", background: estadoBadge.dot, flexShrink: 0 }} />
+                                {row.estado}
+                              </span>
+                              <span style={{ fontSize: 10, color: "#94a3b8" }}>Venc. {row.vencimento}</span>
+                            </div>
+                          </td>
+
+                          {/* País */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center" }}>
+                            <span style={{ fontSize: 20 }}>{row.pais === "BR" ? "🇧🇷" : row.pais === "CO" ? "🇨🇴" : "🌐"}</span>
+                          </td>
+
+                          {/* Pagar */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center" }}>
+                            {row.estado !== "Pago" ? (
+                              <div style={{ display: "inline-flex", gap: 4 }}>
+                                <button style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 11, fontWeight: 800, cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 1px 4px rgba(8,145,178,0.4)" }}>
+                                  Pix
+                                </button>
+                                <button style={{ background: "linear-gradient(135deg,#16a34a,#22c55e)", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 11, fontWeight: 800, cursor: "pointer", boxShadow: "0 1px 4px rgba(22,163,74,0.4)" }}>
+                                  $
+                                </button>
+                              </div>
+                            ) : (
+                              <span style={{ fontSize: 11, color: "#94a3b8" }}>—</span>
+                            )}
+                          </td>
+
+                          {/* Detalhes */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center" }}>
+                            <button onClick={() => setFaturaDetalhesId(row.id)}
+                              style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#f0f9ff", color: "#0369a1", border: "1px solid #7dd3fc", borderRadius: 6, padding: "5px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 12, height: 12, fill: "#0369a1" }}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                              Detalhes
+                            </button>
+                          </td>
+
+                          {/* Excluir */}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center" }}>
+                            <button onClick={() => setFaturaDeleteId(row.id)}
+                              style={{ background: "#fff0f0", border: "1px solid #fca5a5", borderRadius: 6, width: 30, height: 30, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#dc2626" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {faturaRows.length === 0 && (
+                      <tr><td colSpan={11} style={{ padding: "60px", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>Nenhuma fatura cadastrada.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* ── Footer summary ── */}
+            <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#fff", borderTop: "1px solid #e2e8f0" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em" }}>FATURAS PENDENTES</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#f59e0b" }}>{faturaRows.filter(r => r.estado === "Pendente").length}</span>
+              </div>
+              <span style={{ color: "#e2e8f0" }}>|</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em" }}>TOTAL USD</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#1e40af" }}>$ {faturaRows.filter(r => r.estado !== "Pago").reduce((a, r) => a + r.valorUsd, 0)} USD</span>
+              </div>
+            </div>
+            <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+
+            {/* ── MODAL NOVA FATURA ── */}
+            {faturaNovaOpen && (
+              <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                onClick={() => setFaturaNovaOpen(false)}>
+                <div style={{ background: "#fff", borderRadius: 14, width: 520, boxShadow: "0 25px 70px rgba(0,0,0,0.4)", overflow: "hidden" }}
+                  onClick={e => e.stopPropagation()}>
+                  <div style={{ background: "linear-gradient(135deg,#2d5474,#3d6e8e)", padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 36, height: 36, background: "rgba(255,255,255,0.15)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#fff" }}><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                      </div>
+                      <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>Nova Fatura</span>
+                    </div>
+                    <button onClick={() => setFaturaNovaOpen(false)} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 6, width: 30, height: 30, cursor: "pointer", fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                  </div>
+                  <div style={{ padding: "22px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Data *</label>
+                        <input type="date" value={faturaForm.data} onChange={e => setFaturaForm(f => ({ ...f, data: e.target.value }))}
+                          style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Vencimento *</label>
+                        <input type="date" value={faturaForm.vencimento} onChange={e => setFaturaForm(f => ({ ...f, vencimento: e.target.value }))}
+                          style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Conceito *</label>
+                      <input type="text" value={faturaForm.conceito} onChange={e => setFaturaForm(f => ({ ...f, conceito: e.target.value }))} placeholder="Ex: Licenciamento SystemPay"
+                        style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Valor COP *</label>
+                        <input type="number" min={0} value={faturaForm.valorCop} onChange={e => setFaturaForm(f => ({ ...f, valorCop: +e.target.value, valorUsd: Math.round(+e.target.value / trmHoje) }))}
+                          style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Valor USD</label>
+                        <input type="number" min={0} value={faturaForm.valorUsd} readOnly
+                          style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f0f4f8", color: "#64748b" }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Meses</label>
+                        <input type="number" min={1} value={faturaForm.meses} onChange={e => setFaturaForm(f => ({ ...f, meses: +e.target.value }))}
+                          style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
+                      </div>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Estado</label>
+                        <select value={faturaForm.estado} onChange={e => setFaturaForm(f => ({ ...f, estado: e.target.value as FaturaRow["estado"] }))}
+                          style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }}>
+                          <option>Pendente</option><option>Pago</option><option>Vencido</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>País</label>
+                        <select value={faturaForm.pais} onChange={e => setFaturaForm(f => ({ ...f, pais: e.target.value }))}
+                          style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }}>
+                          <option value="BR">🇧🇷 Brasil</option><option value="CO">🇨🇴 Colômbia</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
+                      <button onClick={() => setFaturaNovaOpen(false)}
+                        style={{ background: "#f1f5f9", color: "#475569", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "9px 22px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                        Cancelar
+                      </button>
+                      <button onClick={() => {
+                        const maxNro = faturaRows.length > 0 ? Math.max(...faturaRows.map(r => +r.nro)) : 14768398;
+                        setFaturaRows(prev => [...prev, { ...faturaForm, id: Date.now(), nro: String(maxNro + 1) }]);
+                        setFaturaNovaOpen(false);
+                      }} style={{ background: "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.4)" }}>
+                        Salvar Fatura
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── MODAL DETALHES ── */}
+            {faturaDetalhesId !== null && (() => {
+              const fr = faturaRows.find(r => r.id === faturaDetalhesId);
+              if (!fr) return null;
+              const estadoBadge = { Pendente: { bg: "#fef3c7", text: "#92400e", border: "#fcd34d" }, Pago: { bg: "#dcfce7", text: "#15803d", border: "#86efac" }, Vencido: { bg: "#fee2e2", text: "#b91c1c", border: "#fca5a5" } }[fr.estado];
+              return (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onClick={() => setFaturaDetalhesId(null)}>
+                  <div style={{ background: "#fff", borderRadius: 14, width: 480, boxShadow: "0 25px 70px rgba(0,0,0,0.4)", overflow: "hidden" }}
+                    onClick={e => e.stopPropagation()}>
+                    <div style={{ background: "linear-gradient(135deg,#2d5474,#3d6e8e)", padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 36, height: 36, background: "rgba(255,255,255,0.15)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#fff" }}><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        </div>
+                        <div>
+                          <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 10, fontWeight: 600, margin: 0, letterSpacing: "0.06em" }}>FATURA</p>
+                          <p style={{ color: "#fff", fontSize: 16, fontWeight: 800, margin: 0 }}>#{fr.nro}</p>
+                        </div>
+                      </div>
+                      <button onClick={() => setFaturaDetalhesId(null)} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 6, width: 30, height: 30, cursor: "pointer", fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                    </div>
+                    <div style={{ padding: "24px 24px", display: "flex", flexDirection: "column", gap: 0 }}>
+                      {[
+                        { label: "Conceito",   value: fr.conceito },
+                        { label: "Data",       value: fr.data },
+                        { label: "Vencimento", value: fr.vencimento },
+                        { label: "Valor",      value: `${fr.valorCop.toLocaleString("pt-BR")} COP = ${fr.valorUsd} USD` },
+                        { label: "IVA",        value: `${fr.iva}%` },
+                        { label: "Meses",      value: `${fr.meses}` },
+                        { label: "País",       value: fr.pais === "BR" ? "🇧🇷 Brasil" : "🇨🇴 Colômbia" },
+                      ].map(({ label, value }, i) => (
+                        <div key={label} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderBottom: i < 6 ? "1px solid #f1f5f9" : "none" }}>
+                          <span style={{ width: 120, fontSize: 11, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>{label}</span>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: "#1e293b" }}>{value}</span>
+                        </div>
+                      ))}
+                      <div style={{ display: "flex", alignItems: "center", padding: "10px 0" }}>
+                        <span style={{ width: 120, fontSize: 11, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>Estado</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 12px", borderRadius: 20, background: estadoBadge.bg, color: estadoBadge.text, border: `1px solid ${estadoBadge.border}` }}>{fr.estado}</span>
+                      </div>
+                    </div>
+                    <div style={{ padding: "0 24px 20px", display: "flex", justifyContent: "flex-end" }}>
+                      <button onClick={() => setFaturaDetalhesId(null)}
+                        style={{ background: "#f1f5f9", color: "#475569", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "9px 22px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                        Fechar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* ── MODAL EXCLUIR ── */}
+            {faturaDeleteId !== null && (() => {
+              const fr = faturaRows.find(r => r.id === faturaDeleteId);
+              if (!fr) return null;
+              return (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onClick={() => setFaturaDeleteId(null)}>
+                  <div style={{ background: "#fff", borderRadius: 14, width: 400, boxShadow: "0 25px 70px rgba(0,0,0,0.4)", overflow: "hidden" }}
+                    onClick={e => e.stopPropagation()}>
+                    <div style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", padding: "16px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+                      <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, fill: "#fff", flexShrink: 0 }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                      <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Excluir Fatura</span>
+                    </div>
+                    <div style={{ padding: "24px 22px" }}>
+                      <p style={{ fontSize: 13, color: "#475569", margin: "0 0 8px" }}>Tem certeza que deseja excluir a fatura:</p>
+                      <p style={{ fontSize: 15, fontWeight: 800, color: "#1e40af", margin: "0 0 4px" }}>#{fr.nro}</p>
+                      <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 4px" }}>{fr.conceito}</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1e293b", margin: "0 0 20px" }}>{fr.valorCop.toLocaleString("pt-BR")} COP = {fr.valorUsd} USD</p>
+                      <p style={{ fontSize: 12, color: "#b91c1c", fontWeight: 600, margin: "0 0 20px" }}>⚠️ Esta ação não pode ser desfeita.</p>
+                      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+                        <button onClick={() => setFaturaDeleteId(null)}
+                          style={{ background: "#f1f5f9", color: "#475569", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                          Cancelar
+                        </button>
+                        <button onClick={() => { setFaturaRows(prev => prev.filter(r => r.id !== faturaDeleteId)); setFaturaDeleteId(null); }}
+                          style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                          Sim, Excluir
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        ) : activeMain === "Gerenciar Rendimentos" ? (
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* header bar */}
             <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
