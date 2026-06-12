@@ -3485,8 +3485,8 @@ export default function DashboardPage() {
             {[
               { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar, imgSize: 32 },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
-              { icon: null,  label: "Gerenc. de despesas",          color: "#dc2626", img: iconFinanceiro, imgBg: "#fee2e2", imgSize: 22, imgFilter: "invert(27%) sepia(77%) saturate(738%) hue-rotate(327deg) brightness(85%)" },
-              { icon: null,  label: "Gerenc. de rendimentos",       color: "#16a34a", img: iconFinanceiro, imgBg: "#dcfce7", imgSize: 22, imgFilter: "invert(42%) sepia(60%) saturate(600%) hue-rotate(100deg) brightness(80%)" },
+              { icon: null,  label: "Gerenc. de despesas",          color: "#dc2626", img: iconFinanceiro, imgBg: "#fff1f1", imgSize: 22, imgFilter: "invert(27%) sepia(77%) saturate(738%) hue-rotate(327deg) brightness(85%)" },
+              { icon: null,  label: "Gerenc. de rendimentos",       color: "#16a34a", img: iconFinanceiro, imgBg: "#f0fdf4", imgSize: 22, imgFilter: "invert(42%) sepia(60%) saturate(600%) hue-rotate(100deg) brightness(80%)" },
               { icon: "🔄", label: "Importar rota",                 color: "#7c3aed" },
               { icon: "🔗", label: "Faturas",                       color: "#0891b2" },
               { icon: "📅", label: "Consultar gastos",              color: "#db2777" },
