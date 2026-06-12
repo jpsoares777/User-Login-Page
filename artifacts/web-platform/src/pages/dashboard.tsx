@@ -4,6 +4,7 @@ import menuIcon from "@assets/windows_104558_1776473182467.webp";
 import iconGerenciar from "@assets/2205843-mobile-settings-icon-vetor_1781283702330.jpg";
 import iconGerenciarClientes from "@assets/4168988_1781283346707.png";
 import iconGerenciarApp2 from "@assets/1570102_1781283457472.png";
+import iconFinanceiro from "@assets/313011_1781284759448.png";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, Label, Customized,
@@ -3484,8 +3485,8 @@ export default function DashboardPage() {
             {[
               { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar, imgSize: 32 },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
-              { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
-              { icon: "📈", label: "Gerenc. de rendimentos",       color: "#16a34a" },
+              { icon: null,  label: "Gerenc. de despesas",          color: "#dc2626", img: iconFinanceiro, imgBg: "#dc2626", imgSize: 26 },
+              { icon: null,  label: "Gerenc. de rendimentos",       color: "#16a34a", img: iconFinanceiro, imgBg: "#16a34a", imgSize: 26 },
               { icon: "🔄", label: "Importar rota",                 color: "#7c3aed" },
               { icon: "🔗", label: "Faturas",                       color: "#0891b2" },
               { icon: "📅", label: "Consultar gastos",              color: "#db2777" },
