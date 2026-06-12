@@ -4242,13 +4242,6 @@ export default function DashboardPage() {
                     </select>
                   </div>
 
-                  {/* Masivo checkbox */}
-                  <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", fontSize: 13, color: "#334155", userSelect: "none" }}>
-                    <input type="checkbox" checked={importarMasivo} onChange={e => setImportarMasivo(e.target.checked)}
-                      style={{ width: 14, height: 14, accentColor: "#2563eb", cursor: "pointer" }} />
-                    Masivo
-                  </label>
-
                   {/* Escolher arquivo */}
                   <label style={{ display: "flex", alignItems: "center", gap: 0, cursor: "pointer" }}>
                     <span style={{ background: "#e8edf2", border: "1px solid #94a3b8", borderRight: "none", borderRadius: "3px 0 0 3px", padding: "0 10px", height: 28, display: "flex", alignItems: "center", fontSize: 12, color: "#334155", fontWeight: 500, whiteSpace: "nowrap" }}>
