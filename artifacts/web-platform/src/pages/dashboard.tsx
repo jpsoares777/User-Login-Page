@@ -3699,7 +3699,26 @@ export default function DashboardPage() {
   const [faturaDetalhesId, setFaturaDetalhesId] = useState<number | null>(null);
   const [faturaDeleteId, setFaturaDeleteId] = useState<number | null>(null);
   const [faturaForm, setFaturaForm] = useState<typeof emptyFatura>(emptyFatura);
+  const [faturaRotaBusca, setFaturaRotaBusca] = useState("");
+  const [faturaRotaSelecionada, setFaturaRotaSelecionada] = useState<{ id: string; nome: string; vendedor: string; plano: string } | null>(null);
+  const [faturaRotaDropdown, setFaturaRotaDropdown] = useState(false);
   const trmHoje = 3513;
+
+  const rotasSample = [
+    { id: "RT-001", nome: "Rota São Paulo Centro",     vendedor: "Carlos Silva",   plano: "Mensal"    },
+    { id: "RT-002", nome: "Rota Zona Sul SP",           vendedor: "Ana Pereira",    plano: "Trimestral"},
+    { id: "RT-003", nome: "Rota ABC Paulista",          vendedor: "João Santos",    plano: "Anual"     },
+    { id: "RT-004", nome: "Rota Campinas Norte",        vendedor: "Maria Oliveira", plano: "Mensal"    },
+    { id: "RT-005", nome: "Rota Santos Litoral",        vendedor: "Pedro Costa",    plano: "Semestral" },
+    { id: "RT-006", nome: "Rota Guarulhos Industrial",  vendedor: "Lucia Ferreira", plano: "Mensal"    },
+    { id: "RT-007", nome: "Rota Osasco Comercial",      vendedor: "Roberto Lima",   plano: "Trimestral"},
+    { id: "RT-008", nome: "Rota Bauru Centro",          vendedor: "Sandra Souza",   plano: "Mensal"    },
+  ];
+  const rotasFiltradas = rotasSample.filter(r =>
+    r.nome.toLowerCase().includes(faturaRotaBusca.toLowerCase()) ||
+    r.vendedor.toLowerCase().includes(faturaRotaBusca.toLowerCase()) ||
+    r.id.toLowerCase().includes(faturaRotaBusca.toLowerCase())
+  );
 
   // ── Gerenciar Rendimentos ──
   type RendGRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; };
@@ -4362,6 +4381,72 @@ export default function DashboardPage() {
                     <button onClick={() => setFaturaNovaOpen(false)} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 6, width: 30, height: 30, cursor: "pointer", fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                   </div>
                   <div style={{ padding: "22px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+
+                    {/* ── BUSCA DE ROTA ── */}
+                    <div style={{ position: "relative" }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 6, letterSpacing: "0.06em" }}>
+                        🔍 BUSCAR ROTA *
+                      </label>
+                      {/* Campo selecionado */}
+                      {faturaRotaSelecionada ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#eff6ff", border: "2px solid #2563eb", borderRadius: 8, padding: "10px 14px" }}>
+                          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg,#2563eb,#1d4ed8)", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#1e40af", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{faturaRotaSelecionada.nome}</p>
+                            <p style={{ margin: 0, fontSize: 11, color: "#64748b" }}>{faturaRotaSelecionada.id} · {faturaRotaSelecionada.vendedor} · <span style={{ color: "#7c3aed", fontWeight: 600 }}>{faturaRotaSelecionada.plano}</span></p>
+                          </div>
+                          <button onClick={() => { setFaturaRotaSelecionada(null); setFaturaRotaBusca(""); }}
+                            style={{ background: "#fee2e2", border: "none", borderRadius: 5, width: 26, height: 26, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#dc2626" }}><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <div style={{ position: "relative" }}>
+                            <svg viewBox="0 0 24 24" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, fill: "#94a3b8", pointerEvents: "none" }}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                            <input
+                              type="text"
+                              value={faturaRotaBusca}
+                              onChange={e => { setFaturaRotaBusca(e.target.value); setFaturaRotaDropdown(true); }}
+                              onFocus={() => setFaturaRotaDropdown(true)}
+                              placeholder="Pesquisar por nome, vendedor ou código..."
+                              style={{ width: "100%", height: 40, border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "0 12px 0 38px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc", transition: "border-color 0.15s" }}
+                              onMouseEnter={e => (e.target as HTMLInputElement).style.borderColor = "#94a3b8"}
+                              onMouseLeave={e => (e.target as HTMLInputElement).style.borderColor = "#e2e8f0"}
+                            />
+                          </div>
+                          {/* Dropdown resultados */}
+                          {faturaRotaDropdown && (faturaRotaBusca.length > 0 || true) && (
+                            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", zIndex: 50, maxHeight: 220, overflowY: "auto", marginTop: 4 }}>
+                              {rotasFiltradas.length === 0 ? (
+                                <div style={{ padding: "16px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>Nenhuma rota encontrada</div>
+                              ) : rotasFiltradas.map((rota, idx) => (
+                                <button key={rota.id}
+                                  onClick={() => { setFaturaRotaSelecionada(rota); setFaturaRotaBusca(""); setFaturaRotaDropdown(false); }}
+                                  style={{ width: "100%", background: "none", border: "none", borderBottom: idx < rotasFiltradas.length - 1 ? "1px solid #f1f5f9" : "none", padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", textAlign: "left" }}
+                                  onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "#f0f9ff"}
+                                  onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "none"}>
+                                  <div style={{ width: 28, height: 28, background: "linear-gradient(135deg,#e0f2fe,#bae6fd)", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                    <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#0369a1" }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                                  </div>
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "#1e293b" }}>{rota.nome}</p>
+                                    <p style={{ margin: 0, fontSize: 11, color: "#64748b" }}>{rota.id} · {rota.vendedor}</p>
+                                  </div>
+                                  <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: "#f3e8ff", color: "#7c3aed", flexShrink: 0 }}>{rota.plano}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    {/* Divisor */}
+                    <div style={{ borderTop: "1px dashed #e2e8f0", margin: "0 -4px" }} />
+
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                       <div>
                         <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Data *</label>
