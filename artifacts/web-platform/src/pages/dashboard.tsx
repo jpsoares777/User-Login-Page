@@ -2172,25 +2172,35 @@ function ClientesContent() {
 
 // ── Liq. Períodos ─────────────────────────────────────────────────────────────
 
-function LiqPeriodosLiquidacaoView() {
+function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdown }: {
+  selectedEstado: string;
+  estadosData: Record<string, { cidade: string; vendedor: string }[]>;
+  onCloseDropdown: () => void;
+}) {
   return (
     <>
       {/* LEFT: Tree */}
-      <div className="w-64 shrink-0 border-r border-gray-200 bg-white overflow-y-auto">
+      <div className="w-64 shrink-0 border-r border-gray-200 bg-white overflow-y-auto" onClick={onCloseDropdown}>
+        {/* Estado node */}
         <div className="px-3 py-2 flex items-center gap-1.5 text-gray-800 font-bold text-sm cursor-pointer hover:bg-gray-50">
           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-blue-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-          MARANHÃO
+          Estado
         </div>
-        <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50">
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-          SAO LUIS
-        </div>
-        <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          <span className="text-gray-700 text-sm whitespace-nowrap">Rota Cred Bank -</span>
-        </div>
+        {/* Cities + vendors for selected estado */}
+        {(estadosData[selectedEstado] ?? []).map((item, idx) => (
+          <div key={idx}>
+            <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50">
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              {item.cidade}
+            </div>
+            <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              <span className="text-gray-700 text-sm whitespace-nowrap">{item.vendedor}</span>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* CENTER: Sectioned data rows */}
@@ -3432,8 +3442,8 @@ function ConsolidadosContent() {
   );
 }
 
-function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
-  if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView />;
+function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDropdown }: { activeSub: string; selectedEstado: string; estadosData: Record<string, { cidade: string; vendedor: string }[]>; onCloseDropdown: () => void }) {
+  if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView selectedEstado={selectedEstado} estadosData={estadosData} onCloseDropdown={onCloseDropdown} />;
   if (activeSub === "Pagamentos")          return <LiqPeriodosPagamentosContent />;
   if (activeSub === "Empr. por Períodos")  return <VendasPorPeriodosContent />;
   if (activeSub === "Rendimentos")         return <RendimentosContent />;
@@ -3680,6 +3690,15 @@ export default function DashboardPage() {
   const [liqInicio, setLiqInicio] = useState(() => { const d = new Date(); d.setDate(1); return d.toISOString().slice(0,10); });
   const [liqFim,    setLiqFim]    = useState(() => new Date().toISOString().slice(0,10));
   const [diarioData, setDiarioData] = useState(() => new Date().toISOString().slice(0,10));
+  const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
+  const [selectedEstado, setSelectedEstado] = useState("MARANHÃO");
+  const estadosData: Record<string, { cidade: string; vendedor: string }[]> = {
+    "MARANHÃO":   [{ cidade: "SAO LUIS",      vendedor: "Rota Cred Bank -" }],
+    "PARÁ":       [{ cidade: "BELÉM",          vendedor: "Rota Norte -" }],
+    "CEARÁ":      [{ cidade: "FORTALEZA",      vendedor: "Rota Cred CE -" }],
+    "BAHIA":      [{ cidade: "SALVADOR",       vendedor: "Rota Cred BA -" }],
+    "PIAUÍ":      [{ cidade: "TERESINA",       vendedor: "Rota Cred PI -" }],
+  };
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
@@ -4362,10 +4381,27 @@ export default function DashboardPage() {
       {/* ── FILTER BAR (only on Liq. Diária → Relatório Diário) ── */}
       {activeMain === "Liq. Diária" && !showPagamentos && !showEmprestimos && !showDespesas && !showRendimentos && !showClientes && !showAgendados && !showRelatorios && (
         <div className="flex items-center h-11 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-          <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
-            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-            Estado
-          </button>
+          <div style={{ position: "relative" }}>
+            <button onClick={() => setEstadoDropdownOpen(o => !o)}
+              className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded"
+              style={{ background: "#2563eb", color: "#fff", minWidth: 130 }}>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span className="flex-1 text-left">{selectedEstado}</span>
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white opacity-75"><path d="M7 10l5 5 5-5z"/></svg>
+            </button>
+            {estadoDropdownOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 9999, background: "#fff", border: "1px solid #d1d5db", borderRadius: 6, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", minWidth: 180, overflow: "hidden" }}>
+                {Object.keys(estadosData).map(est => (
+                  <button key={est} onClick={() => { setSelectedEstado(est); setEstadoDropdownOpen(false); }}
+                    style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: est === selectedEstado ? "#eff6ff" : "#fff", border: "none", cursor: "pointer", fontSize: 13, fontWeight: est === selectedEstado ? 700 : 500, color: est === selectedEstado ? "#1d4ed8" : "#374151", textAlign: "left" }}>
+                    {est === selectedEstado && <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#2563eb", flexShrink: 0 }}><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>}
+                    {est !== selectedEstado && <span style={{ width: 14, flexShrink: 0 }} />}
+                    {est}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button className="flex items-center justify-center w-8 h-8 rounded" style={{ background: "#16a34a", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
           </button>
@@ -6095,7 +6131,7 @@ export default function DashboardPage() {
         ) : isDesempenho ? (
           <DesempenhoContent />
         ) : activeMain === "Liq. Períodos" ? (
-          <LiqPeriodosContent activeSub={activeSubPeriodos} />
+          <LiqPeriodosContent activeSub={activeSubPeriodos} selectedEstado={selectedEstado} estadosData={estadosData} onCloseDropdown={() => setEstadoDropdownOpen(false)} />
         ) : activeMain === "Consolidados" ? (
           <ConsolidadosContent />
         ) : showPagamentos ? (
