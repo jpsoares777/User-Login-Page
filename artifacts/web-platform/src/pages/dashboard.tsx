@@ -3499,8 +3499,8 @@ export default function DashboardPage() {
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 {img
-                  ? <span style={{ width: 24, height: 24, borderRadius: 6, background: imgBg ?? "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <img src={img} alt={label} style={{ width: imgBg ? 16 : 22, height: imgBg ? 16 : 22, objectFit: "contain", filter: imgBg ? "brightness(0) invert(1)" : "none" }} />
+                  ? <span style={{ width: 26, height: 26, borderRadius: 6, background: imgBg ?? "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <img src={img} alt={label} style={{ width: imgBg ? 17 : 24, height: imgBg ? 17 : 24, objectFit: "contain", filter: imgBg ? "brightness(0) invert(1)" : "brightness(0) saturate(0) contrast(2)" }} />
                     </span>
                   : <span style={{ fontSize: 18, color }}>{icon}</span>
                 }
