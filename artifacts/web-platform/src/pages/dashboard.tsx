@@ -7,6 +7,7 @@ import iconGerenciarApp2 from "@assets/1570102_1781283457472.png";
 import iconFinanceiro from "@assets/313011_1781284759448.png";
 import iconImportarRota from "@assets/images_1781285052367.png";
 import iconFaturas from "@assets/1611154_1781285163664.png";
+import iconDinheiro from "@assets/businesscostcutexpensefinancemoney-glyph-icon--vector-png_2549_1781286038926.jpg";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, Label, Customized,
@@ -3491,10 +3492,10 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenc. de rendimentos",       color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
               { icon: null,  label: "Importar rota",                 color: "#7c3aed", img: iconImportarRota, imgSize: 21 },
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)" },
-              { icon: "📅", label: "Gerenciar gastos",              color: "#db2777" },
-              { icon: "📈", label: "Gerenciar rendimentos",        color: "#16a34a" },
+              { icon: null,  label: "Gerenciar gastos",              color: "#dc2626", img: iconDinheiro, imgSize: 26, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)" },
+              { icon: null,  label: "Gerenciar rendimentos",        color: "#16a34a", img: iconDinheiro, imgSize: 26, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(80%)", imgTransform: "scaleY(-1)" },
               { icon: "👤", label: "Caixa geral",                  color: "#6b7280" },
-            ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string }) => (
+            ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter, imgTransform }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string, imgTransform?: string }) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", borderTop: "none", borderLeft: "none", borderRight: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
@@ -3502,7 +3503,7 @@ export default function DashboardPage() {
               >
                 {img
                   ? <span style={{ width: imgSize ?? 26, height: imgSize ?? 26, borderRadius: 6, background: imgBg ?? "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <img src={img} alt={label} style={{ width: imgSize ?? (imgBg ? 17 : 24), height: imgSize ?? (imgBg ? 17 : 24), objectFit: "contain", filter: imgFilter ?? (imgBg ? "brightness(0) invert(1)" : darkIcon ? "brightness(0) contrast(2)" : "none") }} />
+                      <img src={img} alt={label} style={{ width: imgSize ?? (imgBg ? 17 : 24), height: imgSize ?? (imgBg ? 17 : 24), objectFit: "contain", filter: imgFilter ?? (imgBg ? "brightness(0) invert(1)" : darkIcon ? "brightness(0) contrast(2)" : "none"), transform: imgTransform }} />
                     </span>
                   : <span style={{ fontSize: 18, color }}>{icon}</span>
                 }
