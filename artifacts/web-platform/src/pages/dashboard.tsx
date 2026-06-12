@@ -3697,6 +3697,7 @@ export default function DashboardPage() {
   const [caixaRetiradaOpen, setCaixaRetiradaOpen] = useState(false);
   const [caixaRetiradaValor, setCaixaRetiradaValor] = useState("");
   const [caixaRetiradaObs, setCaixaRetiradaObs] = useState("");
+  const [caixaRetiradaRota, setCaixaRetiradaRota] = useState("");
   type CaixaMovRow = { id: number; tipo: "Entrada" | "Retirada"; descricao: string; valor: number; data: string; };
   const [caixaMovs, setCaixaMovs] = useState<CaixaMovRow[]>([
     { id: 1, tipo: "Entrada",  descricao: "Liquidação Rota SP Centro",  valor: 5200.00, data: "2026-06-10" },
@@ -4267,7 +4268,7 @@ export default function DashboardPage() {
               <div style={{ flex: 1 }} />
 
               {/* Retirada de Caixa */}
-              <button onClick={() => { setCaixaRetiradaValor(""); setCaixaRetiradaObs(""); setCaixaRetiradaOpen(true); }}
+              <button onClick={() => { setCaixaRetiradaValor(""); setCaixaRetiradaObs(""); setCaixaRetiradaRota(""); setCaixaRetiradaOpen(true); }}
                 style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(220,38,38,0.35)" }}>
                 <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                 Retirada de Caixa
@@ -4336,6 +4337,14 @@ export default function DashboardPage() {
                       <span style={{ fontSize: 16, fontWeight: 800, color: "#1e40af" }}>R$ {caixaSaldo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                     </div>
                     <div style={{ marginBottom: 14 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Rota</label>
+                      <select value={caixaRetiradaRota} onChange={e => setCaixaRetiradaRota(e.target.value)}
+                        style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, color: caixaRetiradaRota ? "#334155" : "#94a3b8", background: "#f8fafc", outline: "none" }}>
+                        <option value="">---Selecione a rota---</option>
+                        {rotasSample.map(r => <option key={r.id} value={r.nome}>{r.nome} — {r.vendedor}</option>)}
+                      </select>
+                    </div>
+                    <div style={{ marginBottom: 14 }}>
                       <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Valor da Retirada *</label>
                       <input type="number" min={0} step={0.01} value={caixaRetiradaValor} onChange={e => setCaixaRetiradaValor(e.target.value)} placeholder="0,00"
                         style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
@@ -4353,7 +4362,7 @@ export default function DashboardPage() {
                       <button onClick={() => {
                         const v = parseFloat(caixaRetiradaValor);
                         if (!v || v <= 0 || v > caixaSaldo) return;
-                        setCaixaMovs(prev => [...prev, { id: Date.now(), tipo: "Retirada", descricao: caixaRetiradaObs || "Retirada de caixa", valor: v, data: new Date().toISOString().slice(0,10) }]);
+                        setCaixaMovs(prev => [...prev, { id: Date.now(), tipo: "Retirada", descricao: (caixaRetiradaRota ? `${caixaRetiradaRota} — ` : "") + (caixaRetiradaObs || "Retirada de caixa"), valor: v, data: new Date().toISOString().slice(0,10) }]);
                         setCaixaSaldo(s => s - v);
                         setCaixaRetiradaOpen(false);
                       }} style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
