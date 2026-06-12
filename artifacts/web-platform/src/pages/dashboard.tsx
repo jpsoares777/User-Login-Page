@@ -5,6 +5,7 @@ import iconGerenciar from "@assets/2205843-mobile-settings-icon-vetor_1781283702
 import iconGerenciarClientes from "@assets/4168988_1781283346707.png";
 import iconGerenciarApp2 from "@assets/1570102_1781283457472.png";
 import iconFinanceiro from "@assets/313011_1781284759448.png";
+import iconImportarRota from "@assets/images_1781285052367.png";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, Label, Customized,
@@ -3487,7 +3488,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
               { icon: null,  label: "Gerenc. de despesas",          color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)" },
               { icon: null,  label: "Gerenc. de rendimentos",       color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
-              { icon: "🔄", label: "Importar rota",                 color: "#7c3aed" },
+              { icon: null,  label: "Importar rota",                 color: "#7c3aed", img: iconImportarRota, imgSize: 24 },
               { icon: "🔗", label: "Faturas",                       color: "#0891b2" },
               { icon: "📅", label: "Consultar gastos",              color: "#db2777" },
               { icon: "👤", label: "Caixa geral",                  color: "#6b7280" },
