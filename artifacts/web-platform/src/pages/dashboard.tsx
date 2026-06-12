@@ -3463,6 +3463,8 @@ export default function DashboardPage() {
   const [gaNome, setGaNome] = useState("");
   const [gaSobrenome, setGaSobrenome] = useState("");
   const [gaCodigo, setGaCodigo] = useState("");
+  const [gaModalOpen, setGaModalOpen] = useState(false);
+  const [gaForm, setGaForm] = useState({ empresa: "", nome: "", sobrenome: "-", vencimento: "", valorMax: "", saldoInicial: "", pais: "", cidade: "SAO LUIS", codigoAcesso: "", confirmarCodigo: "", estado: "Ativo" });
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
@@ -3643,7 +3645,7 @@ export default function DashboardPage() {
             <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
-            <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+            <button onClick={() => setGaModalOpen(true)} className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
           </div>
@@ -3913,6 +3915,129 @@ export default function DashboardPage() {
         )}
       </div>
 
+      {/* ── MODAL: Criação de Aplicativo ── */}
+      {gaModalOpen && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 1000, display: "flex", alignItems: "flex-start", justifyContent: "center", paddingTop: 60 }}>
+          <div style={{ background: "#fff", borderRadius: 6, width: "100%", maxWidth: 820, boxShadow: "0 8px 32px rgba(0,0,0,0.22)", overflow: "hidden" }}>
+            {/* header */}
+            <div style={{ background: "#3d6e8e", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 13, letterSpacing: "0.03em" }}>Criação de Aplicativo</span>
+              <button onClick={() => setGaModalOpen(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: 18, lineHeight: 1 }}>×</button>
+            </div>
+
+            {/* body */}
+            <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
+
+              {/* Row 1: Empresa | Nome | Sobrenome | Data Vencimento */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Empresa <span style={{ color: "#dc2626" }}>(*)</span></label>
+                  <select value={gaForm.empresa} onChange={e => setGaForm(f => ({ ...f, empresa: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
+                    <option value="">-- Selecione --</option>
+                    <option>CREDBANK</option>
+                    <option>SystemPay Demo</option>
+                  </select>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Nome:</label>
+                  <input value={gaForm.nome} onChange={e => setGaForm(f => ({ ...f, nome: e.target.value }))} placeholder=""
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Sobrenome:</label>
+                  <input value={gaForm.sobrenome} onChange={e => setGaForm(f => ({ ...f, sobrenome: e.target.value }))} placeholder="-"
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Data Vencimento:</label>
+                  <input type="date" value={gaForm.vencimento} onChange={e => setGaForm(f => ({ ...f, vencimento: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
+                </div>
+              </div>
+
+              {/* Row 2: Valor Venda Máx | Saldo Inicial */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Valor Venda Máxima:</label>
+                  <input value={gaForm.valorMax} onChange={e => setGaForm(f => ({ ...f, valorMax: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Saldo Inicial <span style={{ color: "#dc2626" }}>(*)</span></label>
+                  <input value={gaForm.saldoInicial} onChange={e => setGaForm(f => ({ ...f, saldoInicial: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
+                </div>
+              </div>
+
+              {/* Section: Zona de Operação */}
+              <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 10 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#2563eb" }}>Zona de Operação</span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>País <span style={{ color: "#dc2626" }}>(*)</span></label>
+                  <select value={gaForm.pais} onChange={e => setGaForm(f => ({ ...f, pais: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
+                    <option value="">-- Selecione --</option>
+                    <option>Brasil</option>
+                    <option>Colômbia</option>
+                    <option>México</option>
+                  </select>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Cidade <span style={{ color: "#dc2626" }}>(*)</span></label>
+                  <select value={gaForm.cidade} onChange={e => setGaForm(f => ({ ...f, cidade: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
+                    <option>SAO LUIS</option>
+                    <option>SÃO PAULO</option>
+                    <option>RIO DE JANEIRO</option>
+                    <option>BRASÍLIA</option>
+                    <option>FORTALEZA</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Section: Informação de Acesso */}
+              <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 10 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#2563eb" }}>Informação de Acesso ao Sistema APP</span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Código de Acesso:</label>
+                  <input value={gaForm.codigoAcesso} onChange={e => setGaForm(f => ({ ...f, codigoAcesso: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Confirmar Código de Acesso:</label>
+                  <input value={gaForm.confirmarCodigo} onChange={e => setGaForm(f => ({ ...f, confirmarCodigo: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Estado:</label>
+                  <select value={gaForm.estado} onChange={e => setGaForm(f => ({ ...f, estado: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
+                    <option>Ativo</option>
+                    <option>Inativo</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* action buttons */}
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, paddingTop: 8, borderTop: "1px solid #f1f5f9" }}>
+                <button onClick={() => setGaModalOpen(false)}
+                  style={{ height: 32, padding: "0 18px", borderRadius: 4, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                  Cancelar
+                </button>
+                <button onClick={() => setGaModalOpen(false)}
+                  style={{ height: 32, padding: "0 20px", borderRadius: 4, border: "none", background: "#2563eb", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                  Salvar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
