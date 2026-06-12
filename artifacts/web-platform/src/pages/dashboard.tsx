@@ -2892,6 +2892,7 @@ function ResumoContent() {
 
   const dIni = new Date(dataInicial + "T12:00:00").toLocaleDateString("pt-BR");
   const dFin = new Date(dataFinal   + "T12:00:00").toLocaleDateString("pt-BR");
+  const diasPeriodo = Math.round((new Date(dataFinal + "T12:00:00").getTime() - new Date(dataInicial + "T12:00:00").getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
   const handlePDF = () => {
     const pctR = r.recaudoPretendido > 0 ? ((r.recaudo / r.recaudoPretendido) * 100).toFixed(1) : "0,0";
@@ -2929,7 +2930,7 @@ function ResumoContent() {
       <p>${cobrador} · ${dIni} a ${dFin}</p>
     </div>
     <div class="hdr-right">
-      <span style="font-size:13px;opacity:.9">📅 ${dIni} → ${dFin}</span>
+      <span style="font-size:13px;opacity:.9">📅 ${dIni} → ${dFin} <span style="background:rgba(255,255,255,0.2);border-radius:10px;padding:1px 8px;font-size:11px;font-weight:700">${diasPeriodo} dias</span></span>
       <span class="badge">✓ Correto</span>
     </div>
   </div>
@@ -2983,7 +2984,7 @@ function ResumoContent() {
     const pctR = r.recaudoPretendido > 0 ? ((r.recaudo / r.recaudoPretendido) * 100).toFixed(1) : "0,0";
     const lines = [
       `*📊 RESUMO DE PERÍODO*`,
-      `${cobrador} · ${dIni} → ${dFin}`,
+      `${cobrador} · ${dIni} → ${dFin} (${diasPeriodo} dias)`,
       ``,
       `*👥 CLIENTES*`,
       `Clientes Cadastrados: ${r.nClientes}`,
@@ -3064,7 +3065,7 @@ function ResumoContent() {
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>{cobrador} · Sistema de Cobrança</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.85)" }}>📅 {dIni} → {dFin}</span>
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.85)" }}>📅 {dIni} → {dFin} <span style={{ background: "rgba(255,255,255,0.2)", borderRadius: 10, padding: "1px 8px", fontSize: 11, fontWeight: 700 }}>{diasPeriodo} dias</span></span>
             <span style={{ background: "#16a34a", color: "#fff", padding: "3px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700 }}>✓ Correto</span>
           </div>
         </div>
