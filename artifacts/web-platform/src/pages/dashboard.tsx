@@ -3482,7 +3482,6 @@ export default function DashboardPage() {
           <div style={{ position: "absolute", top: 52, left: 10, width: 240, background: "#fff", borderRadius: 10, boxShadow: "0 6px 24px rgba(0,0,0,0.16)", overflow: "hidden" }}
             onClick={e => e.stopPropagation()}>
             {[
-              { icon: "📊", label: "Relatório diário",             color: "#f97316" },
               { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar, imgSize: 32 },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
               { icon: "💳", label: "Novos empréstimos",            color: "#2563eb" },
