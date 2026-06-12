@@ -3686,6 +3686,10 @@ export default function DashboardPage() {
   const [gerenciarDespesasOpen, setGerenciarDespesasOpen] = useState(false);
   const [gerenciarRendimentosOpen, setGerenciarRendimentosOpen] = useState(false);
   const [faturasOpen, setFaturasOpen] = useState(false);
+  const [importarRotasOpen, setImportarRotasOpen] = useState(false);
+  const [importarVendedor, setImportarVendedor] = useState("");
+  const [importarMasivo, setImportarMasivo] = useState(true);
+  const [importarArquivo, setImportarArquivo] = useState<File | null>(null);
 
   // ── Faturas ──
   type FaturaRow = { id: number; nro: string; data: string; iva: number; valorCop: number; valorUsd: number; meses: number; conceito: string; estado: "Pendente" | "Pago" | "Vencido"; vencimento: string; pais: string; };
@@ -3834,7 +3838,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2, onClick: () => { setGerenciarClientesOpen(true); setActiveMain("Gerenciar Clientes"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. despesas",             color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)", onClick: () => { setGerenciarDespesasOpen(true); setActiveMain("Gerenciar Despesas"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. rendimentos",          color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)", onClick: () => { setGerenciarRendimentosOpen(true); setActiveMain("Gerenciar Rendimentos"); setSideMenuOpen(false); } },
-              { icon: null,  label: "Importar rotas",                color: "#7c3aed", img: iconImportarRota, imgSize: 21 },
+              { icon: null,  label: "Importar rotas",                color: "#7c3aed", img: iconImportarRota, imgSize: 21, onClick: () => { setImportarRotasOpen(true); setActiveMain("Importar Rotas"); setSideMenuOpen(false); } },
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)", onClick: () => { setFaturasOpen(true); setActiveMain("Faturas"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. gastos períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)" },
               { icon: null,  label: "Gerenc. rendimentos períodos", color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
@@ -3909,6 +3913,20 @@ export default function DashboardPage() {
             }}>
             Gerenciar Clientes
             <span onClick={e => { e.stopPropagation(); setGerenciarClientesOpen(false); if (activeMain === "Gerenciar Clientes") setActiveMain("Liq. Diária"); }}
+              style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
+          </button>
+        )}
+        {importarRotasOpen && (
+          <button onClick={() => setActiveMain("Importar Rotas")}
+            className="flex items-center gap-2 px-4 h-10 text-sm font-medium transition-all rounded-t"
+            style={{
+              background: activeMain === "Importar Rotas" ? "#2563eb" : "rgba(255,255,255,0.08)",
+              color: activeMain === "Importar Rotas" ? "#fff" : "rgba(255,255,255,0.65)",
+              border: activeMain === "Importar Rotas" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              borderBottom: "none",
+            }}>
+            Importar Rotas
+            <span onClick={e => { e.stopPropagation(); setImportarRotasOpen(false); if (activeMain === "Importar Rotas") setActiveMain("Liq. Diária"); }}
               style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
           </button>
         )}
@@ -4196,7 +4214,100 @@ export default function DashboardPage() {
 
       {/* ── CONTENT AREA ── */}
       <div className="flex-1 overflow-hidden flex">
-        {activeMain === "Faturas" ? (
+        {activeMain === "Importar Rotas" ? (
+          <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f4f8" }}>
+
+            {/* ── Toolbar ── */}
+            <div className="shrink-0 flex items-center gap-1 px-3 py-2" style={{ background: "#e8edf2", borderBottom: "1px solid #d1d9e0" }}>
+              {[
+                { title: "Grade", path: "M3 3h7v7H3zm0 11h7v7H3zm11-11h7v7h-7zm0 11h7v7h-7z" },
+                { title: "Salvar", path: "M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" },
+                { title: "Pesquisar", path: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" },
+                { title: "Excluir", path: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" },
+                { title: "Imprimir", path: "M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" },
+              ].map(btn => (
+                <button key={btn.title} title={btn.title}
+                  style={{ width: 32, height: 32, background: "#fff", border: "1px solid #c9d4de", borderRadius: 4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#dce8f5")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "#fff")}>
+                  <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#334155" }}><path d={btn.path} /></svg>
+                </button>
+              ))}
+            </div>
+
+            {/* ── Content ── */}
+            <div className="flex-1 overflow-auto p-4">
+              <div style={{ background: "#fff", borderRadius: 4, border: "1px solid #d1d9e0", overflow: "hidden" }}>
+                {/* Blue header */}
+                <div style={{ background: "#2d5474", padding: "8px 14px" }}>
+                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>Importar Rotas</span>
+                </div>
+
+                {/* Form */}
+                <div style={{ padding: "28px 32px", display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
+                  {/* Vendedor */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <label style={{ fontSize: 13, color: "#334155", fontWeight: 500, whiteSpace: "nowrap" }}>Vendedor (*):</label>
+                    <select value={importarVendedor} onChange={e => setImportarVendedor(e.target.value)}
+                      style={{ height: 28, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 24px 0 8px", fontSize: 12, color: importarVendedor ? "#334155" : "#94a3b8", background: "#fff", outline: "none", minWidth: 200, cursor: "pointer" }}>
+                      <option value="">---Selecione---</option>
+                      <option>Carlos Silva</option>
+                      <option>Ana Pereira</option>
+                      <option>João Santos</option>
+                      <option>Maria Oliveira</option>
+                      <option>Pedro Costa</option>
+                      <option>Lucia Ferreira</option>
+                    </select>
+                  </div>
+
+                  {/* Masivo checkbox */}
+                  <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", fontSize: 13, color: "#334155", userSelect: "none" }}>
+                    <input type="checkbox" checked={importarMasivo} onChange={e => setImportarMasivo(e.target.checked)}
+                      style={{ width: 14, height: 14, accentColor: "#2563eb", cursor: "pointer" }} />
+                    Masivo
+                  </label>
+
+                  {/* Escolher arquivo */}
+                  <label style={{ display: "flex", alignItems: "center", gap: 0, cursor: "pointer" }}>
+                    <span style={{ background: "#e8edf2", border: "1px solid #94a3b8", borderRight: "none", borderRadius: "3px 0 0 3px", padding: "0 10px", height: 28, display: "flex", alignItems: "center", fontSize: 12, color: "#334155", fontWeight: 500, whiteSpace: "nowrap" }}>
+                      Escolher arquivo
+                    </span>
+                    <span style={{ background: "#3d6e8e", border: "1px solid #2d5474", borderRadius: "0 3px 3px 0", padding: "0 12px", height: 28, display: "flex", alignItems: "center", fontSize: 12, color: "#fff", whiteSpace: "nowrap", minWidth: 160 }}>
+                      {importarArquivo ? importarArquivo.name : "Nenhum arquivo escolhido"}
+                    </span>
+                    <input type="file" accept=".csv,.xlsx,.xls" style={{ display: "none" }}
+                      onChange={e => setImportarArquivo(e.target.files?.[0] ?? null)} />
+                  </label>
+                </div>
+
+                {/* Upload area when file selected */}
+                {importarArquivo && (
+                  <div style={{ margin: "0 32px 28px", padding: "14px 18px", background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 6, display: "flex", alignItems: "center", gap: 10 }}>
+                    <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#16a34a", flexShrink: 0 }}><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "#15803d" }}>{importarArquivo.name}</p>
+                      <p style={{ margin: 0, fontSize: 11, color: "#4ade80" }}>{(importarArquivo.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                    <button onClick={() => setImportarArquivo(null)}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#dc2626", fontSize: 16, fontWeight: 700, lineHeight: 1 }}>✕</button>
+                  </div>
+                )}
+
+                {/* Import button */}
+                {importarArquivo && importarVendedor && (
+                  <div style={{ padding: "0 32px 28px", display: "flex", gap: 10 }}>
+                    <button style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 6, padding: "9px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.35)" }}>
+                      <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                      Importar Rotas
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+          </div>
+        ) : activeMain === "Faturas" ? (
           <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f4f8" }}>
 
             {/* ── Filter bar ── */}
