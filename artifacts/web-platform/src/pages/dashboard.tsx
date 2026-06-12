@@ -3718,10 +3718,6 @@ export default function DashboardPage() {
                 Buscar
               </button>
             </div>
-            <div className="ml-auto flex flex-col items-end justify-center">
-              <span style={{ fontSize: 10, color: "#6b7280", fontWeight: 600 }}>DATA DE REFERÊNCIA:</span>
-              <span style={{ fontSize: 12, color: "#1e293b", fontWeight: 700 }}>2026-05-25</span>
-            </div>
           </div>
         </>
       )}
