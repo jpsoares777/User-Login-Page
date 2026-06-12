@@ -2886,6 +2886,7 @@ function ResumoContent() {
   const r   = resumoRow;
   const fmt  = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
   const fmtR = (v: number) => `R$ ${fmt(v)}`;
+  const lucro = r.totalInt + r.ingresos - r.egresos - r.retiros;
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700";
 
   const dIni = new Date(dataInicial + "T12:00:00").toLocaleDateString("pt-BR");
@@ -2952,16 +2953,16 @@ function ResumoContent() {
         <div class="row"><span class="lbl">Despesas</span><span class="val r">${fmtR(r.egresos)}</span></div>
         <div class="row"><span class="lbl">Retiradas de Caixa</span><span class="val r">${fmtR(r.retiros)}</span></div>
         <div class="row"><span class="lbl"><strong>Caixa Final</strong></span><span class="val g"><strong>${fmtR(r.cajaFinal)}</strong></span></div>
-        <div class="row"><span class="lbl"><strong>Carteira Final</strong></span><span class="val b"><strong>${fmtR(r.carteira)}</strong></span></div>
+        <div class="row"><span class="lbl"><strong>Lucro</strong></span><span class="val p"><strong>${fmtR(lucro)}</strong></span></div>
       </div>
       <div class="vboxes">
         <div class="vbox" style="background:#f0fdf4;border:1px solid #bbf7d0;">
           <div class="vl" style="color:#4b7c59">Caixa Final</div>
           <div class="vv g">${fmtR(r.cajaFinal)}</div>
         </div>
-        <div class="vbox" style="background:#eff6ff;border:1px solid #bfdbfe;">
-          <div class="vl" style="color:#3b5fa0">Carteira Final</div>
-          <div class="vv b">${fmtR(r.carteira)}</div>
+        <div class="vbox" style="background:#f5f3ff;border:1px solid #ddd6fe;">
+          <div class="vl" style="color:#6d28d9">Lucro</div>
+          <div class="vv p">${fmtR(lucro)}</div>
         </div>
       </div>
     </div>
@@ -2997,10 +2998,10 @@ function ResumoContent() {
       `Despesas: ${fmtR(r.egresos)}`,
       `Retiradas de Caixa: ${fmtR(r.retiros)}`,
       `Caixa Final: ${fmtR(r.cajaFinal)}`,
-      `Carteira Final: ${fmtR(r.carteira)}`,
+      `Lucro: ${fmtR(lucro)}`,
       ``,
       `*🏦 CAIXA FINAL: ${fmtR(r.cajaFinal)}*`,
-      `*📋 CARTEIRA FINAL: ${fmtR(r.carteira)}*`,
+      `*💜 LUCRO: ${fmtR(lucro)}*`,
       ``,
       `_Gerado em ${new Date().toLocaleString("pt-BR")} · SystemPay_`,
     ];
@@ -3083,7 +3084,7 @@ function ResumoContent() {
             <ListRow label="Despesas"                value={r.egresos}             valueColor={r.egresos > 0 ? "#dc2626" : "#6b7280"} />
             <ListRow label="Retiradas de Caixa"      value={r.retiros}             valueColor={r.retiros > 0 ? "#dc2626" : "#6b7280"} />
             <ListRow label="Caixa Final"             value={r.cajaFinal}           valueColor="#16a34a" bold />
-            <ListRow label="Carteira Final"          value={r.carteira}            valueColor="#2563eb" bold border={false} />
+            <ListRow label="Lucro"                   value={lucro}                 valueColor="#7c3aed" bold border={false} />
           </Panel>
 
           {/* Valores Finais */}
@@ -3092,9 +3093,9 @@ function ResumoContent() {
               <span style={{ fontSize: 10, fontWeight: 600, color: "#4b7c59", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Caixa Final</span>
               <span style={{ fontSize: 22, fontWeight: 800, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</span>
             </div>
-            <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "16px 18px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1 }}>
-              <span style={{ fontSize: 10, fontWeight: 600, color: "#3b5fa0", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Carteira Final</span>
-              <span style={{ fontSize: 22, fontWeight: 800, color: "#2563eb" }}>{fmtR(r.carteira)}</span>
+            <div style={{ background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: 8, padding: "16px 18px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1 }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#6d28d9", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Lucro</span>
+              <span style={{ fontSize: 22, fontWeight: 800, color: "#7c3aed" }}>{fmtR(lucro)}</span>
             </div>
           </div>
         </div>
