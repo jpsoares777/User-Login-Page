@@ -3489,8 +3489,6 @@ function ConsolidadosContent() {
             <ListRow label="Carteira Inicial"        value={r.carteiraInicial}       valueColor="#16a34a" bold />
             <ListRow label="Receb. Previsto do Dia"  value={r.recebimentoPrevisto} />
             <ListRow label="Receb. Atual do Dia"     value={r.recaudo}               valueColor="#f59e0b" bold />
-            <ListRow label="  ↳ Efetivo"             value={r.efetivo}               valueColor="#16a34a" />
-            <ListRow label="  ↳ Transferência"       value={r.transferencia} />
             <ListRow label="Novos Empréstimos"       value={r.ventas} />
             <ListRow label="  ↳ Juros"               value={r.juros}                 valueColor="#f59e0b" />
             <ListRow label="Rendimentos"             value={r.ingresos}              valueColor={r.ingresos > 0 ? "#16a34a" : "#6b7280"} />
