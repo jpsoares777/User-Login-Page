@@ -3206,11 +3206,7 @@ const consolidadosData = [
     vendedor: "Rota Cred Bank -", totalClientes: 20,
     cajaInicial: 2979.00, recaudo: 200.00, ventas: 0.00,
     egresos: 0.00, ingresos: 0.00,
-    cajaFinal: 3179.00, cartera: 12460.00, acumulado: 0.00, juros: 0.00,
-    carteiraInicial: 12660.00, recebimentoPrevisto: 1245.00,
-    pagos: 1, noPagos: 0, efetivo: 200.00, transferencia: 0.00,
-    retiradaCaixa: 0.00, sancao: 0.00,
-    clientesIniciais: 20, clientesNovos: 0, clientesRenovados: 0, clientesCancelados: 0,
+    cajaFinal: 3179.00, cartera: 12460.00, acumulado: 0.00, juros: 1246.00,
   },
 ];
 
@@ -3389,19 +3385,36 @@ function ConsolidadosContent() {
     window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
   };
 
-  const pct = r.recebimentoPrevisto > 0 ? ((r.recaudo / r.recebimentoPrevisto) * 100).toFixed(1) : "0,0";
-  const fmtD = (v: number) => `$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  const dateFmt = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
 
-  const Row = ({ label, children, noBorder = false }: { label: string; children: React.ReactNode; noBorder?: boolean }) => (
-    <div style={{ display: "flex", alignItems: "center", padding: "9px 16px", borderBottom: noBorder ? "none" : "1px solid #f0f0f0" }}>
-      <span style={{ width: 220, flexShrink: 0, fontSize: 13, color: "#374151" }}>{label}</span>
-      <span style={{ fontSize: 13, color: "#374151", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" as const }}>{children}</span>
+  const StatCard = ({ icon, label, value, accent, bg }: { icon: string; label: string; value: string; accent: string; bg: string }) => (
+    <div style={{ background: "#fff", border: `1px solid ${accent}22`, borderRadius: 10, padding: "14px 18px", flex: "1 1 140px", minWidth: 130, boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{icon}</div>
+        <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{label}</span>
+      </div>
+      <div style={{ fontSize: 18, fontWeight: 800, color: accent }}>{value}</div>
     </div>
   );
 
-  const SectionHeader = ({ label, color }: { label: string; color: string }) => (
-    <div style={{ borderLeft: `4px solid ${color}`, padding: "7px 12px 7px 14px", background: "#f9fafb" }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color, letterSpacing: "0.06em" }}>{label}</span>
+  const ListRow = ({ label, value, valueColor = "#111827", bold = false, isCount = false, border = true }: {
+    label: string; value: string | number; valueColor?: string; bold?: boolean; isCount?: boolean; border?: boolean;
+  }) => (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: border ? "1px solid #f3f4f6" : "none" }}>
+      <span style={{ fontSize: 13, color: "#6b7280" }}>{label}</span>
+      <span style={{ fontSize: 13, fontWeight: bold ? 700 : 500, color: valueColor }}>
+        {isCount ? value : (typeof value === "number" ? fmtR(value) : value)}
+      </span>
+    </div>
+  );
+
+  const Panel = ({ title, icon, children, accent = "#e5e7eb" }: { title: string; icon: string; children: React.ReactNode; accent?: string }) => (
+    <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+      <div style={{ background: "#f8fafc", padding: "10px 16px", display: "flex", alignItems: "center", gap: 7, borderBottom: `2px solid ${accent}` }}>
+        <span style={{ fontSize: 15 }}>{icon}</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{title}</span>
+      </div>
+      <div style={{ padding: "4px 16px 8px" }}>{children}</div>
     </div>
   );
 
@@ -3437,106 +3450,92 @@ function ConsolidadosContent() {
         </button>
       </div>
 
-      {/* ── Table content ── */}
-      <div className="flex-1 overflow-auto" style={{ background: "#f4f4f4" }}>
-        <div style={{ background: "#fff", border: "1px solid #e0e0e0", margin: 0 }}>
+      {/* ── Dashboard content ── */}
+      <div className="flex-1 overflow-auto" style={{ background: "#f1f5f9", padding: "20px 24px" }}>
 
-          {/* ── CLIENTES ── */}
-          <SectionHeader label="CLIENTES" color="#16a34a" />
+        {/* ── Top identity bar ── */}
+        <div style={{ background: "linear-gradient(135deg, #2d5474 0%, #3d6e8e 100%)", borderRadius: 10, padding: "14px 20px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" as const, gap: 12 }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 2 }}>📊 Consolidado Diário</div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>{cobrador} · {r.pais} · {r.cidade}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.85)" }}>📅 {dateFmt}</span>
+            <span style={{ background: "#16a34a", color: "#fff", padding: "3px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700 }}>✓ Correto</span>
+          </div>
+        </div>
 
-          <Row label="Clientes Iniciais">
-            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#6b7280", flexShrink: 0 }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-            <span style={{ fontWeight: 600 }}>{r.clientesIniciais}</span>
-            <span style={{ color: "#9ca3af", fontSize: 12 }}>(1 Sincronizados / {r.clientesIniciais})</span>
-            <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#6b7280", fontSize: 13, lineHeight: 1 }}>🔄</button>
-          </Row>
+        {/* ── Stat cards ── */}
+        <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" as const }}>
+          <StatCard icon="💰" label="Total Emprestado"   value={fmtR(r.ventas)}          accent="#7c3aed" bg="#f5f3ff" />
+          <StatCard icon="💵" label="Total Recebido"     value={fmtR(r.recaudo)}         accent="#16a34a" bg="#f0fdf4" />
+          <StatCard icon="📈" label="Juros a Receber"    value={fmtR(r.juros)}           accent="#f59e0b" bg="#fffbeb" />
+          <StatCard icon="📋" label="Carteira Aberta"    value={fmtR(r.cartera)}         accent="#2563eb" bg="#eff6ff" />
+          <StatCard icon="👥" label="Clientes Ativos"    value={String(r.totalClientes)} accent="#0891b2" bg="#ecfeff" />
+          <StatCard icon="🏦" label="Caixa Atual"        value={fmtR(r.cajaFinal)}       accent="#16a34a" bg="#f0fdf4" />
+        </div>
 
-          <Row label="Clientes Novos">
-            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#6b7280", flexShrink: 0 }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-            <span style={{ fontWeight: 600 }}>{r.clientesNovos}</span>
-            <span style={{ color: "#9ca3af", fontSize: 12 }}>(0/0)</span>
-          </Row>
+        {/* ── Two-column grid ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
 
-          <Row label="Clientes Renovados">
-            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#6b7280", flexShrink: 0 }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-            <span style={{ fontWeight: 600 }}>{r.clientesRenovados}</span>
-          </Row>
+          <Panel icon="🔥" title="Movimentação do Dia" accent="#f97316">
+            <ListRow label="Caixa inicial do dia"        value={r.cajaInicial} />
+            <ListRow label="Recebido nas cobranças"      value={r.recaudo}  valueColor="#16a34a" bold />
+            <ListRow label="📈 Juros a Receber"          value={r.juros}    valueColor="#f59e0b" bold />
+            <ListRow label="Novos empréstimos (Ventas)"  value={r.ventas}   valueColor={r.ventas  > 0 ? "#7c3aed" : "#6b7280"} />
+            <ListRow label="Despesas (Egresos)"          value={r.egresos}  valueColor={r.egresos > 0 ? "#dc2626" : "#6b7280"} />
+            <ListRow label="Entradas extras (Ingresos)"  value={r.ingresos} valueColor={r.ingresos > 0 ? "#16a34a" : "#6b7280"} border={false} />
+          </Panel>
 
-          <Row label="Clientes Cancelados">
-            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#6b7280", flexShrink: 0 }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-            <span style={{ fontWeight: 600 }}>{r.clientesCancelados}</span>
-          </Row>
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 12 }}>
+            <Panel icon="📋" title="Carteira & Acumulado" accent="#2563eb">
+              <ListRow label="Carteira aberta (a receber)" value={r.cartera}   valueColor="#2563eb" bold />
+              <ListRow label="Fundo de seguro acumulado"   value={r.acumulado} border={false} />
+            </Panel>
 
-          <Row label="Total de Clientes">
-            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#6b7280", flexShrink: 0 }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-            <span style={{ fontWeight: 600 }}>{r.totalClientes}</span>
-          </Row>
+            <div style={{ background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 10, padding: "14px 16px" }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#92400e", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>📐 Como o Caixa Final foi calculado</div>
+              <div style={{ fontSize: 12, color: "#78350f", lineHeight: 1.8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #fde68a", paddingBottom: 4, marginBottom: 4 }}>
+                  <span>Caixa Inicial</span><span style={{ fontWeight: 600 }}>{fmtR(r.cajaInicial)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #fde68a", paddingBottom: 4, marginBottom: 4 }}>
+                  <span>+ Recaudo (recebido)</span><span style={{ fontWeight: 600, color: "#16a34a" }}>+ {fmtR(r.recaudo)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #fde68a", paddingBottom: 4, marginBottom: 4 }}>
+                  <span>+ Ingresos (extras)</span><span style={{ fontWeight: 600, color: "#16a34a" }}>+ {fmtR(r.ingresos)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #fde68a", paddingBottom: 4, marginBottom: 4 }}>
+                  <span>− Ventas (empréstimos)</span><span style={{ fontWeight: 600, color: "#dc2626" }}>− {fmtR(r.ventas)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 4, marginBottom: 8 }}>
+                  <span>− Egresos (despesas)</span><span style={{ fontWeight: 600, color: "#dc2626" }}>− {fmtR(r.egresos)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", background: "#16a34a", color: "#fff", borderRadius: 6, padding: "6px 10px" }}>
+                  <span style={{ fontWeight: 700 }}>= Caixa Final</span>
+                  <span style={{ fontWeight: 800, fontSize: 14 }}>{fmtR(r.cajaFinal)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          {/* ── FINANCEIRO ── */}
-          <SectionHeader label="FINANCEIRO" color="#7c3aed" />
+        {/* ── Caixa Final destaque ── */}
+        <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 2 }}>🟢 Caixa Final do Dia</div>
+            <div style={{ fontSize: 12, color: "#4b7c59" }}>Dinheiro em caixa ao encerrar o dia · {dateFmt}</div>
+          </div>
+          <div style={{ fontSize: 24, fontWeight: 900, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</div>
+        </div>
 
-          <Row label="Caixa Inicial">
-            <span style={{ fontWeight: 700, color: "#16a34a" }}>{fmtD(r.cajaInicial)}</span>
-          </Row>
-
-          <Row label="Carteira Inicial">
-            <span style={{ fontWeight: 700, color: "#16a34a" }}>{fmtD(r.carteiraInicial)}</span>
-          </Row>
-
-          <Row label="Recebimento Previsto do Dia">
-            <span style={{ fontWeight: 600 }}>{fmtD(r.recebimentoPrevisto)}</span>
-            <span style={{ background: "#d1fae5", color: "#065f46", fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 10 }}>100 %</span>
-          </Row>
-
-          <Row label="Recebimento Atual do Dia">
-            <span style={{ fontWeight: 600 }}>{fmtD(r.recaudo)}</span>
-            <span style={{ background: "#fed7aa", color: "#92400e", fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 10 }}>{pct} %</span>
-            <span style={{ color: "#16a34a", fontSize: 12 }}>Pagos: <strong>{r.pagos}</strong></span>
-            <span style={{ color: "#dc2626", fontSize: 12 }}>No Pagos: <strong>{r.noPagos}</strong></span>
-          </Row>
-
-          <Row label="Recebimento por Tipo Pagto">
-            <span style={{ color: "#16a34a", fontWeight: 600 }}>Efetivo: {fmtD(r.efetivo)}</span>
-            <span style={{ color: "#9ca3af" }}>|</span>
-            <span style={{ color: "#6b7280" }}>Transferência: {fmtD(r.transferencia)}</span>
-          </Row>
-
-          <Row label="Novos Empréstimos">
-            <span style={{ fontWeight: 600 }}>{fmtD(r.ventas)}</span>
-            <span style={{ color: "#9ca3af", fontSize: 12 }}>(Juros: {fmtD(r.juros)})</span>
-          </Row>
-
-          <Row label="Rendimentos">
-            <span style={{ color: "#6b7280" }}>+&nbsp;</span>
-            <span style={{ fontWeight: 600 }}>{r.ingresos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-          </Row>
-
-          <Row label="Despesas">
-            <span style={{ color: "#6b7280" }}>−&nbsp;</span>
-            <span style={{ fontWeight: 600 }}>{r.egresos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-          </Row>
-
-          <Row label="Retirada de Caixa">
-            <span style={{ color: "#6b7280" }}>−&nbsp;</span>
-            <span style={{ fontWeight: 600 }}>{r.retiradaCaixa.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-          </Row>
-
-          <Row label="Caixa Final" noBorder>
-            <span style={{ fontWeight: 700, color: "#16a34a", fontSize: 14 }}>{fmtD(r.cajaFinal)}</span>
-            <span style={{ color: "#ef4444", fontSize: 16, cursor: "pointer" }} title="Divergência pendente">❓</span>
-          </Row>
-
+        <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8" }}>
+          Gerado em {new Date().toLocaleString("pt-BR")} · Sistema de Cobrança
         </div>
       </div>
 
-      {/* ── Green footer — Carteira Final ── */}
-      <div className="shrink-0 flex items-center justify-between px-4 py-2.5" style={{ background: "#16a34a", borderTop: "1px solid #15803d" }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>
-          CARTEIRA FINAL
-          <span style={{ fontWeight: 400, fontSize: 12, marginLeft: 6, opacity: 0.85 }}>(Sanção: {fmtD(r.sancao)})</span>
-        </span>
-        <span style={{ fontSize: 15, fontWeight: 800, color: "#fff" }}>{fmtD(r.cartera)}</span>
-      </div>
+      {/* ── Blue footer bar ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
     </div>
   );
 }
