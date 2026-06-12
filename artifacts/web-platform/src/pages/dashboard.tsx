@@ -3674,7 +3674,50 @@ export default function DashboardPage() {
 
       {/* ── CONTENT AREA ── */}
       <div className="flex-1 overflow-hidden flex">
-        {isDesempenho ? (
+        {activeMain === "Gerenciar Aplicativos" ? (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* count bar */}
+            <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+              <span className="text-xs text-gray-500">
+                <span className="font-bold text-gray-800">1</span> registro encontrado
+              </span>
+            </div>
+            {/* table */}
+            <div className="flex-1 overflow-auto bg-white">
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: "#3d6e8e", color: "#fff" }}>
+                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Nome</th>
+                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Sobrenome</th>
+                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Cód. Acesso</th>
+                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Data Vencimento</th>
+                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Opções</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { nome: "Rota Cred Bank", sobrenome: "--", codigo: "10600", vencimento: "2026-05-28" },
+                  ].map((row, i) => (
+                    <tr key={i} style={{ borderBottom: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
+                      <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.nome}</td>
+                      <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.sobrenome}</td>
+                      <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.codigo}</td>
+                      <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.vencimento}</td>
+                      <td style={{ padding: "6px 12px" }}>
+                        <div className="flex items-center gap-1">
+                          <button style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontSize: 12 }}>✏</button>
+                          <button style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontSize: 12 }}>🗑</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* footer bar */}
+            <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+          </div>
+        ) : isDesempenho ? (
           <DesempenhoContent />
         ) : activeMain === "Liq. Períodos" ? (
           <LiqPeriodosContent activeSub={activeSubPeriodos} />
@@ -3835,54 +3878,6 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* ── COUNT BAR (Gerenciar Aplicativos) ── */}
-      {activeMain === "Gerenciar Aplicativos" && (
-        <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
-          <span className="text-xs text-gray-500">
-            <span className="font-bold text-gray-800">1</span> registro encontrado
-          </span>
-        </div>
-      )}
-
-      {/* ── GERENCIAR APLICATIVOS CONTENT ── */}
-      {activeMain === "Gerenciar Aplicativos" && (
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* table */}
-          <div className="flex-1 overflow-auto bg-white">
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-              <thead>
-                <tr style={{ background: "#3d6e8e", color: "#fff" }}>
-                  <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Nome</th>
-                  <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Sobrenome</th>
-                  <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Cód. Acesso</th>
-                  <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Data Vencimento</th>
-                  <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Opções</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { nome: "Rota Cred Bank", sobrenome: "--", codigo: "10600", vencimento: "2026-05-28" },
-                ].map((row, i) => (
-                  <tr key={i} style={{ borderBottom: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
-                    <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.nome}</td>
-                    <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.sobrenome}</td>
-                    <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.codigo}</td>
-                    <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.vencimento}</td>
-                    <td style={{ padding: "6px 12px" }}>
-                      <div className="flex items-center gap-1">
-                        <button style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontSize: 12 }}>✏</button>
-                        <button style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontSize: 12 }}>🗑</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {/* footer bar */}
-          <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
-        </div>
-      )}
 
     </div>
   );
