@@ -3464,7 +3464,14 @@ export default function DashboardPage() {
   const [gaSobrenome, setGaSobrenome] = useState("");
   const [gaCodigo, setGaCodigo] = useState("");
   const [gaModalOpen, setGaModalOpen] = useState(false);
-  const [gaForm, setGaForm] = useState({ empresa: "", nome: "", sobrenome: "-", vencimento: "", valorMax: "", saldoInicial: "", pais: "", cidade: "SAO LUIS", codigoAcesso: "", confirmarCodigo: "", estado: "Ativo" });
+  const [gaEditId, setGaEditId] = useState<number | null>(null);
+  const emptyGaForm = { empresa: "", nome: "", vencimento: "", valorMax: "", saldoInicial: "", codigoAcesso: "", confirmarCodigo: "", estado: "Ativo" };
+  const [gaForm, setGaForm] = useState(emptyGaForm);
+  const [gaRows, setGaRows] = useState([
+    { id: 1, rota: "Rota Cred Bank",  cobrador: "Carlos Alberto Souza",   codigo: "10600", vencimento: "2026-05-28", ativo: false },
+    { id: 2, rota: "SystemPay Demo",  cobrador: "Marcos Antônio Lima",    codigo: "10601", vencimento: "2026-12-31", ativo: true  },
+    { id: 3, rota: "Filial Norte",    cobrador: "Fernanda Costa Ribeiro", codigo: "10602", vencimento: "2026-09-15", ativo: true  },
+  ]);
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
@@ -3645,7 +3652,7 @@ export default function DashboardPage() {
             <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
-            <button onClick={() => setGaModalOpen(true)} className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+            <button onClick={() => { setGaEditId(null); setGaForm(emptyGaForm); setGaModalOpen(true); }} className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
           </div>
@@ -3681,7 +3688,7 @@ export default function DashboardPage() {
             {/* count bar */}
             <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
               <span className="text-xs text-gray-500">
-                <span className="font-bold text-gray-800">3</span> registros encontrados
+                <span className="font-bold text-gray-800">{gaRows.length}</span> registro{gaRows.length !== 1 ? "s" : ""} encontrado{gaRows.length !== 1 ? "s" : ""}
               </span>
             </div>
             {/* table */}
@@ -3699,16 +3706,12 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { id: 1, rota: "Rota Cred Bank",  cobrador: "Carlos Alberto Souza",   codigo: "10600", vencimento: "2026-05-28", ativo: false },
-                    { id: 2, rota: "SystemPay Demo",  cobrador: "Marcos Antônio Lima",    codigo: "10601", vencimento: "2026-12-31", ativo: true  },
-                    { id: 3, rota: "Filial Norte",    cobrador: "Fernanda Costa Ribeiro", codigo: "10602", vencimento: "2026-09-15", ativo: true  },
-                  ].map((row, i) => {
+                  {gaRows.map((row, i) => {
                     const venc = new Date(row.vencimento);
                     const hoje = new Date();
                     const vencido = !row.ativo || venc < hoje;
                     return (
-                      <tr key={i}
+                      <tr key={row.id}
                         style={{ borderBottom: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fff" : "#f8fafc", transition: "background 0.15s" }}
                         onMouseEnter={e => (e.currentTarget.style.background = "#eef4fb")}
                         onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f8fafc")}>
@@ -3737,10 +3740,18 @@ export default function DashboardPage() {
                         </td>
                         <td style={{ padding: "7px 14px", textAlign: "center" }}>
                           <div style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                            <button title="Editar" style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <button title="Editar"
+                              onClick={() => {
+                                setGaEditId(row.id);
+                                setGaForm({ empresa: row.rota, nome: row.cobrador, vencimento: row.vencimento, valorMax: "", saldoInicial: "", codigoAcesso: row.codigo, confirmarCodigo: row.codigo, estado: row.ativo ? "Ativo" : "Inativo" });
+                                setGaModalOpen(true);
+                              }}
+                              style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                               <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                             </button>
-                            <button title="Excluir" style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <button title="Excluir"
+                              onClick={() => { if (window.confirm(`Excluir "${row.rota}"?`)) setGaRows(prev => prev.filter(r => r.id !== row.id)); }}
+                              style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                               <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                             </button>
                           </div>
@@ -3921,7 +3932,7 @@ export default function DashboardPage() {
           <div style={{ background: "#fff", borderRadius: 6, width: "100%", maxWidth: 820, boxShadow: "0 8px 32px rgba(0,0,0,0.22)", overflow: "hidden" }}>
             {/* header */}
             <div style={{ background: "#3d6e8e", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: 13, letterSpacing: "0.03em" }}>Criação de Aplicativo</span>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 13, letterSpacing: "0.03em" }}>{gaEditId !== null ? "Editar Aplicativo" : "Criação de Aplicativo"}</span>
               <button onClick={() => setGaModalOpen(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: 18, lineHeight: 1 }}>×</button>
             </div>
 
@@ -3992,11 +4003,21 @@ export default function DashboardPage() {
 
               {/* action buttons */}
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, paddingTop: 8, borderTop: "1px solid #f1f5f9" }}>
-                <button onClick={() => setGaModalOpen(false)}
+                <button onClick={() => { setGaModalOpen(false); setGaEditId(null); setGaForm(emptyGaForm); }}
                   style={{ height: 32, padding: "0 18px", borderRadius: 4, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
                   Cancelar
                 </button>
-                <button onClick={() => setGaModalOpen(false)}
+                <button onClick={() => {
+                  if (gaEditId !== null) {
+                    setGaRows(prev => prev.map(r => r.id === gaEditId
+                      ? { ...r, rota: gaForm.empresa || r.rota, cobrador: gaForm.nome || r.cobrador, codigo: gaForm.codigoAcesso || r.codigo, vencimento: gaForm.vencimento || r.vencimento, ativo: gaForm.estado === "Ativo" }
+                      : r));
+                  } else {
+                    const newId = Math.max(0, ...gaRows.map(r => r.id)) + 1;
+                    setGaRows(prev => [...prev, { id: newId, rota: gaForm.empresa || "Nova Rota", cobrador: gaForm.nome || "—", codigo: gaForm.codigoAcesso || "—", vencimento: gaForm.vencimento || "", ativo: gaForm.estado === "Ativo" }]);
+                  }
+                  setGaModalOpen(false); setGaEditId(null); setGaForm(emptyGaForm);
+                }}
                   style={{ height: 32, padding: "0 20px", borderRadius: 4, border: "none", background: "#2563eb", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                   Salvar
                 </button>
