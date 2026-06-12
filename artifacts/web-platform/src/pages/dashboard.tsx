@@ -3476,7 +3476,7 @@ export default function DashboardPage() {
       {sideMenuOpen && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1000 }} onClick={() => setSideMenuOpen(false)}>
           {/* Floating card */}
-          <div style={{ position: "absolute", top: 52, left: 10, width: 210, background: "#fff", borderRadius: 10, boxShadow: "0 6px 24px rgba(0,0,0,0.16)", overflow: "hidden" }}
+          <div style={{ position: "absolute", top: 52, left: 10, width: 240, background: "#fff", borderRadius: 10, boxShadow: "0 6px 24px rgba(0,0,0,0.16)", overflow: "hidden" }}
             onClick={e => e.stopPropagation()}>
             {[
               { icon: "📊", label: "Relatório diário",             color: "#f97316" },
@@ -3487,23 +3487,23 @@ export default function DashboardPage() {
               { icon: "🔗", label: "Sincronizar",                  color: "#0891b2" },
               { icon: "📅", label: "Empréstimo outras datas",      color: "#db2777" },
               { icon: "👤", label: "Clientes ausentes",            color: "#6b7280" },
-            ].map(({ icon, label, color }, i, arr) => (
+            ].map(({ icon, label, color }) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
-                style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 14px", background: "transparent", border: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 12, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
+                style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", border: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
-                <span style={{ fontSize: 16, color }}>{icon}</span>
+                <span style={{ fontSize: 18, color }}>{icon}</span>
                 {label}
               </button>
             ))}
             {/* Sair */}
             <button onClick={() => { setSideMenuOpen(false); navigate("/"); }}
-              style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 14px", background: "transparent", border: "none", color: "#dc2626", fontSize: 12, fontWeight: 600, cursor: "pointer", textAlign: "left", width: "100%" }}
+              style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", border: "none", color: "#dc2626", fontSize: 13, fontWeight: 600, cursor: "pointer", textAlign: "left", width: "100%" }}
               onMouseEnter={e => (e.currentTarget.style.background = "#fff5f5")}
               onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
             >
-              <span style={{ fontSize: 16 }}>⏻</span>
+              <span style={{ fontSize: 18 }}>⏻</span>
               Sair
             </button>
           </div>
