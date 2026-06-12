@@ -3233,66 +3233,107 @@ function ConsolidadosContent() {
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <title>Consolidado Diário – ${cobrador} – ${dateFmt}</title>
 <style>
-  body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#111;}
-  .header{background:#2d5474;color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;text-align:center;}
+  *{box-sizing:border-box;}
+  body{font-family:Arial,sans-serif;margin:0;padding:20px;color:#111;background:#f1f5f9;}
+  .wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;}
+  .header{background:linear-gradient(135deg,#2d5474,#3d6e8e);color:#fff;padding:20px 24px;text-align:center;}
   .header h2{margin:0 0 4px;font-size:20px;}
-  .header p{margin:0;font-size:13px;opacity:.85;}
-  .badge{display:inline-block;background:#16a34a;color:#fff;padding:2px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-top:8px;}
-  .info-bar{background:#f1f5f9;padding:10px 24px;display:flex;gap:24px;font-size:13px;border-bottom:1px solid #e5e7eb;}
+  .header p{margin:0 0 10px;font-size:13px;opacity:.85;}
+  .badge{display:inline-block;background:#16a34a;color:#fff;padding:3px 14px;border-radius:20px;font-size:12px;font-weight:700;}
+  .info-bar{background:#f8fafc;padding:10px 22px;display:flex;gap:22px;flex-wrap:wrap;border-bottom:1px solid #e5e7eb;font-size:13px;}
   .info-bar span{color:#374151;}
   .info-bar strong{color:#1e3a5f;}
-  .body{padding:20px 24px;}
-  .section-title{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;}
-  .card{background:#f9fafb;border-radius:8px;overflow:hidden;margin-bottom:4px;}
-  .row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid #f3f4f6;}
+  .body{padding:18px 22px;}
+  /* indicator cards */
+  .cards{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+  .card-sm{flex:1 1 110px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;}
+  .card-sm .ci{font-size:18px;margin-bottom:4px;}
+  .card-sm .cl{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+  .card-sm .cv{font-size:15px;font-weight:800;color:#111;}
+  /* sections */
+  .sec-title{font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;padding-bottom:6px;border-bottom:2px solid #e5e7eb;margin:18px 0 8px;display:flex;align-items:center;gap:6px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .tcard{background:#f9fafb;border-radius:8px;overflow:hidden;}
+  .row{display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #f3f4f6;font-size:13px;}
   .row:last-child{border-bottom:none;}
-  .row .label{font-size:14px;color:#4b5563;}
-  .row .value{font-size:14px;font-weight:600;color:#111827;}
-  .row .value.green{color:#16a34a;}
-  .row .value.blue{color:#2563eb;}
-  .row .value.red{color:#dc2626;}
-  .final{background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
-  .final .fl{font-size:16px;font-weight:700;color:#166534;}
-  .final .fv{font-size:18px;font-weight:800;color:#16a34a;}
-  .footer{text-align:center;font-size:11px;color:#9ca3af;padding:14px;border-top:1px solid #f3f4f6;}
-  @media print{body{padding:0;}button{display:none;}}
+  .row .lbl{color:#6b7280;}
+  .row .val{font-weight:600;color:#111;}
+  .val.green{color:#16a34a;} .val.blue{color:#2563eb;} .val.red{color:#dc2626;} .val.purple{color:#7c3aed;}
+  /* formula */
+  .formula{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 14px;}
+  .formula .ftitle{font-size:11px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
+  .formula .frow{display:flex;justify-content:space-between;font-size:12px;color:#78350f;padding:4px 0;border-bottom:1px solid #fde68a;}
+  .formula .frow:last-child{border-bottom:none;}
+  .formula .fresult{display:flex;justify-content:space-between;background:#16a34a;color:#fff;border-radius:6px;padding:6px 10px;margin-top:8px;font-weight:700;}
+  /* final box */
+  .final{background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:16px;}
+  .final .fl{font-size:15px;font-weight:700;color:#166534;}
+  .final .fv{font-size:22px;font-weight:900;color:#16a34a;}
+  .footer{text-align:center;font-size:11px;color:#9ca3af;padding:12px;border-top:1px solid #f3f4f6;}
+  @media print{body{padding:0;background:#fff;}.wrap{border:none;border-radius:0;}}
 </style></head><body>
-<div style="max-width:680px;margin:0 auto;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+<div class="wrap">
   <div class="header">
     <h2>📊 Consolidado Diário</h2>
-    <p>${cobrador} · Sistema de Cobrança</p>
+    <p>${cobrador} · ${r.pais} · ${r.cidade}</p>
     <span class="badge">✓ Correto</span>
   </div>
   <div class="info-bar">
     <span>📅 <strong>${dateFmt}</strong></span>
+    <span>👥 Clientes ativos: <strong>${r.totalClientes}</strong></span>
     <span>🌍 <strong>${r.pais}</strong></span>
     <span>🏙 <strong>${r.cidade}</strong></span>
-    <span>👥 Clientes: <strong>${r.totalClientes}</strong></span>
   </div>
   <div class="body">
-    <div class="section-title">🔥 Movimentação Financeira</div>
-    <div class="card">
-      <div class="row"><span class="label">Caja Inicial</span><span class="value">${fmtR(r.cajaInicial)}</span></div>
-      <div class="row"><span class="label">Novos Clientes</span><span class="value blue">${r.totalClientes}</span></div>
-      <div class="row"><span class="label">Renovação de Clientes</span><span class="value">0</span></div>
-      <div class="row"><span class="label">Total de Empréstimos</span><span class="value">${fmtR(r.ventas)}</span></div>
-      <div class="row"><span class="label">Retiradas de Caja</span><span class="value">R$ 0,00</span></div>
-      <div class="row"><span class="label">Despesas</span><span class="value red">${fmtR(r.egresos)}</span></div>
-      <div class="row"><span class="label">Rendimentos</span><span class="value green">${fmtR(r.ingresos)}</span></div>
+
+    <div class="sec-title">📊 Indicadores Principais</div>
+    <div class="cards">
+      <div class="card-sm"><div class="ci">💰</div><div class="cl">Total Emprestado</div><div class="cv" style="color:#7c3aed">${fmtR(r.ventas)}</div></div>
+      <div class="card-sm"><div class="ci">💵</div><div class="cl">Total Recebido</div><div class="cv" style="color:#16a34a">${fmtR(r.recaudo)}</div></div>
+      <div class="card-sm"><div class="ci">📋</div><div class="cl">Carteira Aberta</div><div class="cv" style="color:#2563eb">${fmtR(r.cartera)}</div></div>
+      <div class="card-sm"><div class="ci">👥</div><div class="cl">Clientes Ativos</div><div class="cv" style="color:#0891b2">${r.totalClientes}</div></div>
+      <div class="card-sm"><div class="ci">🏦</div><div class="cl">Caixa Atual</div><div class="cv" style="color:#16a34a">${fmtR(r.cajaFinal)}</div></div>
     </div>
-    <div class="section-title">💰 Cobranças</div>
-    <div class="card">
-      <div class="row"><span class="label">Total Cobrado (Recaudo)</span><span class="value green">${fmtR(r.recaudo)}</span></div>
-      <div class="row"><span class="label">Carteira</span><span class="value blue">${fmtR(r.cartera)}</span></div>
-      <div class="row"><span class="label">Acumulado Caja Seguros</span><span class="value">${fmtR(r.acumulado)}</span></div>
+
+    <div class="grid2">
+      <div>
+        <div class="sec-title">🔥 Movimentação do Dia</div>
+        <div class="tcard">
+          <div class="row"><span class="lbl">Caixa inicial do dia</span><span class="val">${fmtR(r.cajaInicial)}</span></div>
+          <div class="row"><span class="lbl">Recebido nas cobranças</span><span class="val green">${fmtR(r.recaudo)}</span></div>
+          <div class="row"><span class="lbl">Novos empréstimos (Ventas)</span><span class="val purple">${fmtR(r.ventas)}</span></div>
+          <div class="row"><span class="lbl">Despesas (Egresos)</span><span class="val red">${fmtR(r.egresos)}</span></div>
+          <div class="row"><span class="lbl">Entradas extras (Ingresos)</span><span class="val green">${fmtR(r.ingresos)}</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-title">📋 Carteira &amp; Acumulado</div>
+        <div class="tcard">
+          <div class="row"><span class="lbl">Carteira aberta (a receber)</span><span class="val blue">${fmtR(r.cartera)}</span></div>
+          <div class="row"><span class="lbl">Fundo de seguro acumulado</span><span class="val">${fmtR(r.acumulado)}</span></div>
+        </div>
+        <div class="sec-title" style="margin-top:14px">📐 Cálculo do Caixa Final</div>
+        <div class="formula">
+          <div class="ftitle">Como o sistema calculou</div>
+          <div class="frow"><span>Caixa Inicial</span><span>${fmtR(r.cajaInicial)}</span></div>
+          <div class="frow"><span>+ Recaudo (recebido)</span><span style="color:#16a34a">+ ${fmtR(r.recaudo)}</span></div>
+          <div class="frow"><span>+ Ingresos (extras)</span><span style="color:#16a34a">+ ${fmtR(r.ingresos)}</span></div>
+          <div class="frow"><span>− Ventas (empréstimos)</span><span style="color:#dc2626">− ${fmtR(r.ventas)}</span></div>
+          <div class="frow"><span>− Egresos (despesas)</span><span style="color:#dc2626">− ${fmtR(r.egresos)}</span></div>
+          <div class="fresult"><span>= Caixa Final</span><span>${fmtR(r.cajaFinal)}</span></div>
+        </div>
+      </div>
     </div>
-    <div class="section-title">🟢 Saldo Final</div>
+
     <div class="final">
-      <span class="fl">Caja Final</span>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">🟢 Caixa Final do Dia</div>
+        <div style="font-size:12px;color:#4b7c59">Dinheiro em caixa ao encerrar o dia · ${dateFmt}</div>
+      </div>
       <span class="fv">${fmtR(r.cajaFinal)}</span>
     </div>
   </div>
-  <div class="footer">Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança</div>
+  <div class="footer">Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança · SystemPay</div>
 </div>
 <script>window.onload=()=>{window.print();}<\/script>
 </body></html>`;
@@ -3307,23 +3348,35 @@ function ConsolidadosContent() {
       `Rota: ${cobrador}`,
       `País: ${r.pais} | Cidade: ${r.cidade}`,
       ``,
-      `*🔥 Movimentação Financeira*`,
-      `Caja Inicial: ${fmtR(r.cajaInicial)}`,
-      `Novos Clientes: ${r.totalClientes}`,
-      `Renovação de Clientes: 0`,
-      `Total de Empréstimos: ${fmtR(r.ventas)}`,
-      `Retiradas de Caja: R$ 0,00`,
-      `Despesas: ${fmtR(r.egresos)}`,
-      `Rendimentos: ${fmtR(r.ingresos)}`,
+      `*📊 Indicadores Principais*`,
+      `💰 Total Emprestado: ${fmtR(r.ventas)}`,
+      `💵 Total Recebido: ${fmtR(r.recaudo)}`,
+      `📋 Carteira Aberta: ${fmtR(r.cartera)}`,
+      `👥 Clientes Ativos: ${r.totalClientes}`,
+      `🏦 Caixa Atual: ${fmtR(r.cajaFinal)}`,
       ``,
-      `*💰 Cobranças*`,
-      `Total Cobrado: ${fmtR(r.recaudo)}`,
-      `Carteira: ${fmtR(r.cartera)}`,
-      `Acumulado: ${fmtR(r.acumulado)}`,
+      `*🔥 Movimentação do Dia*`,
+      `Caixa inicial do dia: ${fmtR(r.cajaInicial)}`,
+      `Recebido nas cobranças: ${fmtR(r.recaudo)}`,
+      `Novos empréstimos (Ventas): ${fmtR(r.ventas)}`,
+      `Despesas (Egresos): ${fmtR(r.egresos)}`,
+      `Entradas extras (Ingresos): ${fmtR(r.ingresos)}`,
       ``,
-      `*🟢 CAJA FINAL: ${fmtR(r.cajaFinal)}*`,
+      `*📋 Carteira & Acumulado*`,
+      `Carteira aberta (a receber): ${fmtR(r.cartera)}`,
+      `Fundo de seguro acumulado: ${fmtR(r.acumulado)}`,
       ``,
-      `_Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança_`,
+      `*📐 Cálculo do Caixa Final*`,
+      `${fmtR(r.cajaInicial)} (inicial)`,
+      `+ ${fmtR(r.recaudo)} (recaudo)`,
+      `+ ${fmtR(r.ingresos)} (ingresos)`,
+      `− ${fmtR(r.ventas)} (ventas)`,
+      `− ${fmtR(r.egresos)} (egresos)`,
+      `= *${fmtR(r.cajaFinal)}*`,
+      ``,
+      `*🟢 CAIXA FINAL DO DIA: ${fmtR(r.cajaFinal)}*`,
+      ``,
+      `_Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança · SystemPay_`,
     ];
     window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
   };
