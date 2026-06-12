@@ -3449,6 +3449,7 @@ export default function DashboardPage() {
   const [liqInicio, setLiqInicio] = useState(() => { const d = new Date(); d.setDate(1); return d.toISOString().slice(0,10); });
   const [liqFim,    setLiqFim]    = useState(() => new Date().toISOString().slice(0,10));
   const [diarioData, setDiarioData] = useState(() => new Date().toISOString().slice(0,10));
+  const [sideMenuOpen, setSideMenuOpen] = useState(false);
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
@@ -3471,9 +3472,51 @@ export default function DashboardPage() {
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ fontFamily: "system-ui, sans-serif", background: "#f4f4f4" }}>
 
+      {/* ── SIDE MENU OVERLAY ── */}
+      {sideMenuOpen && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex" }}>
+          {/* Backdrop */}
+          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)" }} onClick={() => setSideMenuOpen(false)} />
+          {/* Drawer */}
+          <div style={{ position: "relative", width: 230, background: "#1e3a50", height: "100%", display: "flex", flexDirection: "column", boxShadow: "4px 0 24px rgba(0,0,0,0.35)", overflowY: "auto" }}>
+            {/* Header */}
+            <div style={{ background: "#2d5474", padding: "16px 18px", display: "flex", alignItems: "center", gap: 10, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+              <img src={menuIcon} alt="Logo" style={{ width: 32, height: 32, objectFit: "contain" }} />
+              <span style={{ color: "#fff", fontWeight: 800, fontSize: 15, letterSpacing: "0.03em" }}>SYSTEMPAY</span>
+            </div>
+            {/* Menu Items */}
+            {[
+              { icon: "👥", label: "Gestão de Vendedores" },
+              { icon: "🧑‍🤝‍🧑", label: "Gestão de Clientes" },
+              { icon: "💰", label: "Ingressos" },
+              { icon: "💸", label: "Egresos" },
+              { icon: "📋", label: "Importar Rotas" },
+              { icon: "🔧", label: "Gestão de Usuários" },
+              { icon: "📅", label: "Alterar Datas" },
+              { icon: "🧾", label: "Faturas" },
+              { icon: "🏦", label: "Liq. Funcionários" },
+              { icon: "📊", label: "Cons. Gastos" },
+              { icon: "💼", label: "Caixa Geral" },
+              { icon: "🔍", label: "Auditoria" },
+              { icon: "🔓", label: "Abertura Geral" },
+              { icon: "📂", label: "Conceitos Ing/Gasto" },
+            ].map(({ icon, label }) => (
+              <button key={label} onClick={() => setSideMenuOpen(false)}
+                style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 18px", background: "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                <span style={{ fontSize: 16 }}>{icon}</span>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── TOP BAR ── */}
       <div className="flex items-center justify-between h-12 px-3 shrink-0" style={{ background: "#2d5474" }}>
-        <img src={menuIcon} alt="Menu" className="h-8 w-8 object-contain select-none cursor-pointer" draggable={false} />
+        <img src={menuIcon} alt="Menu" className="h-8 w-8 object-contain select-none cursor-pointer" draggable={false} onClick={() => setSideMenuOpen(true)} />
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-1 px-3 h-7 text-sm font-medium rounded" style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.8)" }}>🔑 Alterar Senha</button>
           <button onClick={() => navigate("/")} className="flex items-center gap-1 px-3 h-7 text-sm font-medium rounded" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)" }}>⏻ Sair</button>
