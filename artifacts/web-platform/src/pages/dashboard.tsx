@@ -3206,7 +3206,7 @@ const consolidadosData = [
     vendedor: "Rota Cred Bank -", totalClientes: 20,
     cajaInicial: 2979.00, recaudo: 200.00, ventas: 0.00,
     egresos: 0.00, ingresos: 0.00,
-    cajaFinal: 3179.00, cartera: 12460.00, acumulado: 0.00,
+    cajaFinal: 3179.00, cartera: 12460.00, acumulado: 0.00, juros: 1246.00,
   },
 ];
 
@@ -3290,6 +3290,7 @@ function ConsolidadosContent() {
     <div class="cards">
       <div class="card-sm"><div class="ci">💰</div><div class="cl">Total Emprestado</div><div class="cv" style="color:#7c3aed">${fmtR(r.ventas)}</div></div>
       <div class="card-sm"><div class="ci">💵</div><div class="cl">Total Recebido</div><div class="cv" style="color:#16a34a">${fmtR(r.recaudo)}</div></div>
+      <div class="card-sm"><div class="ci">📈</div><div class="cl">Juros a Receber</div><div class="cv" style="color:#f59e0b">${fmtR(r.juros)}</div></div>
       <div class="card-sm"><div class="ci">📋</div><div class="cl">Carteira Aberta</div><div class="cv" style="color:#2563eb">${fmtR(r.cartera)}</div></div>
       <div class="card-sm"><div class="ci">👥</div><div class="cl">Clientes Ativos</div><div class="cv" style="color:#0891b2">${r.totalClientes}</div></div>
       <div class="card-sm"><div class="ci">🏦</div><div class="cl">Caixa Atual</div><div class="cv" style="color:#16a34a">${fmtR(r.cajaFinal)}</div></div>
@@ -3301,6 +3302,7 @@ function ConsolidadosContent() {
         <div class="tcard">
           <div class="row"><span class="lbl">Caixa inicial do dia</span><span class="val">${fmtR(r.cajaInicial)}</span></div>
           <div class="row"><span class="lbl">Recebido nas cobranças</span><span class="val green">${fmtR(r.recaudo)}</span></div>
+          <div class="row"><span class="lbl">📈 Juros a Receber</span><span class="val" style="color:#f59e0b;font-weight:700">${fmtR(r.juros)}</span></div>
           <div class="row"><span class="lbl">Novos empréstimos (Ventas)</span><span class="val purple">${fmtR(r.ventas)}</span></div>
           <div class="row"><span class="lbl">Despesas (Egresos)</span><span class="val red">${fmtR(r.egresos)}</span></div>
           <div class="row"><span class="lbl">Entradas extras (Ingresos)</span><span class="val green">${fmtR(r.ingresos)}</span></div>
@@ -3351,6 +3353,7 @@ function ConsolidadosContent() {
       `*📊 Indicadores Principais*`,
       `💰 Total Emprestado: ${fmtR(r.ventas)}`,
       `💵 Total Recebido: ${fmtR(r.recaudo)}`,
+      `📈 Juros a Receber: ${fmtR(r.juros)}`,
       `📋 Carteira Aberta: ${fmtR(r.cartera)}`,
       `👥 Clientes Ativos: ${r.totalClientes}`,
       `🏦 Caixa Atual: ${fmtR(r.cajaFinal)}`,
@@ -3358,6 +3361,7 @@ function ConsolidadosContent() {
       `*🔥 Movimentação do Dia*`,
       `Caixa inicial do dia: ${fmtR(r.cajaInicial)}`,
       `Recebido nas cobranças: ${fmtR(r.recaudo)}`,
+      `📈 Juros a Receber: ${fmtR(r.juros)}`,
       `Novos empréstimos (Ventas): ${fmtR(r.ventas)}`,
       `Despesas (Egresos): ${fmtR(r.egresos)}`,
       `Entradas extras (Ingresos): ${fmtR(r.ingresos)}`,
@@ -3466,6 +3470,7 @@ function ConsolidadosContent() {
         <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" as const }}>
           <StatCard icon="💰" label="Total Emprestado"   value={fmtR(r.ventas)}          accent="#7c3aed" bg="#f5f3ff" />
           <StatCard icon="💵" label="Total Recebido"     value={fmtR(r.recaudo)}         accent="#16a34a" bg="#f0fdf4" />
+          <StatCard icon="📈" label="Juros a Receber"    value={fmtR(r.juros)}           accent="#f59e0b" bg="#fffbeb" />
           <StatCard icon="📋" label="Carteira Aberta"    value={fmtR(r.cartera)}         accent="#2563eb" bg="#eff6ff" />
           <StatCard icon="👥" label="Clientes Ativos"    value={String(r.totalClientes)} accent="#0891b2" bg="#ecfeff" />
           <StatCard icon="🏦" label="Caixa Atual"        value={fmtR(r.cajaFinal)}       accent="#16a34a" bg="#f0fdf4" />
@@ -3478,6 +3483,7 @@ function ConsolidadosContent() {
           <Panel icon="🔥" title="Movimentação do Dia" accent="#f97316">
             <ListRow label="Caixa inicial do dia"        value={r.cajaInicial} />
             <ListRow label="Recebido nas cobranças"      value={r.recaudo}  valueColor="#16a34a" bold />
+            <ListRow label="📈 Juros a Receber"          value={r.juros}    valueColor="#f59e0b" bold />
             <ListRow label="Novos empréstimos (Ventas)"  value={r.ventas}   valueColor={r.ventas  > 0 ? "#7c3aed" : "#6b7280"} />
             <ListRow label="Despesas (Egresos)"          value={r.egresos}  valueColor={r.egresos > 0 ? "#dc2626" : "#6b7280"} />
             <ListRow label="Entradas extras (Ingresos)"  value={r.ingresos} valueColor={r.ingresos > 0 ? "#16a34a" : "#6b7280"} border={false} />
