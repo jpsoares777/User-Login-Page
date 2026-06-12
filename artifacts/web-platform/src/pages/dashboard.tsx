@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
-import iconGerenciar from "@assets/ícone-linear-de-segurança-do-smartphone-verificação-usuário-t_1781283034370.webp";
+import iconGerenciar from "@assets/2205843-mobile-settings-icon-vetor_1781283702330.jpg";
 import iconGerenciarClientes from "@assets/4168988_1781283346707.png";
 import iconGerenciarApp2 from "@assets/1570102_1781283457472.png";
 import {
