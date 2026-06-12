@@ -3881,116 +3881,124 @@ export default function DashboardPage() {
               const prevParc = Math.round(prevTotal / 14);
               const totalEmp = mr.total + prevTotal;
               return (
-                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 9000, display: "flex", alignItems: "center", justifyContent: "center" }}
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9000, display: "flex", alignItems: "center", justifyContent: "center" }}
                   onClick={() => setGcModalOpen(false)}>
-                  <div style={{ background: "#fff", borderRadius: 8, width: 560, maxHeight: "90vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", display: "flex", flexDirection: "column" }}
+                  <div style={{ background: "#fff", borderRadius: 6, width: 490, maxHeight: "92vh", overflowY: "auto", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}
                     onClick={e => e.stopPropagation()}>
-                    {/* header bar */}
-                    <div style={{ background: "#2d5474", color: "#fff", padding: "12px 16px", borderRadius: "8px 8px 0 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: "0.08em" }}>FICHA DO CLIENTE</span>
-                      <button onClick={() => setGcModalOpen(false)} style={{ background: "none", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" }}>×</button>
+
+                    {/* ── header ── */}
+                    <div style={{ background: "#2d5474", color: "#fff", padding: "10px 16px", borderRadius: "6px 6px 0 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ fontWeight: 700, fontSize: 13, letterSpacing: "0.06em" }}>FICHA DO CLIENTE</span>
+                      <button onClick={() => setGcModalOpen(false)} style={{ background: "none", border: "none", color: "#fff", fontSize: 22, cursor: "pointer", lineHeight: 1, padding: 0 }}>×</button>
                     </div>
-                    {/* body */}
-                    <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
-                      {/* client header */}
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#2d5474", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 20, flexShrink: 0 }}>
+
+                    <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
+
+                      {/* ── avatar + info + inativar ── */}
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                        {/* avatar */}
+                        <div style={{ width: 58, height: 58, borderRadius: "50%", background: "#cbd5e1", border: "3px solid #94a3b8", color: "#475569", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 20, flexShrink: 0, letterSpacing: 1 }}>
                           {initials}
                         </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-                            <span style={{ fontWeight: 800, fontSize: 16, color: "#1e293b" }}>{mr.nome}</span>
-                            <button style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, padding: "5px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", marginLeft: 10 }}>
-                              ● Inativar Cliente
+                        {/* name + badges + doc */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+                            <span style={{ fontWeight: 800, fontSize: 15, color: "#1e293b", lineHeight: 1.3 }}>{mr.nome}</span>
+                            <button style={{ flexShrink: 0, background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, padding: "5px 11px", fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+                              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff", display: "inline-block" }} />
+                              Inativar Cliente
                             </button>
                           </div>
-                          <div style={{ display: "flex", gap: 6, marginTop: 5, flexWrap: "wrap" }}>
-                            <span style={{ background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>ACTIVO</span>
-                            <span style={{ background: "#dbeafe", color: "#1d4ed8", border: "1px solid #93c5fd", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{mr.consec}</span>
-                            <span style={{ background: "#f3f4f6", color: "#374151", border: "1px solid #d1d5db", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>{mr.freq}</span>
+                          {/* badges row */}
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5, flexWrap: "wrap" }}>
+                            <span style={{ background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 3, padding: "1px 7px", fontSize: 11, fontWeight: 700 }}>ACTIVO</span>
+                            <span style={{ background: "#dbeafe", color: "#1d4ed8", border: "1px solid #93c5fd", borderRadius: 3, padding: "1px 7px", fontSize: 11, fontWeight: 600 }}>{mr.consec}</span>
+                            <span style={{ fontSize: 11, color: "#374151" }}>{mr.freq}</span>
                           </div>
-                          <div style={{ marginTop: 5, fontSize: 12, color: "#64748b" }}>
-                            Doc: <strong style={{ color: "#374151" }}>{mr.doc}</strong> &nbsp;|&nbsp; Nasc: <strong style={{ color: "#374151" }}>{mr.nasc}</strong>
+                          {/* doc + nasc */}
+                          <div style={{ marginTop: 4, fontSize: 11.5, color: "#64748b" }}>
+                            Doc: <span style={{ color: "#374151" }}>{mr.doc}</span>&ensp;|&ensp;Nasc: <span style={{ color: "#374151" }}>{mr.nasc}</span>
                           </div>
                         </div>
                       </div>
-                      {/* edit + delete buttons */}
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                          Editar Dados
-                        </button>
-                        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                          Excluir Cliente
-                        </button>
-                      </div>
-                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
-                      {/* contato */}
+
+                      <hr style={{ margin: "0", borderColor: "#e5e7eb" }} />
+
+                      {/* ── contato e endereço ── */}
                       <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Contato e Endereço</div>
-                        <div style={{ display: "flex", gap: 24, fontSize: 12, color: "#374151", marginBottom: 4 }}>
-                          <span>Tel 1: <strong>{mr.tel1}</strong></span>
-                          <span>Tel 2: <strong>{mr.tel2}</strong></span>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#374151", letterSpacing: "0.07em", marginBottom: 6 }}>CONTATO E ENDEREÇO</div>
+                        <div style={{ fontSize: 12, color: "#374151", marginBottom: 3 }}>
+                          Tel 1: <strong>{mr.tel1}</strong>&emsp;Tel 2: <strong>{mr.tel2}</strong>
                         </div>
-                        <div style={{ fontSize: 12, color: "#374151", marginBottom: 4 }}>Endereço: {mr.endereco}</div>
-                        <div style={{ fontSize: 12 }}>Verificação: <span style={{ color: "#d97706", fontWeight: 600 }}>Sem Verificação</span></div>
+                        <div style={{ fontSize: 12, color: "#374151", marginBottom: 3 }}>
+                          Endereço: {mr.endereco}
+                        </div>
+                        <div style={{ fontSize: 12 }}>
+                          Verificação: <span style={{ color: "#f59e0b", fontWeight: 600, textDecoration: "underline", cursor: "pointer" }}>Sem Verificação</span>
+                        </div>
                       </div>
-                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
-                      {/* action buttons */}
+
+                      {/* ── ver parcelas + documentos ── */}
                       <div style={{ display: "flex", gap: 8 }}>
-                        <button style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid #cbd5e1", background: "#f8fafc", color: "#1e293b", borderRadius: 5, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                          📋 Ver Parcelas Pagas — Empréstimo Ativo
+                        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#334155", color: "#fff", border: "none", borderRadius: 5, padding: "7px 12px", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
+                          <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff", flexShrink: 0 }}><path d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h12v2H3v-2zm0 4h12v2H3v-2z"/></svg>
+                          Ver Parcelas Pagas — Empréstimo Ativo
                         </button>
-                        <button style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid #cbd5e1", background: "#f8fafc", color: "#1e293b", borderRadius: 5, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                          🖼 Documentos
+                        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#f8fafc", color: "#374151", border: "1px solid #cbd5e1", borderRadius: 5, padding: "7px 12px", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
+                          <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#6b7280", flexShrink: 0 }}><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                          Documentos
                         </button>
                       </div>
-                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
-                      {/* loan history */}
+
+                      {/* ── loan history ── */}
                       <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 6 }}>
-                          👤 {mr.nome.toUpperCase()} #{mr.consec}
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 6, display: "flex", alignItems: "center", gap: 5 }}>
+                          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#374151" }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                          {mr.nome.toUpperCase()}&ensp;#{mr.consec}
                         </div>
-                        <div style={{ overflowX: "auto", border: "1px solid #e5e7eb", borderRadius: 6 }}>
-                          <table style={{ borderCollapse: "collapse", fontSize: 11, whiteSpace: "nowrap", width: "100%" }}>
+                        <div style={{ overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: 4 }}>
+                          <table style={{ borderCollapse: "collapse", fontSize: 11, whiteSpace: "nowrap", minWidth: 600 }}>
                             <thead>
                               <tr style={{ background: "#3d6e8e", color: "#fff" }}>
-                                {["Nro.","Data do Emp.","Estado","Parr.","Pagas","Falt.","Saldo","Valor Emp.","Freq.","Vs. Parcela","Visitas"].map(h => (
-                                  <th key={h} style={{ padding: "6px 8px", fontWeight: 600, textAlign: "center" }}>{h}</th>
+                                {["Nro.","Data do Emp.","Estado","Parr.","Pagas","Falt.","Saldo","Valor Emp.","Freq.","Vs. Parcela","Visitas","%"].map(h => (
+                                  <th key={h} style={{ padding: "5px 8px", fontWeight: 600, fontSize: 10.5, textAlign: "center" }}>{h}</th>
                                 ))}
                               </tr>
                             </thead>
                             <tbody>
+                              {/* row 2 — current */}
                               <tr style={{ background: "#fff", borderBottom: "1px solid #f1f5f9" }}>
-                                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700 }}>2</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>2026-04-08</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>
-                                  <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 10, padding: "1px 8px", fontWeight: 700 }}>Quitado</span>
+                                <td style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700 }}>2</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>2026-04-08</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>
+                                  <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 10, padding: "1px 8px", fontWeight: 700, fontSize: 10 }}>Quitado</span>
                                 </td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.parcelas}</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.pagas}</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>0</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>$ 0,00</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700, color: "#dc2626" }}>$ {mr.total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.freq}</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>$ {mr.valorParc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.visitas}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.parcelas}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.pagas}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>0</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>$ 0,00</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700, color: "#dc2626" }}>$ {mr.total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.freq}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>$ {mr.valorParc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.visitas}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>-</td>
                               </tr>
+                              {/* row 1 — previous */}
                               <tr style={{ background: "#f8fafc" }}>
-                                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700 }}>1</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>2025-10-01</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>
-                                  <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 10, padding: "1px 8px", fontWeight: 700 }}>Quitado</span>
+                                <td style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700 }}>1</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>2025-10-01</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>
+                                  <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 10, padding: "1px 8px", fontWeight: 700, fontSize: 10 }}>Quitado</span>
                                 </td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>14</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>14</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>0</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>$ 0,00</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700, color: "#dc2626" }}>$ {prevTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.freq}</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>$ {prevParc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.visitas}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>14</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>14</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>0</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>$ 0,00</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700, color: "#dc2626" }}>$ {prevTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.freq}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>$ {prevParc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.visitas}</td>
+                                <td style={{ padding: "5px 8px", textAlign: "center" }}>-</td>
                               </tr>
                             </tbody>
                           </table>
@@ -3999,22 +4007,35 @@ export default function DashboardPage() {
                           TOTAL EMPRÉSTIMOS: $ {totalEmp.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                         </div>
                       </div>
-                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
-                      {/* cancelar */}
-                      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+
+                      {/* ── cancelar + editar + excluir ── */}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <button style={{ display: "flex", alignItems: "center", gap: 5, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "6px 12px", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 12, height: 12, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            Editar Dados
+                          </button>
+                          <button style={{ display: "flex", alignItems: "center", gap: 5, background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, padding: "6px 12px", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 12, height: 12, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            Excluir Cliente
+                          </button>
+                        </div>
                         <button onClick={() => setGcModalOpen(false)}
-                          style={{ background: "#2d5474", color: "#fff", border: "none", borderRadius: 5, padding: "8px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                          style={{ background: "#1e3a5f", color: "#fff", border: "none", borderRadius: 5, padding: "7px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                           Cancelar
                         </button>
                       </div>
-                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
-                      {/* observações */}
+
+                      <hr style={{ margin: "0", borderColor: "#e5e7eb" }} />
+
+                      {/* ── observações ── */}
                       <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#374151", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Observações</div>
-                        <div style={{ background: "#fefce8", border: "1px solid #fde68a", borderRadius: 5, padding: "10px 12px", fontSize: 13, color: "#374151", minHeight: 48 }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#374151", letterSpacing: "0.07em", marginBottom: 6 }}>OBSERVAÇÕES</div>
+                        <div style={{ background: "#fefce8", border: "1px solid #fde68a", borderRadius: 4, padding: "10px 12px", fontSize: 12.5, color: "#374151", minHeight: 44 }}>
                           {mr.obs || <span style={{ color: "#9ca3af", fontStyle: "italic" }}>Sem observações.</span>}
                         </div>
                       </div>
+
                     </div>
                   </div>
                 </div>
