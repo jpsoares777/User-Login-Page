@@ -3487,7 +3487,7 @@ export default function DashboardPage() {
               { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
               { icon: "📈", label: "Gerenc. de rendimentos",       color: "#16a34a" },
               { icon: "🔄", label: "Importar rota",                 color: "#7c3aed" },
-              { icon: "🔗", label: "Sincronizar",                  color: "#0891b2" },
+              { icon: "🔗", label: "Faturas",                       color: "#0891b2" },
               { icon: "📅", label: "Empréstimo outras datas",      color: "#db2777" },
               { icon: "👤", label: "Clientes ausentes",            color: "#6b7280" },
             ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number }) => (
