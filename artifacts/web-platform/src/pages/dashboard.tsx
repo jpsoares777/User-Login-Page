@@ -3483,7 +3483,7 @@ export default function DashboardPage() {
             onClick={e => e.stopPropagation()}>
             {[
               { icon: "📊", label: "Relatório diário",             color: "#f97316" },
-              { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar },
+              { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar, darkIcon: true },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
               { icon: "💳", label: "Novos empréstimos",            color: "#2563eb" },
               { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
@@ -3492,7 +3492,7 @@ export default function DashboardPage() {
               { icon: "🔗", label: "Sincronizar",                  color: "#0891b2" },
               { icon: "📅", label: "Empréstimo outras datas",      color: "#db2777" },
               { icon: "👤", label: "Clientes ausentes",            color: "#6b7280" },
-            ].map(({ icon, label, color, img, imgBg }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string }) => (
+            ].map(({ icon, label, color, img, imgBg, darkIcon }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean }) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", border: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
@@ -3500,7 +3500,7 @@ export default function DashboardPage() {
               >
                 {img
                   ? <span style={{ width: 26, height: 26, borderRadius: 6, background: imgBg ?? "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <img src={img} alt={label} style={{ width: imgBg ? 17 : 24, height: imgBg ? 17 : 24, objectFit: "contain", filter: imgBg ? "brightness(0) invert(1)" : "brightness(0) saturate(0) contrast(2)" }} />
+                      <img src={img} alt={label} style={{ width: imgBg ? 17 : 24, height: imgBg ? 17 : 24, objectFit: "contain", filter: imgBg ? "brightness(0) invert(1)" : darkIcon ? "brightness(0) contrast(2)" : "none" }} />
                     </span>
                   : <span style={{ fontSize: 18, color }}>{icon}</span>
                 }
