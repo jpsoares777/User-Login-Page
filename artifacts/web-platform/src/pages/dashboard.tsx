@@ -3690,6 +3690,7 @@ export default function DashboardPage() {
   const [importarVendedor, setImportarVendedor] = useState("");
   const [importarMasivo, setImportarMasivo] = useState(true);
   const [importarArquivo, setImportarArquivo] = useState<File | null>(null);
+  const [importarArquivoClientes, setImportarArquivoClientes] = useState<File | null>(null);
 
   // ── Faturas ──
   type FaturaRow = { id: number; nro: string; data: string; iva: number; valorCop: number; valorUsd: number; meses: number; conceito: string; estado: "Pendente" | "Pago" | "Vencido"; vencimento: string; pais: string; };
@@ -4229,7 +4230,7 @@ export default function DashboardPage() {
                 <div style={{ padding: "28px 32px", display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
                   {/* Vendedor */}
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <label style={{ fontSize: 13, color: "#334155", fontWeight: 500, whiteSpace: "nowrap" }}>Vendedor (*):</label>
+                    <label style={{ fontSize: 13, color: "#334155", fontWeight: 500, whiteSpace: "nowrap" }}>Rota (*):</label>
                     <select value={importarVendedor} onChange={e => setImportarVendedor(e.target.value)}
                       style={{ height: 28, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 24px 0 8px", fontSize: 12, color: importarVendedor ? "#334155" : "#94a3b8", background: "#fff", outline: "none", minWidth: 200, cursor: "pointer" }}>
                       <option value="">---Selecione---</option>
@@ -4242,34 +4243,65 @@ export default function DashboardPage() {
                     </select>
                   </div>
 
-                  {/* Escolher arquivo */}
-                  <label style={{ display: "flex", alignItems: "center", gap: 0, cursor: "pointer" }}>
-                    <span style={{ background: "#e8edf2", border: "1px solid #94a3b8", borderRight: "none", borderRadius: "3px 0 0 3px", padding: "0 10px", height: 28, display: "flex", alignItems: "center", fontSize: 12, color: "#334155", fontWeight: 500, whiteSpace: "nowrap" }}>
-                      Escolher arquivo
-                    </span>
-                    <span style={{ background: "#3d6e8e", border: "1px solid #2d5474", borderRadius: "0 3px 3px 0", padding: "0 12px", height: 28, display: "flex", alignItems: "center", fontSize: 12, color: "#fff", whiteSpace: "nowrap", minWidth: 160 }}>
-                      {importarArquivo ? importarArquivo.name : "Nenhum arquivo escolhido"}
-                    </span>
-                    <input type="file" accept=".csv,.xlsx,.xls" style={{ display: "none" }}
-                      onChange={e => setImportarArquivo(e.target.files?.[0] ?? null)} />
-                  </label>
+                  {/* Arquivo de Rotas */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase" }}>Arquivo de Rotas</span>
+                    <label style={{ display: "flex", alignItems: "center", gap: 0, cursor: "pointer" }}>
+                      <span style={{ background: "#e8edf2", border: "1px solid #94a3b8", borderRight: "none", borderRadius: "3px 0 0 3px", padding: "0 10px", height: 28, display: "flex", alignItems: "center", fontSize: 12, color: "#334155", fontWeight: 500, whiteSpace: "nowrap" }}>
+                        Escolher arquivo
+                      </span>
+                      <span style={{ background: "#3d6e8e", border: "1px solid #2d5474", borderRadius: "0 3px 3px 0", padding: "0 12px", height: 28, display: "flex", alignItems: "center", fontSize: 12, color: "#fff", whiteSpace: "nowrap", minWidth: 160 }}>
+                        {importarArquivo ? importarArquivo.name : "Nenhum arquivo escolhido"}
+                      </span>
+                      <input type="file" accept=".csv,.xlsx,.xls" style={{ display: "none" }}
+                        onChange={e => setImportarArquivo(e.target.files?.[0] ?? null)} />
+                    </label>
+                  </div>
+
+                  {/* Arquivo de Clientes */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase" }}>Lista de Clientes</span>
+                    <label style={{ display: "flex", alignItems: "center", gap: 0, cursor: "pointer" }}>
+                      <span style={{ background: "#e8edf2", border: "1px solid #94a3b8", borderRight: "none", borderRadius: "3px 0 0 3px", padding: "0 10px", height: 28, display: "flex", alignItems: "center", fontSize: 12, color: "#334155", fontWeight: 500, whiteSpace: "nowrap" }}>
+                        Escolher arquivo
+                      </span>
+                      <span style={{ background: "#7c3aed", border: "1px solid #6d28d9", borderRadius: "0 3px 3px 0", padding: "0 12px", height: 28, display: "flex", alignItems: "center", fontSize: 12, color: "#fff", whiteSpace: "nowrap", minWidth: 160 }}>
+                        {importarArquivoClientes ? importarArquivoClientes.name : "Nenhum arquivo escolhido"}
+                      </span>
+                      <input type="file" accept=".csv,.xlsx,.xls" style={{ display: "none" }}
+                        onChange={e => setImportarArquivoClientes(e.target.files?.[0] ?? null)} />
+                    </label>
+                  </div>
                 </div>
 
-                {/* Upload area when file selected */}
-                {importarArquivo && (
-                  <div style={{ margin: "0 32px 28px", padding: "14px 18px", background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 6, display: "flex", alignItems: "center", gap: 10 }}>
-                    <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#16a34a", flexShrink: 0 }}><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                    <div style={{ flex: 1 }}>
-                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "#15803d" }}>{importarArquivo.name}</p>
-                      <p style={{ margin: 0, fontSize: 11, color: "#4ade80" }}>{(importarArquivo.size / 1024).toFixed(1)} KB</p>
-                    </div>
-                    <button onClick={() => setImportarArquivo(null)}
-                      style={{ background: "none", border: "none", cursor: "pointer", color: "#dc2626", fontSize: 16, fontWeight: 700, lineHeight: 1 }}>✕</button>
+                {/* Cards de arquivos selecionados */}
+                {(importarArquivo || importarArquivoClientes) && (
+                  <div style={{ margin: "0 32px 20px", display: "flex", flexDirection: "column", gap: 8 }}>
+                    {importarArquivo && (
+                      <div style={{ padding: "12px 16px", background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 6, display: "flex", alignItems: "center", gap: 10 }}>
+                        <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#16a34a", flexShrink: 0 }}><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        <div style={{ flex: 1 }}>
+                          <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#15803d" }}>{importarArquivo.name}</p>
+                          <p style={{ margin: 0, fontSize: 10, color: "#64748b" }}>Arquivo de Rotas · {(importarArquivo.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                        <button onClick={() => setImportarArquivo(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#dc2626", fontSize: 16, fontWeight: 700 }}>✕</button>
+                      </div>
+                    )}
+                    {importarArquivoClientes && (
+                      <div style={{ padding: "12px 16px", background: "#f5f3ff", border: "1px solid #c4b5fd", borderRadius: 6, display: "flex", alignItems: "center", gap: 10 }}>
+                        <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#7c3aed", flexShrink: 0 }}><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        <div style={{ flex: 1 }}>
+                          <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#7c3aed" }}>{importarArquivoClientes.name}</p>
+                          <p style={{ margin: 0, fontSize: 10, color: "#64748b" }}>Lista de Clientes · {(importarArquivoClientes.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                        <button onClick={() => setImportarArquivoClientes(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#dc2626", fontSize: 16, fontWeight: 700 }}>✕</button>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {/* Import button */}
-                {importarArquivo && importarVendedor && (
+                {(importarArquivo || importarArquivoClientes) && importarVendedor && (
                   <div style={{ padding: "0 32px 28px", display: "flex", gap: 10 }}>
                     <button style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 6, padding: "9px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.35)" }}>
                       <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
