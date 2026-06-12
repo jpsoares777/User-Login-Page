@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
 import iconGerenciar from "@assets/ícone-linear-de-segurança-do-smartphone-verificação-usuário-t_1781283034370.webp";
+import iconGerenciarClientes from "@assets/4168988_1781283346707.png";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, Label, Customized,
@@ -3482,7 +3483,7 @@ export default function DashboardPage() {
             {[
               { icon: "📊", label: "Relatório diário",             color: "#f97316" },
               { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar },
-              { icon: "🧑‍🤝‍🧑", label: "Gerenciar Clientes",           color: "#16a34a" },
+              { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarClientes },
               { icon: "💳", label: "Novos empréstimos",            color: "#2563eb" },
               { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
               { icon: "📈", label: "Gerenc. de rendimentos",       color: "#16a34a" },
