@@ -3928,10 +3928,10 @@ export default function DashboardPage() {
             {/* body */}
             <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
 
-              {/* Row 1: Empresa | Nome | Sobrenome | Data Vencimento */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12 }}>
+              {/* Row 1: Rota | Nome Cobrador | Data Vencimento */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Empresa <span style={{ color: "#dc2626" }}>(*)</span></label>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Rota <span style={{ color: "#dc2626" }}>(*)</span></label>
                   <select value={gaForm.empresa} onChange={e => setGaForm(f => ({ ...f, empresa: e.target.value }))}
                     style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
                     <option value="">-- Selecione --</option>
@@ -3940,13 +3940,8 @@ export default function DashboardPage() {
                   </select>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Nome:</label>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Nome Cobrador:</label>
                   <input value={gaForm.nome} onChange={e => setGaForm(f => ({ ...f, nome: e.target.value }))} placeholder=""
-                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Sobrenome:</label>
-                  <input value={gaForm.sobrenome} onChange={e => setGaForm(f => ({ ...f, sobrenome: e.target.value }))} placeholder="-"
                     style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
