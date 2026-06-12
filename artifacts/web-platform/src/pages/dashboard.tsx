@@ -3505,15 +3505,6 @@ export default function DashboardPage() {
                 {label}
               </button>
             ))}
-            {/* Sair */}
-            <button onClick={() => { setSideMenuOpen(false); navigate("/"); }}
-              style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", border: "none", color: "#dc2626", fontSize: 13, fontWeight: 600, cursor: "pointer", textAlign: "left", width: "100%" }}
-              onMouseEnter={e => (e.currentTarget.style.background = "#fff5f5")}
-              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-            >
-              <span style={{ fontSize: 18 }}>⏻</span>
-              Sair
-            </button>
           </div>
         </div>
       )}
