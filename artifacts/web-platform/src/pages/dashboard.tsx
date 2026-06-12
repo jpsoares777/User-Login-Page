@@ -2871,6 +2871,7 @@ const resumoRow = {
   fechaInicial: "2026-03-06",
   fechaFinal:   "2026-06-11",
   nClientes: 31, nCierres: 23,
+  clientesAtivos: 24, clientesInativos: 4, clientesCancelados: 3,
   cajaInicial: 0.00, carteira: 12170.00, recaudo: 17420.00,
   promedio: 757.39, recaudoPretendido: 9940.00,
   numVentas: 31, totalVentas: 21200.00, totalInt: 8390.00,
@@ -2939,6 +2940,9 @@ function ResumoContent() {
         <div class="row"><span class="lbl">Clientes Cadastrados</span><span class="val">${r.nClientes}</span></div>
         <div class="row"><span class="lbl">Clientes Finalizados</span><span class="val r">${r.nCierres}</span></div>
         <div class="row"><span class="lbl">Empréstimos Realizados</span><span class="val p">${r.numVentas}</span></div>
+        <div class="row"><span class="lbl">Clientes Ativos</span><span class="val g">${r.clientesAtivos}</span></div>
+        <div class="row"><span class="lbl">Clientes Inativos</span><span class="val a">${r.clientesInativos}</span></div>
+        <div class="row"><span class="lbl">Clientes Cancelados</span><span class="val r">${r.clientesCancelados}</span></div>
         <div class="row"><span class="lbl"><strong>Total Clientes</strong></span><span class="val b"><strong>${r.nClientes}</strong></span></div>
       </div>
       <div class="panel">
@@ -2984,6 +2988,9 @@ function ResumoContent() {
       `*👥 CLIENTES*`,
       `Clientes Cadastrados: ${r.nClientes}`,
       `Clientes Finalizados: ${r.nCierres}`,
+      `Clientes Ativos: ${r.clientesAtivos}`,
+      `Clientes Inativos: ${r.clientesInativos}`,
+      `Clientes Cancelados: ${r.clientesCancelados}`,
       `Empréstimos Realizados: ${r.numVentas}`,
       `Total Clientes: ${r.nClientes}`,
       ``,
@@ -3066,10 +3073,13 @@ function ResumoContent() {
 
           {/* Clientes */}
           <Panel icon="👥" title="Clientes" accent="#16a34a">
-            <ListRow label="Clientes Cadastrados"   value={r.nClientes}  isCount bold valueColor="#374151" />
-            <ListRow label="Clientes Finalizados"   value={r.nCierres}   isCount valueColor="#dc2626" />
-            <ListRow label="Empréstimos Realizados" value={r.numVentas}  isCount valueColor="#7c3aed" />
-            <ListRow label="Total de Clientes"      value={r.nClientes}  isCount bold valueColor="#0891b2" border={false} />
+            <ListRow label="Clientes Cadastrados"   value={r.nClientes}          isCount bold valueColor="#374151" />
+            <ListRow label="Clientes Finalizados"   value={r.nCierres}           isCount valueColor="#dc2626" />
+            <ListRow label="Empréstimos Realizados" value={r.numVentas}          isCount valueColor="#7c3aed" />
+            <ListRow label="Clientes Ativos"        value={r.clientesAtivos}     isCount valueColor="#16a34a" />
+            <ListRow label="Clientes Inativos"      value={r.clientesInativos}   isCount valueColor="#d97706" />
+            <ListRow label="Clientes Cancelados"    value={r.clientesCancelados} isCount valueColor="#dc2626" />
+            <ListRow label="Total de Clientes"      value={r.nClientes}          isCount bold valueColor="#0891b2" border={false} />
           </Panel>
 
           {/* Financeiro */}
@@ -3201,7 +3211,6 @@ function ConsolidadosContent() {
         <div class="row"><span class="lbl">Clientes Iniciais</span><span class="val">${r.clientesIniciais}</span></div>
         <div class="row"><span class="lbl">Clientes Novos</span><span class="val p">${r.clientesNovos}</span></div>
         <div class="row"><span class="lbl">Clientes Renovados</span><span class="val">${r.clientesRenovados}</span></div>
-        <div class="row"><span class="lbl">Clientes Cancelados</span><span class="val r">${r.clientesCancelados}</span></div>
         <div class="row"><span class="lbl">Clientes Pagos</span><span class="val g">${r.pagos}</span></div>
         <div class="row"><span class="lbl">Clientes Não Pagos</span><span class="val r">${r.noPagos}</span></div>
         <div class="row"><span class="lbl"><strong>Total de Clientes</strong></span><span class="val b"><strong>${r.totalClientes}</strong></span></div>
@@ -3254,7 +3263,6 @@ function ConsolidadosContent() {
       `Clientes Iniciais: ${r.clientesIniciais}`,
       `Clientes Novos: ${r.clientesNovos}`,
       `Clientes Renovados: ${r.clientesRenovados}`,
-      `Clientes Cancelados: ${r.clientesCancelados}`,
       `Clientes Pagos: ${r.pagos}`,
       `Clientes Não Pagos: ${r.noPagos}`,
       `Total de Clientes: ${r.totalClientes}`,
@@ -3368,7 +3376,6 @@ function ConsolidadosContent() {
             <ListRow label="Clientes Iniciais"   value={r.clientesIniciais}   isCount bold valueColor="#374151" />
             <ListRow label="Clientes Novos"      value={r.clientesNovos}      isCount valueColor="#7c3aed" />
             <ListRow label="Clientes Renovados"  value={r.clientesRenovados}  isCount />
-            <ListRow label="Clientes Cancelados" value={r.clientesCancelados} isCount valueColor="#dc2626" />
             <ListRow label="Clientes Pagos"      value={r.pagos}              isCount bold valueColor="#16a34a" />
             <ListRow label="Clientes Não Pagos"  value={r.noPagos}            isCount bold valueColor="#dc2626" />
             <ListRow label="Total de Clientes"   value={r.totalClientes}      isCount bold valueColor="#0891b2" border={false} />
