@@ -3451,6 +3451,106 @@ function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
 
 type GcRow = { id: number; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number };
 
+function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
+  const fieldStyle: React.CSSProperties = {
+    width: "100%", height: 38, border: "1px solid #d1d5db", borderRadius: 6,
+    padding: "0 10px", fontSize: 13, color: "#111827", background: "#f3f4f6",
+    outline: "none", boxSizing: "border-box",
+  };
+  const labelStyle: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 4, display: "block" };
+  const sectionCard = (icon: string, title: string, children: React.ReactNode) => (
+    <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden", borderLeft: "4px solid #6366f1" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+        <span style={{ fontSize: 16 }}>{icon}</span>
+        <span style={{ fontWeight: 800, fontSize: 12, color: "#1e293b", letterSpacing: "0.06em" }}>{title}</span>
+      </div>
+      <div style={{ padding: "16px 14px", background: "#fff" }}>{children}</div>
+    </div>
+  );
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+      onClick={onClose}>
+      <div style={{ background: "#fff", borderRadius: 8, width: 560, maxHeight: "90vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.35)" }}
+        onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.03em" }}>NOVO CLIENTE</span>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+        </div>
+
+        <div style={{ padding: "20px 18px", display: "flex", flexDirection: "column", gap: 16 }}>
+
+          {/* DADOS DO CLIENTE */}
+          {sectionCard("👤", "DADOS DO CLIENTE", (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 16px" }}>
+              <div>
+                <label style={labelStyle}>CPF <span style={{ color: "#ef4444" }}>*</span></label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+              <div>
+                <label style={labelStyle}>TELEFONE <span style={{ color: "#ef4444" }}>*</span></label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+              <div>
+                <label style={labelStyle}>NOME <span style={{ color: "#ef4444" }}>*</span></label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+              <div>
+                <label style={labelStyle}>SOBRENOME</label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+            </div>
+          ))}
+
+          {/* ENDEREÇO */}
+          {sectionCard("📍", "ENDEREÇO", (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr 0.6fr", gap: "12px 12px" }}>
+              <div>
+                <label style={labelStyle}>CEP <span style={{ color: "#ef4444" }}>*</span></label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+              <div>
+                <label style={labelStyle}>RUA / AVENIDA <span style={{ color: "#ef4444" }}>*</span></label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+              <div>
+                <label style={labelStyle}>Nº <span style={{ color: "#ef4444" }}>*</span></label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+              <div>
+                <label style={labelStyle}>BAIRRO <span style={{ color: "#ef4444" }}>*</span></label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+              <div>
+                <label style={labelStyle}>CIDADE <span style={{ color: "#ef4444" }}>*</span></label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+              <div>
+                <label style={labelStyle}>UF <span style={{ color: "#ef4444" }}>*</span></label>
+                <input style={fieldStyle} placeholder="" />
+              </div>
+            </div>
+          ))}
+
+          {/* Botões */}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
+            <button onClick={onClose}
+              style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+              Cancelar
+            </button>
+            <button onClick={onClose}
+              style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+              Salvar Cliente
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }) {
   const [showParcelas, setShowParcelas] = useState(false);
   const [showDocumentos, setShowDocumentos] = useState(false);
