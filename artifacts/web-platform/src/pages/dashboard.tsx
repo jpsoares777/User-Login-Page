@@ -4252,13 +4252,13 @@ export default function DashboardPage() {
             {/* ── Saldo + Retirada bar ── */}
             <div className="shrink-0 flex items-center gap-4 px-5 py-3" style={{ background: "#fff", borderBottom: "1px solid #e2e8f0" }}>
               {/* Saldo do Caixa */}
-              <div style={{ display: "flex", alignItems: "center", gap: 14, background: "linear-gradient(135deg,#1e3a5f,#2d5474)", borderRadius: 10, padding: "10px 20px", boxShadow: "0 2px 10px rgba(45,84,116,0.3)" }}>
-                <div style={{ width: 38, height: 38, background: "rgba(255,255,255,0.15)", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff" }}><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, background: "#f0fdf4", border: "1.5px solid #bbf7d0", borderRadius: 10, padding: "10px 20px", boxShadow: "0 1px 6px rgba(22,163,74,0.1)" }}>
+                <div style={{ width: 38, height: 38, background: "#dcfce7", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#16a34a" }}><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
                 </div>
                 <div>
-                  <p style={{ margin: 0, fontSize: 10, color: "rgba(255,255,255,0.7)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>Saldo do Caixa</p>
-                  <p style={{ margin: 0, fontSize: 22, fontWeight: 900, color: "#fff", letterSpacing: "0.02em" }}>
+                  <p style={{ margin: 0, fontSize: 10, color: "#15803d", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>Saldo do Caixa</p>
+                  <p style={{ margin: 0, fontSize: 22, fontWeight: 900, color: "#15803d", letterSpacing: "0.02em" }}>
                     R$ {caixaSaldo.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                 </div>
