@@ -3233,88 +3233,94 @@ function ConsolidadosContent() {
   const r = consolidadosData[0];
 
   const handlePDF = () => {
-    const dateFmt = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
+    const dateFmtLocal = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
     const pct = r.recebimentoPrevisto > 0 ? ((r.recaudo / r.recebimentoPrevisto) * 100).toFixed(1) : "0,0";
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
-<title>Consolidado Diário – ${cobrador} – ${dateFmt}</title>
+<title>Consolidado Diário – ${cobrador} – ${dateFmtLocal}</title>
 <style>
-  *{box-sizing:border-box;}
-  body{font-family:Arial,sans-serif;margin:0;padding:20px;color:#111;background:#f1f5f9;}
-  .wrap{max-width:760px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;}
-  .header{background:linear-gradient(135deg,#2d5474,#3d6e8e);color:#fff;padding:20px 24px;text-align:center;}
-  .header h2{margin:0 0 4px;font-size:20px;}
-  .header p{margin:0 0 10px;font-size:13px;opacity:.85;}
-  .badge{display:inline-block;background:#16a34a;color:#fff;padding:3px 14px;border-radius:20px;font-size:12px;font-weight:700;}
-  .info-bar{background:#f8fafc;padding:10px 22px;display:flex;gap:22px;flex-wrap:wrap;border-bottom:1px solid #e5e7eb;font-size:13px;}
-  .body{padding:18px 22px;}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:Arial,sans-serif;background:#f1f5f9;padding:20px;}
+  .wrap{max-width:820px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1);}
+  /* header */
+  .hdr{background:linear-gradient(135deg,#2d5474,#3d6e8e);color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;}
+  .hdr-left h2{font-size:17px;font-weight:800;margin-bottom:3px;}
+  .hdr-left p{font-size:12px;opacity:.8;}
+  .hdr-right{display:flex;align-items:center;gap:10px;}
+  .hdr-right .date{font-size:13px;opacity:.9;}
+  .badge{background:#16a34a;color:#fff;padding:3px 13px;border-radius:20px;font-size:11px;font-weight:700;}
+  /* body */
+  .body{padding:18px 20px;}
+  /* 3-col grid */
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+  /* panels */
   .panel{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;}
-  .ptitle{font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;background:#f1f5f9;border-bottom:2px solid #e5e7eb;}
-  .row{display:flex;justify-content:space-between;padding:7px 12px;border-bottom:1px solid #f3f4f6;font-size:12px;}
+  .ptitle{font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;padding:7px 12px 7px 14px;background:#f1f5f9;border-bottom:2px solid #e5e7eb;}
+  .ptitle.green{border-color:#16a34a;} .ptitle.orange{border-color:#f97316;} .ptitle.blue{border-color:#2563eb;}
+  .row{display:flex;justify-content:space-between;padding:6px 12px;border-bottom:1px solid #f3f4f6;font-size:12px;}
   .row:last-child{border-bottom:none;}
-  .lbl{color:#6b7280;} .val{font-weight:600;color:#111;}
-  .green{color:#16a34a;} .blue{color:#2563eb;} .red{color:#dc2626;} .amber{color:#d97706;}
-  .finals{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;}
-  .fbox{border-radius:8px;padding:14px 16px;text-align:center;}
-  .fbox .flbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
-  .fbox .fval{font-size:20px;font-weight:800;}
-  .footer{text-align:center;font-size:11px;color:#9ca3af;padding:12px;border-top:1px solid #f3f4f6;}
-  @media print{body{padding:0;background:#fff;}.wrap{border:none;border-radius:0;}}
+  .lbl{color:#6b7280;}
+  .val{font-weight:600;color:#111;}
+  .g{color:#16a34a;} .b{color:#2563eb;} .r{color:#dc2626;} .a{color:#d97706;} .p{color:#7c3aed;}
+  /* value boxes */
+  .vboxes{display:flex;flex-direction:column;gap:10px;}
+  .vbox{border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;}
+  .vbox .vl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+  .vbox .vv{font-size:20px;font-weight:800;}
+  /* footer */
+  .footer{text-align:center;font-size:10px;color:#9ca3af;padding:10px;border-top:1px solid #f0f0f0;}
+  @media print{body{padding:0;background:#fff;}.wrap{box-shadow:none;border-radius:0;}}
 </style></head><body>
 <div class="wrap">
-  <div class="header">
-    <h2>📊 Consolidado Diário</h2>
-    <p>${cobrador} · ${r.pais} · ${r.cidade}</p>
-    <span class="badge">✓ Correto</span>
-  </div>
-  <div class="info-bar">
-    <span>📅 <strong>${dateFmt}</strong></span>
-    <span>👥 Total Clientes: <strong>${r.totalClientes}</strong></span>
-    <span>Pagos: <strong style="color:#16a34a">${r.pagos}</strong></span>
-    <span>No Pagos: <strong style="color:#dc2626">${r.noPagos}</strong></span>
+  <div class="hdr">
+    <div class="hdr-left">
+      <h2>📊 Consolidado Diário</h2>
+      <p>${cobrador} · ${r.pais} · ${r.cidade}</p>
+    </div>
+    <div class="hdr-right">
+      <span class="date">📅 ${dateFmtLocal}</span>
+      <span class="badge">✓ Correto</span>
+    </div>
   </div>
   <div class="body">
     <div class="grid3">
+
       <div class="panel">
-        <div class="ptitle">👥 Clientes</div>
-        <div class="row"><span class="lbl">Iniciais</span><span class="val">${r.clientesIniciais}</span></div>
-        <div class="row"><span class="lbl">Novos</span><span class="val" style="color:#7c3aed">${r.clientesNovos}</span></div>
-        <div class="row"><span class="lbl">Renovados</span><span class="val">${r.clientesRenovados}</span></div>
-        <div class="row"><span class="lbl">Cancelados</span><span class="val red">${r.clientesCancelados}</span></div>
-        <div class="row"><span class="lbl">Pagos</span><span class="val green">${r.pagos}</span></div>
-        <div class="row"><span class="lbl">Não Pagos</span><span class="val red">${r.noPagos}</span></div>
-        <div class="row"><span class="lbl"><strong>Total</strong></span><span class="val blue"><strong>${r.totalClientes}</strong></span></div>
+        <div class="ptitle green">👥 Clientes</div>
+        <div class="row"><span class="lbl">Clientes Iniciais</span><span class="val">${r.clientesIniciais}</span></div>
+        <div class="row"><span class="lbl">Clientes Novos</span><span class="val p">${r.clientesNovos}</span></div>
+        <div class="row"><span class="lbl">Clientes Renovados</span><span class="val">${r.clientesRenovados}</span></div>
+        <div class="row"><span class="lbl">Clientes Cancelados</span><span class="val r">${r.clientesCancelados}</span></div>
+        <div class="row"><span class="lbl">Clientes Pagos</span><span class="val g">${r.pagos}</span></div>
+        <div class="row"><span class="lbl">Clientes Não Pagos</span><span class="val r">${r.noPagos}</span></div>
+        <div class="row"><span class="lbl"><strong>Total de Clientes</strong></span><span class="val b"><strong>${r.totalClientes}</strong></span></div>
       </div>
+
       <div class="panel">
-        <div class="ptitle">🔥 Financeiro</div>
-        <div class="row"><span class="lbl">Caixa Inicial</span><span class="val green">${fmtR(r.cajaInicial)}</span></div>
-        <div class="row"><span class="lbl">Carteira Inicial</span><span class="val green">${fmtR(r.carteiraInicial)}</span></div>
-        <div class="row"><span class="lbl">Receb. Previsto</span><span class="val">${fmtR(r.recebimentoPrevisto)} <span style="background:#d1fae5;color:#065f46;padding:1px 6px;border-radius:8px;font-size:10px">100%</span></span></div>
-        <div class="row"><span class="lbl">Receb. Atual</span><span class="val amber">${fmtR(r.recaudo)} <span style="background:#fed7aa;color:#92400e;padding:1px 6px;border-radius:8px;font-size:10px">${pct}%</span></span></div>
+        <div class="ptitle orange">🔥 Financeiro</div>
+        <div class="row"><span class="lbl">Caixa Inicial</span><span class="val g">${fmtR(r.cajaInicial)}</span></div>
+        <div class="row"><span class="lbl">Carteira Inicial</span><span class="val g">${fmtR(r.carteiraInicial)}</span></div>
+        <div class="row"><span class="lbl">Receb. Previsto do Dia</span><span class="val">${fmtR(r.recebimentoPrevisto)} <span style="background:#d1fae5;color:#065f46;padding:1px 5px;border-radius:6px;font-size:9px;font-weight:700">100%</span></span></div>
+        <div class="row"><span class="lbl">Receb. Atual do Dia</span><span class="val a">${fmtR(r.recaudo)} <span style="background:#fed7aa;color:#92400e;padding:1px 5px;border-radius:6px;font-size:9px;font-weight:700">${pct}%</span></span></div>
         <div class="row"><span class="lbl">Novos Empréstimos</span><span class="val">${fmtR(r.ventas)}</span></div>
-        <div class="row"><span class="lbl">↳ Juros</span><span class="val amber">${fmtR(r.juros)}</span></div>
-        <div class="row"><span class="lbl">Rendimentos</span><span class="val green">${fmtR(r.ingresos)}</span></div>
-        <div class="row"><span class="lbl">Despesas</span><span class="val red">${fmtR(r.egresos)}</span></div>
-        <div class="row"><span class="lbl">Retirada de Caixa</span><span class="val red">${fmtR(r.retiradaCaixa)}</span></div>
-        <div class="row"><span class="lbl"><strong>Caixa Final</strong></span><span class="val green"><strong>${fmtR(r.cajaFinal)}</strong></span></div>
-        <div class="row"><span class="lbl"><strong>Carteira Final</strong></span><span class="val blue"><strong>${fmtR(r.cartera)}</strong></span></div>
+        <div class="row"><span class="lbl">&nbsp;&nbsp;↳ Juros</span><span class="val a">${fmtR(r.juros)}</span></div>
+        <div class="row"><span class="lbl">Rendimentos</span><span class="val g">${fmtR(r.ingresos)}</span></div>
+        <div class="row"><span class="lbl">Despesas</span><span class="val r">${fmtR(r.egresos)}</span></div>
+        <div class="row"><span class="lbl">Retirada de Caixa</span><span class="val r">${fmtR(r.retiradaCaixa)}</span></div>
+        <div class="row"><span class="lbl"><strong>Caixa Final</strong></span><span class="val g"><strong>${fmtR(r.cajaFinal)}</strong></span></div>
+        <div class="row"><span class="lbl"><strong>Carteira Final</strong></span><span class="val b"><strong>${fmtR(r.cartera)}</strong></span></div>
       </div>
-      <div class="panel">
-        <div class="ptitle">📋 Carteira</div>
-        <div class="row"><span class="lbl">Carteira Inicial</span><span class="val blue">${fmtR(r.carteiraInicial)}</span></div>
-        <div class="row"><span class="lbl">Carteira Final</span><span class="val blue">${fmtR(r.cartera)}</span></div>
-        <div class="row"><span class="lbl">Fundo de Seguro</span><span class="val">${fmtR(r.acumulado)}</span></div>
+
+      <div class="vboxes">
+        <div class="vbox" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+          <div class="vl" style="color:#4b7c59">Caixa Final</div>
+          <div class="vv g">${fmtR(r.cajaFinal)}</div>
+        </div>
+        <div class="vbox" style="background:#eff6ff;border:1px solid #bfdbfe;">
+          <div class="vl" style="color:#3b5fa0">Carteira Final</div>
+          <div class="vv b">${fmtR(r.cartera)}</div>
+        </div>
       </div>
-    </div>
-    <div class="finals">
-      <div class="fbox" style="background:#f0fdf4;border:1px solid #bbf7d0;">
-        <div class="flbl" style="color:#4b7c59">Caixa Final</div>
-        <div class="fval green">${fmtR(r.cajaFinal)}</div>
-      </div>
-      <div class="fbox" style="background:#eff6ff;border:1px solid #bfdbfe;">
-        <div class="flbl" style="color:#3b5fa0">Carteira Final</div>
-        <div class="fval blue">${fmtR(r.cartera)}</div>
-      </div>
+
     </div>
   </div>
   <div class="footer">Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança · SystemPay</div>
@@ -3326,34 +3332,33 @@ function ConsolidadosContent() {
   };
 
   const handleWhatsApp = () => {
-    const dateFmt = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
+    const dateFmtWa = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
     const pct = r.recebimentoPrevisto > 0 ? ((r.recaudo / r.recebimentoPrevisto) * 100).toFixed(1) : "0,0";
     const lines = [
-      `*📊 CONSOLIDADO DIÁRIO — ${dateFmt}*`,
-      `Rota: ${cobrador} · ${r.pais} · ${r.cidade}`,
+      `*📊 CONSOLIDADO DIÁRIO — ${dateFmtWa}*`,
+      `${cobrador} · ${r.pais} · ${r.cidade}`,
       ``,
       `*👥 CLIENTES*`,
-      `Iniciais: ${r.clientesIniciais}`,
-      `Novos: ${r.clientesNovos}`,
-      `Renovados: ${r.clientesRenovados}`,
-      `Cancelados: ${r.clientesCancelados}`,
-      `Pagos: ${r.pagos} | Não Pagos: ${r.noPagos}`,
-      `Total: ${r.totalClientes}`,
+      `Clientes Iniciais: ${r.clientesIniciais}`,
+      `Clientes Novos: ${r.clientesNovos}`,
+      `Clientes Renovados: ${r.clientesRenovados}`,
+      `Clientes Cancelados: ${r.clientesCancelados}`,
+      `Clientes Pagos: ${r.pagos}`,
+      `Clientes Não Pagos: ${r.noPagos}`,
+      `Total de Clientes: ${r.totalClientes}`,
       ``,
       `*🔥 FINANCEIRO*`,
       `Caixa Inicial: ${fmtR(r.cajaInicial)}`,
       `Carteira Inicial: ${fmtR(r.carteiraInicial)}`,
-      `Receb. Previsto: ${fmtR(r.recebimentoPrevisto)} (100%)`,
-      `Receb. Atual: ${fmtR(r.recaudo)} (${pct}%)`,
-      `Novos Empréstimos: ${fmtR(r.ventas)} (Juros: ${fmtR(r.juros)})`,
-      `Rendimentos: + ${fmtR(r.ingresos)}`,
-      `Despesas: - ${fmtR(r.egresos)}`,
-      `Retirada de Caixa: - ${fmtR(r.retiradaCaixa)}`,
-      ``,
-      `*📋 CARTEIRA*`,
-      `Carteira Inicial: ${fmtR(r.carteiraInicial)}`,
+      `Receb. Previsto do Dia: ${fmtR(r.recebimentoPrevisto)} (100%)`,
+      `Receb. Atual do Dia: ${fmtR(r.recaudo)} (${pct}%)`,
+      `Novos Empréstimos: ${fmtR(r.ventas)}`,
+      `  ↳ Juros: ${fmtR(r.juros)}`,
+      `Rendimentos: ${fmtR(r.ingresos)}`,
+      `Despesas: ${fmtR(r.egresos)}`,
+      `Retirada de Caixa: ${fmtR(r.retiradaCaixa)}`,
+      `Caixa Final: ${fmtR(r.cajaFinal)}`,
       `Carteira Final: ${fmtR(r.cartera)}`,
-      `Fundo de Seguro: ${fmtR(r.acumulado)}`,
       ``,
       `*🏦 CAIXA FINAL: ${fmtR(r.cajaFinal)}*`,
       `*📋 CARTEIRA FINAL: ${fmtR(r.cartera)}*`,
