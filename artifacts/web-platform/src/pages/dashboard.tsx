@@ -2944,7 +2944,6 @@ function ResumoContent() {
       <div class="panel">
         <div class="ptitle orange">🔥 Financeiro</div>
         <div class="row"><span class="lbl">Caixa Inicial</span><span class="val g">${fmtR(r.cajaInicial)}</span></div>
-        <div class="row"><span class="lbl">Carteira Inicial</span><span class="val g">${fmtR(r.carteira)}</span></div>
         <div class="row"><span class="lbl">Receb. Pretendido</span><span class="val">${fmtR(r.recaudoPretendido)}</span></div>
         <div class="row"><span class="lbl">Receb. Realizado</span><span class="val a">${fmtR(r.recaudo)} <span style="background:#fed7aa;color:#92400e;padding:1px 5px;border-radius:6px;font-size:9px;font-weight:700">${pctR}%</span></span></div>
         <div class="row"><span class="lbl">Total Emprestado</span><span class="val p">${fmtR(r.totalVentas)}</span></div>
@@ -2989,7 +2988,6 @@ function ResumoContent() {
       ``,
       `*🔥 FINANCEIRO*`,
       `Caixa Inicial: ${fmtR(r.cajaInicial)}`,
-      `Carteira Inicial: ${fmtR(r.carteira)}`,
       `Receb. Pretendido: ${fmtR(r.recaudoPretendido)}`,
       `Receb. Realizado: ${fmtR(r.recaudo)} (${pctR}%)`,
       `Total Emprestado: ${fmtR(r.totalVentas)}`,
@@ -3075,7 +3073,6 @@ function ResumoContent() {
           {/* Financeiro */}
           <Panel icon="🔥" title="Financeiro" accent="#f97316">
             <ListRow label="Caixa Inicial"          value={r.cajaInicial}         valueColor="#16a34a" bold />
-            <ListRow label="Carteira Inicial"        value={r.carteira}            valueColor="#16a34a" bold />
             <ListRow label="Receb. Pretendido"       value={r.recaudoPretendido} />
             <ListRow label="Receb. Realizado"        value={r.recaudo}             valueColor="#f59e0b" bold />
             <ListRow label="Total Emprestado"        value={r.totalVentas} />
