@@ -3478,6 +3478,8 @@ function ConsolidadosContent() {
             <ListRow label="Clientes Novos"      value={r.clientesNovos}      isCount valueColor="#7c3aed" />
             <ListRow label="Clientes Renovados"  value={r.clientesRenovados}  isCount />
             <ListRow label="Clientes Cancelados" value={r.clientesCancelados} isCount valueColor="#dc2626" />
+            <ListRow label="Clientes Pagos"      value={r.pagos}              isCount bold valueColor="#16a34a" />
+            <ListRow label="Clientes Não Pagos"  value={r.noPagos}            isCount bold valueColor="#dc2626" />
             <ListRow label="Total de Clientes"   value={r.totalClientes}      isCount bold valueColor="#0891b2" border={false} />
           </Panel>
 
