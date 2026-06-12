@@ -3692,6 +3692,7 @@ export default function DashboardPage() {
   const [gcModalOpen, setGcModalOpen] = useState(false);
   const [gcModalRowId, setGcModalRowId] = useState<number | null>(null);
   const [gcHistRowId, setGcHistRowId] = useState<number | null>(null);
+  const [gcDeleteId, setGcDeleteId] = useState<number | null>(null);
   const [gcRows] = useState([
     { id: 1,  consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "012.345.678-90", nasc: "1985-03-12", tel1: "91633427315",   tel2: "98985014328",  endereco: "Rua Gama Lobo, nº 10, Quarto, Centro – São Luís – MA",        obs: "Cliente pontual. Prefere contato pelo WhatsApp.", freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
     { id: 2,  consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    nasc: "1990-07-22", tel1: "5599883457671",  tel2: "03270213301",  endereco: "Av. Colares Moreira, nº 500, Renascença II – São Luís – MA",  obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
@@ -4079,7 +4080,7 @@ export default function DashboardPage() {
                             style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                           </button>
-                          <button title="Excluir"
+                          <button title="Excluir" onClick={() => setGcDeleteId(row.id)}
                             style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                           </button>
@@ -4097,6 +4098,39 @@ export default function DashboardPage() {
                 $ {gcRows.reduce((s, r) => s + r.saldo, 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </div>
+            {/* ── CONFIRMAÇÃO EXCLUIR ── */}
+            {gcDeleteId !== null && (() => {
+              const gcr = gcRows.find(r => r.id === gcDeleteId);
+              if (!gcr) return null;
+              return (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onClick={() => setGcDeleteId(null)}>
+                  <div style={{ background: "#fff", borderRadius: 8, width: 420, boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
+                    onClick={e => e.stopPropagation()}>
+                    <div style={{ background: "#dc2626", padding: "14px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+                      <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff", flexShrink: 0 }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                      <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Excluir Cliente</span>
+                    </div>
+                    <div style={{ padding: "22px 20px" }}>
+                      <p style={{ fontSize: 14, color: "#374151", margin: "0 0 6px" }}>Tem certeza que deseja excluir o cliente:</p>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>{gcr.nome}</p>
+                      <p style={{ fontSize: 12, color: "#6b7280", margin: "0 0 20px" }}>Consecutivo: {gcr.consec} · Doc: {gcr.doc}</p>
+                      <p style={{ fontSize: 12, color: "#b91c1c", fontWeight: 600, margin: "0 0 20px" }}>⚠️ Esta ação não pode ser desfeita.</p>
+                      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+                        <button onClick={() => setGcDeleteId(null)}
+                          style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                          Cancelar
+                        </button>
+                        <button onClick={() => setGcDeleteId(null)}
+                          style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                          Sim, Excluir
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
             {/* ── HISTÓRICO MODAL (same as Novos Empréstimos) ── */}
             {gcHistRowId !== null && (() => {
               const gcr = gcRows.find(r => r.id === gcHistRowId);
