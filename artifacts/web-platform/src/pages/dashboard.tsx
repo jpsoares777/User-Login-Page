@@ -3459,6 +3459,23 @@ export default function DashboardPage() {
   const [diarioData, setDiarioData] = useState(() => new Date().toISOString().slice(0,10));
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
+  const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
+  const [gcVendedor, setGcVendedor] = useState("");
+  const [gcConsecutivo, setGcConsecutivo] = useState("");
+  const [gcDocumento, setGcDocumento] = useState("");
+  const [gcNome, setGcNome] = useState("");
+  const [gcSobrenome, setGcSobrenome] = useState("");
+  const [gcFecha, setGcFecha] = useState("");
+  const [gcEstado, setGcEstado] = useState("Deve");
+  const [gcRows] = useState([
+    { id: 1, vendedor: "Rota Cred Bank", consec: "4700627089", documento: "034.286.733-44", nome: "Aline Lima",        sobrenome: "De Alencar",         dataVenda: "2026-03-25", estado: "Deve" },
+    { id: 2, vendedor: "Rota Cred Bank", consec: "4700627049", documento: "61538186302",    nome: "Ana Flávia",       sobrenome: "Pereira Moraes",      dataVenda: "2026-04-08", estado: "Deve" },
+    { id: 3, vendedor: "Rota Cred Bank", consec: "4700627026", documento: "91633427315",    nome: "Andreia",          sobrenome: "Jesus Costa Araújo",  dataVenda: "2026-03-30", estado: "Quitado" },
+    { id: 4, vendedor: "Rota Cred Bank", consec: "4700627079", documento: "85259284372",    nome: "Ana Paula",        sobrenome: "Marques De Oliveira", dataVenda: "2026-03-28", estado: "Quitado" },
+    { id: 5, vendedor: "Rota Cred Bank", consec: "4700627027", documento: "005234678355",   nome: "Antônio",          sobrenome: "Leite Neto",          dataVenda: "2026-03-14", estado: "Deve" },
+    { id: 6, vendedor: "Rota Cred Bank", consec: "4700627025", documento: "60974118397",    nome: "Bianca",           sobrenome: "De Araújo Alves",     dataVenda: "2026-04-16", estado: "Deve" },
+    { id: 7, vendedor: "Rota Cred Bank", consec: "4700627023", documento: "88899900011",    nome: "Elaira Kisley",    sobrenome: "Conceição Lopes",     dataVenda: "2026-03-20", estado: "Deve" },
+  ]);
   const [gaEmpresa, setGaEmpresa] = useState("CREDBANK");
   const [gaNome, setGaNome] = useState("");
   const [gaSobrenome, setGaSobrenome] = useState("");
@@ -3503,7 +3520,7 @@ export default function DashboardPage() {
             onClick={e => e.stopPropagation()}>
             {[
               { icon: null,  label: "Gerenciar Aplicativos",        color: "#64748b", img: iconGerenciar, imgSize: 32, onClick: () => { setGerenciarAppsOpen(true); setActiveMain("Gerenciar Aplicativos"); setSideMenuOpen(false); } },
-              { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
+              { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2, onClick: () => { setGerenciarClientesOpen(true); setActiveMain("Gerenciar Clientes"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. despesas",             color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)" },
               { icon: null,  label: "Gerenc. rendimentos",          color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
               { icon: null,  label: "Importar rotas",                color: "#7c3aed", img: iconImportarRota, imgSize: 21 },
@@ -3570,6 +3587,20 @@ export default function DashboardPage() {
               style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
           </button>
         )}
+        {gerenciarClientesOpen && (
+          <button onClick={() => setActiveMain("Gerenciar Clientes")}
+            className="flex items-center gap-2 px-4 h-10 text-sm font-medium transition-all rounded-t"
+            style={{
+              background: activeMain === "Gerenciar Clientes" ? "#2563eb" : "rgba(255,255,255,0.08)",
+              color: activeMain === "Gerenciar Clientes" ? "#fff" : "rgba(255,255,255,0.65)",
+              border: activeMain === "Gerenciar Clientes" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              borderBottom: "none",
+            }}>
+            Gerenciar Clientes
+            <span onClick={e => { e.stopPropagation(); setGerenciarClientesOpen(false); if (activeMain === "Gerenciar Clientes") setActiveMain("Liq. Diária"); }}
+              style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
+          </button>
+        )}
       </div>
       <div style={{ height: "2px", background: "#2563eb" }} className="shrink-0" />
 
@@ -3629,6 +3660,61 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* ── FILTER BAR (Gerenciar Clientes) ── */}
+      {activeMain === "Gerenciar Clientes" && (
+        <div className="flex items-center flex-wrap h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+          <div className="flex flex-col" style={{ minWidth: 120 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Vendedor</label>
+            <select value={gcVendedor} onChange={e => setGcVendedor(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 110 }}>
+              <option value="">-- Selecione --</option>
+              <option>Rota Cred Bank</option>
+              <option>SystemPay Demo</option>
+              <option>Filial Norte</option>
+            </select>
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 110 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Consecutivo</label>
+            <input type="text" value={gcConsecutivo} onChange={e => setGcConsecutivo(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 100 }} />
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 130 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Documento Cliente</label>
+            <input type="text" value={gcDocumento} onChange={e => setGcDocumento(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }} />
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 120 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Nome Cliente</label>
+            <input type="text" value={gcNome} onChange={e => setGcNome(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 110 }} />
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 130 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Sobrenome Cliente</label>
+            <input type="text" value={gcSobrenome} onChange={e => setGcSobrenome(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }} />
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 120 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Data da Venda</label>
+            <input type="date" value={gcFecha} onChange={e => setGcFecha(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 110 }} />
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 90 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Estado</label>
+            <select value={gcEstado} onChange={e => setGcEstado(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 80 }}>
+              <option>Deve</option>
+              <option>Quitado</option>
+              <option>Todos</option>
+            </select>
+          </div>
+          <div className="flex items-end pb-0.5" style={{ alignSelf: "flex-end" }}>
+            <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── FILTER BAR (Gerenciar Aplicativos) ── */}
       {activeMain === "Gerenciar Aplicativos" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
@@ -3684,7 +3770,78 @@ export default function DashboardPage() {
 
       {/* ── CONTENT AREA ── */}
       <div className="flex-1 overflow-hidden flex">
-        {activeMain === "Gerenciar Aplicativos" ? (
+        {activeMain === "Gerenciar Clientes" ? (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* count bar */}
+            <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+              <span className="text-xs text-gray-500">
+                <span className="font-bold text-gray-800">{gcRows.length}</span> registro{gcRows.length !== 1 ? "s" : ""} encontrado{gcRows.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+            {/* table */}
+            <div className="flex-1 overflow-auto bg-white">
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: "#3d6e8e", color: "#fff" }}>
+                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>#</th>
+                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Vendedor</th>
+                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Consecutivo</th>
+                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Documento</th>
+                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Nome Cliente</th>
+                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Sobrenome Cliente</th>
+                    <th style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Data da Venda</th>
+                    <th style={{ padding: "9px 12px", textAlign: "center", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Estado</th>
+                    <th style={{ padding: "9px 12px", textAlign: "center", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Opções</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {gcRows.map((row, i) => (
+                    <tr key={row.id}
+                      style={{ borderBottom: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fff" : "#f8fafc", transition: "background 0.15s" }}
+                      onMouseEnter={e => (e.currentTarget.style.background = "#eef4fb")}
+                      onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f8fafc")}>
+                      <td style={{ padding: "8px 12px", color: "#94a3b8", fontWeight: 600, fontSize: 12 }}>{row.id}</td>
+                      <td style={{ padding: "8px 12px", color: "#1e293b", fontWeight: 600, whiteSpace: "nowrap" }}>{row.vendedor}</td>
+                      <td style={{ padding: "8px 12px" }}>
+                        <span style={{ fontFamily: "monospace", background: "#f1f5f9", color: "#2d5474", border: "1px solid #e2e8f0", borderRadius: 4, padding: "2px 6px", fontSize: 11, fontWeight: 700 }}>
+                          {row.consec}
+                        </span>
+                      </td>
+                      <td style={{ padding: "8px 12px", color: "#374151", fontFamily: "monospace", fontSize: 12 }}>{row.documento}</td>
+                      <td style={{ padding: "8px 12px", color: "#1e293b", fontWeight: 600 }}>{row.nome}</td>
+                      <td style={{ padding: "8px 12px", color: "#374151" }}>{row.sobrenome}</td>
+                      <td style={{ padding: "8px 12px", color: "#374151", whiteSpace: "nowrap" }}>{row.dataVenda}</td>
+                      <td style={{ padding: "8px 12px", textAlign: "center" }}>
+                        <span style={{
+                          display: "inline-flex", alignItems: "center", gap: 4,
+                          background: row.estado === "Deve" ? "#fef2f2" : "#f0fdf4",
+                          color: row.estado === "Deve" ? "#dc2626" : "#16a34a",
+                          border: `1px solid ${row.estado === "Deve" ? "#fecaca" : "#bbf7d0"}`,
+                          borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700
+                        }}>
+                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: row.estado === "Deve" ? "#dc2626" : "#16a34a", display: "inline-block" }} />
+                          {row.estado}
+                        </span>
+                      </td>
+                      <td style={{ padding: "7px 12px", textAlign: "center" }}>
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                          <button title="Editar" style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                          </button>
+                          <button title="Excluir" style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* footer bar */}
+            <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+          </div>
+        ) : activeMain === "Gerenciar Aplicativos" ? (
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* count bar */}
             <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
