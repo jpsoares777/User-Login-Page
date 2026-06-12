@@ -3684,6 +3684,30 @@ export default function DashboardPage() {
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
   const [gerenciarDespesasOpen, setGerenciarDespesasOpen] = useState(false);
+  const [gerenciarRendimentosOpen, setGerenciarRendimentosOpen] = useState(false);
+
+  // ── Gerenciar Rendimentos ──
+  type RendGRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; };
+  const emptyRend: RendGRow = { id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "" };
+  const [rendGRows, setRendGRows] = useState<RendGRow[]>([
+    { id: 1, data: "2026-06-01", hora: "07:00", categoria: "Aporte",        descricao: "Aporte inicial de caixa para rota",        valor: 1500.00, responsavel: "Carlos Souza", obs: "Abertura do dia" },
+    { id: 2, data: "2026-06-03", hora: "08:30", categoria: "Depósito",      descricao: "Depósito bancário transferido para caixa",  valor: 800.00,  responsavel: "João Mendes",  obs: "" },
+    { id: 3, data: "2026-06-05", hora: "10:45", categoria: "Entrada Extra", descricao: "Entrada extra – venda de serviço avulso",   valor: 150.00,  responsavel: "Ana Lima",     obs: "Serviço pontual" },
+    { id: 4, data: "2026-06-07", hora: "12:00", categoria: "Transferência", descricao: "Transferência entre rotas – matriz",         valor: 500.00,  responsavel: "Carlos Souza", obs: "Autorizado" },
+    { id: 5, data: "2026-06-10", hora: "14:20", categoria: "Aporte",        descricao: "Aporte emergencial para cobertura",         valor: 300.00,  responsavel: "João Mendes",  obs: "Saldo baixo" },
+    { id: 6, data: "2026-06-11", hora: "15:50", categoria: "Entrada Extra", descricao: "Recebimento de taxa administrativa",        valor: 75.00,   responsavel: "Ana Lima",     obs: "" },
+  ]);
+  const [rendGFiltroCategoria, setRendGFiltroCategoria] = useState("-- Selecione --");
+  const [rendGFiltroData, setRendGFiltroData] = useState("");
+  const [rendGModalOpen, setRendGModalOpen] = useState(false);
+  const [rendGEditId, setRendGEditId] = useState<number | null>(null);
+  const [rendGForm, setRendGForm] = useState<RendGRow>(emptyRend);
+  const [rendGDeleteId, setRendGDeleteId] = useState<number | null>(null);
+  const rendGCategorias = ["Aporte", "Depósito", "Entrada Extra", "Transferência", "Outros"];
+  const rendGFiltered = rendGRows.filter(r =>
+    (rendGFiltroCategoria === "-- Selecione --" || r.categoria === rendGFiltroCategoria) &&
+    (!rendGFiltroData || r.data === rendGFiltroData)
+  );
 
   // ── Gerenciar Despesas ──
   type DespRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; };
@@ -3775,7 +3799,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenciar Aplicativos",        color: "#64748b", img: iconGerenciar, imgSize: 32, onClick: () => { setGerenciarAppsOpen(true); setActiveMain("Gerenciar Aplicativos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2, onClick: () => { setGerenciarClientesOpen(true); setActiveMain("Gerenciar Clientes"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. despesas",             color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)", onClick: () => { setGerenciarDespesasOpen(true); setActiveMain("Gerenciar Despesas"); setSideMenuOpen(false); } },
-              { icon: null,  label: "Gerenc. rendimentos",          color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
+              { icon: null,  label: "Gerenc. rendimentos",          color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)", onClick: () => { setGerenciarRendimentosOpen(true); setActiveMain("Gerenciar Rendimentos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Importar rotas",                color: "#7c3aed", img: iconImportarRota, imgSize: 21 },
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)" },
               { icon: null,  label: "Gerenc. gastos períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)" },
@@ -3851,6 +3875,20 @@ export default function DashboardPage() {
             }}>
             Gerenciar Clientes
             <span onClick={e => { e.stopPropagation(); setGerenciarClientesOpen(false); if (activeMain === "Gerenciar Clientes") setActiveMain("Liq. Diária"); }}
+              style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
+          </button>
+        )}
+        {gerenciarRendimentosOpen && (
+          <button onClick={() => setActiveMain("Gerenciar Rendimentos")}
+            className="flex items-center gap-2 px-4 h-10 text-sm font-medium transition-all rounded-t"
+            style={{
+              background: activeMain === "Gerenciar Rendimentos" ? "#2563eb" : "rgba(255,255,255,0.08)",
+              color: activeMain === "Gerenciar Rendimentos" ? "#fff" : "rgba(255,255,255,0.65)",
+              border: activeMain === "Gerenciar Rendimentos" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              borderBottom: "none",
+            }}>
+            Gerenc. Rendimentos
+            <span onClick={e => { e.stopPropagation(); setGerenciarRendimentosOpen(false); if (activeMain === "Gerenciar Rendimentos") setActiveMain("Liq. Diária"); }}
               style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
           </button>
         )}
@@ -3987,6 +4025,40 @@ export default function DashboardPage() {
         </>
       )}
 
+      {/* ── FILTER BAR (Gerenciar Rendimentos) ── */}
+      {activeMain === "Gerenciar Rendimentos" && (
+        <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+          <div className="flex flex-col" style={{ minWidth: 160 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Vendedor (*):</label>
+            <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
+              <option>– Rota Cred Bank –</option>
+            </select>
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 190 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Conceito (*):</label>
+            <select value={rendGFiltroCategoria} onChange={e => setRendGFiltroCategoria(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 175 }}>
+              <option>-- Selecione --</option>
+              {rendGCategorias.map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 160 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Data do Rendimento:</label>
+            <input type="date" value={rendGFiltroData} onChange={e => setRendGFiltroData(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 148 }} />
+          </div>
+          <div className="flex items-end pb-0.5 gap-2" style={{ alignSelf: "flex-end" }}>
+            <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
+            <button onClick={() => { setRendGEditId(null); setRendGForm({ ...emptyRend, id: Date.now() }); setRendGModalOpen(true); }}
+              className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── FILTER BAR (Gerenciar Despesas) ── */}
       {activeMain === "Gerenciar Despesas" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
@@ -4076,7 +4148,204 @@ export default function DashboardPage() {
 
       {/* ── CONTENT AREA ── */}
       <div className="flex-1 overflow-hidden flex">
-        {activeMain === "Gerenciar Despesas" ? (
+        {activeMain === "Gerenciar Rendimentos" ? (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* header bar */}
+            <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+              <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                Gerenc. Rendimentos
+              </span>
+              <div className="flex-1" />
+              <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: {rendGFiltroData || new Date().toISOString().slice(0,10)}</span>
+            </div>
+            {/* table */}
+            <div className="flex-1 overflow-auto">
+              <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1100 }}>
+                <colgroup>
+                  {[54, 150, 280, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
+                </colgroup>
+                <thead>
+                  <tr>
+                    {[
+                      { label: "Nro.",        align: "center" as const },
+                      { label: "Categoria",   align: "center" as const },
+                      { label: "Descrição",   align: "left"   as const },
+                      { label: "Valor",       align: "right"  as const },
+                      { label: "Data",        align: "center" as const },
+                      { label: "Hora",        align: "center" as const },
+                      { label: "Responsável", align: "left"   as const },
+                      { label: "Observações", align: "left"   as const },
+                      { label: "Ações",       align: "center" as const },
+                    ].map(c => (
+                      <th key={c.label} style={{
+                        padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                        whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
+                        borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
+                        position: "sticky", top: 0, zIndex: 1,
+                      }}>{c.label}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rendGFiltered.map((row, i) => {
+                    const cat = rendCategoriaColor[row.categoria] ?? rendCategoriaColor["Outros"];
+                    const td = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
+                      padding: "5px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+                      textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+                    });
+                    return (
+                      <tr key={row.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
+                        <td style={td("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{i + 1}</td>
+                        <td style={td("center")}>
+                          <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: cat.bg, color: cat.text, border: `1px solid ${cat.border}` }}>{row.categoria}</span>
+                        </td>
+                        <td style={td("left", { color: "#374151" })}>{row.descricao}</td>
+                        <td style={td("right", { fontWeight: 700, color: "#15803d" })}>R$ {row.valor.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
+                        <td style={td("center", { color: "#6b7280" })}>{row.data}</td>
+                        <td style={td("center", { color: "#6b7280" })}>{row.hora}</td>
+                        <td style={td("left", { color: "#374151" })}>{row.responsavel}</td>
+                        <td style={td("left", { color: "#6b7280", fontStyle: row.obs ? "normal" : "italic" })}>{row.obs || "—"}</td>
+                        <td style={td("center")}>
+                          <div style={{ display: "inline-flex", gap: 4 }}>
+                            <button title="Editar" onClick={() => { setRendGEditId(row.id); setRendGForm({ ...row }); setRendGModalOpen(true); }}
+                              style={{ background: "#2563eb", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                            <button title="Excluir" onClick={() => setRendGDeleteId(row.id)}
+                              style={{ background: "#dc2626", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {rendGFiltered.length === 0 && (
+                    <tr><td colSpan={9} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum rendimento encontrado.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {/* total footer */}
+            <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL RENDIMENTOS</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>R$ {rendGFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+            </div>
+            <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+
+            {/* ── MODAL NOVO / EDITAR ── */}
+            {rendGModalOpen && (
+              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                onClick={() => setRendGModalOpen(false)}>
+                <div style={{ background: "#fff", borderRadius: 8, width: 480, boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
+                  onClick={e => e.stopPropagation()}>
+                  <div style={{ background: "#2d5474", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{rendGEditId ? "Editar Rendimento" : "Novo Rendimento"}</span>
+                    <button onClick={() => setRendGModalOpen(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+                  </div>
+                  <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Data *</label>
+                        <input type="date" value={rendGForm.data} onChange={e => setRendGForm(f => ({ ...f, data: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Hora *</label>
+                        <input type="time" value={rendGForm.hora} onChange={e => setRendGForm(f => ({ ...f, hora: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Categoria *</label>
+                      <select value={rendGForm.categoria} onChange={e => setRendGForm(f => ({ ...f, categoria: e.target.value }))}
+                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
+                        <option value="">-- Selecione --</option>
+                        {rendGCategorias.map(c => <option key={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Descrição *</label>
+                      <input type="text" value={rendGForm.descricao} onChange={e => setRendGForm(f => ({ ...f, descricao: e.target.value }))}
+                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Valor (R$) *</label>
+                        <input type="number" min={0} step={0.01} value={rendGForm.valor} onChange={e => setRendGForm(f => ({ ...f, valor: parseFloat(e.target.value) || 0 }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Responsável</label>
+                        <input type="text" value={rendGForm.responsavel} onChange={e => setRendGForm(f => ({ ...f, responsavel: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Observações</label>
+                      <input type="text" value={rendGForm.obs} onChange={e => setRendGForm(f => ({ ...f, obs: e.target.value }))}
+                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
+                      <button onClick={() => setRendGModalOpen(false)}
+                        style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                        Cancelar
+                      </button>
+                      <button onClick={() => {
+                        if (rendGEditId) {
+                          setRendGRows(prev => prev.map(r => r.id === rendGEditId ? rendGForm : r));
+                        } else {
+                          setRendGRows(prev => [...prev, { ...rendGForm, id: Date.now() }]);
+                        }
+                        setRendGModalOpen(false);
+                      }} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                        Salvar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── CONFIRMAÇÃO EXCLUIR ── */}
+            {rendGDeleteId !== null && (() => {
+              const rr = rendGRows.find(r => r.id === rendGDeleteId);
+              if (!rr) return null;
+              return (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onClick={() => setRendGDeleteId(null)}>
+                  <div style={{ background: "#fff", borderRadius: 8, width: 400, boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
+                    onClick={e => e.stopPropagation()}>
+                    <div style={{ background: "#dc2626", padding: "14px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+                      <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff", flexShrink: 0 }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                      <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Excluir Rendimento</span>
+                    </div>
+                    <div style={{ padding: "22px 20px" }}>
+                      <p style={{ fontSize: 14, color: "#374151", margin: "0 0 6px" }}>Tem certeza que deseja excluir:</p>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>{rr.descricao}</p>
+                      <p style={{ fontSize: 12, color: "#6b7280", margin: "0 0 4px" }}>{rr.categoria} · {rr.data}</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#15803d", margin: "0 0 20px" }}>
+                        R$ {rr.valor.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                      </p>
+                      <p style={{ fontSize: 12, color: "#b91c1c", fontWeight: 600, margin: "0 0 20px" }}>⚠️ Esta ação não pode ser desfeita.</p>
+                      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+                        <button onClick={() => setRendGDeleteId(null)}
+                          style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                          Cancelar
+                        </button>
+                        <button onClick={() => { setRendGRows(prev => prev.filter(r => r.id !== rendGDeleteId)); setRendGDeleteId(null); }}
+                          style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                          Sim, Excluir
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        ) : activeMain === "Gerenciar Despesas" ? (
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* header bar */}
             <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
