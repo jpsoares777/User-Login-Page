@@ -3688,8 +3688,8 @@ export default function DashboardPage() {
                 <thead>
                   <tr style={{ background: "#3d6e8e", color: "#fff" }}>
                     <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>#</th>
-                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Nome</th>
-                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Sobrenome</th>
+                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Rota</th>
+                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Nome do Cobrador</th>
                     <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Cód. Acesso</th>
                     <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Data Vencimento</th>
                     <th style={{ padding: "9px 14px", textAlign: "center", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Status</th>
@@ -3698,9 +3698,9 @@ export default function DashboardPage() {
                 </thead>
                 <tbody>
                   {[
-                    { id: 1, nome: "Rota Cred Bank", sobrenome: "—", codigo: "10600", vencimento: "2026-05-28", ativo: false },
-                    { id: 2, nome: "SystemPay Demo", sobrenome: "—", codigo: "10601", vencimento: "2026-12-31", ativo: true },
-                    { id: 3, nome: "Filial Norte",   sobrenome: "—", codigo: "10602", vencimento: "2026-09-15", ativo: true },
+                    { id: 1, rota: "Rota Cred Bank",  cobrador: "Carlos Alberto Souza",   codigo: "10600", vencimento: "2026-05-28", ativo: false },
+                    { id: 2, rota: "SystemPay Demo",  cobrador: "Marcos Antônio Lima",    codigo: "10601", vencimento: "2026-12-31", ativo: true  },
+                    { id: 3, rota: "Filial Norte",    cobrador: "Fernanda Costa Ribeiro", codigo: "10602", vencimento: "2026-09-15", ativo: true  },
                   ].map((row, i) => {
                     const venc = new Date(row.vencimento);
                     const hoje = new Date();
@@ -3711,8 +3711,8 @@ export default function DashboardPage() {
                         onMouseEnter={e => (e.currentTarget.style.background = "#eef4fb")}
                         onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f8fafc")}>
                         <td style={{ padding: "9px 14px", color: "#94a3b8", fontWeight: 600, fontSize: 12 }}>{row.id}</td>
-                        <td style={{ padding: "9px 14px", color: "#1e293b", fontWeight: 600 }}>{row.nome}</td>
-                        <td style={{ padding: "9px 14px", color: "#64748b" }}>{row.sobrenome}</td>
+                        <td style={{ padding: "9px 14px", color: "#1e293b", fontWeight: 600 }}>{row.rota}</td>
+                        <td style={{ padding: "9px 14px", color: "#374151" }}>{row.cobrador}</td>
                         <td style={{ padding: "9px 14px" }}>
                           <span style={{ fontFamily: "monospace", background: "#f1f5f9", color: "#2d5474", border: "1px solid #e2e8f0", borderRadius: 4, padding: "2px 7px", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em" }}>
                             {row.codigo}
