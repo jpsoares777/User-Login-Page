@@ -2993,6 +2993,7 @@ function ConsolidadosContent() {
   const [cidade,    setCidade]    = useState("SAO LUIS");
   const [buscarCobrador, setBuscarCobrador] = useState("");
   const [buscarData,     setBuscarData]     = useState("");
+  const [showResumo,     setShowResumo]     = useState(false);
 
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
   const labelCls = { fontSize: 11, fontWeight: 700 as const, color: "#6b7280", display: "block" as const, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.04em" };
@@ -3069,6 +3070,11 @@ function ConsolidadosContent() {
         </div>
         <button className="h-7 px-4 rounded text-xs font-bold text-white" style={{ background: "#2563eb", border: "none", cursor: "pointer", alignSelf: "flex-end" }}>
           🔍 Pesquisar
+        </button>
+        <button onClick={() => setShowResumo(true)}
+          className="h-7 px-4 rounded text-xs font-bold text-white"
+          style={{ background: "#059669", border: "none", cursor: "pointer", alignSelf: "flex-end", display: "flex", alignItems: "center", gap: 5 }}>
+          📊 Resumo
         </button>
 
         <div className="flex-1" />
@@ -3162,6 +3168,94 @@ function ConsolidadosContent() {
 
       {/* ── Blue footer bar ── */}
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+
+      {/* ── Modal Resumo de Caixa ── */}
+      {showResumo && consolidadosData[0] && (() => {
+        const r = consolidadosData[0];
+        const fmtR = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+        const Row = ({ label, value, valueColor = "#111827", bold = false }: { label: string; value: string | number; valueColor?: string; bold?: boolean }) => (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid #f3f4f6" }}>
+            <span style={{ fontSize: 14, color: "#4b5563" }}>{label}</span>
+            <span style={{ fontSize: 14, fontWeight: bold ? 700 : 500, color: valueColor }}>{typeof value === "number" ? fmtR(value) : value}</span>
+          </div>
+        );
+        const SectionHeader = ({ icon, title }: { icon: string; title: string }) => (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, margin: "16px 0 4px", paddingTop: 4 }}>
+            <span style={{ fontSize: 15 }}>{icon}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#374151", textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{title}</span>
+          </div>
+        );
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setShowResumo(false)}>
+            <div style={{ background: "#fff", borderRadius: 12, width: 440, maxHeight: "90vh", overflowY: "auto", boxShadow: "0 32px 80px rgba(0,0,0,0.3)" }}
+              onClick={e => e.stopPropagation()}>
+
+              {/* ── Title bar ── */}
+              <div style={{ background: "#f8f9fa", borderBottom: "1px solid #e5e7eb", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "12px 12px 0 0" }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#374151", display: "flex", alignItems: "center", gap: 6 }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#2563eb" }}><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                  Relatório Diário
+                </span>
+                <button onClick={() => setShowResumo(false)}
+                  style={{ width: 28, height: 28, background: "#e5e7eb", border: "none", color: "#374151", borderRadius: 6, cursor: "pointer", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+              </div>
+
+              {/* ── Body ── */}
+              <div style={{ padding: "20px 24px 24px" }}>
+
+                {/* Heading */}
+                <div style={{ textAlign: "center", marginBottom: 20 }}>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: "#111827", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
+                    <span>📊</span> Resumo de Caixa
+                  </div>
+                  <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>
+                    {r.vendedor} · Sistema de Cobrança
+                  </div>
+                </div>
+
+                {/* Info geral */}
+                <div style={{ background: "#f9fafb", borderRadius: 8, padding: "4px 16px", marginBottom: 4 }}>
+                  <Row label="Status de Liquidação" value="✓ Correto" valueColor="#16a34a" bold />
+                  <Row label="Sincronização" value={r.vendedor} bold />
+                  <Row label="Data" value={new Date(r.fechaCaja).toLocaleDateString("pt-BR")} />
+                </div>
+
+                {/* Movimentação Financeira */}
+                <SectionHeader icon="🔥" title="Movimentação Financeira" />
+                <div style={{ background: "#f9fafb", borderRadius: 8, padding: "4px 16px", marginBottom: 4 }}>
+                  <Row label="Caja Inicial"            value={r.cajaInicial} />
+                  <Row label="Novos Clientes"          value={r.totalClientes} valueColor="#2563eb" bold />
+                  <Row label="Renovação de Clientes"   value="0" />
+                  <Row label="Total de Empréstimos"    value={r.ventas} />
+                  <Row label="Retiradas de Caja"       value={0} />
+                  <Row label="Despesas"                value={r.egresos} />
+                  <Row label="Rendimentos"             value={r.ingresos} />
+                </div>
+
+                {/* Cobranças */}
+                <SectionHeader icon="💰" title="Cobranças" />
+                <div style={{ background: "#f9fafb", borderRadius: 8, padding: "4px 16px", marginBottom: 4 }}>
+                  <Row label="Total Cobrado (Recaudo)" value={r.recaudo} valueColor="#16a34a" bold />
+                  <Row label="Carteira"                value={r.cartera} valueColor="#2563eb" bold />
+                </div>
+
+                {/* Saldo Final */}
+                <SectionHeader icon="🟢" title="Saldo Final" />
+                <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: "#166534" }}>Caja Final</span>
+                  <span style={{ fontSize: 16, fontWeight: 800, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</span>
+                </div>
+
+                {/* Footer */}
+                <div style={{ textAlign: "center", fontSize: 11, color: "#9ca3af", borderTop: "1px solid #f3f4f6", paddingTop: 12 }}>
+                  Gerado em {new Date(r.fechaCaja).toLocaleDateString("pt-BR")}, {new Date().toLocaleTimeString("pt-BR")} · Sistema de Cobrança
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Modal Opções ── */}
       {showModal && (
