@@ -4098,6 +4098,8 @@ export default function DashboardPage() {
                 $ {gcRows.reduce((s, r) => s + r.saldo, 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </div>
+            {/* ── Blue footer bar (padrão) ── */}
+            <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
             {/* ── CONFIRMAÇÃO EXCLUIR ── */}
             {gcDeleteId !== null && (() => {
               const gcr = gcRows.find(r => r.id === gcDeleteId);
