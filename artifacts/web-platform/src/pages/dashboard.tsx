@@ -3484,7 +3484,6 @@ export default function DashboardPage() {
             {[
               { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar, imgSize: 32 },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
-              { icon: "💳", label: "Novos empréstimos",            color: "#2563eb" },
               { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
               { icon: "📈", label: "Gerenc. de rendimentos",       color: "#16a34a" },
               { icon: "🔄", label: "Renovação de empréstimos",     color: "#7c3aed" },
