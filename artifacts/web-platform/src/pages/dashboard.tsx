@@ -3474,42 +3474,38 @@ export default function DashboardPage() {
 
       {/* ── SIDE MENU OVERLAY ── */}
       {sideMenuOpen && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex" }}>
-          {/* Backdrop */}
-          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)" }} onClick={() => setSideMenuOpen(false)} />
-          {/* Drawer */}
-          <div style={{ position: "relative", width: 230, background: "#1e3a50", height: "100%", display: "flex", flexDirection: "column", boxShadow: "4px 0 24px rgba(0,0,0,0.35)", overflowY: "auto" }}>
-            {/* Header */}
-            <div style={{ background: "#2d5474", padding: "16px 18px", display: "flex", alignItems: "center", gap: 10, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
-              <img src={menuIcon} alt="Logo" style={{ width: 32, height: 32, objectFit: "contain" }} />
-              <span style={{ color: "#fff", fontWeight: 800, fontSize: 15, letterSpacing: "0.03em" }}>SYSTEMPAY</span>
-            </div>
-            {/* Menu Items */}
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000 }} onClick={() => setSideMenuOpen(false)}>
+          {/* Floating card */}
+          <div style={{ position: "absolute", top: 52, left: 10, width: 260, background: "#fff", borderRadius: 12, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", overflow: "hidden" }}
+            onClick={e => e.stopPropagation()}>
             {[
-              { icon: "👥", label: "Gestão de Vendedores" },
-              { icon: "🧑‍🤝‍🧑", label: "Gestão de Clientes" },
-              { icon: "💰", label: "Ingressos" },
-              { icon: "💸", label: "Egresos" },
-              { icon: "📋", label: "Importar Rotas" },
-              { icon: "🔧", label: "Gestão de Usuários" },
-              { icon: "📅", label: "Alterar Datas" },
-              { icon: "🧾", label: "Faturas" },
-              { icon: "🏦", label: "Liq. Funcionários" },
-              { icon: "📊", label: "Cons. Gastos" },
-              { icon: "💼", label: "Caixa Geral" },
-              { icon: "🔍", label: "Auditoria" },
-              { icon: "🔓", label: "Abertura Geral" },
-              { icon: "📂", label: "Conceitos Ing/Gasto" },
-            ].map(({ icon, label }) => (
+              { icon: "📊", label: "Relatório diário",           color: "#f97316" },
+              { icon: "💳", label: "Novos empréstimos",          color: "#2563eb" },
+              { icon: "💰", label: "Gerenciamento de despesas",  color: "#f59e0b" },
+              { icon: "📈", label: "Gerenciamento de rendimentos", color: "#16a34a" },
+              { icon: "🔄", label: "Renovação de empréstimos",   color: "#7c3aed" },
+              { icon: "🔗", label: "Sincronizar",                color: "#0891b2" },
+              { icon: "📅", label: "Empréstimo de outras datas", color: "#db2777" },
+              { icon: "👤", label: "Clientes ausentes",          color: "#6b7280" },
+            ].map(({ icon, label, color }, i, arr) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
-                style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 18px", background: "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
-                onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
+                style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 18px", background: "transparent", border: "none", borderBottom: i < arr.length - 1 ? "1px solid #f1f5f9" : "1px solid #f1f5f9", color: "#1e293b", fontSize: 14, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
-                <span style={{ fontSize: 16 }}>{icon}</span>
+                <span style={{ fontSize: 20, color }}>{icon}</span>
                 {label}
               </button>
             ))}
+            {/* Sair */}
+            <button onClick={() => { setSideMenuOpen(false); navigate("/"); }}
+              style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 18px", background: "transparent", border: "none", color: "#dc2626", fontSize: 14, fontWeight: 600, cursor: "pointer", textAlign: "left", width: "100%" }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#fff5f5")}
+              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+            >
+              <span style={{ fontSize: 20 }}>⏻</span>
+              Sair
+            </button>
           </div>
         </div>
       )}
