@@ -3529,31 +3529,13 @@ function ConsolidadosContent() {
           </div>
         </div>
 
-        {/* ── Caixa Final destaque ── */}
-        <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "12px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 2 }}>🟢 Caixa Final do Dia</div>
-            <div style={{ fontSize: 12, color: "#4b7c59" }}>Pagos: <strong>{r.pagos}</strong> · No Pagos: <strong style={{ color: "#dc2626" }}>{r.noPagos}</strong> · {dateFmt}</div>
-          </div>
-          <div style={{ textAlign: "right" as const }}>
-            <div style={{ fontSize: 22, fontWeight: 900, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</div>
-            <div style={{ fontSize: 11, color: "#f59e0b", fontWeight: 600 }}>Receb. {((r.recaudo / r.recebimentoPrevisto) * 100).toFixed(1)}% do previsto</div>
-          </div>
-        </div>
-
         <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8" }}>
           Gerado em {new Date().toLocaleString("pt-BR")} · Sistema de Cobrança
         </div>
       </div>
 
-      {/* ── Green footer — Carteira Final ── */}
-      <div className="shrink-0 flex items-center justify-between px-4 py-2.5" style={{ background: "#16a34a", borderTop: "1px solid #15803d" }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>
-          CARTEIRA FINAL
-          <span style={{ fontWeight: 400, fontSize: 12, marginLeft: 8, opacity: 0.85 }}>(Sanção: {fmtR(r.sancao)})</span>
-        </span>
-        <span style={{ fontSize: 15, fontWeight: 800, color: "#fff" }}>{fmtR(r.cartera)}</span>
-      </div>
+      {/* ── Blue footer bar ── */}
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
     </div>
   );
 }
