@@ -3489,7 +3489,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
               { icon: null,  label: "Gerenc. de despesas",          color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)" },
               { icon: null,  label: "Gerenc. de rendimentos",       color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
-              { icon: null,  label: "Importar rota",                 color: "#7c3aed", img: iconImportarRota, imgSize: 24 },
+              { icon: null,  label: "Importar rota",                 color: "#7c3aed", img: iconImportarRota, imgSize: 21 },
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)" },
               { icon: "📅", label: "Consultar gastos",              color: "#db2777" },
               { icon: "👤", label: "Caixa geral",                  color: "#6b7280" },
