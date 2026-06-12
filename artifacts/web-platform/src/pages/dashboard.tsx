@@ -3468,6 +3468,7 @@ export default function DashboardPage() {
   const [gcFrequencia, setGcFrequencia] = useState("-- Todas --");
   const [gcModalOpen, setGcModalOpen] = useState(false);
   const [gcModalRowId, setGcModalRowId] = useState<number | null>(null);
+  const [gcHistRowId, setGcHistRowId] = useState<number | null>(null);
   const [gcRows] = useState([
     { id: 1,  consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "012.345.678-90", nasc: "1985-03-12", tel1: "91633427315",   tel2: "98985014328",  endereco: "Rua Gama Lobo, nº 10, Quarto, Centro – São Luís – MA",        obs: "Cliente pontual. Prefere contato pelo WhatsApp.", freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
     { id: 2,  consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    nasc: "1990-07-22", tel1: "5599883457671",  tel2: "03270213301",  endereco: "Av. Colares Moreira, nº 500, Renascença II – São Luís – MA",  obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
@@ -3814,7 +3815,8 @@ export default function DashboardPage() {
                       onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
                       onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f9fafb")}>
                       <td style={{ padding: "10px 10px", textAlign: "center" }}>
-                        <button style={{ background: "#0e7490", color: "#fff", border: "none", borderRadius: 4, padding: "4px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                        <button onClick={() => setGcHistRowId(row.id)}
+                          style={{ background: "#0e7490", color: "#fff", border: "none", borderRadius: 4, padding: "4px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
                           Histórico
                         </button>
                       </td>
@@ -3872,6 +3874,33 @@ export default function DashboardPage() {
                 $ {gcRows.reduce((s, r) => s + r.saldo, 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </div>
+            {/* ── HISTÓRICO MODAL (same as Novos Empréstimos) ── */}
+            {gcHistRowId !== null && (() => {
+              const gcr = gcRows.find(r => r.id === gcHistRowId);
+              if (!gcr) return null;
+              const empRow: EmpRow = {
+                id: gcr.id,
+                consec: gcr.consec,
+                freq: gcr.freq,
+                valorAnt: gcr.saldo,
+                cliente: gcr.nome,
+                tag: "Renovado",
+                documento: gcr.doc,
+                celular: gcr.tel1,
+                valorProd: gcr.total,
+                parcelas: gcr.parcelas,
+                pctJuros: gcr.jurosPorc,
+                valorJuros: gcr.total - gcr.valorEmp,
+                valorParcela: gcr.valorParc,
+                dataVenda: "2026-04-08 00:00:00",
+                parcRest: gcr.rest,
+                saldo: gcr.saldo,
+                numSeguro: "",
+                vrSeguro: 0,
+                chaveAutor: "",
+              };
+              return <HistorialVendasModal row={empRow} onClose={() => setGcHistRowId(null)} />;
+            })()}
             {/* ── FICHA DO CLIENTE MODAL ── */}
             {gcModalOpen && (() => {
               const mr = gcRows.find(r => r.id === gcModalRowId);
