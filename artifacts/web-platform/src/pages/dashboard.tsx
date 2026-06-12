@@ -3494,7 +3494,7 @@ export default function DashboardPage() {
               { icon: "👤", label: "Clientes ausentes",            color: "#6b7280" },
             ].map(({ icon, label, color, img, imgBg, darkIcon }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean }) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
-                style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", border: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
+                style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", borderTop: "none", borderLeft: "none", borderRight: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
