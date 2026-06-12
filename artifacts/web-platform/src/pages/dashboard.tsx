@@ -3610,16 +3610,16 @@ function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }
                   <div style={{ fontSize: 9, fontWeight: 700, color: "#6b7280", marginBottom: 1, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                     {label}{req && <span style={{ color: "#ef4444" }}> *</span>}
                   </div>
-                  <div style={{ height: 22, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 6px", fontSize: 11, color: "#111827", background: "#f3f4f6", display: "flex", alignItems: "center" }}>{value}</div>
+                  <div style={{ height: 19, border: "1px solid #d1d5db", borderRadius: 3, padding: "0 5px", fontSize: 10, color: "#111827", background: "#f3f4f6", display: "flex", alignItems: "center" }}>{value}</div>
                 </div>
               );
               return (
-                <div style={{ border: "1px solid #e5e7eb", borderRadius: 6, overflow: "hidden", borderLeft: "3px solid #6366f1" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
-                    <span style={{ fontSize: 11 }}>👤</span>
-                    <span style={{ fontWeight: 800, fontSize: 10, color: "#1e293b", letterSpacing: "0.06em" }}>DADOS DO CLIENTE</span>
+                <div style={{ border: "1px solid #e5e7eb", borderRadius: 5, overflow: "hidden", borderLeft: "3px solid #6366f1" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "3px 8px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+                    <span style={{ fontSize: 10 }}>👤</span>
+                    <span style={{ fontWeight: 800, fontSize: 9, color: "#1e293b", letterSpacing: "0.06em" }}>DADOS DO CLIENTE</span>
                   </div>
-                  <div style={{ padding: "7px 10px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5px 10px" }}>
+                  <div style={{ padding: "5px 8px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 8px" }}>
                     {fieldBox("CPF", mr.doc)}
                     {fieldBox("TELEFONE", mr.tel1)}
                     {fieldBox("NOME", mr.nome.split(" ")[0])}
@@ -3636,7 +3636,7 @@ function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }
                   <div style={{ fontSize: 9, fontWeight: 700, color: "#6b7280", marginBottom: 1, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                     {label}{req && <span style={{ color: "#ef4444" }}> *</span>}
                   </div>
-                  <div style={{ height: 22, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 6px", fontSize: 11, color: "#111827", background: "#f3f4f6", display: "flex", alignItems: "center", overflow: "hidden", whiteSpace: "nowrap" }}>{value}</div>
+                  <div style={{ height: 19, border: "1px solid #d1d5db", borderRadius: 3, padding: "0 5px", fontSize: 10, color: "#111827", background: "#f3f4f6", display: "flex", alignItems: "center", overflow: "hidden", whiteSpace: "nowrap" }}>{value}</div>
                 </div>
               );
               const parts = mr.endereco.split(" – ");
@@ -3649,12 +3649,12 @@ function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }
               const segmentos = streetChunk.split(",").map(s => s.trim());
               const bairro   = segmentos[segmentos.length - 1] ?? "";
               return (
-                <div style={{ border: "1px solid #e5e7eb", borderRadius: 6, overflow: "hidden", borderLeft: "3px solid #6366f1" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
-                    <span style={{ fontSize: 11 }}>📍</span>
-                    <span style={{ fontWeight: 800, fontSize: 10, color: "#1e293b", letterSpacing: "0.06em" }}>ENDEREÇO</span>
+                <div style={{ border: "1px solid #e5e7eb", borderRadius: 5, overflow: "hidden", borderLeft: "3px solid #6366f1" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "3px 8px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+                    <span style={{ fontSize: 10 }}>📍</span>
+                    <span style={{ fontWeight: 800, fontSize: 9, color: "#1e293b", letterSpacing: "0.06em" }}>ENDEREÇO</span>
                   </div>
-                  <div style={{ padding: "7px 10px", display: "grid", gridTemplateColumns: "1fr 2fr 0.6fr", gap: "5px 8px" }}>
+                  <div style={{ padding: "5px 8px", display: "grid", gridTemplateColumns: "1fr 2fr 0.6fr", gap: "4px 7px" }}>
                     {fieldBox("CEP", "-")}
                     {fieldBox("RUA / AVENIDA", rua)}
                     {fieldBox("Nº", numero)}
