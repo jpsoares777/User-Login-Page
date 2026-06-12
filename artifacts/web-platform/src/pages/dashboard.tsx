@@ -3655,10 +3655,13 @@ function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }
               );
             })()}
 
-            {/* Cancelar */}
-            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 4 }}>
-              <button onClick={onClose} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+            {/* Botões */}
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
+              <button onClick={onClose} style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                 Cancelar
+              </button>
+              <button onClick={onClose} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                Salvar
               </button>
             </div>
 
