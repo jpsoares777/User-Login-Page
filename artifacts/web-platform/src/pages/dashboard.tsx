@@ -3236,9 +3236,9 @@ function ConsolidadosContent() {
           <div class="vl" style="color:#4b7c59">Caixa Final</div>
           <div class="vv g">${fmtR(r.cajaFinal)}</div>
         </div>
-        <div class="vbox" style="background:#eff6ff;border:1px solid #bfdbfe;">
-          <div class="vl" style="color:#3b5fa0">Carteira Final</div>
-          <div class="vv b">${fmtR(r.cartera)}</div>
+        <div class="vbox" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+          <div class="vl" style="color:#4b7c59">Carteira Final</div>
+          <div class="vv g">${fmtR(r.cartera)}</div>
         </div>
       </div>
 
@@ -3402,9 +3402,9 @@ function ConsolidadosContent() {
               <span style={{ fontSize: 10, fontWeight: 600, color: "#4b7c59", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Caixa Final</span>
               <span style={{ fontSize: 22, fontWeight: 800, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</span>
             </div>
-            <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "16px 18px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1 }}>
-              <span style={{ fontSize: 10, fontWeight: 600, color: "#3b5fa0", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Carteira Final</span>
-              <span style={{ fontSize: 22, fontWeight: 800, color: "#2563eb" }}>{fmtR(r.cartera)}</span>
+            <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: "16px 18px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1 }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#4b7c59", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Carteira Final</span>
+              <span style={{ fontSize: 22, fontWeight: 800, color: "#16a34a" }}>{fmtR(r.cartera)}</span>
             </div>
           </div>
 
