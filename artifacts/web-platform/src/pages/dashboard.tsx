@@ -3970,34 +3970,6 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Section: Zona de Operação */}
-              <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 10 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#2563eb" }}>Zona de Operação</span>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>País <span style={{ color: "#dc2626" }}>(*)</span></label>
-                  <select value={gaForm.pais} onChange={e => setGaForm(f => ({ ...f, pais: e.target.value }))}
-                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
-                    <option value="">-- Selecione --</option>
-                    <option>Brasil</option>
-                    <option>Colômbia</option>
-                    <option>México</option>
-                  </select>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Cidade <span style={{ color: "#dc2626" }}>(*)</span></label>
-                  <select value={gaForm.cidade} onChange={e => setGaForm(f => ({ ...f, cidade: e.target.value }))}
-                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
-                    <option>SAO LUIS</option>
-                    <option>SÃO PAULO</option>
-                    <option>RIO DE JANEIRO</option>
-                    <option>BRASÍLIA</option>
-                    <option>FORTALEZA</option>
-                  </select>
-                </div>
-              </div>
-
               {/* Section: Informação de Acesso */}
               <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 10 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#2563eb" }}>Informação de Acesso ao Sistema APP</span>
