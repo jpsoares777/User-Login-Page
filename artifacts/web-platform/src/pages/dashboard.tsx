@@ -3552,19 +3552,8 @@ function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
 }
 
 function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }) {
-  const [showParcelas, setShowParcelas] = useState(false);
-  const [showDocumentos, setShowDocumentos] = useState(false);
-  const [histEmp, setHistEmp] = useState<{ data: string; cuotas: number; total: number; valor: number } | null>(null);
-
-  const fmtM = (v: number) => `$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   const nameColor = mr.atrasadas === 0 ? "#15803d" : mr.atrasadas >= 5 ? "#b91c1c" : "#b45309";
   const initials = mr.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
-
-  const prevTotal = Math.round(mr.valorEmp * 1.4);
-  const historico: { data: string; cuotas: number; total: number; valor: number }[] = [
-    { data: "2025-10-01", cuotas: 14, total: prevTotal, valor: mr.valorEmp },
-    { data: "2026-04-08", cuotas: mr.parcelas, total: mr.total, valor: mr.valorEmp },
-  ];
 
   return (
     <>
@@ -3666,180 +3655,16 @@ function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }
               );
             })()}
 
-            {/* Botões */}
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <button onClick={() => setShowParcelas(true)}
-                style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "9px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
-                <span style={{ fontSize: 15 }}>📋</span> Ver Parcelas Pagas — Empréstimo Ativo
-              </button>
-              <button onClick={() => setShowDocumentos(true)}
-                style={{ background: "#e8f0f7", color: "#2d5474", border: "1px solid #a8c4d8", borderRadius: 5, padding: "7px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ fontSize: 12 }}>📷</span> Documentos
+            {/* Cancelar */}
+            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 4 }}>
+              <button onClick={onClose} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                Cancelar
               </button>
             </div>
-
-            {/* Histórico de empréstimos */}
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-                👤 {mr.nome.toUpperCase()} &nbsp;<span style={{ color: "#9ca3af", fontWeight: 400 }}>#{mr.consec}</span>
-              </div>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, minWidth: 700 }}>
-                  <thead>
-                    <tr>
-                      {["Nro.", "Data do Emp.", "Estado", "Parc.", "Pagas", "Falt.", "Saldo", "Valor Empr.", "Freq.", "Vr. Parcela", "Visitas", "% Juros"].map(hd => (
-                        <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "6px 8px", textAlign: "center", fontWeight: 700, fontSize: 10, whiteSpace: "nowrap" }}>{hd}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[...historico].reverse().map((h, idx) => {
-                      const pagasH = h.cuotas;
-                      const faltH = 0;
-                      const saldoH = 0;
-                      const vrParc = h.total / h.cuotas;
-                      const pctJurosH = Math.round((h.total / h.valor - 1) * 100);
-                      const nro = historico.length - idx;
-                      const bg = idx % 2 === 0 ? "#fff" : "#f5f7f9";
-                      return (
-                        <tr key={idx} onClick={() => setHistEmp(h)}
-                          style={{ cursor: "pointer", background: bg }}
-                          onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
-                          onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = bg}>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{nro}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#374151" }}>{h.data}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 20, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac" }}>Quitado</span>
-                          </td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>{h.cuotas}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#15803d", fontWeight: 600 }}>{pagasH}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#6b7280" }}>{faltH}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: "#15803d" }}>{fmtM(saldoH)}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: "#2563eb" }}>{fmtM(h.total)}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#6b7280" }}>{mr.freq}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", color: "#374151" }}>{fmtM(vrParc)}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#374151" }}>{mr.visitas}</td>
-                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#15803d" }}>{pctJurosH}%</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 4px 0" }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>
-                  TOTAL EMPRÉSTIMOS:&nbsp;
-                  <span style={{ color: "#2563eb" }}>{fmtM(historico.reduce((a, h) => a + h.total, 0))}</span>
-                </span>
-                <button onClick={onClose} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                  Cancelar
-                </button>
-              </div>
-            </div>
-
-            {/* Observações */}
-            {mr.obs && (
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Observações</div>
-                <div style={{ background: "#fefce8", border: "1px solid #fde68a", borderRadius: 5, padding: "10px 12px", fontSize: 12, color: "#713f12", lineHeight: 1.6 }}>{mr.obs}</div>
-              </div>
-            )}
 
           </div>
         </div>
       </div>
-
-      {/* ── Sub-modal: Histórico de Pagamentos ── */}
-      {histEmp !== null && (() => {
-        const emp = histEmp;
-        const empNro = historico.findIndex(h => h.data === emp.data) + 1;
-        const vrParc = emp.total / emp.cuotas;
-        const startDate = new Date(emp.data + "T00:00:00");
-        const rows: { num: number; tipo: string; valor: number; fecha: string; obs: string }[] = [];
-        for (let i = 0; i < emp.cuotas; i++) {
-          const d = new Date(startDate); d.setDate(d.getDate() + i + 1);
-          rows.push({ num: i + 1, tipo: "PARC.", valor: vrParc, fecha: d.toISOString().slice(0, 10), obs: "" });
-        }
-        const rowsDesc = [...rows].reverse();
-        const totalPago = rows.reduce((a, r) => a + r.valor, 0);
-        const nomeShort = mr.nome.length > 20 ? mr.nome.slice(0, 19) + "…" : mr.nome;
-        return (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center" }}
-            onClick={() => setHistEmp(null)}>
-            <div style={{ background: "#fff", borderRadius: 8, width: 660, maxHeight: "82vh", boxShadow: "0 24px 64px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", overflow: "hidden" }}
-              onClick={e => e.stopPropagation()}>
-              <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-                <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Histórico de Pagamentos</span>
-                <button onClick={() => setHistEmp(null)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
-              </div>
-              <div style={{ padding: "10px 18px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-                <span style={{ fontSize: 14 }}>👤</span>
-                <span style={{ fontWeight: 800, fontSize: 13, color: "#e07b39", letterSpacing: "0.02em" }}>{mr.nome.toUpperCase()}</span>
-                <span style={{ color: "#6b7280", fontSize: 12 }}>Empréstimo #{empNro}</span>
-              </div>
-              <div style={{ flex: 1, overflowY: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                  <thead>
-                    <tr>
-                      {["Nro.", "Cliente", "Tipo", "Valor", "Fecha", "Observações"].map(hd => (
-                        <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "8px 12px", textAlign: hd === "Valor" ? "right" : hd === "Nro." ? "center" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0, zIndex: 1, whiteSpace: "nowrap" }}>{hd}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rowsDesc.map((r, idx) => (
-                      <tr key={r.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
-                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{r.num}</td>
-                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#2563eb", fontWeight: 500 }}>{nomeShort.toUpperCase()}</td>
-                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}><TipoBadge tipo={r.tipo} /></td>
-                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: r.tipo === "PARC." ? "#15803d" : "#9ca3af" }}>{r.tipo === "PARC." ? fmtM(r.valor) : "$ 0,00"}</td>
-                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{r.fecha}</td>
-                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#9ca3af" }}>{r.obs}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div style={{ padding: "12px 18px", borderTop: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-                <span style={{ fontWeight: 700, fontSize: 13, color: "#374151" }}>
-                  TOTAL PAGO:&nbsp;<span style={{ color: "#15803d" }}>{fmtM(totalPago)}</span>
-                </span>
-                <button onClick={() => setHistEmp(null)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* ── Sub-modal: Ver Parcelas ── */}
-      {showParcelas && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center" }}
-          onClick={() => setShowParcelas(false)}>
-          <div style={{ background: "#fff", borderRadius: 8, width: 420, padding: "24px 28px", boxShadow: "0 16px 48px rgba(0,0,0,0.4)", textAlign: "center" }}
-            onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: 38, marginBottom: 10 }}>📋</div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#2d5474", marginBottom: 6 }}>Ver Parcelas Pagas</div>
-            <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 16 }}>Empréstimo Ativo — {mr.pagas} parcelas pagas de {mr.parcelas}</div>
-            <button onClick={() => setShowParcelas(false)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Fechar</button>
-          </div>
-        </div>
-      )}
-
-      {/* ── Sub-modal: Documentos ── */}
-      {showDocumentos && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center" }}
-          onClick={() => setShowDocumentos(false)}>
-          <div style={{ background: "#fff", borderRadius: 8, width: 420, padding: "24px 28px", boxShadow: "0 16px 48px rgba(0,0,0,0.4)", textAlign: "center" }}
-            onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: 38, marginBottom: 10 }}>📷</div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#2d5474", marginBottom: 6 }}>Documentos do Cliente</div>
-            <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 16 }}>Nenhum documento anexado para {mr.nome}.</div>
-            <button onClick={() => setShowDocumentos(false)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Fechar</button>
-          </div>
-        </div>
-      )}
     </>
   );
 }
