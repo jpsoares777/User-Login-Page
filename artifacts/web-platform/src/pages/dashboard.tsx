@@ -3458,6 +3458,11 @@ export default function DashboardPage() {
   const [liqFim,    setLiqFim]    = useState(() => new Date().toISOString().slice(0,10));
   const [diarioData, setDiarioData] = useState(() => new Date().toISOString().slice(0,10));
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
+  const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
+  const [gaEmpresa, setGaEmpresa] = useState("CREDBANK");
+  const [gaNome, setGaNome] = useState("");
+  const [gaSobrenome, setGaSobrenome] = useState("");
+  const [gaCodigo, setGaCodigo] = useState("");
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
@@ -3487,7 +3492,7 @@ export default function DashboardPage() {
           <div style={{ position: "absolute", top: 52, left: 10, width: 240, background: "#fff", borderRadius: 10, boxShadow: "0 6px 24px rgba(0,0,0,0.16)", overflow: "hidden" }}
             onClick={e => e.stopPropagation()}>
             {[
-              { icon: null,  label: "Gerenciar Aplicativos",        color: "#64748b", img: iconGerenciar, imgSize: 32 },
+              { icon: null,  label: "Gerenciar Aplicativos",        color: "#64748b", img: iconGerenciar, imgSize: 32, onClick: () => { setGerenciarAppsOpen(true); setActiveMain("Gerenciar Aplicativos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2 },
               { icon: null,  label: "Gerenc. despesas",             color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)" },
               { icon: null,  label: "Gerenc. rendimentos",          color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
@@ -3496,8 +3501,8 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenc. gastos períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)" },
               { icon: null,  label: "Gerenc. rendimentos períodos", color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
               { icon: null,  label: "Caixa geral",                  color: "#6b7280", img: iconCaixaGeral, imgSize: 34 },
-            ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter, imgTransform, useMask }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string, imgTransform?: string, useMask?: boolean }) => (
-              <button key={label} onClick={() => setSideMenuOpen(false)}
+            ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter, imgTransform, useMask, onClick: itemOnClick }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string, imgTransform?: string, useMask?: boolean, onClick?: () => void }) => (
+              <button key={label} onClick={() => { itemOnClick ? itemOnClick() : setSideMenuOpen(false); }}
                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", borderTop: "none", borderLeft: "none", borderRight: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
@@ -3541,6 +3546,20 @@ export default function DashboardPage() {
             {tab}
           </button>
         ))}
+        {gerenciarAppsOpen && (
+          <button onClick={() => setActiveMain("Gerenciar Aplicativos")}
+            className="flex items-center gap-2 px-4 h-10 text-sm font-medium transition-all rounded-t"
+            style={{
+              background: activeMain === "Gerenciar Aplicativos" ? "#2563eb" : "rgba(255,255,255,0.08)",
+              color: activeMain === "Gerenciar Aplicativos" ? "#fff" : "rgba(255,255,255,0.65)",
+              border: activeMain === "Gerenciar Aplicativos" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              borderBottom: "none",
+            }}>
+            Gerenciar Aplicativos
+            <span onClick={e => { e.stopPropagation(); setGerenciarAppsOpen(false); if (activeMain === "Gerenciar Aplicativos") setActiveMain("Liq. Diária"); }}
+              style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
+          </button>
+        )}
       </div>
       <div style={{ height: "2px", background: "#2563eb" }} className="shrink-0" />
 
@@ -3596,6 +3615,42 @@ export default function DashboardPage() {
             <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>Até</span>
             <input type="date" value={liqFim} onChange={e => setLiqFim(e.target.value)}
               className="h-8 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" />
+          </div>
+        </div>
+      )}
+
+      {/* ── FILTER BAR (Gerenciar Aplicativos) ── */}
+      {activeMain === "Gerenciar Aplicativos" && (
+        <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+          <div className="flex flex-col" style={{ minWidth: 140 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Empresa (*):</label>
+            <select value={gaEmpresa} onChange={e => setGaEmpresa(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }}>
+              <option>CREDBANK</option>
+            </select>
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 160 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Nome:</label>
+            <input type="text" value={gaNome} onChange={e => setGaNome(e.target.value)} placeholder=""
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 150 }} />
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 160 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Sobrenome:</label>
+            <input type="text" value={gaSobrenome} onChange={e => setGaSobrenome(e.target.value)} placeholder=""
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 150 }} />
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 180 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Código de Acesso:</label>
+            <input type="text" value={gaCodigo} onChange={e => setGaCodigo(e.target.value)} placeholder=""
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 170 }} />
+          </div>
+          <div className="flex items-end pb-0.5 gap-2" style={{ alignSelf: "flex-end" }}>
+            <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
+            <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
           </div>
         </div>
       )}
@@ -3785,6 +3840,10 @@ export default function DashboardPage() {
         )}
       </div>
 
+      {/* ── GERENCIAR APLICATIVOS CONTENT ── */}
+      {activeMain === "Gerenciar Aplicativos" && (
+        <div className="flex-1 bg-white overflow-auto" style={{ border: "1px solid #e0e0e0" }} />
+      )}
 
     </div>
   );
