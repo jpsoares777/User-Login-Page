@@ -4201,21 +4201,23 @@ export default function DashboardPage() {
 
             {/* ── Action bar ── */}
             <div className="shrink-0 flex items-center gap-3 px-5 py-3" style={{ background: "#fff", borderBottom: "1px solid #e2e8f0" }}>
-              <button onClick={() => { setFaturaForm(emptyFatura); setFaturaNovaOpen(true); }}
-                style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#16a34a,#15803d)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(22,163,74,0.35)" }}>
+              <button onClick={() => { setFaturaForm(emptyFatura); setFaturaRotaSelecionada(null); setFaturaRotaBusca(""); setFaturaNovaOpen(true); }}
+                style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#16a34a,#15803d)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(22,163,74,0.35)", flexShrink: 0 }}>
                 <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Nova Fatura
               </button>
-              <div style={{ flex: 1 }} />
-              {/* TRM card */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, background: "linear-gradient(135deg,#1e40af,#2563eb)", borderRadius: 10, padding: "8px 18px", boxShadow: "0 2px 10px rgba(37,99,235,0.3)" }}>
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>TRM do Dólar Hoje</span>
-                  <span style={{ fontSize: 18, fontWeight: 900, color: "#fff", letterSpacing: "0.02em" }}>$ {trmHoje.toLocaleString("pt-BR")}</span>
-                </div>
-                <div style={{ width: 36, height: 36, background: "rgba(255,255,255,0.15)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff" }}><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-                </div>
+              {/* Barra de pesquisa */}
+              <div style={{ flex: 1, maxWidth: 420, position: "relative" }}>
+                <svg viewBox="0 0 24 24" style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, fill: "#94a3b8", pointerEvents: "none" }}>
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Pesquisar faturas por Nro, conceito ou estado..."
+                  style={{ width: "100%", height: 38, border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "0 12px 0 36px", fontSize: 13, color: "#334155", outline: "none", boxSizing: "border-box", background: "#f8fafc" }}
+                  onFocus={e => (e.target.style.borderColor = "#2563eb")}
+                  onBlur={e => (e.target.style.borderColor = "#e2e8f0")}
+                />
               </div>
             </div>
 
