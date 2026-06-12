@@ -3466,17 +3466,19 @@ export default function DashboardPage() {
   const [gcSobrenome, setGcSobrenome] = useState("");
   const [gcEstado, setGcEstado] = useState("-- Todos --");
   const [gcFrequencia, setGcFrequencia] = useState("-- Todas --");
+  const [gcModalOpen, setGcModalOpen] = useState(false);
+  const [gcModalRowId, setGcModalRowId] = useState<number | null>(null);
   const [gcRows] = useState([
-    { id: 1,  consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "91633427315",    freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
-    { id: 2,  consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
-    { id: 3,  consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    doc: "852592284372",   freq: "Diário", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
-    { id: 4,  consec: "4700627078", nome: "Mariana Beatriz Rabelo Barbosa",   doc: "073.604.383-73", freq: "Diário", valorEmp: 1000, jurosPorc: 40, total: 1400, parcelas: 14, atrasadas: 4,  pagas: 0,  rest: 14, sancao: 0, visitas: 4,  valorParc: 100, saldo: 1400 },
-    { id: 5,  consec: "4700627077", nome: "Natanael Dos Santos Mendes",       doc: "11971269742",    freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 13, pagas: 1,  rest: 13, sancao: 0, visitas: 14, valorParc: 50,  saldo: 650  },
-    { id: 6,  consec: "4700627058", nome: "Aline Lima De Alencar",            doc: "034.286.733-44", freq: "Diário", valorEmp: 800,  jurosPorc: 40, total: 1120, parcelas: 14, atrasadas: 2,  pagas: 4,  rest: 10, sancao: 0, visitas: 6,  valorParc: 80,  saldo: 570  },
-    { id: 7,  consec: "4700627049", nome: "Ana Flávia Pereira Moraes",        doc: "61538186302",    freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 0,  pagas: 0,  rest: 14, sancao: 0, visitas: 0,  valorParc: 50,  saldo: 700  },
-    { id: 8,  consec: "4700627027", nome: "Antônio Leite Neto",               doc: "00523478355",    freq: "Diário", valorEmp: 600,  jurosPorc: 25, total: 750,  parcelas: 15, atrasadas: 3,  pagas: 2,  rest: 13, sancao: 0, visitas: 5,  valorParc: 50,  saldo: 500  },
-    { id: 9,  consec: "4700627025", nome: "Bianca de Araújo Alves",           doc: "60974118397",    freq: "Diário", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
-    { id: 10, consec: "4700627022", nome: "Klailton Viana Gonçalves",         doc: "88899900011",    freq: "Diário", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
+    { id: 1,  consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "012.345.678-90", nasc: "1985-03-12", tel1: "91633427315",   tel2: "98985014328",  endereco: "Rua Gama Lobo, nº 10, Quarto, Centro – São Luís – MA",        obs: "Cliente pontual. Prefere contato pelo WhatsApp.", freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
+    { id: 2,  consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    nasc: "1990-07-22", tel1: "5599883457671",  tel2: "03270213301",  endereco: "Av. Colares Moreira, nº 500, Renascença II – São Luís – MA",  obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
+    { id: 3,  consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    doc: "852592284372",   nasc: "1988-11-05", tel1: "989896248424",   tel2: "852592284372", endereco: "Rua do Sol, nº 35, Centro – São Luís – MA",                   obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
+    { id: 4,  consec: "4700627078", nome: "Mariana Beatriz Rabelo Barbosa",   doc: "073.604.383-73", nasc: "1992-04-18", tel1: "98985721207",    tel2: "985721297",    endereco: "Rua da Paz, nº 120, Cohama – São Luís – MA",                  obs: "Prefere receber boletos por e-mail.", freq: "Diário", valorEmp: 1000, jurosPorc: 40, total: 1400, parcelas: 14, atrasadas: 4,  pagas: 0,  rest: 14, sancao: 0, visitas: 4,  valorParc: 100, saldo: 1400 },
+    { id: 5,  consec: "4700627077", nome: "Natanael Dos Santos Mendes",       doc: "11971269742",    nasc: "1986-09-30", tel1: "5511971269742",  tel2: "11971269742",  endereco: "Rua Jaime Tavares, nº 67, Tirirical – São Luís – MA",         obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 13, pagas: 1,  rest: 13, sancao: 0, visitas: 14, valorParc: 50,  saldo: 650  },
+    { id: 6,  consec: "4700627058", nome: "Aline Lima De Alencar",            doc: "034.286.733-44", nasc: "1994-02-14", tel1: "034286733440",   tel2: "98856332110",  endereco: "Rua das Flores, nº 22, Cohajap – São Luís – MA",              obs: "", freq: "Diário", valorEmp: 800,  jurosPorc: 40, total: 1120, parcelas: 14, atrasadas: 2,  pagas: 4,  rest: 10, sancao: 0, visitas: 6,  valorParc: 80,  saldo: 570  },
+    { id: 7,  consec: "4700627049", nome: "Ana Flávia Pereira Moraes",        doc: "61538186302",    nasc: "1991-06-08", tel1: "61538186302",    tel2: "98745612300",  endereco: "Trav. São Francisco, nº 8, Vila Embratel – São Luís – MA",    obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 0,  pagas: 0,  rest: 14, sancao: 0, visitas: 0,  valorParc: 50,  saldo: 700  },
+    { id: 8,  consec: "4700627027", nome: "Antônio Leite Neto",               doc: "00523478355",    nasc: "1980-12-25", tel1: "00523478355",    tel2: "99612345678",  endereco: "Rua Santa Clara, nº 100, Centro – São Luís – MA",             obs: "Pagamento sempre em dia.", freq: "Diário", valorEmp: 600,  jurosPorc: 25, total: 750,  parcelas: 15, atrasadas: 3,  pagas: 2,  rest: 13, sancao: 0, visitas: 5,  valorParc: 50,  saldo: 500  },
+    { id: 9,  consec: "4700627025", nome: "Bianca de Araújo Alves",           doc: "60974118397",    nasc: "1997-03-19", tel1: "60974118397",    tel2: "98765432101",  endereco: "Rua Oswaldo Cruz, nº 45, Bequimão – São Luís – MA",            obs: "", freq: "Diário", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
+    { id: 10, consec: "4700627022", nome: "Klailton Viana Gonçalves",         doc: "88899900011",    nasc: "1983-08-11", tel1: "88899900011",    tel2: "98700112233",  endereco: "Av. dos Holandeses, nº 300, Calhau – São Luís – MA",          obs: "", freq: "Diário", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
   ]);
   const [gaEmpresa, setGaEmpresa] = useState("CREDBANK");
   const [gaNome, setGaNome] = useState("");
@@ -3800,6 +3802,7 @@ export default function DashboardPage() {
                       { label: "Atrasadas / Pagas", align: "left" as const },
                       { label: "Valor Parc.", align: "right" as const },
                       { label: "Saldo", align: "right" as const },
+                      { label: "Opções", align: "center" as const },
                     ].map(h => (
                       <th key={h.label} style={{ padding: "8px 10px", textAlign: h.align, fontWeight: 600, fontSize: 11, whiteSpace: "nowrap", letterSpacing: "0.03em" }}>{h.label}</th>
                     ))}
@@ -3841,6 +3844,22 @@ export default function DashboardPage() {
                         <div style={{ color: "#dc2626", fontWeight: 700, fontSize: 13 }}>$ {row.saldo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div>
                         <div style={{ color: "#6b7280", fontSize: 10, marginTop: 1 }}>Sanção: $ 0.00</div>
                       </td>
+                      <td style={{ padding: "8px 10px", textAlign: "center", verticalAlign: "middle" }}>
+                        <div style={{ display: "inline-flex", gap: 4 }}>
+                          <button onClick={() => { setGcModalRowId(row.id); setGcModalOpen(true); }} title="Ver ficha"
+                            style={{ background: "#0891b2", color: "#fff", border: "none", borderRadius: 4, width: 26, height: 26, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                          </button>
+                          <button title="Editar"
+                            style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 4, width: 26, height: 26, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                          </button>
+                          <button title="Excluir"
+                            style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 4, width: 26, height: 26, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -3853,6 +3872,154 @@ export default function DashboardPage() {
                 $ {gcRows.reduce((s, r) => s + r.saldo, 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </div>
+            {/* ── FICHA DO CLIENTE MODAL ── */}
+            {gcModalOpen && (() => {
+              const mr = gcRows.find(r => r.id === gcModalRowId);
+              if (!mr) return null;
+              const initials = mr.nome.split(" ").filter(w => w.length > 0).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+              const prevTotal = Math.round(mr.valorEmp * 1.4);
+              const prevParc = Math.round(prevTotal / 14);
+              const totalEmp = mr.total + prevTotal;
+              return (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 9000, display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onClick={() => setGcModalOpen(false)}>
+                  <div style={{ background: "#fff", borderRadius: 8, width: 560, maxHeight: "90vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", display: "flex", flexDirection: "column" }}
+                    onClick={e => e.stopPropagation()}>
+                    {/* header bar */}
+                    <div style={{ background: "#2d5474", color: "#fff", padding: "12px 16px", borderRadius: "8px 8px 0 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: "0.08em" }}>FICHA DO CLIENTE</span>
+                      <button onClick={() => setGcModalOpen(false)} style={{ background: "none", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" }}>×</button>
+                    </div>
+                    {/* body */}
+                    <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+                      {/* client header */}
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#2d5474", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 20, flexShrink: 0 }}>
+                          {initials}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+                            <span style={{ fontWeight: 800, fontSize: 16, color: "#1e293b" }}>{mr.nome}</span>
+                            <button style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, padding: "5px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", marginLeft: 10 }}>
+                              ● Inativar Cliente
+                            </button>
+                          </div>
+                          <div style={{ display: "flex", gap: 6, marginTop: 5, flexWrap: "wrap" }}>
+                            <span style={{ background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>ACTIVO</span>
+                            <span style={{ background: "#dbeafe", color: "#1d4ed8", border: "1px solid #93c5fd", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{mr.consec}</span>
+                            <span style={{ background: "#f3f4f6", color: "#374151", border: "1px solid #d1d5db", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>{mr.freq}</span>
+                          </div>
+                          <div style={{ marginTop: 5, fontSize: 12, color: "#64748b" }}>
+                            Doc: <strong style={{ color: "#374151" }}>{mr.doc}</strong> &nbsp;|&nbsp; Nasc: <strong style={{ color: "#374151" }}>{mr.nasc}</strong>
+                          </div>
+                        </div>
+                      </div>
+                      {/* edit + delete buttons */}
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                          Editar Dados
+                        </button>
+                        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                          Excluir Cliente
+                        </button>
+                      </div>
+                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
+                      {/* contato */}
+                      <div>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Contato e Endereço</div>
+                        <div style={{ display: "flex", gap: 24, fontSize: 12, color: "#374151", marginBottom: 4 }}>
+                          <span>Tel 1: <strong>{mr.tel1}</strong></span>
+                          <span>Tel 2: <strong>{mr.tel2}</strong></span>
+                        </div>
+                        <div style={{ fontSize: 12, color: "#374151", marginBottom: 4 }}>Endereço: {mr.endereco}</div>
+                        <div style={{ fontSize: 12 }}>Verificação: <span style={{ color: "#d97706", fontWeight: 600 }}>Sem Verificação</span></div>
+                      </div>
+                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
+                      {/* action buttons */}
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid #cbd5e1", background: "#f8fafc", color: "#1e293b", borderRadius: 5, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                          📋 Ver Parcelas Pagas — Empréstimo Ativo
+                        </button>
+                        <button style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid #cbd5e1", background: "#f8fafc", color: "#1e293b", borderRadius: 5, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                          🖼 Documentos
+                        </button>
+                      </div>
+                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
+                      {/* loan history */}
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 6 }}>
+                          👤 {mr.nome.toUpperCase()} #{mr.consec}
+                        </div>
+                        <div style={{ overflowX: "auto", border: "1px solid #e5e7eb", borderRadius: 6 }}>
+                          <table style={{ borderCollapse: "collapse", fontSize: 11, whiteSpace: "nowrap", width: "100%" }}>
+                            <thead>
+                              <tr style={{ background: "#3d6e8e", color: "#fff" }}>
+                                {["Nro.","Data do Emp.","Estado","Parr.","Pagas","Falt.","Saldo","Valor Emp.","Freq.","Vs. Parcela","Visitas"].map(h => (
+                                  <th key={h} style={{ padding: "6px 8px", fontWeight: 600, textAlign: "center" }}>{h}</th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr style={{ background: "#fff", borderBottom: "1px solid #f1f5f9" }}>
+                                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700 }}>2</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>2026-04-08</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>
+                                  <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 10, padding: "1px 8px", fontWeight: 700 }}>Quitado</span>
+                                </td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.parcelas}</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.pagas}</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>0</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>$ 0,00</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700, color: "#dc2626" }}>$ {mr.total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.freq}</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>$ {mr.valorParc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.visitas}</td>
+                              </tr>
+                              <tr style={{ background: "#f8fafc" }}>
+                                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700 }}>1</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>2025-10-01</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>
+                                  <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 10, padding: "1px 8px", fontWeight: 700 }}>Quitado</span>
+                                </td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>14</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>14</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>0</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>$ 0,00</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700, color: "#dc2626" }}>$ {prevTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.freq}</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>$ {prevParc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td style={{ padding: "6px 8px", textAlign: "center" }}>{mr.visitas}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div style={{ marginTop: 8, fontSize: 13, color: "#2563eb", fontWeight: 700 }}>
+                          TOTAL EMPRÉSTIMOS: $ {totalEmp.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                        </div>
+                      </div>
+                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
+                      {/* cancelar */}
+                      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <button onClick={() => setGcModalOpen(false)}
+                          style={{ background: "#2d5474", color: "#fff", border: "none", borderRadius: 5, padding: "8px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                          Cancelar
+                        </button>
+                      </div>
+                      <hr style={{ margin: "2px 0", borderColor: "#e5e7eb" }} />
+                      {/* observações */}
+                      <div>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#374151", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Observações</div>
+                        <div style={{ background: "#fefce8", border: "1px solid #fde68a", borderRadius: 5, padding: "10px 12px", fontSize: 13, color: "#374151", minHeight: 48 }}>
+                          {mr.obs || <span style={{ color: "#9ca3af", fontStyle: "italic" }}>Sem observações.</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         ) : activeMain === "Gerenciar Aplicativos" ? (
           <div className="flex-1 flex flex-col overflow-hidden">
