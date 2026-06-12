@@ -3467,16 +3467,16 @@ export default function DashboardPage() {
   const [gcEstado, setGcEstado] = useState("-- Todos --");
   const [gcFrequencia, setGcFrequencia] = useState("-- Todas --");
   const [gcRows] = useState([
-    { id: 1,  consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   tel1: "91633427315",   tel2: "98985014328",  freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
-    { id: 2,  consec: "4700627080", nome: "Luciana Alves Da Silva",           tel1: "5599883457671", tel2: "03270213301",  freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
-    { id: 3,  consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    tel1: "989896248424",  tel2: "852592284372", freq: "Diário", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
-    { id: 4,  consec: "4700627078", nome: "Mariana Beatriz Rabelo Barbosa",   tel1: "98985721207",   tel2: "985721297",    freq: "Diário", valorEmp: 1000, jurosPorc: 40, total: 1400, parcelas: 14, atrasadas: 4,  pagas: 0,  rest: 14, sancao: 0, visitas: 4,  valorParc: 100, saldo: 1400 },
-    { id: 5,  consec: "4700627077", nome: "Natanael Dos Santos Mendes",       tel1: "5511971269742", tel2: "11971269742",  freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 13, pagas: 1,  rest: 13, sancao: 0, visitas: 14, valorParc: 50,  saldo: 650  },
-    { id: 6,  consec: "4700627058", nome: "Aline Lima De Alencar",            tel1: "034286733440",  tel2: "98856332110",  freq: "Diário", valorEmp: 800,  jurosPorc: 40, total: 1120, parcelas: 14, atrasadas: 2,  pagas: 4,  rest: 10, sancao: 0, visitas: 6,  valorParc: 80,  saldo: 570  },
-    { id: 7,  consec: "4700627049", nome: "Ana Flávia Pereira Moraes",        tel1: "61538186302",   tel2: "98745612300",  freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 0,  pagas: 0,  rest: 14, sancao: 0, visitas: 0,  valorParc: 50,  saldo: 700  },
-    { id: 8,  consec: "4700627027", nome: "Antônio Leite Neto",               tel1: "00523478355",   tel2: "99612345678",  freq: "Diário", valorEmp: 600,  jurosPorc: 25, total: 750,  parcelas: 15, atrasadas: 3,  pagas: 2,  rest: 13, sancao: 0, visitas: 5,  valorParc: 50,  saldo: 500  },
-    { id: 9,  consec: "4700627025", nome: "Bianca de Araújo Alves",           tel1: "60974118397",   tel2: "98765432101",  freq: "Diário", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
-    { id: 10, consec: "4700627022", nome: "Klailton Viana Gonçalves",         tel1: "88899900011",   tel2: "98700112233",  freq: "Diário", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
+    { id: 1,  consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "91633427315",    freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
+    { id: 2,  consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
+    { id: 3,  consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    doc: "852592284372",   freq: "Diário", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
+    { id: 4,  consec: "4700627078", nome: "Mariana Beatriz Rabelo Barbosa",   doc: "073.604.383-73", freq: "Diário", valorEmp: 1000, jurosPorc: 40, total: 1400, parcelas: 14, atrasadas: 4,  pagas: 0,  rest: 14, sancao: 0, visitas: 4,  valorParc: 100, saldo: 1400 },
+    { id: 5,  consec: "4700627077", nome: "Natanael Dos Santos Mendes",       doc: "11971269742",    freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 13, pagas: 1,  rest: 13, sancao: 0, visitas: 14, valorParc: 50,  saldo: 650  },
+    { id: 6,  consec: "4700627058", nome: "Aline Lima De Alencar",            doc: "034.286.733-44", freq: "Diário", valorEmp: 800,  jurosPorc: 40, total: 1120, parcelas: 14, atrasadas: 2,  pagas: 4,  rest: 10, sancao: 0, visitas: 6,  valorParc: 80,  saldo: 570  },
+    { id: 7,  consec: "4700627049", nome: "Ana Flávia Pereira Moraes",        doc: "61538186302",    freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 0,  pagas: 0,  rest: 14, sancao: 0, visitas: 0,  valorParc: 50,  saldo: 700  },
+    { id: 8,  consec: "4700627027", nome: "Antônio Leite Neto",               doc: "00523478355",    freq: "Diário", valorEmp: 600,  jurosPorc: 25, total: 750,  parcelas: 15, atrasadas: 3,  pagas: 2,  rest: 13, sancao: 0, visitas: 5,  valorParc: 50,  saldo: 500  },
+    { id: 9,  consec: "4700627025", nome: "Bianca de Araújo Alves",           doc: "60974118397",    freq: "Diário", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
+    { id: 10, consec: "4700627022", nome: "Klailton Viana Gonçalves",         doc: "88899900011",    freq: "Diário", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
   ]);
   const [gaEmpresa, setGaEmpresa] = useState("CREDBANK");
   const [gaNome, setGaNome] = useState("");
@@ -3792,7 +3792,7 @@ export default function DashboardPage() {
                       { label: "Nro.", align: "center" as const },
                       { label: "Consecutivo", align: "left" as const },
                       { label: "Nome e Sobrenome", align: "left" as const },
-                      { label: "Telefones", align: "left" as const },
+                      { label: "CPF / RG", align: "left" as const },
                       { label: "Frequência", align: "center" as const },
                       { label: "Valor Empr.", align: "right" as const },
                       { label: "Juros / Total", align: "center" as const },
@@ -3816,14 +3816,7 @@ export default function DashboardPage() {
                         <span style={{ display: "inline-block", marginTop: 3, background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 3, padding: "1px 6px", fontSize: 10, fontWeight: 700 }}>ACTIVO</span>
                       </td>
                       <td style={{ padding: "10px 10px", color: "#dc2626", fontWeight: 600, fontSize: 12 }}>{row.nome}</td>
-                      <td style={{ padding: "10px 10px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#374151", fontSize: 11 }}>
-                          <span style={{ color: "#16a34a" }}>📞</span> {row.tel1}
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#374151", fontSize: 11, marginTop: 2 }}>
-                          <span style={{ color: "#6b7280" }}>📱</span> {row.tel2}
-                        </div>
-                      </td>
+                      <td style={{ padding: "10px 10px", color: "#374151", fontFamily: "monospace", fontSize: 11 }}>{row.doc}</td>
                       <td style={{ padding: "10px 10px", textAlign: "center" }}>
                         <span style={{ background: "#dbeafe", color: "#1d4ed8", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>{row.freq}</span>
                       </td>
