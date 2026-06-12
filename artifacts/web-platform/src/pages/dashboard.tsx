@@ -4199,26 +4199,40 @@ export default function DashboardPage() {
         {activeMain === "Faturas" ? (
           <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f4f8" }}>
 
-            {/* ── Action bar ── */}
-            <div className="shrink-0 flex items-center gap-3 px-5 py-3" style={{ background: "#fff", borderBottom: "1px solid #e2e8f0" }}>
-              <button onClick={() => { setFaturaForm(emptyFatura); setFaturaRotaSelecionada(null); setFaturaRotaBusca(""); setFaturaNovaOpen(true); }}
-                style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#16a34a,#15803d)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(22,163,74,0.35)", flexShrink: 0 }}>
-                <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Nova Fatura
-              </button>
-              {/* Barra de pesquisa */}
-              <div style={{ flex: 1, maxWidth: 420, position: "relative" }}>
-                <svg viewBox="0 0 24 24" style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, fill: "#94a3b8", pointerEvents: "none" }}>
-                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Pesquisar faturas por Nro, conceito ou estado..."
-                  style={{ width: "100%", height: 38, border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "0 12px 0 36px", fontSize: 13, color: "#334155", outline: "none", boxSizing: "border-box", background: "#f8fafc" }}
-                  onFocus={e => (e.target.style.borderColor = "#2563eb")}
-                  onBlur={e => (e.target.style.borderColor = "#e2e8f0")}
-                />
+            {/* ── Filter bar ── */}
+            <div className="shrink-0 flex items-center gap-4 px-4 py-2.5" style={{ background: "#fff", borderBottom: "1px solid #e2e8f0" }}>
+              {/* COBRADOR (ROTA) */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <label style={{ fontSize: 10, fontWeight: 700, color: "#64748b", letterSpacing: "0.07em", textTransform: "uppercase" }}>Cobrador (Rota)</label>
+                <select style={{ height: 32, border: "1px solid #cbd5e1", borderRadius: 5, padding: "0 28px 0 8px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", minWidth: 160, cursor: "pointer" }}>
+                  <option>Rota Cred Bank -</option>
+                  {rotasSample.map(r => <option key={r.id}>{r.nome}</option>)}
+                </select>
               </div>
+              {/* DATA */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <label style={{ fontSize: 10, fontWeight: 700, color: "#64748b", letterSpacing: "0.07em", textTransform: "uppercase" }}>Data</label>
+                <input type="date" defaultValue={new Date().toISOString().slice(0,10)}
+                  style={{ height: 32, border: "1px solid #cbd5e1", borderRadius: 5, padding: "0 8px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", cursor: "pointer" }} />
+              </div>
+              {/* Pesquisar */}
+              <div style={{ paddingTop: 16 }}>
+                <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "0 14px", height: 32, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                  Pesquisar
+                </button>
+              </div>
+              <div style={{ flex: 1 }} />
+              {/* PDF */}
+              <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, padding: "0 14px", height: 32, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>
+                PDF
+              </button>
+              {/* WhatsApp */}
+              <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#16a34a", color: "#fff", border: "none", borderRadius: 5, padding: "0 14px", height: 32, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                WhatsApp
+              </button>
             </div>
 
             {/* ── Table area ── */}
