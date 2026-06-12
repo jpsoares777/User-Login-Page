@@ -3835,15 +3835,18 @@ export default function DashboardPage() {
         )}
       </div>
 
+      {/* ── COUNT BAR (Gerenciar Aplicativos) ── */}
+      {activeMain === "Gerenciar Aplicativos" && (
+        <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
+          <span className="text-xs text-gray-500">
+            <span className="font-bold text-gray-800">1</span> registro encontrado
+          </span>
+        </div>
+      )}
+
       {/* ── GERENCIAR APLICATIVOS CONTENT ── */}
       {activeMain === "Gerenciar Aplicativos" && (
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* inner top bar */}
-          <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-            <span className="text-xs text-gray-500">
-              <span className="font-bold text-gray-800">1</span> registro encontrado
-            </span>
-          </div>
           {/* table */}
           <div className="flex-1 overflow-auto bg-white">
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
