@@ -3687,6 +3687,23 @@ export default function DashboardPage() {
   const [gerenciarRendimentosOpen, setGerenciarRendimentosOpen] = useState(false);
   const [faturasOpen, setFaturasOpen] = useState(false);
   const [importarRotasOpen, setImportarRotasOpen] = useState(false);
+  const [caixaGeralOpen, setCaixaGeralOpen] = useState(false);
+  const [caixaSaldo, setCaixaSaldo] = useState(12450.75);
+  const [caixaVendedor, setCaixaVendedor] = useState("");
+  const [caixaConceito, setCaixaConceito] = useState("");
+  const [caixaValor, setCaixaValor] = useState("");
+  const [caixaData, setCaixaData] = useState("");
+  const [caixaObs, setCaixaObs] = useState("");
+  const [caixaRetiradaOpen, setCaixaRetiradaOpen] = useState(false);
+  const [caixaRetiradaValor, setCaixaRetiradaValor] = useState("");
+  const [caixaRetiradaObs, setCaixaRetiradaObs] = useState("");
+  type CaixaMovRow = { id: number; tipo: "Entrada" | "Retirada"; descricao: string; valor: number; data: string; };
+  const [caixaMovs, setCaixaMovs] = useState<CaixaMovRow[]>([
+    { id: 1, tipo: "Entrada",  descricao: "Liquidação Rota SP Centro",  valor: 5200.00, data: "2026-06-10" },
+    { id: 2, tipo: "Entrada",  descricao: "Liquidação Rota Zona Sul",   valor: 4800.50, data: "2026-06-11" },
+    { id: 3, tipo: "Retirada", descricao: "Retirada operacional",       valor: 1500.00, data: "2026-06-11" },
+    { id: 4, tipo: "Entrada",  descricao: "Liquidação Rota ABC",        valor: 3950.25, data: "2026-06-12" },
+  ]);
   const [importarVendedor, setImportarVendedor] = useState("");
   const [importarMasivo, setImportarMasivo] = useState(true);
   const [importarArquivo, setImportarArquivo] = useState<File | null>(null);
@@ -3843,7 +3860,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)", onClick: () => { setFaturasOpen(true); setActiveMain("Faturas"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. gastos períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)" },
               { icon: null,  label: "Gerenc. rendimentos períodos", color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
-              { icon: null,  label: "Caixa geral",                  color: "#6b7280", img: iconCaixaGeral, imgSize: 34 },
+              { icon: null,  label: "Caixa geral",                  color: "#6b7280", img: iconCaixaGeral, imgSize: 34, onClick: () => { setCaixaGeralOpen(true); setActiveMain("Caixa Geral"); setSideMenuOpen(false); } },
             ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter, imgTransform, useMask, onClick: itemOnClick }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string, imgTransform?: string, useMask?: boolean, onClick?: () => void }) => (
               <button key={label} onClick={() => { itemOnClick ? itemOnClick() : setSideMenuOpen(false); }}
                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", borderTop: "none", borderLeft: "none", borderRight: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
@@ -3914,6 +3931,20 @@ export default function DashboardPage() {
             }}>
             Gerenciar Clientes
             <span onClick={e => { e.stopPropagation(); setGerenciarClientesOpen(false); if (activeMain === "Gerenciar Clientes") setActiveMain("Liq. Diária"); }}
+              style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
+          </button>
+        )}
+        {caixaGeralOpen && (
+          <button onClick={() => setActiveMain("Caixa Geral")}
+            className="flex items-center gap-2 px-4 h-10 text-sm font-medium transition-all rounded-t"
+            style={{
+              background: activeMain === "Caixa Geral" ? "#2563eb" : "rgba(255,255,255,0.08)",
+              color: activeMain === "Caixa Geral" ? "#fff" : "rgba(255,255,255,0.65)",
+              border: activeMain === "Caixa Geral" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              borderBottom: "none",
+            }}>
+            Caixa Geral
+            <span onClick={e => { e.stopPropagation(); setCaixaGeralOpen(false); if (activeMain === "Caixa Geral") setActiveMain("Liq. Diária"); }}
               style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
           </button>
         )}
@@ -4215,7 +4246,188 @@ export default function DashboardPage() {
 
       {/* ── CONTENT AREA ── */}
       <div className="flex-1 overflow-hidden flex">
-        {activeMain === "Importar Rotas" ? (
+        {activeMain === "Caixa Geral" ? (
+          <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f4f8" }}>
+
+            {/* ── Saldo + Retirada bar ── */}
+            <div className="shrink-0 flex items-center gap-4 px-5 py-3" style={{ background: "#fff", borderBottom: "1px solid #e2e8f0" }}>
+              {/* Saldo do Caixa */}
+              <div style={{ display: "flex", alignItems: "center", gap: 14, background: "linear-gradient(135deg,#1e3a5f,#2d5474)", borderRadius: 10, padding: "10px 20px", boxShadow: "0 2px 10px rgba(45,84,116,0.3)" }}>
+                <div style={{ width: 38, height: 38, background: "rgba(255,255,255,0.15)", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff" }}><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: 10, color: "rgba(255,255,255,0.7)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>Saldo do Caixa</p>
+                  <p style={{ margin: 0, fontSize: 22, fontWeight: 900, color: "#fff", letterSpacing: "0.02em" }}>
+                    R$ {caixaSaldo.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ flex: 1 }} />
+
+              {/* Retirada de Caixa */}
+              <button onClick={() => { setCaixaRetiradaValor(""); setCaixaRetiradaObs(""); setCaixaRetiradaOpen(true); }}
+                style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(220,38,38,0.35)" }}>
+                <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Retirada de Caixa
+              </button>
+            </div>
+
+            {/* ── Content: Form + Movimentos ── */}
+            <div className="flex-1 overflow-auto p-4" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+              {/* Form card */}
+              <div style={{ background: "#fff", borderRadius: 4, border: "1px solid #d1d9e0", overflow: "hidden" }}>
+                <div style={{ background: "#2d5474", padding: "8px 14px" }}>
+                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>Dados Básicos</span>
+                </div>
+                <div style={{ padding: "20px 20px 8px" }}>
+                  {/* Row 1 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 180px 200px", gap: 16, marginBottom: 16 }}>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Vendedor (*)</label>
+                      <select value={caixaVendedor} onChange={e => setCaixaVendedor(e.target.value)}
+                        style={{ width: "100%", height: 30, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 8px", fontSize: 12, color: caixaVendedor ? "#334155" : "#94a3b8", background: "#fff", outline: "none" }}>
+                        <option value="">---Selecione---</option>
+                        <option>Carlos Silva</option><option>Ana Pereira</option><option>João Santos</option>
+                        <option>Maria Oliveira</option><option>Pedro Costa</option><option>Lucia Ferreira</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Conceito (*)</label>
+                      <select value={caixaConceito} onChange={e => setCaixaConceito(e.target.value)}
+                        style={{ width: "100%", height: 30, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 8px", fontSize: 12, color: caixaConceito ? "#334155" : "#94a3b8", background: "#fff", outline: "none" }}>
+                        <option value="">---Selecione---</option>
+                        <option>Liquidação</option><option>Entrada Extra</option><option>Aporte</option>
+                        <option>Transferência</option><option>Outros</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Valor (*)</label>
+                      <input type="number" min={0} step={0.01} value={caixaValor} onChange={e => setCaixaValor(e.target.value)} placeholder="0,00"
+                        style={{ width: "100%", height: 30, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 8px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", boxSizing: "border-box" }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Data Liquidação</label>
+                      <select value={caixaData} onChange={e => setCaixaData(e.target.value)}
+                        style={{ width: "100%", height: 30, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 8px", fontSize: 12, color: caixaData ? "#334155" : "#94a3b8", background: "#fff", outline: "none" }}>
+                        <option value="">---Datas---</option>
+                        <option>Hoje</option><option>Ontem</option><option>Esta semana</option><option>Este mês</option>
+                      </select>
+                    </div>
+                  </div>
+                  {/* Observações */}
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Observações</label>
+                    <textarea value={caixaObs} onChange={e => setCaixaObs(e.target.value)} rows={4}
+                      style={{ width: "100%", border: "1px solid #94a3b8", borderRadius: 3, padding: "8px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }} />
+                  </div>
+                  {/* Salvar */}
+                  <div style={{ display: "flex", justifyContent: "flex-end", paddingBottom: 16 }}>
+                    <button onClick={() => {
+                      if (!caixaVendedor || !caixaConceito || !caixaValor) return;
+                      const v = parseFloat(caixaValor);
+                      setCaixaMovs(prev => [...prev, { id: Date.now(), tipo: "Entrada", descricao: `${caixaConceito} — ${caixaVendedor}`, valor: v, data: new Date().toISOString().slice(0,10) }]);
+                      setCaixaSaldo(s => s + v);
+                      setCaixaVendedor(""); setCaixaConceito(""); setCaixaValor(""); setCaixaData(""); setCaixaObs("");
+                    }} style={{ display: "flex", alignItems: "center", gap: 7, background: "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.35)" }}>
+                      <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#fff" }}><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+                      Salvar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Histórico de movimentos */}
+              <div style={{ background: "#fff", borderRadius: 4, border: "1px solid #d1d9e0", overflow: "hidden" }}>
+                <div style={{ background: "#2d5474", padding: "8px 14px" }}>
+                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>Movimentos do Caixa</span>
+                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: "#f8fafc" }}>
+                      {["Tipo","Descrição","Valor","Data"].map(h => (
+                        <th key={h} style={{ padding: "9px 14px", textAlign: h === "Valor" ? "right" : "left", fontWeight: 700, fontSize: 11, color: "#64748b", letterSpacing: "0.05em", borderBottom: "1px solid #e2e8f0" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {caixaMovs.map((m, i) => (
+                      <tr key={m.id} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
+                        <td style={{ padding: "10px 14px" }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20,
+                            background: m.tipo === "Entrada" ? "#dcfce7" : "#fee2e2",
+                            color: m.tipo === "Entrada" ? "#15803d" : "#b91c1c",
+                            border: `1px solid ${m.tipo === "Entrada" ? "#86efac" : "#fca5a5"}` }}>
+                            <span style={{ width: 6, height: 6, borderRadius: "50%", background: m.tipo === "Entrada" ? "#22c55e" : "#ef4444", flexShrink: 0 }} />
+                            {m.tipo}
+                          </span>
+                        </td>
+                        <td style={{ padding: "10px 14px", color: "#334155" }}>{m.descricao}</td>
+                        <td style={{ padding: "10px 14px", textAlign: "right", fontWeight: 700, color: m.tipo === "Entrada" ? "#15803d" : "#dc2626" }}>
+                          {m.tipo === "Retirada" ? "- " : "+ "}R$ {m.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                        </td>
+                        <td style={{ padding: "10px 14px", color: "#64748b" }}>{m.data}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+
+            {/* ── MODAL RETIRADA ── */}
+            {caixaRetiradaOpen && (
+              <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                onClick={() => setCaixaRetiradaOpen(false)}>
+                <div style={{ background: "#fff", borderRadius: 14, width: 420, boxShadow: "0 25px 70px rgba(0,0,0,0.4)", overflow: "hidden" }}
+                  onClick={e => e.stopPropagation()}>
+                  <div style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff" }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                      <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Retirada de Caixa</span>
+                    </div>
+                    <button onClick={() => setCaixaRetiradaOpen(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 6, width: 28, height: 28, cursor: "pointer", fontSize: 15, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                  </div>
+                  <div style={{ padding: "22px 22px" }}>
+                    {/* Saldo atual */}
+                    <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 16px", marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>Saldo atual do caixa</span>
+                      <span style={{ fontSize: 16, fontWeight: 800, color: "#1e40af" }}>R$ {caixaSaldo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <div style={{ marginBottom: 14 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Valor da Retirada *</label>
+                      <input type="number" min={0} step={0.01} value={caixaRetiradaValor} onChange={e => setCaixaRetiradaValor(e.target.value)} placeholder="0,00"
+                        style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
+                    </div>
+                    <div style={{ marginBottom: 18 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Observações</label>
+                      <textarea value={caixaRetiradaObs} onChange={e => setCaixaRetiradaObs(e.target.value)} rows={3}
+                        style={{ width: "100%", border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "8px 10px", fontSize: 13, outline: "none", resize: "none", boxSizing: "border-box", fontFamily: "inherit", background: "#f8fafc" }} />
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+                      <button onClick={() => setCaixaRetiradaOpen(false)}
+                        style={{ background: "#f1f5f9", color: "#475569", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                        Cancelar
+                      </button>
+                      <button onClick={() => {
+                        const v = parseFloat(caixaRetiradaValor);
+                        if (!v || v <= 0 || v > caixaSaldo) return;
+                        setCaixaMovs(prev => [...prev, { id: Date.now(), tipo: "Retirada", descricao: caixaRetiradaObs || "Retirada de caixa", valor: v, data: new Date().toISOString().slice(0,10) }]);
+                        setCaixaSaldo(s => s - v);
+                        setCaixaRetiradaOpen(false);
+                      }} style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                        Confirmar Retirada
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : activeMain === "Importar Rotas" ? (
           <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f4f8" }}>
 
             {/* ── Content ── */}
