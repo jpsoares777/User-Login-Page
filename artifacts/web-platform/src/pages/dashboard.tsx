@@ -3449,6 +3449,249 @@ function LiqPeriodosContent({ activeSub }: { activeSub: string }) {
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
+type GcRow = { id: number; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number };
+
+function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }) {
+  const [showParcelas, setShowParcelas] = useState(false);
+  const [showDocumentos, setShowDocumentos] = useState(false);
+  const [histEmp, setHistEmp] = useState<{ data: string; cuotas: number; total: number; valor: number } | null>(null);
+
+  const fmtM = (v: number) => `$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  const nameColor = mr.atrasadas === 0 ? "#15803d" : mr.atrasadas >= 5 ? "#b91c1c" : "#b45309";
+  const initials = mr.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+
+  const prevTotal = Math.round(mr.valorEmp * 1.4);
+  const historico: { data: string; cuotas: number; total: number; valor: number }[] = [
+    { data: "2025-10-01", cuotas: 14, total: prevTotal, valor: mr.valorEmp },
+    { data: "2026-04-08", cuotas: mr.parcelas, total: mr.total, valor: mr.valorEmp },
+  ];
+
+  return (
+    <>
+      <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+        onClick={onClose}>
+        <div style={{ background: "#fff", borderRadius: 8, width: 700, maxHeight: "90vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", display: "flex", flexDirection: "column" }}
+          onClick={e => e.stopPropagation()}>
+
+          {/* Header */}
+          <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: "0.03em" }}>FICHA DO CLIENTE</span>
+            <button onClick={onClose} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 15, fontWeight: 700, lineHeight: 1 }}>✕</button>
+          </div>
+
+          <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
+
+            {/* Avatar + info + inativar */}
+            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <div style={{ flexShrink: 0, width: 80, height: 80, borderRadius: "50%", background: "#e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, color: "#3d6e8e", border: "3px solid #4a7fa0" }}>
+                {initials}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 17, fontWeight: 800, color: nameColor, marginBottom: 4 }}>{mr.nome}</div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "2px 7px" }}>ACTIVO</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "2px 7px" }}>{mr.consec}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 3, padding: "2px 7px" }}>{mr.freq}</span>
+                </div>
+                <div style={{ fontSize: 12, color: "#6b7280" }}>Doc: <b style={{ color: "#374151" }}>{mr.doc}</b> &nbsp;|&nbsp; Nasc.: <b style={{ color: "#374151" }}>{mr.nasc}</b></div>
+              </div>
+              <button style={{ flexShrink: 0, background: "#b91c1c", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                onClick={() => { alert(`Cliente ${mr.nome} marcado como INACTIVO.`); onClose(); }}>
+                🚫 Inativar Cliente
+              </button>
+            </div>
+
+            <div style={{ borderTop: "1px solid #e5e7eb" }} />
+
+            {/* Contato e Endereço */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Contato e Endereço</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 16px", fontSize: 12 }}>
+                <div><span style={{ color: "#9ca3af" }}>Tel 1:</span> <b style={{ color: "#111827" }}>{mr.tel1}</b></div>
+                <div><span style={{ color: "#9ca3af" }}>Tel 2:</span> <b style={{ color: "#111827" }}>{mr.tel2}</b></div>
+                <div style={{ gridColumn: "1/-1" }}><span style={{ color: "#9ca3af" }}>Endereço:</span> <b style={{ color: "#111827" }}>{mr.endereco}</b></div>
+                <div><span style={{ color: "#9ca3af" }}>Verificação:</span> <b style={{ color: "#d97706" }}>Sem Verificação</b></div>
+              </div>
+            </div>
+
+            {/* Botões */}
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <button onClick={() => setShowParcelas(true)}
+                style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "9px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
+                <span style={{ fontSize: 15 }}>📋</span> Ver Parcelas Pagas — Empréstimo Ativo
+              </button>
+              <button onClick={() => setShowDocumentos(true)}
+                style={{ background: "#e8f0f7", color: "#2d5474", border: "1px solid #a8c4d8", borderRadius: 5, padding: "7px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 12 }}>📷</span> Documentos
+              </button>
+            </div>
+
+            {/* Histórico de empréstimos */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                👤 {mr.nome.toUpperCase()} &nbsp;<span style={{ color: "#9ca3af", fontWeight: 400 }}>#{mr.consec}</span>
+              </div>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, minWidth: 700 }}>
+                  <thead>
+                    <tr>
+                      {["Nro.", "Data do Emp.", "Estado", "Parc.", "Pagas", "Falt.", "Saldo", "Valor Empr.", "Freq.", "Vr. Parcela", "Visitas", "% Juros"].map(hd => (
+                        <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "6px 8px", textAlign: "center", fontWeight: 700, fontSize: 10, whiteSpace: "nowrap" }}>{hd}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...historico].reverse().map((h, idx) => {
+                      const pagasH = h.cuotas;
+                      const faltH = 0;
+                      const saldoH = 0;
+                      const vrParc = h.total / h.cuotas;
+                      const pctJurosH = Math.round((h.total / h.valor - 1) * 100);
+                      const nro = historico.length - idx;
+                      const bg = idx % 2 === 0 ? "#fff" : "#f5f7f9";
+                      return (
+                        <tr key={idx} onClick={() => setHistEmp(h)}
+                          style={{ cursor: "pointer", background: bg }}
+                          onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
+                          onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = bg}>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{nro}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#374151" }}>{h.data}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 20, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac" }}>Quitado</span>
+                          </td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>{h.cuotas}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#15803d", fontWeight: 600 }}>{pagasH}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#6b7280" }}>{faltH}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: "#15803d" }}>{fmtM(saldoH)}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: "#2563eb" }}>{fmtM(h.total)}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#6b7280" }}>{mr.freq}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", color: "#374151" }}>{fmtM(vrParc)}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#374151" }}>{mr.visitas}</td>
+                          <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#15803d" }}>{pctJurosH}%</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 4px 0" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>
+                  TOTAL EMPRÉSTIMOS:&nbsp;
+                  <span style={{ color: "#2563eb" }}>{fmtM(historico.reduce((a, h) => a + h.total, 0))}</span>
+                </span>
+                <button onClick={onClose} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+
+            {/* Observações */}
+            {mr.obs && (
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Observações</div>
+                <div style={{ background: "#fefce8", border: "1px solid #fde68a", borderRadius: 5, padding: "10px 12px", fontSize: 12, color: "#713f12", lineHeight: 1.6 }}>{mr.obs}</div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      </div>
+
+      {/* ── Sub-modal: Histórico de Pagamentos ── */}
+      {histEmp !== null && (() => {
+        const emp = histEmp;
+        const empNro = historico.findIndex(h => h.data === emp.data) + 1;
+        const vrParc = emp.total / emp.cuotas;
+        const startDate = new Date(emp.data + "T00:00:00");
+        const rows: { num: number; tipo: string; valor: number; fecha: string; obs: string }[] = [];
+        for (let i = 0; i < emp.cuotas; i++) {
+          const d = new Date(startDate); d.setDate(d.getDate() + i + 1);
+          rows.push({ num: i + 1, tipo: "PARC.", valor: vrParc, fecha: d.toISOString().slice(0, 10), obs: "" });
+        }
+        const rowsDesc = [...rows].reverse();
+        const totalPago = rows.reduce((a, r) => a + r.valor, 0);
+        const nomeShort = mr.nome.length > 20 ? mr.nome.slice(0, 19) + "…" : mr.nome;
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setHistEmp(null)}>
+            <div style={{ background: "#fff", borderRadius: 8, width: 660, maxHeight: "82vh", boxShadow: "0 24px 64px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", overflow: "hidden" }}
+              onClick={e => e.stopPropagation()}>
+              <div style={{ background: "#2d5474", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Histórico de Pagamentos</span>
+                <button onClick={() => setHistEmp(null)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+              </div>
+              <div style={{ padding: "10px 18px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                <span style={{ fontSize: 14 }}>👤</span>
+                <span style={{ fontWeight: 800, fontSize: 13, color: "#e07b39", letterSpacing: "0.02em" }}>{mr.nome.toUpperCase()}</span>
+                <span style={{ color: "#6b7280", fontSize: 12 }}>Empréstimo #{empNro}</span>
+              </div>
+              <div style={{ flex: 1, overflowY: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                  <thead>
+                    <tr>
+                      {["Nro.", "Cliente", "Tipo", "Valor", "Fecha", "Observações"].map(hd => (
+                        <th key={hd} style={{ background: "#3d6e8e", color: "#e2e8f0", padding: "8px 12px", textAlign: hd === "Valor" ? "right" : hd === "Nro." ? "center" : "left", fontWeight: 700, fontSize: 11, position: "sticky", top: 0, zIndex: 1, whiteSpace: "nowrap" }}>{hd}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rowsDesc.map((r, idx) => (
+                      <tr key={r.num} style={{ background: idx % 2 === 0 ? "#fff" : "#f5f7f9" }}>
+                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{r.num}</td>
+                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#2563eb", fontWeight: 500 }}>{nomeShort.toUpperCase()}</td>
+                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }}><TipoBadge tipo={r.tipo} /></td>
+                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: r.tipo === "PARC." ? "#15803d" : "#9ca3af" }}>{r.tipo === "PARC." ? fmtM(r.valor) : "$ 0,00"}</td>
+                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>{r.fecha}</td>
+                        <td style={{ padding: "8px 12px", borderBottom: "1px solid #f0f0f0", color: "#9ca3af" }}>{r.obs}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ padding: "12px 18px", borderTop: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+                <span style={{ fontWeight: 700, fontSize: 13, color: "#374151" }}>
+                  TOTAL PAGO:&nbsp;<span style={{ color: "#15803d" }}>{fmtM(totalPago)}</span>
+                </span>
+                <button onClick={() => setHistEmp(null)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ── Sub-modal: Ver Parcelas ── */}
+      {showParcelas && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowParcelas(false)}>
+          <div style={{ background: "#fff", borderRadius: 8, width: 420, padding: "24px 28px", boxShadow: "0 16px 48px rgba(0,0,0,0.4)", textAlign: "center" }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: 38, marginBottom: 10 }}>📋</div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#2d5474", marginBottom: 6 }}>Ver Parcelas Pagas</div>
+            <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 16 }}>Empréstimo Ativo — {mr.pagas} parcelas pagas de {mr.parcelas}</div>
+            <button onClick={() => setShowParcelas(false)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Fechar</button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Sub-modal: Documentos ── */}
+      {showDocumentos && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowDocumentos(false)}>
+          <div style={{ background: "#fff", borderRadius: 8, width: 420, padding: "24px 28px", boxShadow: "0 16px 48px rgba(0,0,0,0.4)", textAlign: "center" }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: 38, marginBottom: 10 }}>📷</div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#2d5474", marginBottom: 6 }}>Documentos do Cliente</div>
+            <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 16 }}>Nenhum documento anexado para {mr.nome}.</div>
+            <button onClick={() => setShowDocumentos(false)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Fechar</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function DashboardPage() {
   const [, navigate] = useLocation();
   const [activeMain, setActiveMain] = useState("Liq. Diária");
@@ -3905,160 +4148,7 @@ export default function DashboardPage() {
             {gcModalOpen && (() => {
               const mr = gcRows.find(r => r.id === gcModalRowId);
               if (!mr) return null;
-              const initials = mr.nome.split(" ").filter(w => w.length > 0).slice(0, 2).map(w => w[0].toUpperCase()).join("");
-              const prevTotal = Math.round(mr.valorEmp * 1.4);
-              const prevParc = Math.round(prevTotal / 14);
-              const totalEmp = mr.total + prevTotal;
-              return (
-                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9000, display: "flex", alignItems: "center", justifyContent: "center" }}
-                  onClick={() => setGcModalOpen(false)}>
-                  <div style={{ background: "#fff", borderRadius: 6, width: 490, maxHeight: "92vh", overflowY: "auto", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}
-                    onClick={e => e.stopPropagation()}>
-
-                    {/* ── header ── */}
-                    <div style={{ background: "#2d5474", color: "#fff", padding: "10px 16px", borderRadius: "6px 6px 0 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <span style={{ fontWeight: 700, fontSize: 13, letterSpacing: "0.06em" }}>FICHA DO CLIENTE</span>
-                      <button onClick={() => setGcModalOpen(false)} style={{ background: "none", border: "none", color: "#fff", fontSize: 22, cursor: "pointer", lineHeight: 1, padding: 0 }}>×</button>
-                    </div>
-
-                    <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
-
-                      {/* ── avatar + info + inativar ── */}
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-                        {/* avatar */}
-                        <div style={{ width: 58, height: 58, borderRadius: "50%", background: "#cbd5e1", border: "3px solid #94a3b8", color: "#475569", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 20, flexShrink: 0, letterSpacing: 1 }}>
-                          {initials}
-                        </div>
-                        {/* name + badges + doc */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-                            <span style={{ fontWeight: 800, fontSize: 15, color: "#1e293b", lineHeight: 1.3 }}>{mr.nome}</span>
-                            <button style={{ flexShrink: 0, background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, padding: "5px 11px", fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
-                              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff", display: "inline-block" }} />
-                              Inativar Cliente
-                            </button>
-                          </div>
-                          {/* badges row */}
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5, flexWrap: "wrap" }}>
-                            <span style={{ background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 3, padding: "1px 7px", fontSize: 11, fontWeight: 700 }}>ACTIVO</span>
-                            <span style={{ background: "#dbeafe", color: "#1d4ed8", border: "1px solid #93c5fd", borderRadius: 3, padding: "1px 7px", fontSize: 11, fontWeight: 600 }}>{mr.consec}</span>
-                            <span style={{ fontSize: 11, color: "#374151" }}>{mr.freq}</span>
-                          </div>
-                          {/* doc + nasc */}
-                          <div style={{ marginTop: 4, fontSize: 11.5, color: "#64748b" }}>
-                            Doc: <span style={{ color: "#374151" }}>{mr.doc}</span>&ensp;|&ensp;Nasc: <span style={{ color: "#374151" }}>{mr.nasc}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <hr style={{ margin: "0", borderColor: "#e5e7eb" }} />
-
-                      {/* ── contato e endereço ── */}
-                      <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#374151", letterSpacing: "0.07em", marginBottom: 6 }}>CONTATO E ENDEREÇO</div>
-                        <div style={{ fontSize: 12, color: "#374151", marginBottom: 3 }}>
-                          Tel 1: <strong>{mr.tel1}</strong>&emsp;Tel 2: <strong>{mr.tel2}</strong>
-                        </div>
-                        <div style={{ fontSize: 12, color: "#374151", marginBottom: 3 }}>
-                          Endereço: {mr.endereco}
-                        </div>
-                        <div style={{ fontSize: 12 }}>
-                          Verificação: <span style={{ color: "#f59e0b", fontWeight: 600, textDecoration: "underline", cursor: "pointer" }}>Sem Verificação</span>
-                        </div>
-                      </div>
-
-                      {/* ── ver parcelas + documentos ── */}
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#334155", color: "#fff", border: "none", borderRadius: 5, padding: "7px 12px", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
-                          <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff", flexShrink: 0 }}><path d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h12v2H3v-2zm0 4h12v2H3v-2z"/></svg>
-                          Ver Parcelas Pagas — Empréstimo Ativo
-                        </button>
-                        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#f8fafc", color: "#374151", border: "1px solid #cbd5e1", borderRadius: 5, padding: "7px 12px", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
-                          <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#6b7280", flexShrink: 0 }}><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                          Documentos
-                        </button>
-                      </div>
-
-                      {/* ── loan history ── */}
-                      <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 6, display: "flex", alignItems: "center", gap: 5 }}>
-                          <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#374151" }}><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-                          {mr.nome.toUpperCase()}&ensp;#{mr.consec}
-                        </div>
-                        <div style={{ overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: 4 }}>
-                          <table style={{ borderCollapse: "collapse", fontSize: 11, whiteSpace: "nowrap", minWidth: 600 }}>
-                            <thead>
-                              <tr style={{ background: "#3d6e8e", color: "#fff" }}>
-                                {["Nro.","Data do Emp.","Estado","Parr.","Pagas","Falt.","Saldo","Valor Emp.","Freq.","Vs. Parcela","Visitas","%"].map(h => (
-                                  <th key={h} style={{ padding: "5px 8px", fontWeight: 600, fontSize: 10.5, textAlign: "center" }}>{h}</th>
-                                ))}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {/* row 2 — current */}
-                              <tr style={{ background: "#fff", borderBottom: "1px solid #f1f5f9" }}>
-                                <td style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700 }}>2</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>2026-04-08</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>
-                                  <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 10, padding: "1px 8px", fontWeight: 700, fontSize: 10 }}>Quitado</span>
-                                </td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.parcelas}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.pagas}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>0</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>$ 0,00</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700, color: "#dc2626" }}>$ {mr.total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.freq}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>$ {mr.valorParc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.visitas}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>-</td>
-                              </tr>
-                              {/* row 1 — previous */}
-                              <tr style={{ background: "#f8fafc" }}>
-                                <td style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700 }}>1</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>2025-10-01</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>
-                                  <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 10, padding: "1px 8px", fontWeight: 700, fontSize: 10 }}>Quitado</span>
-                                </td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>14</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>14</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>0</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>$ 0,00</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700, color: "#dc2626" }}>$ {prevTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.freq}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>$ {prevParc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>{mr.visitas}</td>
-                                <td style={{ padding: "5px 8px", textAlign: "center" }}>-</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                        <div style={{ marginTop: 8, fontSize: 13, color: "#2563eb", fontWeight: 700 }}>
-                          TOTAL EMPRÉSTIMOS: $ {totalEmp.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                        </div>
-                      </div>
-
-                      {/* ── cancelar ── */}
-                      <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                        <button onClick={() => setGcModalOpen(false)}
-                          style={{ background: "#1e3a5f", color: "#fff", border: "none", borderRadius: 5, padding: "7px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-                          Cancelar
-                        </button>
-                      </div>
-
-                      <hr style={{ margin: "0", borderColor: "#e5e7eb" }} />
-
-                      {/* ── observações ── */}
-                      <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#374151", letterSpacing: "0.07em", marginBottom: 6 }}>OBSERVAÇÕES</div>
-                        <div style={{ background: "#fefce8", border: "1px solid #fde68a", borderRadius: 4, padding: "10px 12px", fontSize: 12.5, color: "#374151", minHeight: 44 }}>
-                          {mr.obs || <span style={{ color: "#9ca3af", fontStyle: "italic" }}>Sem observações.</span>}
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              );
+              return <GcFichaClienteModal mr={mr} onClose={() => setGcModalOpen(false)} />;
             })()}
           </div>
         ) : activeMain === "Gerenciar Aplicativos" ? (
