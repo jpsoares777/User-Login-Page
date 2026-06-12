@@ -4091,13 +4091,6 @@ export default function DashboardPage() {
                 </tbody>
               </table>
             </div>
-            {/* footer — total saldo */}
-            <div className="shrink-0 flex items-center justify-end px-6 py-2 border-t gap-4" style={{ background: "#f8f9fa", borderTop: "2px solid #e5e7eb" }}>
-              <span style={{ fontWeight: 700, fontSize: 12, color: "#374151", letterSpacing: "0.05em", textTransform: "uppercase" }}>TOTAL SALDO CLIENTES</span>
-              <span style={{ fontWeight: 800, fontSize: 15, color: "#dc2626" }}>
-                $ {gcRows.reduce((s, r) => s + r.saldo, 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-              </span>
-            </div>
             {/* ── Blue footer bar (padrão) ── */}
             <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
             {/* ── CONFIRMAÇÃO EXCLUIR ── */}
