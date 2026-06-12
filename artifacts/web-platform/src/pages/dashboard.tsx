@@ -2587,7 +2587,7 @@ const liqPerClientesData: LiqPerClienteRow[] = [
   { id:7,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-30", consec:"4700627026", status:"Cancelado", cancelDate:"",           cliente:"Andreia de Jesus Costa Araújo",   idVenta:"4700627081", movel:"98985014328",   direc:"Rua gama lobon número 10 quarto",         cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:1120, vrCuota:80,  visitas:12, freq:"DIARIO" },
   { id:8,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-08", consec:"4700627026", status:"Activo",    cancelDate:"",           cliente:"Andreia de Jesus Costa Araújo",   idVenta:"4700627065", movel:"98985014328",   direc:"Rua gama lobon número 10 quarto",         cuotas:20.0, cuoPag:12.4, cuoFalt:7.6,  saldo:800,  int:40, valorProd:2100, vrCuota:105, visitas:4,  freq:"DIARIO" },
   { id:9,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-13", consec:"4700627024", status:"Activo",    cancelDate:"",           cliente:"Anny Briane Pires Belfort",       idVenta:"4700627024", movel:"559883156178",  direc:"",                                        cuotas:14.0, cuoPag:11.4, cuoFalt:2.6,  saldo:210,  int:40, valorProd:1120, vrCuota:80,  visitas:22, freq:"DIARIO" },
-  { id:10, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-14", consec:"4700627027", status:"Inativo",    cancelDate:"",           cliente:"Antônio Leite Neto",              idVenta:"4700627027", movel:"5598984643699", direc:"Rua frei Lauro número 7 conj. COHAB",     cuotas:14.0, cuoPag:1.5,  cuoFalt:12.5, saldo:750,  int:40, valorProd:840,  vrCuota:60,  visitas:20, freq:"DIARIO" },
+  { id:10, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-14", consec:"4700627027", status:"Activo",    cancelDate:"",           cliente:"Antônio Leite Neto",              idVenta:"4700627027", movel:"5598984643699", direc:"Rua frei Lauro número 7 conj. COHAB",     cuotas:14.0, cuoPag:1.5,  cuoFalt:12.5, saldo:750,  int:40, valorProd:840,  vrCuota:60,  visitas:20, freq:"DIARIO" },
   { id:11, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-13", consec:"4700627025", status:"Cancelado", cancelDate:"2026-04-11", cliente:"Bianca de Araújo Alves",          idVenta:"4700627025", movel:"9898330893",    direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:700,  vrCuota:50,  visitas:21, freq:"DIARIO" },
   { id:12, vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-16", consec:"4700627025", status:"Activo",    cancelDate:"",           cliente:"Bianca de Araújo Alves",          idVenta:"4700627070", movel:"9898330893",    direc:"",                                        cuotas:14.0, cuoPag:0.0,  cuoFalt:14.0, saldo:420,  int:40, valorProd:420,  vrCuota:30,  visitas:2,  freq:"DIARIO" },
   { id:13, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-20", consec:"4700627023", status:"Activo",    cancelDate:"",           cliente:"Elaira Kisley Conceição Lopes",   idVenta:"4700627023", movel:"98986543210",   direc:"",                                        cuotas:14.0, cuoPag:5.0,  cuoFalt:9.0,  saldo:540,  int:40, valorProd:840,  vrCuota:60,  visitas:9,  freq:"DIARIO" },
@@ -2620,14 +2620,13 @@ function LiqPeriodosClientesContent() {
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
 
   const cols = [
-    { label: "Vendedor",      w: "7%",  align: "left"   as const },
-    { label: "Data Venda",    w: "6%",  align: "center" as const },
-    { label: "Consec.",       w: "9%",  align: "left"   as const },
-    { label: "Status",        w: "7%",  align: "center" as const },
-    { label: "Cliente",       w: "12%", align: "left"   as const },
+    { label: "Vendedor",      w: "8%",  align: "left"   as const },
+    { label: "Data Venda",    w: "7%",  align: "center" as const },
+    { label: "Consec.",       w: "13%", align: "left"   as const },
+    { label: "Cliente",       w: "13%", align: "left"   as const },
     { label: "Id Venda",      w: "7%",  align: "left"   as const },
     { label: "Celular",       w: "8%",  align: "left"   as const },
-    { label: "Endereço",      w: "9%",  align: "left"   as const },
+    { label: "Endereço",      w: "10%", align: "left"   as const },
     { label: "Parcelas",      w: "4%",  align: "center" as const },
     { label: "Parc. Pag.",    w: "4%",  align: "center" as const },
     { label: "Parc. Rest.",   w: "4%",  align: "center" as const },
@@ -2669,8 +2668,7 @@ function LiqPeriodosClientesContent() {
           <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Status</label>
           <select className={`${inputCls} w-24`}>
             <option>Todos</option>
-            <option>Activo</option>
-            <option>Inativo</option>
+            <option>Ativo</option>
             <option>Cancelado</option>
           </select>
         </div>
@@ -2733,18 +2731,10 @@ function LiqPeriodosClientesContent() {
                   <td style={tdC("left", { color: "#374151", fontSize: 13 })}>{r.id}. {r.vendedor}</td>
                   <td style={tdC("center", { color: "#6b7280" })}>{r.fechaVenta}</td>
                   <td style={tdC("left")}>
-                    <span style={{ color: "#2563eb", fontWeight: 700, fontSize: 13 }}>{r.consec}</span>
-                  </td>
-                  <td style={tdC("center")}>
-                    {r.status === "Activo" && (
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 8px" }}>Ativo</span>
-                    )}
-                    {r.status === "Inativo" && (
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#b45309", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 4, padding: "2px 8px" }}>Inativo</span>
-                    )}
-                    {r.status === "Cancelado" && (
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#b91c1c", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 4, padding: "2px 8px" }}>Cancelado</span>
-                    )}
+                    <span style={{ color: consecColor, fontWeight: 700, borderBottom: `1px dashed ${consecColor}`, fontSize: 13 }}>{r.consec}</span>
+                    <span style={{ color: consecColor, fontSize: 12, marginLeft: 3 }}>
+                      ({isAtivo ? "Ativo" : `Cancelado${r.cancelDate ? "-" + r.cancelDate : ""}`})
+                    </span>
                   </td>
                   <td style={tdC("left", { color: "#374151", fontWeight: 500 })}>{r.cliente}</td>
                   <td style={tdC("left", { color: "#2563eb", fontWeight: 700, fontSize: 13 })}>
