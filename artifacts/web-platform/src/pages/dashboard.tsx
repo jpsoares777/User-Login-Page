@@ -3500,13 +3500,13 @@ function ConsolidadosContent() {
 
           {/* Valores Finais */}
           <div style={{ display: "flex", flexDirection: "column" as const, gap: 14 }}>
-            <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "22px 20px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 10 }}>🏦 Caixa Final</span>
-              <span style={{ fontSize: 28, fontWeight: 900, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</span>
+            <div style={{ background: "#fff", border: "1px solid #d1fae5", borderRadius: 8, padding: "14px 16px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1 }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#6b7280", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Caixa Final</span>
+              <span style={{ fontSize: 20, fontWeight: 700, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</span>
             </div>
-            <div style={{ background: "#eff6ff", border: "2px solid #93c5fd", borderRadius: 10, padding: "22px 20px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 10 }}>📋 Carteira Final</span>
-              <span style={{ fontSize: 28, fontWeight: 900, color: "#2563eb" }}>{fmtR(r.cartera)}</span>
+            <div style={{ background: "#fff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "14px 16px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1 }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#6b7280", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Carteira Final</span>
+              <span style={{ fontSize: 20, fontWeight: 700, color: "#2563eb" }}>{fmtR(r.cartera)}</span>
             </div>
           </div>
         </div>
