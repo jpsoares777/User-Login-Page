@@ -3480,6 +3480,7 @@ export default function DashboardPage() {
             onClick={e => e.stopPropagation()}>
             {[
               { icon: "📊", label: "Relatório diário",             color: "#f97316" },
+              { icon: "⚙️", label: "Gerenciar Aplicativo",         color: "#64748b" },
               { icon: "💳", label: "Novos empréstimos",            color: "#2563eb" },
               { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
               { icon: "📈", label: "Gerenc. de rendimentos",       color: "#16a34a" },
