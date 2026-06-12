@@ -3492,6 +3492,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Importar rota",                 color: "#7c3aed", img: iconImportarRota, imgSize: 21 },
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)" },
               { icon: "📅", label: "Consultar gastos",              color: "#db2777" },
+              { icon: "📈", label: "Consultar rendimentos",        color: "#16a34a" },
               { icon: "👤", label: "Caixa geral",                  color: "#6b7280" },
             ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string }) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
