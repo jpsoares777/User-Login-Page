@@ -4209,12 +4209,6 @@ export default function DashboardPage() {
                   {rotasSample.map(r => <option key={r.id}>{r.nome}</option>)}
                 </select>
               </div>
-              {/* DATA */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <label style={{ fontSize: 10, fontWeight: 700, color: "#64748b", letterSpacing: "0.07em", textTransform: "uppercase" }}>Data</label>
-                <input type="date" defaultValue={new Date().toISOString().slice(0,10)}
-                  style={{ height: 32, border: "1px solid #cbd5e1", borderRadius: 5, padding: "0 8px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", cursor: "pointer" }} />
-              </div>
               {/* Pesquisar */}
               <div style={{ paddingTop: 16 }}>
                 <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, padding: "0 14px", height: 32, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
