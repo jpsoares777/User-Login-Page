@@ -3498,34 +3498,15 @@ function ConsolidadosContent() {
             <ListRow label="Carteira Final"          value={r.cartera}               valueColor="#2563eb" bold border={false} />
           </Panel>
 
-          {/* Carteira + Fórmula */}
-          <div style={{ display: "flex", flexDirection: "column" as const, gap: 12 }}>
-            <Panel icon="📋" title="Carteira" accent="#2563eb">
-              <ListRow label="Carteira inicial"     value={r.carteiraInicial}  valueColor="#2563eb" bold />
-              <ListRow label="Carteira final"       value={r.cartera}          valueColor="#2563eb" bold />
-              <ListRow label="Fundo de seguro"      value={r.acumulado}        border={false} />
-            </Panel>
-
-            <div style={{ background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 10, padding: "12px 14px" }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#92400e", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>📐 Cálculo Caixa Final</div>
-              <div style={{ fontSize: 12, color: "#78350f", lineHeight: 1.8 }}>
-                {[
-                  { lbl: "Caixa Inicial",    val: fmtR(r.cajaInicial),  color: "#374151",  pre: "" },
-                  { lbl: "Recaudo",          val: fmtR(r.recaudo),      color: "#16a34a",  pre: "+" },
-                  { lbl: "Ingresos",         val: fmtR(r.ingresos),     color: "#16a34a",  pre: "+" },
-                  { lbl: "Ventas",           val: fmtR(r.ventas),       color: "#dc2626",  pre: "−" },
-                  { lbl: "Egresos",          val: fmtR(r.egresos),      color: "#dc2626",  pre: "−" },
-                  { lbl: "Retirada",         val: fmtR(r.retiradaCaixa),color: "#dc2626",  pre: "−" },
-                ].map(({ lbl, val, color, pre }) => (
-                  <div key={lbl} style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #fde68a", paddingBottom: 3, marginBottom: 3 }}>
-                    <span>{lbl}</span><span style={{ fontWeight: 600, color }}>{pre} {val}</span>
-                  </div>
-                ))}
-                <div style={{ display: "flex", justifyContent: "space-between", background: "#16a34a", color: "#fff", borderRadius: 6, padding: "5px 8px", marginTop: 4 }}>
-                  <span style={{ fontWeight: 700 }}>= Caixa Final</span>
-                  <span style={{ fontWeight: 800 }}>{fmtR(r.cajaFinal)}</span>
-                </div>
-              </div>
+          {/* Valores Finais */}
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 14 }}>
+            <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "22px 20px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 10 }}>🏦 Caixa Final</span>
+              <span style={{ fontSize: 28, fontWeight: 900, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</span>
+            </div>
+            <div style={{ background: "#eff6ff", border: "2px solid #93c5fd", borderRadius: 10, padding: "22px 20px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 10 }}>📋 Carteira Final</span>
+              <span style={{ fontSize: 28, fontWeight: 900, color: "#2563eb" }}>{fmtR(r.cartera)}</span>
             </div>
           </div>
         </div>
