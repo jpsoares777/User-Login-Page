@@ -3489,7 +3489,7 @@ export default function DashboardPage() {
               { icon: "🔄", label: "Importar rota",                 color: "#7c3aed" },
               { icon: "🔗", label: "Faturas",                       color: "#0891b2" },
               { icon: "📅", label: "Consultar gastos",              color: "#db2777" },
-              { icon: "👤", label: "Clientes ausentes",            color: "#6b7280" },
+              { icon: "👤", label: "Caixa geral",                  color: "#6b7280" },
             ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number }) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", borderTop: "none", borderLeft: "none", borderRight: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
