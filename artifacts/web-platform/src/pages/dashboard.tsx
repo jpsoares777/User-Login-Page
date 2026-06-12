@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
 import iconGerenciar from "@assets/ícone-linear-de-segurança-do-smartphone-verificação-usuário-t_1781283034370.webp";
 import iconGerenciarClientes from "@assets/4168988_1781283346707.png";
+import iconGerenciarApp2 from "@assets/1570102_1781283457472.png";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, Label, Customized,
@@ -3482,7 +3483,7 @@ export default function DashboardPage() {
             onClick={e => e.stopPropagation()}>
             {[
               { icon: "📊", label: "Relatório diário",             color: "#f97316" },
-              { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar },
+              { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciarApp2, imgBg: "#2563eb" },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarClientes },
               { icon: "💳", label: "Novos empréstimos",            color: "#2563eb" },
               { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
@@ -3491,14 +3492,16 @@ export default function DashboardPage() {
               { icon: "🔗", label: "Sincronizar",                  color: "#0891b2" },
               { icon: "📅", label: "Empréstimo outras datas",      color: "#db2777" },
               { icon: "👤", label: "Clientes ausentes",            color: "#6b7280" },
-            ].map(({ icon, label, color, img }: { icon: string | null, label: string, color: string, img?: string }) => (
+            ].map(({ icon, label, color, img, imgBg }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string }) => (
               <button key={label} onClick={() => setSideMenuOpen(false)}
                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", background: "transparent", border: "none", borderBottom: "1px solid #f1f5f9", color: "#1e293b", fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", width: "100%" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 {img
-                  ? <img src={img} alt={label} style={{ width: 20, height: 20, objectFit: "contain" }} />
+                  ? <span style={{ width: 24, height: 24, borderRadius: 6, background: imgBg ?? "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <img src={img} alt={label} style={{ width: imgBg ? 16 : 22, height: imgBg ? 16 : 22, objectFit: "contain", filter: imgBg ? "brightness(0) invert(1)" : "none" }} />
+                    </span>
                   : <span style={{ fontSize: 18, color }}>{icon}</span>
                 }
                 {label}
