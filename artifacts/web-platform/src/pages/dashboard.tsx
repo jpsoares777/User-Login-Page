@@ -2892,72 +2892,81 @@ function ResumoContent() {
   const dFin = new Date(dataFinal   + "T12:00:00").toLocaleDateString("pt-BR");
 
   const handlePDF = () => {
+    const pctR = r.recaudoPretendido > 0 ? ((r.recaudo / r.recaudoPretendido) * 100).toFixed(1) : "0,0";
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <title>Resumo de Período – ${cobrador}</title>
 <style>
-  body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#111;}
-  .header{background:#2d5474;color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;text-align:center;}
-  .header h2{margin:0 0 4px;font-size:20px;}
-  .header p{margin:0;font-size:13px;opacity:.85;}
-  .info-bar{background:#f1f5f9;padding:10px 24px;display:flex;gap:24px;font-size:13px;border-bottom:1px solid #e5e7eb;flex-wrap:wrap;}
-  .body{padding:20px 24px;}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .section-title{font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;}
-  .card{background:#f9fafb;border-radius:8px;overflow:hidden;margin-bottom:4px;}
-  .row{display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #f3f4f6;font-size:13px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:Arial,sans-serif;background:#f1f5f9;padding:20px;}
+  .wrap{max-width:820px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1);}
+  .hdr{background:linear-gradient(135deg,#2d5474,#3d6e8e);color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;}
+  .hdr-left h2{font-size:17px;font-weight:800;margin-bottom:3px;}
+  .hdr-left p{font-size:12px;opacity:.8;}
+  .hdr-right{display:flex;align-items:center;gap:10px;}
+  .badge{background:#16a34a;color:#fff;padding:3px 13px;border-radius:20px;font-size:11px;font-weight:700;}
+  .body{padding:18px 20px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+  .panel{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;}
+  .ptitle{font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;padding:7px 12px 7px 14px;background:#f1f5f9;border-bottom:2px solid #e5e7eb;}
+  .ptitle.green{border-color:#16a34a;} .ptitle.orange{border-color:#f97316;} .ptitle.blue{border-color:#2563eb;}
+  .row{display:flex;justify-content:space-between;padding:6px 12px;border-bottom:1px solid #f3f4f6;font-size:12px;}
   .row:last-child{border-bottom:none;}
-  .row .label{color:#6b7280;}
-  .row .value{font-weight:600;color:#111;}
-  .row .value.green{color:#16a34a;}
-  .row .value.blue{color:#2563eb;}
-  .row .value.red{color:#dc2626;}
-  .final{background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
-  .footer{text-align:center;font-size:11px;color:#9ca3af;padding:14px;border-top:1px solid #f3f4f6;}
-  @media print{body{padding:0;}}
+  .lbl{color:#6b7280;} .val{font-weight:600;color:#111;}
+  .g{color:#16a34a;} .b{color:#2563eb;} .r{color:#dc2626;} .a{color:#d97706;} .p{color:#7c3aed;}
+  .vboxes{display:flex;flex-direction:column;gap:10px;}
+  .vbox{border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;}
+  .vbox .vl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+  .vbox .vv{font-size:20px;font-weight:800;}
+  .footer{text-align:center;font-size:10px;color:#9ca3af;padding:10px;border-top:1px solid #f0f0f0;}
+  @media print{body{padding:0;background:#fff;}.wrap{box-shadow:none;border-radius:0;}}
 </style></head><body>
-<div style="max-width:720px;margin:0 auto;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
-  <div class="header">
-    <h2>📊 Resumo de Período</h2>
-    <p>${cobrador} · ${dIni} a ${dFin}</p>
-  </div>
-  <div class="info-bar">
-    <span>👥 Clientes: <strong>${r.nClientes}</strong></span>
-    <span>🔒 Cierres: <strong>${r.nCierres}</strong></span>
-    <span>🛒 Num. Ventas: <strong>${r.numVentas}</strong></span>
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-left">
+      <h2>📊 Resumo de Período</h2>
+      <p>${cobrador} · ${dIni} a ${dFin}</p>
+    </div>
+    <div class="hdr-right">
+      <span style="font-size:13px;opacity:.9">📅 ${dIni} → ${dFin}</span>
+      <span class="badge">✓ Correto</span>
+    </div>
   </div>
   <div class="body">
-    <div class="grid">
-      <div>
-        <div class="section-title">📋 Clientes &amp; Vendas</div>
-        <div class="card">
-          <div class="row"><span class="label">Nº Clientes</span><span class="value blue">${r.nClientes}</span></div>
-          <div class="row"><span class="label">Nº Cierres</span><span class="value">${r.nCierres}</span></div>
-          <div class="row"><span class="label">Num. Ventas</span><span class="value">${r.numVentas}</span></div>
-          <div class="row"><span class="label">Total Ventas</span><span class="value">${fmtR(r.totalVentas)}</span></div>
-          <div class="row"><span class="label">Total Int.</span><span class="value">${fmtR(r.totalInt)}</span></div>
-          <div class="row"><span class="label">Caja Inicial</span><span class="value">${fmtR(r.cajaInicial)}</span></div>
-          <div class="row"><span class="label">Carteira últ. dia</span><span class="value blue">${fmtR(r.carteira)}</span></div>
+    <div class="grid3">
+      <div class="panel">
+        <div class="ptitle green">👥 Clientes</div>
+        <div class="row"><span class="lbl">Clientes Cadastrados</span><span class="val">${r.nClientes}</span></div>
+        <div class="row"><span class="lbl">Clientes Finalizados</span><span class="val r">${r.nCierres}</span></div>
+        <div class="row"><span class="lbl">Empréstimos Realizados</span><span class="val p">${r.numVentas}</span></div>
+        <div class="row"><span class="lbl"><strong>Total Clientes</strong></span><span class="val b"><strong>${r.nClientes}</strong></span></div>
+      </div>
+      <div class="panel">
+        <div class="ptitle orange">🔥 Financeiro</div>
+        <div class="row"><span class="lbl">Caixa Inicial</span><span class="val g">${fmtR(r.cajaInicial)}</span></div>
+        <div class="row"><span class="lbl">Carteira Inicial</span><span class="val g">${fmtR(r.carteira)}</span></div>
+        <div class="row"><span class="lbl">Receb. Pretendido</span><span class="val">${fmtR(r.recaudoPretendido)}</span></div>
+        <div class="row"><span class="lbl">Receb. Realizado</span><span class="val a">${fmtR(r.recaudo)} <span style="background:#fed7aa;color:#92400e;padding:1px 5px;border-radius:6px;font-size:9px;font-weight:700">${pctR}%</span></span></div>
+        <div class="row"><span class="lbl">Total Emprestado</span><span class="val p">${fmtR(r.totalVentas)}</span></div>
+        <div class="row"><span class="lbl">&nbsp;&nbsp;↳ Juros Gerados</span><span class="val a">${fmtR(r.totalInt)}</span></div>
+        <div class="row"><span class="lbl">Entradas Extras</span><span class="val g">${fmtR(r.ingresos)}</span></div>
+        <div class="row"><span class="lbl">Despesas</span><span class="val r">${fmtR(r.egresos)}</span></div>
+        <div class="row"><span class="lbl">Retiradas de Caixa</span><span class="val r">${fmtR(r.retiros)}</span></div>
+        <div class="row"><span class="lbl"><strong>Caixa Final</strong></span><span class="val g"><strong>${fmtR(r.cajaFinal)}</strong></span></div>
+        <div class="row"><span class="lbl"><strong>Carteira Final</strong></span><span class="val b"><strong>${fmtR(r.carteira)}</strong></span></div>
+      </div>
+      <div class="vboxes">
+        <div class="vbox" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+          <div class="vl" style="color:#4b7c59">Caixa Final</div>
+          <div class="vv g">${fmtR(r.cajaFinal)}</div>
+        </div>
+        <div class="vbox" style="background:#eff6ff;border:1px solid #bfdbfe;">
+          <div class="vl" style="color:#3b5fa0">Carteira Final</div>
+          <div class="vv b">${fmtR(r.carteira)}</div>
         </div>
       </div>
-      <div>
-        <div class="section-title">💰 Recaudo &amp; Movimentação</div>
-        <div class="card">
-          <div class="row"><span class="label">Recaudo</span><span class="value green">${fmtR(r.recaudo)}</span></div>
-          <div class="row"><span class="label">Recaudo Pretendido</span><span class="value">${fmtR(r.recaudoPretendido)}</span></div>
-          <div class="row"><span class="label">Promedio Recaudo</span><span class="value">${fmtR(r.promedio)}</span></div>
-          <div class="row"><span class="label">Retiros</span><span class="value red">${fmtR(r.retiros)}</span></div>
-          <div class="row"><span class="label">Egresos</span><span class="value red">${fmtR(r.egresos)}</span></div>
-          <div class="row"><span class="label">Ingresos</span><span class="value green">${fmtR(r.ingresos)}</span></div>
-          <div class="row"><span class="label">Sanción Cobrada</span><span class="value">${fmtR(r.sancao)}</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="final">
-      <span style="font-size:16px;font-weight:700;color:#166534;">🟢 Caja Final</span>
-      <span style="font-size:20px;font-weight:800;color:#16a34a;">${fmtR(r.cajaFinal)}</span>
     </div>
   </div>
-  <div class="footer">Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança</div>
+  <div class="footer">Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança · SystemPay</div>
 </div>
 <script>window.onload=()=>{window.print();}<\/script>
 </body></html>`;
@@ -2966,53 +2975,46 @@ function ResumoContent() {
   };
 
   const handleWhatsApp = () => {
+    const pctR = r.recaudoPretendido > 0 ? ((r.recaudo / r.recaudoPretendido) * 100).toFixed(1) : "0,0";
     const lines = [
       `*📊 RESUMO DE PERÍODO*`,
-      `Rota: ${cobrador}`,
-      `Período: ${dIni} a ${dFin}`,
+      `${cobrador} · ${dIni} → ${dFin}`,
       ``,
-      `*📋 Clientes & Vendas*`,
-      `Nº Clientes: ${r.nClientes}`,
-      `Nº Cierres: ${r.nCierres}`,
-      `Num. Ventas: ${r.numVentas}`,
-      `Total Ventas: ${fmtR(r.totalVentas)}`,
-      `Total Int.: ${fmtR(r.totalInt)}`,
-      `Caja Inicial: ${fmtR(r.cajaInicial)}`,
-      `Carteira últ. dia: ${fmtR(r.carteira)}`,
+      `*👥 CLIENTES*`,
+      `Clientes Cadastrados: ${r.nClientes}`,
+      `Clientes Finalizados: ${r.nCierres}`,
+      `Empréstimos Realizados: ${r.numVentas}`,
+      `Total Clientes: ${r.nClientes}`,
       ``,
-      `*💰 Recaudo & Movimentação*`,
-      `Recaudo: ${fmtR(r.recaudo)}`,
-      `Recaudo Pretendido: ${fmtR(r.recaudoPretendido)}`,
-      `Promedio Recaudo: ${fmtR(r.promedio)}`,
-      `Retiros: ${fmtR(r.retiros)}`,
-      `Egresos: ${fmtR(r.egresos)}`,
-      `Ingresos: ${fmtR(r.ingresos)}`,
-      `Sanción Cobrada: ${fmtR(r.sancao)}`,
+      `*🔥 FINANCEIRO*`,
+      `Caixa Inicial: ${fmtR(r.cajaInicial)}`,
+      `Carteira Inicial: ${fmtR(r.carteira)}`,
+      `Receb. Pretendido: ${fmtR(r.recaudoPretendido)}`,
+      `Receb. Realizado: ${fmtR(r.recaudo)} (${pctR}%)`,
+      `Total Emprestado: ${fmtR(r.totalVentas)}`,
+      `  ↳ Juros Gerados: ${fmtR(r.totalInt)}`,
+      `Entradas Extras: ${fmtR(r.ingresos)}`,
+      `Despesas: ${fmtR(r.egresos)}`,
+      `Retiradas de Caixa: ${fmtR(r.retiros)}`,
+      `Caixa Final: ${fmtR(r.cajaFinal)}`,
+      `Carteira Final: ${fmtR(r.carteira)}`,
       ``,
-      `*🟢 CAJA FINAL: ${fmtR(r.cajaFinal)}*`,
+      `*🏦 CAIXA FINAL: ${fmtR(r.cajaFinal)}*`,
+      `*📋 CARTEIRA FINAL: ${fmtR(r.carteira)}*`,
       ``,
-      `_Gerado em ${new Date().toLocaleString("pt-BR")} · Sistema de Cobrança_`,
+      `_Gerado em ${new Date().toLocaleString("pt-BR")} · SystemPay_`,
     ];
     window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
   };
 
-  /* helpers */
-  const StatCard = ({ icon, label, value, accent, bg }: { icon: string; label: string; value: string; accent: string; bg: string }) => (
-    <div style={{ background: "#fff", border: `1px solid ${accent}22`, borderRadius: 10, padding: "14px 18px", flex: "1 1 130px", minWidth: 120, boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 8, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{icon}</div>
-        <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{label}</span>
-      </div>
-      <div style={{ fontSize: 17, fontWeight: 800, color: accent }}>{value}</div>
-    </div>
-  );
-
-  const ListRow = ({ label, value, valueColor = "#111827", bold = false, border = true }: {
-    label: string; value: string; valueColor?: string; bold?: boolean; border?: boolean;
+  const ListRow = ({ label, value, valueColor = "#111827", bold = false, isCount = false, border = true }: {
+    label: string; value: string | number; valueColor?: string; bold?: boolean; isCount?: boolean; border?: boolean;
   }) => (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: border ? "1px solid #f3f4f6" : "none" }}>
       <span style={{ fontSize: 13, color: "#6b7280" }}>{label}</span>
-      <span style={{ fontSize: 13, fontWeight: bold ? 700 : 500, color: valueColor }}>{value}</span>
+      <span style={{ fontSize: 13, fontWeight: bold ? 700 : 500, color: valueColor }}>
+        {isCount ? value : (typeof value === "number" ? fmtR(value) : value)}
+      </span>
     </div>
   );
 
@@ -3077,118 +3079,46 @@ function ResumoContent() {
           </div>
         </div>
 
-        {/* ── Stat cards row ── */}
-        {(() => {
-          const lucroLiquido = r.totalInt - r.retiros - r.egresos;
-          const receitaTotal = r.totalInt + r.ingresos;
-          return (
-            <>
-              <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" as const }}>
-                <StatCard icon="💳" label="Total Recebido"   value={fmtR(r.recaudo)}     accent="#16a34a" bg="#f0fdf4" />
-                <StatCard icon="📈" label="Juros Gerados"    value={fmtR(r.totalInt)}    accent="#7c3aed" bg="#f5f3ff" />
-                <StatCard icon="💵" label="Lucro Líquido"   value={fmtR(lucroLiquido)}  accent="#059669" bg="#ecfdf5" />
-                <StatCard icon="📋" label="Carteira"         value={fmtR(r.carteira)}    accent="#2563eb" bg="#eff6ff" />
-                <StatCard icon="🏦" label="Caja Final"       value={fmtR(r.cajaFinal)}  accent="#16a34a" bg="#f0fdf4" />
-              </div>
+        {/* ── Three-column grid ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, marginBottom: 14 }}>
 
-              {/* ── Two-column grid ── */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+          {/* Clientes */}
+          <Panel icon="👥" title="Clientes" accent="#16a34a">
+            <ListRow label="Clientes Cadastrados"   value={r.nClientes}  isCount bold valueColor="#374151" />
+            <ListRow label="Clientes Finalizados"   value={r.nCierres}   isCount valueColor="#dc2626" />
+            <ListRow label="Empréstimos Realizados" value={r.numVentas}  isCount valueColor="#7c3aed" />
+            <ListRow label="Total de Clientes"      value={r.nClientes}  isCount bold valueColor="#0891b2" border={false} />
+          </Panel>
 
-                {/* Left: Clientes & Empréstimos */}
-                <Panel icon="📋" title="Clientes & Empréstimos" accent="#0891b2">
-                  <ListRow label="Clientes cadastrados"      value={String(r.nClientes)}   valueColor="#0891b2" bold />
-                  <ListRow label="Clientes finalizados/quit." value={String(r.nCierres)} />
-                  <ListRow label="Empréstimos realizados"    value={String(r.numVentas)} />
-                  <ListRow label="Total emprestado"          value={fmtR(r.totalVentas)}   valueColor="#7c3aed" bold />
-                  <ListRow label="Juros gerados"             value={fmtR(r.totalInt)}      valueColor="#7c3aed" />
-                  <ListRow label="Caixa inicial"             value={fmtR(r.cajaInicial)} />
-                  <ListRow label="Carteira (últ. dia)"       value={fmtR(r.carteira)}      valueColor="#2563eb" bold border={false} />
-                </Panel>
+          {/* Financeiro */}
+          <Panel icon="🔥" title="Financeiro" accent="#f97316">
+            <ListRow label="Caixa Inicial"          value={r.cajaInicial}         valueColor="#16a34a" bold />
+            <ListRow label="Carteira Inicial"        value={r.carteira}            valueColor="#16a34a" bold />
+            <ListRow label="Receb. Pretendido"       value={r.recaudoPretendido} />
+            <ListRow label="Receb. Realizado"        value={r.recaudo}             valueColor="#f59e0b" bold />
+            <ListRow label="Total Emprestado"        value={r.totalVentas} />
+            <ListRow label="  ↳ Juros Gerados"       value={r.totalInt}            valueColor="#f59e0b" />
+            <ListRow label="Entradas Extras"         value={r.ingresos}            valueColor={r.ingresos > 0 ? "#16a34a" : "#6b7280"} />
+            <ListRow label="Despesas"                value={r.egresos}             valueColor={r.egresos > 0 ? "#dc2626" : "#6b7280"} />
+            <ListRow label="Retiradas de Caixa"      value={r.retiros}             valueColor={r.retiros > 0 ? "#dc2626" : "#6b7280"} />
+            <ListRow label="Caixa Final"             value={r.cajaFinal}           valueColor="#16a34a" bold />
+            <ListRow label="Carteira Final"          value={r.carteira}            valueColor="#2563eb" bold border={false} />
+          </Panel>
 
-                {/* Right: Recaudo & Movimentação */}
-                <Panel icon="💰" title="Recaudo & Movimentação" accent="#16a34a">
-                  <ListRow label="Total recebido (recaudo)"  value={fmtR(r.recaudo)}           valueColor="#16a34a" bold />
-                  <ListRow label="Deveria arrecadar"         value={fmtR(r.recaudoPretendido)} />
-                  <ListRow label="Média por cobrança"        value={fmtR(r.promedio)} />
-                  <ListRow label="Retiradas de caixa"        value={fmtR(r.retiros)}            valueColor="#dc2626" />
-                  <ListRow label="Despesas"                  value={fmtR(r.egresos)}            valueColor="#dc2626" />
-                  <ListRow label="Entradas extras"           value={fmtR(r.ingresos)}           valueColor="#16a34a" />
-                  <ListRow label="Multas cobradas"           value={fmtR(r.sancao)}            border={false} />
-                </Panel>
-              </div>
+          {/* Valores Finais */}
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 14 }}>
+            <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: "16px 18px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1 }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#4b7c59", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Caixa Final</span>
+              <span style={{ fontSize: 22, fontWeight: 800, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</span>
+            </div>
+            <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "16px 18px", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", flex: 1 }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#3b5fa0", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Carteira Final</span>
+              <span style={{ fontSize: 22, fontWeight: 800, color: "#2563eb" }}>{fmtR(r.carteira)}</span>
+            </div>
+          </div>
+        </div>
 
-              {/* ── Resultado Financeiro (full width) ── */}
-              <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", marginBottom: 14 }}>
-                <div style={{ background: "#f8fafc", padding: "10px 16px", display: "flex", alignItems: "center", gap: 7, borderBottom: "2px solid #f59e0b" }}>
-                  <span style={{ fontSize: 15 }}>📊</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Resultado Financeiro do Período</span>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 0 }}>
-                  {/* Receitas */}
-                  <div style={{ padding: "14px 18px", borderRight: "1px solid #f3f4f6" }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 10 }}>📈 Receitas</div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
-                      <span style={{ fontSize: 13, color: "#6b7280" }}>Juros gerados</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#7c3aed" }}>{fmtR(r.totalInt)}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
-                      <span style={{ fontSize: 13, color: "#6b7280" }}>Entradas extras</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#16a34a" }}>{fmtR(r.ingresos)}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "9px 0 0" }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>Receita total</span>
-                      <span style={{ fontSize: 14, fontWeight: 800, color: "#059669" }}>{fmtR(receitaTotal)}</span>
-                    </div>
-                  </div>
-                  {/* Despesas */}
-                  <div style={{ padding: "14px 18px", borderRight: "1px solid #f3f4f6" }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#dc2626", textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 10 }}>📉 Despesas</div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
-                      <span style={{ fontSize: 13, color: "#6b7280" }}>Retiradas</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#dc2626" }}>{fmtR(r.retiros)}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
-                      <span style={{ fontSize: 13, color: "#6b7280" }}>Egresos</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#dc2626" }}>{fmtR(r.egresos)}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "9px 0 0" }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>Total despesas</span>
-                      <span style={{ fontSize: 14, fontWeight: 800, color: "#dc2626" }}>{fmtR(r.retiros + r.egresos)}</span>
-                    </div>
-                  </div>
-                  {/* Lucro */}
-                  <div style={{ padding: "14px 18px", background: "#f0fdf4" }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#059669", textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 10 }}>💵 Resultado</div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #d1fae5" }}>
-                      <span style={{ fontSize: 13, color: "#4b7c59" }}>Receita juros</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#059669" }}>{fmtR(r.totalInt)}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #d1fae5" }}>
-                      <span style={{ fontSize: 13, color: "#4b7c59" }}>− Retiros + Egresos</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#dc2626" }}>− {fmtR(r.retiros + r.egresos)}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "9px 0 0", alignItems: "center" }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#166534" }}>Lucro líquido</span>
-                      <span style={{ fontSize: 18, fontWeight: 900, color: "#16a34a" }}>{fmtR(lucroLiquido)}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Caja Final + footer */}
-              <div style={{ background: "#f0fdf4", border: "2px solid #86efac", borderRadius: 10, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 2 }}>🟢 Saldo Final</div>
-                  <div style={{ fontSize: 12, color: "#4b7c59" }}>Dinheiro que ficou em caixa ao fim do período</div>
-                </div>
-                <div style={{ fontSize: 24, fontWeight: 900, color: "#16a34a" }}>{fmtR(r.cajaFinal)}</div>
-              </div>
-            </>
-          );
-        })()}
-
-        {/* ── Footer timestamp ── */}
-        <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginTop: 4 }}>
+        <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8" }}>
           Gerado em {new Date().toLocaleString("pt-BR")} · Sistema de Cobrança
         </div>
       </div>
