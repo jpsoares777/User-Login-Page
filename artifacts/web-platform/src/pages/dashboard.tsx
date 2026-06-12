@@ -4277,68 +4277,6 @@ export default function DashboardPage() {
             {/* ── Content: Form + Movimentos ── */}
             <div className="flex-1 overflow-auto p-4" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-              {/* Form card */}
-              <div style={{ background: "#fff", borderRadius: 4, border: "1px solid #d1d9e0", overflow: "hidden" }}>
-                <div style={{ background: "#2d5474", padding: "8px 14px" }}>
-                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>Dados Básicos</span>
-                </div>
-                <div style={{ padding: "20px 20px 8px" }}>
-                  {/* Row 1 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 180px 200px", gap: 16, marginBottom: 16 }}>
-                    <div>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Vendedor (*)</label>
-                      <select value={caixaVendedor} onChange={e => setCaixaVendedor(e.target.value)}
-                        style={{ width: "100%", height: 30, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 8px", fontSize: 12, color: caixaVendedor ? "#334155" : "#94a3b8", background: "#fff", outline: "none" }}>
-                        <option value="">---Selecione---</option>
-                        <option>Carlos Silva</option><option>Ana Pereira</option><option>João Santos</option>
-                        <option>Maria Oliveira</option><option>Pedro Costa</option><option>Lucia Ferreira</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Conceito (*)</label>
-                      <select value={caixaConceito} onChange={e => setCaixaConceito(e.target.value)}
-                        style={{ width: "100%", height: 30, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 8px", fontSize: 12, color: caixaConceito ? "#334155" : "#94a3b8", background: "#fff", outline: "none" }}>
-                        <option value="">---Selecione---</option>
-                        <option>Liquidação</option><option>Entrada Extra</option><option>Aporte</option>
-                        <option>Transferência</option><option>Outros</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Valor (*)</label>
-                      <input type="number" min={0} step={0.01} value={caixaValor} onChange={e => setCaixaValor(e.target.value)} placeholder="0,00"
-                        style={{ width: "100%", height: 30, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 8px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", boxSizing: "border-box" }} />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Data Liquidação</label>
-                      <select value={caixaData} onChange={e => setCaixaData(e.target.value)}
-                        style={{ width: "100%", height: 30, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 8px", fontSize: 12, color: caixaData ? "#334155" : "#94a3b8", background: "#fff", outline: "none" }}>
-                        <option value="">---Datas---</option>
-                        <option>Hoje</option><option>Ontem</option><option>Esta semana</option><option>Este mês</option>
-                      </select>
-                    </div>
-                  </div>
-                  {/* Observações */}
-                  <div style={{ marginBottom: 16 }}>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Observações</label>
-                    <textarea value={caixaObs} onChange={e => setCaixaObs(e.target.value)} rows={4}
-                      style={{ width: "100%", border: "1px solid #94a3b8", borderRadius: 3, padding: "8px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }} />
-                  </div>
-                  {/* Salvar */}
-                  <div style={{ display: "flex", justifyContent: "flex-end", paddingBottom: 16 }}>
-                    <button onClick={() => {
-                      if (!caixaVendedor || !caixaConceito || !caixaValor) return;
-                      const v = parseFloat(caixaValor);
-                      setCaixaMovs(prev => [...prev, { id: Date.now(), tipo: "Entrada", descricao: `${caixaConceito} — ${caixaVendedor}`, valor: v, data: new Date().toISOString().slice(0,10) }]);
-                      setCaixaSaldo(s => s + v);
-                      setCaixaVendedor(""); setCaixaConceito(""); setCaixaValor(""); setCaixaData(""); setCaixaObs("");
-                    }} style={{ display: "flex", alignItems: "center", gap: 7, background: "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.35)" }}>
-                      <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#fff" }}><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-                      Salvar
-                    </button>
-                  </div>
-                </div>
-              </div>
-
               {/* Histórico de movimentos */}
               <div style={{ background: "#fff", borderRadius: 4, border: "1px solid #d1d9e0", overflow: "hidden" }}>
                 <div style={{ background: "#2d5474", padding: "8px 14px" }}>
