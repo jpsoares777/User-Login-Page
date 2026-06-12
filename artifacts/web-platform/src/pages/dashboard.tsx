@@ -3689,7 +3689,7 @@ export default function DashboardPage() {
                   <tr style={{ background: "#3d6e8e", color: "#fff" }}>
                     <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>#</th>
                     <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Rota</th>
-                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Nome do Cobrador</th>
+                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Nome Cobrador</th>
                     <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Cód. Acesso</th>
                     <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Data Vencimento</th>
                     <th style={{ padding: "9px 14px", textAlign: "center", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Status</th>
