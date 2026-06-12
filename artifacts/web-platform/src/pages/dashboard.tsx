@@ -3448,6 +3448,7 @@ export default function DashboardPage() {
   const [activeSubPeriodos, setActiveSubPeriodos] = useState("Liquidação");
   const [liqInicio, setLiqInicio] = useState(() => { const d = new Date(); d.setDate(1); return d.toISOString().slice(0,10); });
   const [liqFim,    setLiqFim]    = useState(() => new Date().toISOString().slice(0,10));
+  const [diarioData, setDiarioData] = useState(() => new Date().toISOString().slice(0,10));
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
@@ -3569,9 +3570,8 @@ export default function DashboardPage() {
             <span className="text-xs bg-white/25 rounded-full w-5 h-5 flex items-center justify-center font-bold">1</span>
           </button>
           <div className="flex-1" />
-          <button className="flex items-center justify-center w-9 h-8 rounded" style={{ background: "#2563eb", color: "#fff" }}>
-            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
-          </button>
+          <input type="date" value={diarioData} onChange={e => setDiarioData(e.target.value)}
+            className="h-8 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" />
         </div>
       )}
 
