@@ -3686,15 +3686,15 @@ export default function DashboardPage() {
   const [gerenciarDespesasOpen, setGerenciarDespesasOpen] = useState(false);
 
   // ── Gerenciar Despesas ──
-  type DespRow = { id: number; data: string; categoria: string; descricao: string; valor: number; estado: "Pago" | "Pendente"; obs: string; };
-  const emptyDesp: DespRow = { id: 0, data: new Date().toISOString().slice(0,10), categoria: "", descricao: "", valor: 0, estado: "Pendente", obs: "" };
+  type DespRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; };
+  const emptyDesp: DespRow = { id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "" };
   const [despRows, setDespRows] = useState<DespRow[]>([
-    { id: 1, data: "2026-06-01", categoria: "Combustível",    descricao: "Gasolina – rota diária",      valor: 220.00, estado: "Pago",     obs: "" },
-    { id: 2, data: "2026-06-03", categoria: "Alimentação",    descricao: "Almoço equipe cobrança",      valor: 85.50,  estado: "Pago",     obs: "" },
-    { id: 3, data: "2026-06-05", categoria: "Manutenção",     descricao: "Troca de óleo – veículo",     valor: 310.00, estado: "Pendente", obs: "Aguardando NF" },
-    { id: 4, data: "2026-06-07", categoria: "Escritório",     descricao: "Papelaria e impressões",      valor: 67.80,  estado: "Pago",     obs: "" },
-    { id: 5, data: "2026-06-10", categoria: "Combustível",    descricao: "Gasolina – visita clientes",  valor: 195.00, estado: "Pendente", obs: "" },
-    { id: 6, data: "2026-06-11", categoria: "Comunicação",    descricao: "Recarga celular corporativo", valor: 50.00,  estado: "Pago",     obs: "" },
+    { id: 1, data: "2026-06-01", hora: "07:45", categoria: "Combustível",        descricao: "Gasolina – rota diária",           valor: 220.00, responsavel: "Carlos Souza",  obs: "" },
+    { id: 2, data: "2026-06-03", hora: "12:30", categoria: "Alimentação",        descricao: "Almoço equipe cobrança",           valor: 85.50,  responsavel: "João Mendes",   obs: "3 pessoas" },
+    { id: 3, data: "2026-06-05", hora: "16:00", categoria: "Manutenção",         descricao: "Troca de óleo – veículo",          valor: 310.00, responsavel: "Carlos Souza",  obs: "Aguardando NF" },
+    { id: 4, data: "2026-06-07", hora: "09:15", categoria: "Material",           descricao: "Papelaria e impressões",           valor: 67.80,  responsavel: "Ana Lima",      obs: "" },
+    { id: 5, data: "2026-06-10", hora: "14:20", categoria: "Combustível",        descricao: "Gasolina – visita clientes",       valor: 195.00, responsavel: "João Mendes",   obs: "" },
+    { id: 6, data: "2026-06-11", hora: "08:50", categoria: "Retirada de Caixa", descricao: "Retirada diária do operador",      valor: 500.00, responsavel: "Carlos Souza",  obs: "Autorizado" },
   ]);
   const [despFiltroCategoria, setDespFiltroCategoria] = useState("-- Selecione --");
   const [despFiltroData, setDespFiltroData] = useState("");
@@ -3702,7 +3702,7 @@ export default function DashboardPage() {
   const [despEditId, setDespEditId] = useState<number | null>(null);
   const [despForm, setDespForm] = useState<DespRow>(emptyDesp);
   const [despDeleteId, setDespDeleteId] = useState<number | null>(null);
-  const despCategorias = ["Combustível", "Alimentação", "Manutenção", "Escritório", "Comunicação", "Salários", "Impostos", "Outros"];
+  const despCategorias = ["Combustível", "Alimentação", "Retirada de Caixa", "Material", "Manutenção", "Outros"];
   const despFiltered = despRows.filter(r =>
     (despFiltroCategoria === "-- Selecione --" || r.categoria === despFiltroCategoria) &&
     (!despFiltroData || r.data === despFiltroData)
@@ -4078,64 +4078,71 @@ export default function DashboardPage() {
       <div className="flex-1 overflow-hidden flex">
         {activeMain === "Gerenciar Despesas" ? (
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* count bar */}
-            <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb" }}>
-              <span className="text-xs text-gray-600 font-medium">{despFiltered.length} registros encontrados</span>
+            {/* header bar */}
+            <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+              <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5l4-4h10v4z"/></svg>
+                Despesas
+              </span>
+              <div className="flex-1" />
+              <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: {despFiltroData || new Date().toISOString().slice(0,10)}</span>
             </div>
             {/* table */}
-            <div className="flex-1 overflow-auto" style={{ background: "#fff" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+            <div className="flex-1 overflow-auto">
+              <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1100 }}>
+                <colgroup>
+                  {[54, 150, 280, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
+                </colgroup>
                 <thead>
-                  <tr style={{ background: "#3d6e8e", color: "#fff" }}>
+                  <tr>
                     {[
-                      { label: "Nro.",        align: "center" as const, w: 50  },
-                      { label: "Data",        align: "center" as const, w: 100 },
-                      { label: "Categoria",   align: "left"   as const, w: 130 },
-                      { label: "Descrição",   align: "left"   as const          },
-                      { label: "Valor",       align: "right"  as const, w: 110 },
-                      { label: "Estado",      align: "center" as const, w: 90  },
-                      { label: "Ações",       align: "center" as const, w: 80  },
-                    ].map(h => (
-                      <th key={h.label} style={{ padding: "9px 10px", textAlign: h.align, fontWeight: 700, fontSize: 11, whiteSpace: "nowrap", width: h.w }}>{h.label}</th>
+                      { label: "Nro.",        align: "center" as const },
+                      { label: "Categoria",   align: "center" as const },
+                      { label: "Descrição",   align: "left"   as const },
+                      { label: "Valor",       align: "right"  as const },
+                      { label: "Data",        align: "center" as const },
+                      { label: "Hora",        align: "center" as const },
+                      { label: "Responsável", align: "left"   as const },
+                      { label: "Observações", align: "left"   as const },
+                      { label: "Ações",       align: "center" as const },
+                    ].map(c => (
+                      <th key={c.label} style={{
+                        padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                        whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
+                        borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
+                        position: "sticky", top: 0, zIndex: 1,
+                      }}>{c.label}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {despFiltered.map((row, idx) => {
-                    const bg = idx % 2 === 0 ? "#fff" : "#f9fafb";
+                  {despFiltered.map((row, i) => {
+                    const cat = categoriaColor[row.categoria] ?? categoriaColor["Outros"];
+                    const td = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
+                      padding: "5px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+                      textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+                    });
                     return (
-                      <tr key={row.id} style={{ background: bg }}
-                        onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
-                        onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = bg}>
-                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{idx + 1}</td>
-                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#374151" }}>{row.data}</td>
-                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", color: "#374151", fontWeight: 600 }}>{row.categoria}</td>
-                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>
-                          {row.descricao}
-                          {row.obs && <span style={{ marginLeft: 6, fontSize: 10, color: "#9ca3af" }}>({row.obs})</span>}
+                      <tr key={row.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
+                        <td style={td("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{i + 1}</td>
+                        <td style={td("center")}>
+                          <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: cat.bg, color: cat.text, border: `1px solid ${cat.border}` }}>{row.categoria}</span>
                         </td>
-                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: "#dc2626" }}>
-                          $ {row.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                        </td>
-                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>
-                          <span style={{
-                            fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
-                            color: row.estado === "Pago" ? "#15803d" : "#b45309",
-                            background: row.estado === "Pago" ? "#dcfce7" : "#fef3c7",
-                            border: `1px solid ${row.estado === "Pago" ? "#86efac" : "#fcd34d"}`,
-                          }}>{row.estado}</span>
-                        </td>
-                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>
-                          <div style={{ display: "inline-flex", gap: 5 }}>
-                            <button title="Editar"
-                              onClick={() => { setDespEditId(row.id); setDespForm({ ...row }); setDespModalOpen(true); }}
-                              style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 30, height: 30, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        <td style={td("left", { color: "#374151" })}>{row.descricao}</td>
+                        <td style={td("right", { fontWeight: 700, color: "#b91c1c" })}>R$ {row.valor.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
+                        <td style={td("center", { color: "#6b7280" })}>{row.data}</td>
+                        <td style={td("center", { color: "#6b7280" })}>{row.hora}</td>
+                        <td style={td("left", { color: "#374151" })}>{row.responsavel}</td>
+                        <td style={td("left", { color: "#6b7280", fontStyle: row.obs ? "normal" : "italic" })}>{row.obs || "—"}</td>
+                        <td style={td("center")}>
+                          <div style={{ display: "inline-flex", gap: 4 }}>
+                            <button title="Editar" onClick={() => { setDespEditId(row.id); setDespForm({ ...row }); setDespModalOpen(true); }}
+                              style={{ background: "#2563eb", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                             </button>
-                            <button title="Excluir"
-                              onClick={() => setDespDeleteId(row.id)}
-                              style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 30, height: 30, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            <button title="Excluir" onClick={() => setDespDeleteId(row.id)}
+                              style={{ background: "#dc2626", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                             </button>
                           </div>
                         </td>
@@ -4143,10 +4150,18 @@ export default function DashboardPage() {
                     );
                   })}
                   {despFiltered.length === 0 && (
-                    <tr><td colSpan={7} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada.</td></tr>
+                    <tr><td colSpan={9} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada.</td></tr>
                   )}
                 </tbody>
               </table>
+            </div>
+            {/* total footer */}
+            <div className="shrink-0 flex items-center justify-end gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>RETIRADA DE CAIXA</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#7c3aed" }}>R$ {despFiltered.filter(r => r.categoria === "Retirada de Caixa").reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+              <span style={{ color: "#d1d5db", fontSize: 16, fontWeight: 300 }}>|</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL DESPESAS</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#b91c1c" }}>R$ {despFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
             </div>
             {/* ── Blue footer bar (padrão) ── */}
             <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
@@ -4169,13 +4184,18 @@ export default function DashboardPage() {
                           style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Categoria *</label>
-                        <select value={despForm.categoria} onChange={e => setDespForm(f => ({ ...f, categoria: e.target.value }))}
-                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
-                          <option value="">-- Selecione --</option>
-                          {despCategorias.map(c => <option key={c}>{c}</option>)}
-                        </select>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Hora *</label>
+                        <input type="time" value={despForm.hora} onChange={e => setDespForm(f => ({ ...f, hora: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                       </div>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Categoria *</label>
+                      <select value={despForm.categoria} onChange={e => setDespForm(f => ({ ...f, categoria: e.target.value }))}
+                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
+                        <option value="">-- Selecione --</option>
+                        {despCategorias.map(c => <option key={c}>{c}</option>)}
+                      </select>
                     </div>
                     <div>
                       <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Descrição *</label>
@@ -4189,12 +4209,9 @@ export default function DashboardPage() {
                           style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Estado</label>
-                        <select value={despForm.estado} onChange={e => setDespForm(f => ({ ...f, estado: e.target.value as "Pago" | "Pendente" }))}
-                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
-                          <option>Pendente</option>
-                          <option>Pago</option>
-                        </select>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Responsável</label>
+                        <input type="text" value={despForm.responsavel} onChange={e => setDespForm(f => ({ ...f, responsavel: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                       </div>
                     </div>
                     <div>
