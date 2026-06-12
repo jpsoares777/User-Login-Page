@@ -3683,6 +3683,30 @@ export default function DashboardPage() {
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
+  const [gerenciarDespesasOpen, setGerenciarDespesasOpen] = useState(false);
+
+  // ── Gerenciar Despesas ──
+  type DespRow = { id: number; data: string; categoria: string; descricao: string; valor: number; estado: "Pago" | "Pendente"; obs: string; };
+  const emptyDesp: DespRow = { id: 0, data: new Date().toISOString().slice(0,10), categoria: "", descricao: "", valor: 0, estado: "Pendente", obs: "" };
+  const [despRows, setDespRows] = useState<DespRow[]>([
+    { id: 1, data: "2026-06-01", categoria: "Combustível",    descricao: "Gasolina – rota diária",      valor: 220.00, estado: "Pago",     obs: "" },
+    { id: 2, data: "2026-06-03", categoria: "Alimentação",    descricao: "Almoço equipe cobrança",      valor: 85.50,  estado: "Pago",     obs: "" },
+    { id: 3, data: "2026-06-05", categoria: "Manutenção",     descricao: "Troca de óleo – veículo",     valor: 310.00, estado: "Pendente", obs: "Aguardando NF" },
+    { id: 4, data: "2026-06-07", categoria: "Escritório",     descricao: "Papelaria e impressões",      valor: 67.80,  estado: "Pago",     obs: "" },
+    { id: 5, data: "2026-06-10", categoria: "Combustível",    descricao: "Gasolina – visita clientes",  valor: 195.00, estado: "Pendente", obs: "" },
+    { id: 6, data: "2026-06-11", categoria: "Comunicação",    descricao: "Recarga celular corporativo", valor: 50.00,  estado: "Pago",     obs: "" },
+  ]);
+  const [despFiltroCategoria, setDespFiltroCategoria] = useState("-- Selecione --");
+  const [despFiltroData, setDespFiltroData] = useState("");
+  const [despModalOpen, setDespModalOpen] = useState(false);
+  const [despEditId, setDespEditId] = useState<number | null>(null);
+  const [despForm, setDespForm] = useState<DespRow>(emptyDesp);
+  const [despDeleteId, setDespDeleteId] = useState<number | null>(null);
+  const despCategorias = ["Combustível", "Alimentação", "Manutenção", "Escritório", "Comunicação", "Salários", "Impostos", "Outros"];
+  const despFiltered = despRows.filter(r =>
+    (despFiltroCategoria === "-- Selecione --" || r.categoria === despFiltroCategoria) &&
+    (!despFiltroData || r.data === despFiltroData)
+  );
   const [gcConsecutivo, setGcConsecutivo] = useState("");
   const [gcDocumento, setGcDocumento] = useState("");
   const [gcNome, setGcNome] = useState("");
@@ -3750,7 +3774,7 @@ export default function DashboardPage() {
             {[
               { icon: null,  label: "Gerenciar Aplicativos",        color: "#64748b", img: iconGerenciar, imgSize: 32, onClick: () => { setGerenciarAppsOpen(true); setActiveMain("Gerenciar Aplicativos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenciar Clientes",           color: "#16a34a", img: iconGerenciarApp2, onClick: () => { setGerenciarClientesOpen(true); setActiveMain("Gerenciar Clientes"); setSideMenuOpen(false); } },
-              { icon: null,  label: "Gerenc. despesas",             color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)" },
+              { icon: null,  label: "Gerenc. despesas",             color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(328deg) brightness(90%)", onClick: () => { setGerenciarDespesasOpen(true); setActiveMain("Gerenciar Despesas"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. rendimentos",          color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
               { icon: null,  label: "Importar rotas",                color: "#7c3aed", img: iconImportarRota, imgSize: 21 },
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)" },
@@ -3827,6 +3851,20 @@ export default function DashboardPage() {
             }}>
             Gerenciar Clientes
             <span onClick={e => { e.stopPropagation(); setGerenciarClientesOpen(false); if (activeMain === "Gerenciar Clientes") setActiveMain("Liq. Diária"); }}
+              style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
+          </button>
+        )}
+        {gerenciarDespesasOpen && (
+          <button onClick={() => setActiveMain("Gerenciar Despesas")}
+            className="flex items-center gap-2 px-4 h-10 text-sm font-medium transition-all rounded-t"
+            style={{
+              background: activeMain === "Gerenciar Despesas" ? "#2563eb" : "rgba(255,255,255,0.08)",
+              color: activeMain === "Gerenciar Despesas" ? "#fff" : "rgba(255,255,255,0.65)",
+              border: activeMain === "Gerenciar Despesas" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              borderBottom: "none",
+            }}>
+            Despesas
+            <span onClick={e => { e.stopPropagation(); setGerenciarDespesasOpen(false); if (activeMain === "Gerenciar Despesas") setActiveMain("Liq. Diária"); }}
               style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
           </button>
         )}
@@ -3949,6 +3987,40 @@ export default function DashboardPage() {
         </>
       )}
 
+      {/* ── FILTER BAR (Gerenciar Despesas) ── */}
+      {activeMain === "Gerenciar Despesas" && (
+        <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+          <div className="flex flex-col" style={{ minWidth: 160 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Vendedor (*):</label>
+            <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
+              <option>– Rota Cred Bank –</option>
+            </select>
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 190 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Conceito (*):</label>
+            <select value={despFiltroCategoria} onChange={e => setDespFiltroCategoria(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 175 }}>
+              <option>-- Selecione --</option>
+              {despCategorias.map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 160 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Data da Despesa:</label>
+            <input type="date" value={despFiltroData} onChange={e => setDespFiltroData(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 148 }} />
+          </div>
+          <div className="flex items-end pb-0.5 gap-2" style={{ alignSelf: "flex-end" }}>
+            <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
+            <button onClick={() => { setDespEditId(null); setDespForm({ ...emptyDesp, id: Date.now() }); setDespModalOpen(true); }}
+              className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── FILTER BAR (Gerenciar Aplicativos) ── */}
       {activeMain === "Gerenciar Aplicativos" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
@@ -4004,7 +4076,191 @@ export default function DashboardPage() {
 
       {/* ── CONTENT AREA ── */}
       <div className="flex-1 overflow-hidden flex">
-        {activeMain === "Gerenciar Clientes" ? (
+        {activeMain === "Gerenciar Despesas" ? (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* count bar */}
+            <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb" }}>
+              <span className="text-xs text-gray-600 font-medium">{despFiltered.length} registros encontrados</span>
+            </div>
+            {/* table */}
+            <div className="flex-1 overflow-auto" style={{ background: "#fff" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                <thead>
+                  <tr style={{ background: "#3d6e8e", color: "#fff" }}>
+                    {[
+                      { label: "Nro.",        align: "center" as const, w: 50  },
+                      { label: "Data",        align: "center" as const, w: 100 },
+                      { label: "Categoria",   align: "left"   as const, w: 130 },
+                      { label: "Descrição",   align: "left"   as const          },
+                      { label: "Valor",       align: "right"  as const, w: 110 },
+                      { label: "Estado",      align: "center" as const, w: 90  },
+                      { label: "Ações",       align: "center" as const, w: 80  },
+                    ].map(h => (
+                      <th key={h.label} style={{ padding: "9px 10px", textAlign: h.align, fontWeight: 700, fontSize: 11, whiteSpace: "nowrap", width: h.w }}>{h.label}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {despFiltered.map((row, idx) => {
+                    const bg = idx % 2 === 0 ? "#fff" : "#f9fafb";
+                    return (
+                      <tr key={row.id} style={{ background: bg }}
+                        onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#eff6ff"}
+                        onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = bg}>
+                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center", fontWeight: 700, color: "#2563eb" }}>{idx + 1}</td>
+                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#374151" }}>{row.data}</td>
+                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", color: "#374151", fontWeight: 600 }}>{row.categoria}</td>
+                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", color: "#374151" }}>
+                          {row.descricao}
+                          {row.obs && <span style={{ marginLeft: 6, fontSize: 10, color: "#9ca3af" }}>({row.obs})</span>}
+                        </td>
+                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: "#dc2626" }}>
+                          $ {row.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                        </td>
+                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>
+                          <span style={{
+                            fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
+                            color: row.estado === "Pago" ? "#15803d" : "#b45309",
+                            background: row.estado === "Pago" ? "#dcfce7" : "#fef3c7",
+                            border: `1px solid ${row.estado === "Pago" ? "#86efac" : "#fcd34d"}`,
+                          }}>{row.estado}</span>
+                        </td>
+                        <td style={{ padding: "8px 10px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>
+                          <div style={{ display: "inline-flex", gap: 5 }}>
+                            <button title="Editar"
+                              onClick={() => { setDespEditId(row.id); setDespForm({ ...row }); setDespModalOpen(true); }}
+                              style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 30, height: 30, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                            <button title="Excluir"
+                              onClick={() => setDespDeleteId(row.id)}
+                              style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 30, height: 30, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {despFiltered.length === 0 && (
+                    <tr><td colSpan={7} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {/* ── Blue footer bar (padrão) ── */}
+            <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+
+            {/* ── MODAL NOVO / EDITAR DESPESA ── */}
+            {despModalOpen && (
+              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                onClick={() => setDespModalOpen(false)}>
+                <div style={{ background: "#fff", borderRadius: 8, width: 480, boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
+                  onClick={e => e.stopPropagation()}>
+                  <div style={{ background: "#2d5474", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{despEditId ? "Editar Despesa" : "Nova Despesa"}</span>
+                    <button onClick={() => setDespModalOpen(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+                  </div>
+                  <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Data *</label>
+                        <input type="date" value={despForm.data} onChange={e => setDespForm(f => ({ ...f, data: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Categoria *</label>
+                        <select value={despForm.categoria} onChange={e => setDespForm(f => ({ ...f, categoria: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
+                          <option value="">-- Selecione --</option>
+                          {despCategorias.map(c => <option key={c}>{c}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Descrição *</label>
+                      <input type="text" value={despForm.descricao} onChange={e => setDespForm(f => ({ ...f, descricao: e.target.value }))}
+                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Valor (R$) *</label>
+                        <input type="number" min={0} step={0.01} value={despForm.valor} onChange={e => setDespForm(f => ({ ...f, valor: parseFloat(e.target.value) || 0 }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Estado</label>
+                        <select value={despForm.estado} onChange={e => setDespForm(f => ({ ...f, estado: e.target.value as "Pago" | "Pendente" }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
+                          <option>Pendente</option>
+                          <option>Pago</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Observações</label>
+                      <input type="text" value={despForm.obs} onChange={e => setDespForm(f => ({ ...f, obs: e.target.value }))}
+                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
+                      <button onClick={() => setDespModalOpen(false)}
+                        style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                        Cancelar
+                      </button>
+                      <button onClick={() => {
+                        if (despEditId) {
+                          setDespRows(prev => prev.map(r => r.id === despEditId ? despForm : r));
+                        } else {
+                          setDespRows(prev => [...prev, { ...despForm, id: Date.now() }]);
+                        }
+                        setDespModalOpen(false);
+                      }} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                        Salvar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── CONFIRMAÇÃO EXCLUIR DESPESA ── */}
+            {despDeleteId !== null && (() => {
+              const dr = despRows.find(r => r.id === despDeleteId);
+              if (!dr) return null;
+              return (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onClick={() => setDespDeleteId(null)}>
+                  <div style={{ background: "#fff", borderRadius: 8, width: 400, boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
+                    onClick={e => e.stopPropagation()}>
+                    <div style={{ background: "#dc2626", padding: "14px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+                      <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff", flexShrink: 0 }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                      <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Excluir Despesa</span>
+                    </div>
+                    <div style={{ padding: "22px 20px" }}>
+                      <p style={{ fontSize: 14, color: "#374151", margin: "0 0 6px" }}>Tem certeza que deseja excluir:</p>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>{dr.descricao}</p>
+                      <p style={{ fontSize: 12, color: "#6b7280", margin: "0 0 4px" }}>{dr.categoria} · {dr.data}</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#dc2626", margin: "0 0 20px" }}>
+                        $ {dr.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </p>
+                      <p style={{ fontSize: 12, color: "#b91c1c", fontWeight: 600, margin: "0 0 20px" }}>⚠️ Esta ação não pode ser desfeita.</p>
+                      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+                        <button onClick={() => setDespDeleteId(null)}
+                          style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                          Cancelar
+                        </button>
+                        <button onClick={() => { setDespRows(prev => prev.filter(r => r.id !== despDeleteId)); setDespDeleteId(null); }}
+                          style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                          Sim, Excluir
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        ) : activeMain === "Gerenciar Clientes" ? (
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* count bar */}
             <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb" }}>
