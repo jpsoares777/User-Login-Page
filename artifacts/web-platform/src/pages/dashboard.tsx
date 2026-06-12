@@ -3460,30 +3460,23 @@ export default function DashboardPage() {
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
-  const [gcVendedor, setGcVendedor] = useState("");
   const [gcConsecutivo, setGcConsecutivo] = useState("");
   const [gcDocumento, setGcDocumento] = useState("");
   const [gcNome, setGcNome] = useState("");
   const [gcSobrenome, setGcSobrenome] = useState("");
-  const [gcFecha, setGcFecha] = useState("");
-  const [gcEstado, setGcEstado] = useState("--Estado--");
+  const [gcEstado, setGcEstado] = useState("-- Todos --");
+  const [gcFrequencia, setGcFrequencia] = useState("-- Todas --");
   const [gcRows] = useState([
-    { id: 1,  vendedor: "Rota Cred Bank -", consec: "4700627058", documento: "034.286.733-44", cliente: "Aline Lima De Alencar",          valorVenda: 800,  saldoVenda: 1040, dataVenda: "2026-04-15", estado: "Activo", historico: true  },
-    { id: 2,  vendedor: "Rota Cred Bank -", consec: "4700627049", documento: "61538186302",    cliente: "Ana Flávia Pereira Moraes",      valorVenda: 500,  saldoVenda: 450,  dataVenda: "2026-04-08", estado: "Activo", historico: false },
-    { id: 3,  vendedor: "Rota Cred Bank -", consec: "4700627026", documento: "91633427515",    cliente: "Andreia de Jesus Costa Araújo",  valorVenda: 1500, saldoVenda: 800,  dataVenda: "2026-04-08", estado: "Activo", historico: false },
-    { id: 4,  vendedor: "Rota Cred Bank -", consec: "4700627024", documento: "",               cliente: "Anny Briane Pires Belfort",      valorVenda: 800,  saldoVenda: 210,  dataVenda: "2026-02-13", estado: "Activo", historico: true  },
-    { id: 5,  vendedor: "Rota Cred Bank -", consec: "4700627027", documento: "00523478355",    cliente: "Antônio Leite Neto",             valorVenda: 600,  saldoVenda: 750,  dataVenda: "2026-03-14", estado: "Activo", historico: false },
-    { id: 6,  vendedor: "Rota Cred Bank -", consec: "4700627025", documento: "60974118397",    cliente: "Bianca de Araújo Alves",         valorVenda: 300,  saldoVenda: 420,  dataVenda: "2026-04-16", estado: "Activo", historico: true  },
-    { id: 7,  vendedor: "Rota Cred Bank -", consec: "4700627145", documento: "01487468320",    cliente: "Bores Viana De Souza",           valorVenda: 400,  saldoVenda: 480,  dataVenda: "2026-04-15", estado: "Activo", historico: false },
-    { id: 8,  vendedor: "Rota Cred Bank -", consec: "4700627090", documento: "01148713379",    cliente: "Daniele Teixeira Lindoso",       valorVenda: 1000, saldoVenda: 900,  dataVenda: "2026-03-30", estado: "Activo", historico: false },
-    { id: 9,  vendedor: "Rota Cred Bank -", consec: "4700627023", documento: "",               cliente: "Elaira Kisley Conceição Lopes",  valorVenda: 540,  saldoVenda: 0,    dataVenda: "2026-04-02", estado: "Activo", historico: true  },
-    { id: 10, vendedor: "Rota Cred Bank -", consec: "4700627164", documento: "61348633390",    cliente: "Erick Pereira Santos",           valorVenda: 600,  saldoVenda: 780,  dataVenda: "2026-04-04", estado: "Activo", historico: false },
-    { id: 11, vendedor: "Rota Cred Bank -", consec: "4700627089", documento: "00500307300",    cliente: "Geilson Eduardo Rosa de Jesus",  valorVenda: 700,  saldoVenda: 630,  dataVenda: "2026-03-30", estado: "Activo", historico: false },
-    { id: 12, vendedor: "Rota Cred Bank -", consec: "4700627057", documento: "75408511391",    cliente: "José Francisco Chaves",          valorVenda: 500,  saldoVenda: 650,  dataVenda: "2026-03-25", estado: "Activo", historico: false },
-    { id: 13, vendedor: "Rota Cred Bank -", consec: "4700627041", documento: "",               cliente: "João Felipe Pereira",            valorVenda: 300,  saldoVenda: 120,  dataVenda: "2026-03-23", estado: "Activo", historico: false },
-    { id: 14, vendedor: "Rota Cred Bank -", consec: "4700627022", documento: "",               cliente: "Klailton Viana Gonçalves",       valorVenda: 900,  saldoVenda: 420,  dataVenda: "2026-03-13", estado: "Activo", historico: false },
-    { id: 15, vendedor: "Rota Cred Bank -", consec: "4700627080", documento: "00270213301",    cliente: "Luciana Alves Da Silva",         valorVenda: 500,  saldoVenda: 700,  dataVenda: "2026-03-28", estado: "Activo", historico: false },
-    { id: 16, vendedor: "Rota Cred Bank -", consec: "4700627078", documento: "073.604.383-73", cliente: "Marlana Beatriz Rabelo Barbosa", valorVenda: 1000, saldoVenda: 1400, dataVenda: "2026-04-15", estado: "Activo", historico: true  },
+    { id: 1,  consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   tel1: "91633427315",   tel2: "98985014328",  freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
+    { id: 2,  consec: "4700627080", nome: "Luciana Alves Da Silva",           tel1: "5599883457671", tel2: "03270213301",  freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
+    { id: 3,  consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    tel1: "989896248424",  tel2: "852592284372", freq: "Diário", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
+    { id: 4,  consec: "4700627078", nome: "Mariana Beatriz Rabelo Barbosa",   tel1: "98985721207",   tel2: "985721297",    freq: "Diário", valorEmp: 1000, jurosPorc: 40, total: 1400, parcelas: 14, atrasadas: 4,  pagas: 0,  rest: 14, sancao: 0, visitas: 4,  valorParc: 100, saldo: 1400 },
+    { id: 5,  consec: "4700627077", nome: "Natanael Dos Santos Mendes",       tel1: "5511971269742", tel2: "11971269742",  freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 13, pagas: 1,  rest: 13, sancao: 0, visitas: 14, valorParc: 50,  saldo: 650  },
+    { id: 6,  consec: "4700627058", nome: "Aline Lima De Alencar",            tel1: "034286733440",  tel2: "98856332110",  freq: "Diário", valorEmp: 800,  jurosPorc: 40, total: 1120, parcelas: 14, atrasadas: 2,  pagas: 4,  rest: 10, sancao: 0, visitas: 6,  valorParc: 80,  saldo: 570  },
+    { id: 7,  consec: "4700627049", nome: "Ana Flávia Pereira Moraes",        tel1: "61538186302",   tel2: "98745612300",  freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 0,  pagas: 0,  rest: 14, sancao: 0, visitas: 0,  valorParc: 50,  saldo: 700  },
+    { id: 8,  consec: "4700627027", nome: "Antônio Leite Neto",               tel1: "00523478355",   tel2: "99612345678",  freq: "Diário", valorEmp: 600,  jurosPorc: 25, total: 750,  parcelas: 15, atrasadas: 3,  pagas: 2,  rest: 13, sancao: 0, visitas: 5,  valorParc: 50,  saldo: 500  },
+    { id: 9,  consec: "4700627025", nome: "Bianca de Araújo Alves",           tel1: "60974118397",   tel2: "98765432101",  freq: "Diário", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
+    { id: 10, consec: "4700627022", nome: "Klailton Viana Gonçalves",         tel1: "88899900011",   tel2: "98700112233",  freq: "Diário", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
   ]);
   const [gaEmpresa, setGaEmpresa] = useState("CREDBANK");
   const [gaNome, setGaNome] = useState("");
@@ -3673,55 +3666,56 @@ export default function DashboardPage() {
       {activeMain === "Gerenciar Clientes" && (
         <>
           {/* filter bar */}
-          <div className="flex items-center flex-wrap h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-            <div className="flex flex-col" style={{ minWidth: 120 }}>
-              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Vendedor</label>
-              <select value={gcVendedor} onChange={e => setGcVendedor(e.target.value)}
-                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 110 }}>
-                <option value="">-- Selecione --</option>
-                <option>Rota Cred Bank</option>
-                <option>SystemPay Demo</option>
-                <option>Filial Norte</option>
-              </select>
+          <div className="flex items-center flex-wrap px-3 py-2 gap-3 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+            <div className="flex flex-col gap-0.5">
+              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>Consecutivo</label>
+              <input type="text" placeholder="Ex: 4700627026" value={gcConsecutivo} onChange={e => setGcConsecutivo(e.target.value)}
+                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400" style={{ width: 130 }} />
             </div>
-            <div className="flex flex-col" style={{ minWidth: 110 }}>
-              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Consecutivo</label>
-              <input type="text" value={gcConsecutivo} onChange={e => setGcConsecutivo(e.target.value)}
-                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 100 }} />
+            <div className="flex flex-col gap-0.5">
+              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>Nome</label>
+              <input type="text" placeholder="Nome do cliente" value={gcNome} onChange={e => setGcNome(e.target.value)}
+                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400" style={{ width: 130 }} />
             </div>
-            <div className="flex flex-col" style={{ minWidth: 130 }}>
-              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Documento Cliente</label>
-              <input type="text" value={gcDocumento} onChange={e => setGcDocumento(e.target.value)}
-                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }} />
+            <div className="flex flex-col gap-0.5">
+              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>Sobrenome</label>
+              <input type="text" placeholder="Sobrenome" value={gcSobrenome} onChange={e => setGcSobrenome(e.target.value)}
+                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400" style={{ width: 110 }} />
             </div>
-            <div className="flex flex-col" style={{ minWidth: 130 }}>
-              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Nombres Cliente</label>
-              <input type="text" value={gcNome} onChange={e => setGcNome(e.target.value)}
-                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }} />
+            <div className="flex flex-col gap-0.5">
+              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>Documento</label>
+              <input type="text" placeholder="CPF / RG" value={gcDocumento} onChange={e => setGcDocumento(e.target.value)}
+                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400" style={{ width: 110 }} />
             </div>
-            <div className="flex flex-col" style={{ minWidth: 130 }}>
-              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Apellidos Cliente</label>
-              <input type="text" value={gcSobrenome} onChange={e => setGcSobrenome(e.target.value)}
-                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }} />
-            </div>
-            <div className="flex flex-col" style={{ minWidth: 130 }}>
-              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Fecha de la Venta</label>
-              <input type="date" value={gcFecha} onChange={e => setGcFecha(e.target.value)}
-                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }} />
-            </div>
-            <div className="flex flex-col" style={{ minWidth: 110 }}>
-              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Estado</label>
+            <div className="flex flex-col gap-0.5">
+              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>Estado</label>
               <select value={gcEstado} onChange={e => setGcEstado(e.target.value)}
-                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 100 }}>
-                <option>--Estado--</option>
+                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400" style={{ width: 110 }}>
+                <option>-- Todos --</option>
                 <option>Activo</option>
                 <option>Inactivo</option>
                 <option>Cancelado</option>
               </select>
             </div>
-            <div className="flex items-end pb-0.5" style={{ alignSelf: "flex-end" }}>
-              <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <div className="flex flex-col gap-0.5">
+              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>Frequência</label>
+              <select value={gcFrequencia} onChange={e => setGcFrequencia(e.target.value)}
+                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400" style={{ width: 110 }}>
+                <option>-- Todas --</option>
+                <option>Diário</option>
+                <option>Semanal</option>
+                <option>Quinzenal</option>
+                <option>Mensal</option>
+              </select>
+            </div>
+            <div className="flex items-end gap-2" style={{ alignSelf: "flex-end" }}>
+              <button onClick={() => { setGcConsecutivo(""); setGcNome(""); setGcSobrenome(""); setGcDocumento(""); setGcEstado("-- Todos --"); setGcFrequencia("-- Todas --"); }}
+                className="h-7 px-3 rounded text-xs font-medium border border-gray-300 bg-white text-gray-600 hover:bg-gray-50">
+                Limpar
+              </button>
+              <button className="h-7 px-4 rounded text-xs font-semibold flex items-center gap-1.5" style={{ background: "#2563eb", color: "#fff" }}>
+                <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg>
+                Buscar
               </button>
             </div>
           </div>
@@ -3786,64 +3780,86 @@ export default function DashboardPage() {
         {activeMain === "Gerenciar Clientes" ? (
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* count bar */}
-            <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
-              <span className="text-xs text-gray-500">
-                <span className="font-bold text-gray-800">{gcRows.length}</span> registro{gcRows.length !== 1 ? "s" : ""} encontrado{gcRows.length !== 1 ? "s" : ""}
-              </span>
+            <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb" }}>
+              <span className="text-xs text-gray-600 font-medium">{gcRows.length} registros encontrados</span>
             </div>
             {/* table */}
-            <div className="flex-1 overflow-auto bg-white">
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <div className="flex-1 overflow-auto" style={{ background: "#fff" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                 <thead>
                   <tr style={{ background: "#3d6e8e", color: "#fff" }}>
-                    {["Vendedor","Consecutivo","Documento","Cliente","Valor Venta","Saldo Venta","Fecha Venta","Estado","Opciones"].map(h => (
-                      <th key={h} style={{ padding: "9px 12px", textAlign: ["Valor Venta","Saldo Venta","Estado","Opciones"].includes(h) ? "center" : "left", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap" }}>{h}</th>
+                    {[
+                      { label: "Nro.", align: "center" as const },
+                      { label: "Consecutivo", align: "left" as const },
+                      { label: "Nome e Sobrenome", align: "left" as const },
+                      { label: "Telefones", align: "left" as const },
+                      { label: "Frequência", align: "center" as const },
+                      { label: "Valor Empr.", align: "right" as const },
+                      { label: "Juros / Total", align: "center" as const },
+                      { label: "Parcela", align: "center" as const },
+                      { label: "Atrasadas / Pagas", align: "left" as const },
+                      { label: "Valor Parc.", align: "right" as const },
+                      { label: "Saldo", align: "right" as const },
+                    ].map(h => (
+                      <th key={h.label} style={{ padding: "8px 10px", textAlign: h.align, fontWeight: 600, fontSize: 11, whiteSpace: "nowrap", letterSpacing: "0.03em" }}>{h.label}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {gcRows.map((row, i) => (
-                    <tr key={row.id}
-                      style={{ borderBottom: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fff" : "#f8fafc" }}
-                      onMouseEnter={e => (e.currentTarget.style.background = "#eef4fb")}
-                      onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f8fafc")}>
-                      <td style={{ padding: "7px 12px", color: "#374151", fontSize: 12 }}>{row.vendedor}</td>
-                      <td style={{ padding: "7px 12px", fontSize: 12 }}>
-                        <span style={{ fontFamily: "monospace", background: "#f1f5f9", color: "#2d5474", border: "1px solid #e2e8f0", borderRadius: 4, padding: "2px 6px", fontSize: 11, fontWeight: 700 }}>{row.consec}</span>
+                    <tr key={row.id} style={{ borderBottom: "1px solid #e5e7eb", verticalAlign: "top", background: i % 2 === 0 ? "#fff" : "#f9fafb" }}
+                      onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
+                      onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f9fafb")}>
+                      <td style={{ padding: "10px 10px", textAlign: "center", color: "#6b7280", fontWeight: 600, fontSize: 12 }}>{row.id}</td>
+                      <td style={{ padding: "10px 10px" }}>
+                        <div style={{ color: "#2563eb", fontWeight: 700, fontSize: 12, fontFamily: "monospace" }}>{row.consec}</div>
+                        <span style={{ display: "inline-block", marginTop: 3, background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 3, padding: "1px 6px", fontSize: 10, fontWeight: 700 }}>ACTIVO</span>
                       </td>
-                      <td style={{ padding: "7px 12px", color: "#374151", fontFamily: "monospace", fontSize: 11 }}>{row.documento}</td>
-                      <td style={{ padding: "7px 12px", color: "#1e293b", fontWeight: 600, fontSize: 12 }}>{row.cliente}</td>
-                      <td style={{ padding: "7px 12px", textAlign: "center", color: "#374151", fontSize: 12 }}>{row.valorVenda}</td>
-                      <td style={{ padding: "7px 12px", textAlign: "center", color: row.saldoVenda > 0 ? "#dc2626" : "#374151", fontWeight: row.saldoVenda > 0 ? 600 : 400, fontSize: 12 }}>{row.saldoVenda || ""}</td>
-                      <td style={{ padding: "7px 12px", color: "#374151", fontSize: 12, whiteSpace: "nowrap" }}>{row.dataVenda}</td>
-                      <td style={{ padding: "7px 12px", textAlign: "center" }}>
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0", borderRadius: 20, padding: "2px 9px", fontSize: 11, fontWeight: 700 }}>
-                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#16a34a", display: "inline-block" }} />
-                          {row.estado}
-                        </span>
-                      </td>
-                      <td style={{ padding: "6px 12px", textAlign: "center" }}>
-                        <div style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                          <button title="Editar" style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 4, width: 26, height: 26, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                          </button>
-                          <button title="Excluir" style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 4, width: 26, height: 26, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                          </button>
-                          {row.historico && (
-                            <button style={{ background: "#0891b2", color: "#fff", border: "none", borderRadius: 4, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
-                              ⓘ Histórico
-                            </button>
-                          )}
+                      <td style={{ padding: "10px 10px", color: "#dc2626", fontWeight: 600, fontSize: 12 }}>{row.nome}</td>
+                      <td style={{ padding: "10px 10px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#374151", fontSize: 11 }}>
+                          <span style={{ color: "#16a34a" }}>📞</span> {row.tel1}
                         </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#374151", fontSize: 11, marginTop: 2 }}>
+                          <span style={{ color: "#6b7280" }}>📱</span> {row.tel2}
+                        </div>
+                      </td>
+                      <td style={{ padding: "10px 10px", textAlign: "center" }}>
+                        <span style={{ background: "#dbeafe", color: "#1d4ed8", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>{row.freq}</span>
+                      </td>
+                      <td style={{ padding: "10px 10px", textAlign: "right", color: "#1e293b", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap" }}>
+                        $ {row.valorEmp.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </td>
+                      <td style={{ padding: "10px 10px", textAlign: "center" }}>
+                        <div style={{ color: "#374151", fontSize: 11 }}>Juros {row.jurosPorc}%</div>
+                        <div style={{ color: "#dc2626", fontWeight: 700, fontSize: 11 }}>Total {row.total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div>
+                      </td>
+                      <td style={{ padding: "10px 10px", textAlign: "center", color: "#374151", fontWeight: 600, fontSize: 12 }}>{row.parcelas}</td>
+                      <td style={{ padding: "10px 10px", fontSize: 11 }}>
+                        <div style={{ color: row.atrasadas > 0 ? "#dc2626" : "#374151", fontWeight: row.atrasadas > 0 ? 700 : 400 }}>Atrasadas: {row.atrasadas}</div>
+                        <div style={{ color: "#374151" }}>Pagas: {row.pagas}</div>
+                        <div style={{ color: "#374151" }}>Rest: {row.rest} (Sanc. {row.sancao})</div>
+                        <div style={{ color: "#374151" }}>Visitas: {row.visitas}</div>
+                      </td>
+                      <td style={{ padding: "10px 10px", textAlign: "right", color: "#374151", fontSize: 12, whiteSpace: "nowrap" }}>
+                        $ {row.valorParc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </td>
+                      <td style={{ padding: "10px 10px", textAlign: "right", whiteSpace: "nowrap" }}>
+                        <div style={{ color: "#dc2626", fontWeight: 700, fontSize: 13 }}>$ {row.saldo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div>
+                        <div style={{ color: "#6b7280", fontSize: 10, marginTop: 1 }}>Sanção: $ 0.00</div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            {/* footer bar */}
-            <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+            {/* footer — total saldo */}
+            <div className="shrink-0 flex items-center justify-end px-6 py-2 border-t gap-4" style={{ background: "#f8f9fa", borderTop: "2px solid #e5e7eb" }}>
+              <span style={{ fontWeight: 700, fontSize: 12, color: "#374151", letterSpacing: "0.05em", textTransform: "uppercase" }}>TOTAL SALDO CLIENTES</span>
+              <span style={{ fontWeight: 800, fontSize: 15, color: "#dc2626" }}>
+                $ {gcRows.reduce((s, r) => s + r.saldo, 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+              </span>
+            </div>
           </div>
         ) : activeMain === "Gerenciar Aplicativos" ? (
           <div className="flex-1 flex flex-col overflow-hidden">
