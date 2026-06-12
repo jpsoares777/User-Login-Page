@@ -3634,11 +3634,6 @@ export default function DashboardPage() {
             <input type="text" value={gaNome} onChange={e => setGaNome(e.target.value)} placeholder=""
               className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 150 }} />
           </div>
-          <div className="flex flex-col" style={{ minWidth: 160 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Sobrenome:</label>
-            <input type="text" value={gaSobrenome} onChange={e => setGaSobrenome(e.target.value)} placeholder=""
-              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 150 }} />
-          </div>
           <div className="flex flex-col" style={{ minWidth: 180 }}>
             <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Código de Acesso:</label>
             <input type="text" value={gaCodigo} onChange={e => setGaCodigo(e.target.value)} placeholder=""
