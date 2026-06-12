@@ -3466,7 +3466,6 @@ export default function DashboardPage() {
   const [gcSobrenome, setGcSobrenome] = useState("");
   const [gcEstado, setGcEstado] = useState("-- Todos --");
   const [gcFrequencia, setGcFrequencia] = useState("-- Todas --");
-  const [gcSubTab, setGcSubTab] = useState("Clientes");
   const [gcRows] = useState([
     { id: 1,  consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",    tel1: "91633427315",  tel2: "98985014328",  freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
     { id: 2,  consec: "4700627080", nome: "Luciana Alves Da Silva",            tel1: "5599883457671",tel2: "03270213301",  freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
@@ -3666,22 +3665,6 @@ export default function DashboardPage() {
       {/* ── SUB-TABS + FILTER BAR (Gerenciar Clientes) ── */}
       {activeMain === "Gerenciar Clientes" && (
         <>
-          {/* sub-tab bar */}
-          <div className="flex items-end shrink-0 px-2 pt-1 gap-0.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #d1d5db" }}>
-            {["Relatório Diário","Pagamentos","Novos Empréstimos","Despesas","Rendimentos","Clientes","Agendados","Relatórios"].map(t => (
-              <button key={t} onClick={() => setGcSubTab(t)}
-                className="px-3 py-1.5 text-xs font-medium rounded-t transition-all"
-                style={{
-                  background: gcSubTab === t ? "#2563eb" : "transparent",
-                  color: gcSubTab === t ? "#fff" : "#374151",
-                  border: gcSubTab === t ? "1px solid #2563eb" : "1px solid transparent",
-                  borderBottom: gcSubTab === t ? "1px solid #2563eb" : "none",
-                  marginBottom: gcSubTab === t ? -1 : 0,
-                }}>
-                {t}
-              </button>
-            ))}
-          </div>
           {/* filter bar */}
           <div className="flex items-center flex-wrap px-3 py-2 gap-3 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
             <div className="flex flex-col gap-0.5">
