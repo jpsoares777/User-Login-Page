@@ -3684,6 +3684,21 @@ export default function DashboardPage() {
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
   const [gerenciarDespesasOpen, setGerenciarDespesasOpen] = useState(false);
+  const [gastosPeriodosOpen, setGastosPeriodosOpen] = useState(false);
+  const [gpFiltroCategoria, setGpFiltroCategoria] = useState("-- Selecione --");
+  const [gpFiltroDataInicial, setGpFiltroDataInicial] = useState("");
+  const [gpFiltroDataFinal, setGpFiltroDataFinal] = useState("");
+  const [gpRows, setGpRows] = useState<Array<{ id: number; categoria: string; descricao: string; valor: number; data: string; hora: string; responsavel: string; obs: string }>>([
+    { id: 1, categoria: "Combustível",      descricao: "Abastecimento frota Rota SP Centro",   valor: 450.00,  data: "2026-06-01", hora: "08:30", responsavel: "Carlos Silva",  obs: "Posto Shell" },
+    { id: 2, categoria: "Alimentação",      descricao: "Almoço equipe comercial",              valor: 180.50,  data: "2026-06-03", hora: "12:15", responsavel: "Ana Pereira",   obs: "" },
+    { id: 3, categoria: "Manutenção",       descricao: "Revisão veículo placa ABC-1234",       valor: 920.00,  data: "2026-06-05", hora: "09:00", responsavel: "João Santos",   obs: "Troca de óleo" },
+    { id: 4, categoria: "Retirada de Caixa","descricao": "Retirada operacional junho",         valor: 1500.00, data: "2026-06-10", hora: "17:45", responsavel: "Carlos Silva",  obs: "" },
+    { id: 5, categoria: "Outros",           descricao: "Material de escritório",               valor: 135.75,  data: "2026-06-12", hora: "11:20", responsavel: "Maria Oliveira",obs: "Papelaria Alfa" },
+  ]);
+  const [gpEditId, setGpEditId] = useState<number | null>(null);
+  const [gpModalOpen, setGpModalOpen] = useState(false);
+  const [gpDeleteId, setGpDeleteId] = useState<number | null>(null);
+  const [gpForm, setGpForm] = useState<{ id: number; categoria: string; descricao: string; valor: number; data: string; hora: string; responsavel: string; obs: string }>({ id: 0, categoria: "", descricao: "", valor: 0, data: "", hora: "", responsavel: "", obs: "" });
   const [gerenciarRendimentosOpen, setGerenciarRendimentosOpen] = useState(false);
   const [faturasOpen, setFaturasOpen] = useState(false);
   const [importarRotasOpen, setImportarRotasOpen] = useState(false);
@@ -3859,7 +3874,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenc. rendimentos",          color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)", onClick: () => { setGerenciarRendimentosOpen(true); setActiveMain("Gerenciar Rendimentos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Importar rotas",                color: "#7c3aed", img: iconImportarRota, imgSize: 21, onClick: () => { setImportarRotasOpen(true); setActiveMain("Importar Rotas"); setSideMenuOpen(false); } },
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)", onClick: () => { setFaturasOpen(true); setActiveMain("Faturas"); setSideMenuOpen(false); } },
-              { icon: null,  label: "Gerenc. gastos períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)" },
+              { icon: null,  label: "Gerenc. gastos períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)", onClick: () => { setGastosPeriodosOpen(true); setActiveMain("Gastos Períodos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. rendimentos períodos", color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)" },
               { icon: null,  label: "Caixa geral",                  color: "#6b7280", img: iconCaixaGeral, imgSize: 34, onClick: () => { setCaixaGeralOpen(true); setActiveMain("Caixa Geral"); setSideMenuOpen(false); } },
             ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter, imgTransform, useMask, onClick: itemOnClick }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string, imgTransform?: string, useMask?: boolean, onClick?: () => void }) => (
@@ -4002,6 +4017,20 @@ export default function DashboardPage() {
             }}>
             Gerenc. Despesas
             <span onClick={e => { e.stopPropagation(); setGerenciarDespesasOpen(false); if (activeMain === "Gerenciar Despesas") setActiveMain("Liq. Diária"); }}
+              style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
+          </button>
+        )}
+        {gastosPeriodosOpen && (
+          <button onClick={() => setActiveMain("Gastos Períodos")}
+            className="flex items-center gap-2 px-4 h-10 text-sm font-medium transition-all rounded-t"
+            style={{
+              background: activeMain === "Gastos Períodos" ? "#2563eb" : "rgba(255,255,255,0.08)",
+              color: activeMain === "Gastos Períodos" ? "#fff" : "rgba(255,255,255,0.65)",
+              border: activeMain === "Gastos Períodos" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              borderBottom: "none",
+            }}>
+            Gastos Períodos
+            <span onClick={e => { e.stopPropagation(); setGastosPeriodosOpen(false); if (activeMain === "Gastos Períodos") setActiveMain("Liq. Diária"); }}
               style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
           </button>
         )}
@@ -4185,6 +4214,45 @@ export default function DashboardPage() {
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
             <button onClick={() => { setDespEditId(null); setDespForm({ ...emptyDesp, id: Date.now() }); setDespModalOpen(true); }}
+              className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── FILTER BAR (Gastos Períodos) ── */}
+      {activeMain === "Gastos Períodos" && (
+        <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+          <div className="flex flex-col" style={{ minWidth: 160 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Vendedor (*):</label>
+            <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
+              <option>– Rota Cred Bank –</option>
+            </select>
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 190 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Conceito (*):</label>
+            <select value={gpFiltroCategoria} onChange={e => setGpFiltroCategoria(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 175 }}>
+              <option>-- Selecione --</option>
+              {despCategorias.map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 150 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Data Inicial:</label>
+            <input type="date" value={gpFiltroDataInicial} onChange={e => setGpFiltroDataInicial(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 138 }} />
+          </div>
+          <div className="flex flex-col" style={{ minWidth: 150 }}>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Data Final:</label>
+            <input type="date" value={gpFiltroDataFinal} onChange={e => setGpFiltroDataFinal(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 138 }} />
+          </div>
+          <div className="flex items-end pb-0.5 gap-2" style={{ alignSelf: "flex-end" }}>
+            <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
+            <button onClick={() => { setGpEditId(null); setGpForm({ id: Date.now(), categoria: "", descricao: "", valor: 0, data: "", hora: "", responsavel: "", obs: "" }); setGpModalOpen(true); }}
               className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
@@ -5296,7 +5364,220 @@ export default function DashboardPage() {
               );
             })()}
           </div>
-        ) : activeMain === "Gerenciar Clientes" ? (
+        ) : activeMain === "Gastos Períodos" ? (() => {
+          const gpFiltered = gpRows.filter(r =>
+            (gpFiltroCategoria === "-- Selecione --" || r.categoria === gpFiltroCategoria) &&
+            (!gpFiltroDataInicial || r.data >= gpFiltroDataInicial) &&
+            (!gpFiltroDataFinal   || r.data <= gpFiltroDataFinal)
+          );
+          return (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {/* header bar */}
+              <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
+                <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5l4-4h10v4z"/></svg>
+                  Gastos Períodos
+                </span>
+                <div className="flex-1" />
+                {(gpFiltroDataInicial || gpFiltroDataFinal) && (
+                  <span className="text-xs text-gray-400 font-medium">
+                    PERÍODO: {gpFiltroDataInicial || "…"} → {gpFiltroDataFinal || "…"}
+                  </span>
+                )}
+              </div>
+              {/* table */}
+              <div className="flex-1 overflow-auto">
+                <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1100 }}>
+                  <colgroup>
+                    {[54, 150, 280, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      {[
+                        { label: "Nro.",        align: "center" as const },
+                        { label: "Categoria",   align: "center" as const },
+                        { label: "Descrição",   align: "left"   as const },
+                        { label: "Valor",       align: "right"  as const },
+                        { label: "Data",        align: "center" as const },
+                        { label: "Hora",        align: "center" as const },
+                        { label: "Responsável", align: "left"   as const },
+                        { label: "Observações", align: "left"   as const },
+                        { label: "Ações",       align: "center" as const },
+                      ].map(c => (
+                        <th key={c.label} style={{
+                          padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                          whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
+                          borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
+                          position: "sticky", top: 0, zIndex: 1,
+                        }}>{c.label}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {gpFiltered.map((row, i) => {
+                      const cat = categoriaColor[row.categoria] ?? categoriaColor["Outros"];
+                      const td = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
+                        padding: "5px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+                        textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
+                      });
+                      return (
+                        <tr key={row.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
+                          <td style={td("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{i + 1}</td>
+                          <td style={td("center")}>
+                            <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: cat.bg, color: cat.text, border: `1px solid ${cat.border}` }}>{row.categoria}</span>
+                          </td>
+                          <td style={td("left", { color: "#374151" })}>{row.descricao}</td>
+                          <td style={td("right", { fontWeight: 700, color: "#b91c1c" })}>R$ {row.valor.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
+                          <td style={td("center", { color: "#6b7280" })}>{row.data}</td>
+                          <td style={td("center", { color: "#6b7280" })}>{row.hora}</td>
+                          <td style={td("left", { color: "#374151" })}>{row.responsavel}</td>
+                          <td style={td("left", { color: "#6b7280", fontStyle: row.obs ? "normal" : "italic" })}>{row.obs || "—"}</td>
+                          <td style={td("center")}>
+                            <div style={{ display: "inline-flex", gap: 4 }}>
+                              <button title="Editar" onClick={() => { setGpEditId(row.id); setGpForm({ ...row }); setGpModalOpen(true); }}
+                                style={{ background: "#2563eb", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                              </button>
+                              <button title="Excluir" onClick={() => setGpDeleteId(row.id)}
+                                style={{ background: "#dc2626", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {gpFiltered.length === 0 && (
+                      <tr><td colSpan={9} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada no período.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              {/* total footer */}
+              <div className="shrink-0 flex items-center justify-end gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>RETIRADA DE CAIXA</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#7c3aed" }}>R$ {gpFiltered.filter(r => r.categoria === "Retirada de Caixa").reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+                <span style={{ color: "#d1d5db", fontSize: 16, fontWeight: 300 }}>|</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL DESPESAS</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#b91c1c" }}>R$ {gpFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+              </div>
+              {/* blue footer bar */}
+              <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+
+              {/* ── MODAL NOVO / EDITAR ── */}
+              {gpModalOpen && (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onClick={() => setGpModalOpen(false)}>
+                  <div style={{ background: "#fff", borderRadius: 8, width: 480, boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
+                    onClick={e => e.stopPropagation()}>
+                    <div style={{ background: "#2d5474", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{gpEditId ? "Editar Despesa" : "Nova Despesa"}</span>
+                      <button onClick={() => setGpModalOpen(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+                    </div>
+                    <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Data *</label>
+                          <input type="date" value={gpForm.data} onChange={e => setGpForm(f => ({ ...f, data: e.target.value }))}
+                            style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Hora *</label>
+                          <input type="time" value={gpForm.hora} onChange={e => setGpForm(f => ({ ...f, hora: e.target.value }))}
+                            style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Categoria *</label>
+                        <select value={gpForm.categoria} onChange={e => setGpForm(f => ({ ...f, categoria: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
+                          <option value="">-- Selecione --</option>
+                          {despCategorias.map(c => <option key={c}>{c}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Descrição *</label>
+                        <input type="text" value={gpForm.descricao} onChange={e => setGpForm(f => ({ ...f, descricao: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Valor (R$) *</label>
+                          <input type="number" min={0} step={0.01} value={gpForm.valor} onChange={e => setGpForm(f => ({ ...f, valor: parseFloat(e.target.value) || 0 }))}
+                            style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Responsável</label>
+                          <input type="text" value={gpForm.responsavel} onChange={e => setGpForm(f => ({ ...f, responsavel: e.target.value }))}
+                            style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Observações</label>
+                        <input type="text" value={gpForm.obs} onChange={e => setGpForm(f => ({ ...f, obs: e.target.value }))}
+                          style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
+                        <button onClick={() => setGpModalOpen(false)}
+                          style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                          Cancelar
+                        </button>
+                        <button onClick={() => {
+                          if (gpEditId) {
+                            setGpRows(prev => prev.map(r => r.id === gpEditId ? gpForm : r));
+                          } else {
+                            setGpRows(prev => [...prev, { ...gpForm, id: Date.now() }]);
+                          }
+                          setGpModalOpen(false);
+                        }} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                          Salvar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── CONFIRMAÇÃO EXCLUIR ── */}
+              {gpDeleteId !== null && (() => {
+                const dr = gpRows.find(r => r.id === gpDeleteId);
+                if (!dr) return null;
+                return (
+                  <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+                    onClick={() => setGpDeleteId(null)}>
+                    <div style={{ background: "#fff", borderRadius: 8, width: 400, boxShadow: "0 20px 60px rgba(0,0,0,0.35)", overflow: "hidden" }}
+                      onClick={e => e.stopPropagation()}>
+                      <div style={{ background: "#dc2626", padding: "14px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+                        <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff", flexShrink: 0 }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Excluir Despesa</span>
+                      </div>
+                      <div style={{ padding: "22px 20px" }}>
+                        <p style={{ fontSize: 14, color: "#374151", margin: "0 0 6px" }}>Tem certeza que deseja excluir:</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>{dr.descricao}</p>
+                        <p style={{ fontSize: 12, color: "#6b7280", margin: "0 0 4px" }}>{dr.categoria} · {dr.data}</p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#dc2626", margin: "0 0 20px" }}>
+                          R$ {dr.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                        </p>
+                        <p style={{ fontSize: 12, color: "#b91c1c", fontWeight: 600, margin: "0 0 20px" }}>⚠️ Esta ação não pode ser desfeita.</p>
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+                          <button onClick={() => setGpDeleteId(null)}
+                            style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                            Cancelar
+                          </button>
+                          <button onClick={() => { setGpRows(prev => prev.filter(r => r.id !== gpDeleteId)); setGpDeleteId(null); }}
+                            style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                            Sim, Excluir
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          );
+        })()
+        : activeMain === "Gerenciar Clientes" ? (
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* count bar */}
             <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb" }}>
