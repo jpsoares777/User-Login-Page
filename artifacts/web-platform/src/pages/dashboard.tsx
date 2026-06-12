@@ -3791,7 +3791,7 @@ export default function DashboardPage() {
                 <thead>
                   <tr style={{ background: "#3d6e8e", color: "#fff" }}>
                     {[
-                      { label: "Nro.", align: "center" as const },
+                      { label: "Histórico", align: "center" as const },
                       { label: "Consecutivo", align: "left" as const },
                       { label: "Nome e Sobrenome", align: "left" as const },
                       { label: "CPF / RG", align: "left" as const },
@@ -3813,7 +3813,11 @@ export default function DashboardPage() {
                     <tr key={row.id} style={{ borderBottom: "1px solid #e5e7eb", verticalAlign: "top", background: i % 2 === 0 ? "#fff" : "#f9fafb" }}
                       onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
                       onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f9fafb")}>
-                      <td style={{ padding: "10px 10px", textAlign: "center", color: "#6b7280", fontWeight: 600, fontSize: 12 }}>{row.id}</td>
+                      <td style={{ padding: "10px 10px", textAlign: "center" }}>
+                        <button style={{ background: "#0e7490", color: "#fff", border: "none", borderRadius: 4, padding: "4px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                          Histórico
+                        </button>
+                      </td>
                       <td style={{ padding: "10px 10px" }}>
                         <div style={{ color: "#2563eb", fontWeight: 700, fontSize: 12, fontFamily: "monospace" }}>{row.consec}</div>
                         <span style={{ display: "inline-block", marginTop: 3, background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 3, padding: "1px 6px", fontSize: 10, fontWeight: 700 }}>ACTIVO</span>
