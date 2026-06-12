@@ -3465,6 +3465,7 @@ export default function DashboardPage() {
   const [gaCodigo, setGaCodigo] = useState("");
   const [gaModalOpen, setGaModalOpen] = useState(false);
   const [gaEditId, setGaEditId] = useState<number | null>(null);
+  const [gaDeleteId, setGaDeleteId] = useState<number | null>(null);
   const emptyGaForm = { empresa: "", nome: "", vencimento: "", valorMax: "", saldoInicial: "", codigoAcesso: "", confirmarCodigo: "", estado: "Ativo" };
   const [gaForm, setGaForm] = useState(emptyGaForm);
   const [gaRows, setGaRows] = useState([
@@ -3750,7 +3751,7 @@ export default function DashboardPage() {
                               <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                             </button>
                             <button title="Excluir"
-                              onClick={() => { if (window.confirm(`Excluir "${row.rota}"?`)) setGaRows(prev => prev.filter(r => r.id !== row.id)); }}
+                              onClick={() => setGaDeleteId(row.id)}
                               style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                               <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                             </button>
@@ -3925,6 +3926,39 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* ── MODAL: Confirmar Exclusão ── */}
+      {gaDeleteId !== null && (() => {
+        const row = gaRows.find(r => r.id === gaDeleteId);
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ background: "#fff", borderRadius: 8, width: 380, boxShadow: "0 8px 32px rgba(0,0,0,0.25)", overflow: "hidden" }}>
+              <div style={{ background: "#dc2626", padding: "12px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+                <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff", flexShrink: 0 }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Confirmar Exclusão</span>
+              </div>
+              <div style={{ padding: "20px 20px 8px" }}>
+                <p style={{ fontSize: 13, color: "#374151", margin: 0 }}>Tem certeza que deseja excluir o aplicativo:</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1e293b", margin: "8px 0 4px" }}>"{row?.rota}"</p>
+                <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>Cobrador: {row?.cobrador}</p>
+                <p style={{ fontSize: 11, color: "#ef4444", marginTop: 12, padding: "8px 10px", background: "#fef2f2", borderRadius: 5, borderLeft: "3px solid #dc2626" }}>
+                  Esta ação não pode ser desfeita.
+                </p>
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, padding: "12px 20px 16px" }}>
+                <button onClick={() => setGaDeleteId(null)}
+                  style={{ height: 34, padding: "0 20px", borderRadius: 5, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                  Cancelar
+                </button>
+                <button onClick={() => { setGaRows(prev => prev.filter(r => r.id !== gaDeleteId)); setGaDeleteId(null); }}
+                  style={{ height: 34, padding: "0 20px", borderRadius: 5, border: "none", background: "#dc2626", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                  Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── MODAL: Criação de Aplicativo ── */}
       {gaModalOpen && (
