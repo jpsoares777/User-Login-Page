@@ -3679,7 +3679,7 @@ export default function DashboardPage() {
             {/* count bar */}
             <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
               <span className="text-xs text-gray-500">
-                <span className="font-bold text-gray-800">1</span> registro encontrado
+                <span className="font-bold text-gray-800">3</span> registros encontrados
               </span>
             </div>
             {/* table */}
@@ -3687,30 +3687,65 @@ export default function DashboardPage() {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ background: "#3d6e8e", color: "#fff" }}>
-                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Nome</th>
-                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Sobrenome</th>
-                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Cód. Acesso</th>
-                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Data Vencimento</th>
-                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600 }}>Opções</th>
+                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>#</th>
+                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Nome</th>
+                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Sobrenome</th>
+                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Cód. Acesso</th>
+                    <th style={{ padding: "9px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Data Vencimento</th>
+                    <th style={{ padding: "9px 14px", textAlign: "center", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Status</th>
+                    <th style={{ padding: "9px 14px", textAlign: "center", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Opções</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { nome: "Rota Cred Bank", sobrenome: "--", codigo: "10600", vencimento: "2026-05-28" },
-                  ].map((row, i) => (
-                    <tr key={i} style={{ borderBottom: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
-                      <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.nome}</td>
-                      <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.sobrenome}</td>
-                      <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.codigo}</td>
-                      <td style={{ padding: "8px 12px", color: "#1e293b" }}>{row.vencimento}</td>
-                      <td style={{ padding: "6px 12px" }}>
-                        <div className="flex items-center gap-1">
-                          <button style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontSize: 12 }}>✏</button>
-                          <button style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontSize: 12 }}>🗑</button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                    { id: 1, nome: "Rota Cred Bank", sobrenome: "—", codigo: "10600", vencimento: "2026-05-28", ativo: false },
+                    { id: 2, nome: "SystemPay Demo", sobrenome: "—", codigo: "10601", vencimento: "2026-12-31", ativo: true },
+                    { id: 3, nome: "Filial Norte",   sobrenome: "—", codigo: "10602", vencimento: "2026-09-15", ativo: true },
+                  ].map((row, i) => {
+                    const venc = new Date(row.vencimento);
+                    const hoje = new Date();
+                    const vencido = !row.ativo || venc < hoje;
+                    return (
+                      <tr key={i}
+                        style={{ borderBottom: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fff" : "#f8fafc", transition: "background 0.15s" }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "#eef4fb")}
+                        onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f8fafc")}>
+                        <td style={{ padding: "9px 14px", color: "#94a3b8", fontWeight: 600, fontSize: 12 }}>{row.id}</td>
+                        <td style={{ padding: "9px 14px", color: "#1e293b", fontWeight: 600 }}>{row.nome}</td>
+                        <td style={{ padding: "9px 14px", color: "#64748b" }}>{row.sobrenome}</td>
+                        <td style={{ padding: "9px 14px" }}>
+                          <span style={{ fontFamily: "monospace", background: "#f1f5f9", color: "#2d5474", border: "1px solid #e2e8f0", borderRadius: 4, padding: "2px 7px", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em" }}>
+                            {row.codigo}
+                          </span>
+                        </td>
+                        <td style={{ padding: "9px 14px", color: vencido ? "#dc2626" : "#374151", fontWeight: vencido ? 600 : 400 }}>
+                          {row.vencimento}
+                        </td>
+                        <td style={{ padding: "9px 14px", textAlign: "center" }}>
+                          <span style={{
+                            display: "inline-flex", alignItems: "center", gap: 4,
+                            background: vencido ? "#fef2f2" : "#f0fdf4",
+                            color: vencido ? "#dc2626" : "#16a34a",
+                            border: `1px solid ${vencido ? "#fecaca" : "#bbf7d0"}`,
+                            borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700, letterSpacing: "0.05em"
+                          }}>
+                            <span style={{ width: 6, height: 6, borderRadius: "50%", background: vencido ? "#dc2626" : "#16a34a", display: "inline-block" }} />
+                            {vencido ? "Vencido" : "Ativo"}
+                          </span>
+                        </td>
+                        <td style={{ padding: "7px 14px", textAlign: "center" }}>
+                          <div style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                            <button title="Editar" style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                            <button title="Excluir" style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
