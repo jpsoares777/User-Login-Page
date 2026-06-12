@@ -3496,7 +3496,8 @@ function ConsolidadosContent() {
             <ListRow label="Rendimentos"             value={r.ingresos}              valueColor={r.ingresos > 0 ? "#16a34a" : "#6b7280"} />
             <ListRow label="Despesas"                value={r.egresos}               valueColor={r.egresos > 0 ? "#dc2626" : "#6b7280"} />
             <ListRow label="Retirada de Caixa"       value={r.retiradaCaixa}         valueColor={r.retiradaCaixa > 0 ? "#dc2626" : "#6b7280"} />
-            <ListRow label="Caixa Final"             value={r.cajaFinal}             valueColor="#16a34a" bold border={false} />
+            <ListRow label="Caixa Final"             value={r.cajaFinal}             valueColor="#16a34a" bold />
+            <ListRow label="Carteira Final"          value={r.cartera}               valueColor="#2563eb" bold border={false} />
           </Panel>
 
           {/* Carteira + Fórmula */}
