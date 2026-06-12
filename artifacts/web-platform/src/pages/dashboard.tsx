@@ -3407,6 +3407,7 @@ function ConsolidadosContent() {
               <span style={{ fontSize: 22, fontWeight: 800, color: "#2563eb" }}>{fmtR(r.cartera)}</span>
             </div>
           </div>
+
         </div>
 
         <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8" }}>
