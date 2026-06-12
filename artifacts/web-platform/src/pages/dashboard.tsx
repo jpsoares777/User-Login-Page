@@ -3623,7 +3623,7 @@ export default function DashboardPage() {
       {activeMain === "Gerenciar Aplicativos" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 140 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Empresa (*):</label>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
             <select value={gaEmpresa} onChange={e => setGaEmpresa(e.target.value)}
               className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }}>
               <option>CREDBANK</option>
