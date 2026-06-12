@@ -3482,6 +3482,7 @@ export default function DashboardPage() {
             {[
               { icon: "📊", label: "Relatório diário",             color: "#f97316" },
               { icon: null,  label: "Gerenciar Aplicativo",         color: "#64748b", img: iconGerenciar },
+              { icon: "🧑‍🤝‍🧑", label: "Gerenciar Clientes",           color: "#16a34a" },
               { icon: "💳", label: "Novos empréstimos",            color: "#2563eb" },
               { icon: "💰", label: "Gerenc. de despesas",          color: "#f59e0b" },
               { icon: "📈", label: "Gerenc. de rendimentos",       color: "#16a34a" },
