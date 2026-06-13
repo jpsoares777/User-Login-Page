@@ -7233,8 +7233,8 @@ export default function DashboardPage() {
             </div>
 
             {/* RIGHT: Action buttons */}
-            <div style={{ width:190, flexShrink:0, background:"#f1f5f9", display:"flex",
-                flexDirection:"column", gap:6, padding:"10px 8px", overflowY:"auto",
+            <div style={{ width:210, flexShrink:0, background:"#f1f5f9", display:"flex",
+                flexDirection:"column", gap:7, padding:"12px 10px", overflowY:"auto",
                 borderLeft:"1px solid #e2e8f0" }}>
               {([
                 { icon:"⚙",  label:"Configurações",     accent:"#2d5474", onClick: () => setConfigOpen(true) },
@@ -7247,29 +7247,29 @@ export default function DashboardPage() {
                 { icon:"🔑", label:"Código Aprovações",  accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
               ] as { icon:string; label:string; accent:string; onClick:()=>void }[]).map(item => (
                 <button key={item.label} onClick={item.onClick}
-                  style={{ width:"100%", display:"flex", alignItems:"center", gap:8, padding:"8px 10px",
-                    background:"#fff", border:`1px solid ${item.accent}22`,
-                    borderLeft:`3px solid ${item.accent}`, borderRadius:7,
+                  style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
+                    background:"#fff", border:`1px solid ${item.accent}30`,
+                    borderLeft:`4px solid ${item.accent}`, borderRadius:8,
                     cursor:"pointer", textAlign:"left",
-                    boxShadow:"0 1px 3px rgba(0,0,0,.08)", transition:"all .15s" }}
-                  onMouseEnter={e => { e.currentTarget.style.background=`${item.accent}12`; e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,.12)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,.08)"; }}>
-                  <span style={{ fontSize:14, lineHeight:1 }}>{item.icon}</span>
-                  <span style={{ fontSize:11, fontWeight:700, color:"#1e293b", letterSpacing:".01em" }}>{item.label}</span>
+                    boxShadow:"0 1px 4px rgba(0,0,0,.09)", transition:"all .15s" }}
+                  onMouseEnter={e => { e.currentTarget.style.background=`${item.accent}10`; e.currentTarget.style.boxShadow=`0 3px 10px ${item.accent}30`; }}
+                  onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.09)"; }}>
+                  <span style={{ fontSize:16, lineHeight:1, flexShrink:0 }}>{item.icon}</span>
+                  <span style={{ fontSize:12, fontWeight:700, color:"#1e293b", letterSpacing:".01em" }}>{item.label}</span>
                 </button>
               ))}
               {/* Lucro — botão especial */}
               <button onClick={() => setLucroOpen(true)}
-                style={{ width:"100%", display:"flex", alignItems:"center", gap:8, padding:"8px 10px",
-                  background:"#fff", border:"1px solid #16a34a33",
-                  borderLeft:"3px solid #16a34a", borderRadius:7,
+                style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
+                  background:"#fff", border:"1px solid #16a34a40",
+                  borderLeft:"4px solid #16a34a", borderRadius:8,
                   cursor:"pointer", textAlign:"left",
-                  boxShadow:"0 1px 3px rgba(0,0,0,.08)", transition:"all .15s" }}
-                onMouseEnter={e => { e.currentTarget.style.background="#f0fdf4"; e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,.12)"; }}
-                onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,.08)"; }}>
-                <span style={{ fontSize:14, lineHeight:1 }}>📈</span>
-                <span style={{ fontSize:11, fontWeight:700, color:"#1e293b" }}>Lucro</span>
-                <span style={{ marginLeft:"auto", fontSize:11, fontWeight:800, color:"#16a34a" }}>
+                  boxShadow:"0 1px 4px rgba(0,0,0,.09)", transition:"all .15s" }}
+                onMouseEnter={e => { e.currentTarget.style.background="#f0fdf4"; e.currentTarget.style.boxShadow="0 3px 10px rgba(22,163,74,.25)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.09)"; }}>
+                <span style={{ fontSize:16, lineHeight:1, flexShrink:0 }}>📈</span>
+                <span style={{ fontSize:12, fontWeight:700, color:"#1e293b" }}>Lucro</span>
+                <span style={{ marginLeft:"auto", fontSize:12, fontWeight:800, color:"#16a34a", whiteSpace:"nowrap" }}>
                   R$ {LUCRO_MOCK.reduce((s,r) => s + r.totalLucro, 0).toLocaleString("pt-BR", { minimumFractionDigits:2 })}
                 </span>
               </button>
