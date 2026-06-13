@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
 import iconGerenciar from "@assets/2205843-mobile-settings-icon-vetor_1781283702330.jpg";
 import iconGerenciarClientes from "@assets/4168988_1781283346707.png";
@@ -3929,6 +3931,75 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+function gerarPDFListaClientes() {
+  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const hoje = new Date().toISOString().slice(0, 10);
+
+  doc.setFontSize(11);
+  doc.setTextColor(45, 84, 116);
+  doc.text(`Fecha Lista: ${hoje}   Vendedor: SystemPay`, 10, 12);
+
+  const clientes = [
+    ["2026-04-08","4700627026","Andreia de Jesus Costa Araújo","89985014328","Rua gama lobon nº 10 quarto","1.500","2.100","600","40","105,00","20,0","0,0","7,6","800,00","0,00","5,0","Diário","2026-04-17"],
+    ["2026-03-28","4700627080","Luciana Abreu Da Silva","5598883457 67","—","500","700","200","40","50,00","14,0","0,0","14,0","700,00","0,00","14,0","Diário","—"],
+    ["2026-03-28","4700627078","Mariana Beatriz Rabelo Barbosa","98985721207","—","1.000","1.400","400","40","100,00","14,0","0,0","14,0","1.490,00","0,00","4,0","Diário","—"],
+    ["2026-03-28","4700627077","Natanael Dos Santos Mendes","551197126974 2","—","500","700","200","40","50,00","14,0","0,0","13,0","650,00","0,00","14,0","Diário","2026-03-30"],
+    ["2026-03-14","4700627069","Rosângela Silvestre Silva","98985097895","Rua Irene de Souza Residencial João Alberto SN","400","560","160","40","40,00","14,0","0,0","14,0","560,00","0,00","0,0","Diário","—"],
+    ["2026-03-14","4700627027","António Leite Neto","5598988464369 9","—","600","840","240","40","60,00","14,0","0,0","12,5","750,00","0,00","21,0","Diário","2026-03-25"],
+    ["2026-03-23","4700627041","João Felipe Pereira","559881991414","—","300","420","120","40","30,00","14,0","0,0","4,0","810,00","0,00","19,0","Diário","2026-04-08"],
+    ["2026-03-25","4700627057","José Francisco Chaves","559881187058","—","500","700","200","40","50,00","14,0","0,0","13,0","650,00","0,00","16,0","Diário","2026-03-26"],
+    ["2026-03-22","4700627022","Kledon Viana Gonçalves","5598858229 06","—","900","1.170","270","30","90,00","13,0","0,0","4,7","650,00","0,00","23,0","Diário","—"],
+    ["2026-03-25","4700627092","Patrick Michael Sá Menezes","5598841932430","—","500","700","200","40","50,00","14,0","0,0","12,0","600,00","0,00","16,0","Diário","2026-04-16"],
+    ["2026-04-15","4700627014 5","Borei Viana De Souza","98991245677","—","400","560","160","40","40,00","14,0","0,0","12,0","480,00","0,00","5,0","Diário","2026-04-16"],
+    ["2026-04-15","4700627016 4","Erick Pereira Santos","5598920038634","—","600","840","240","40","60,00","14,0","0,0","13,0","780,00","0,00","9,0","Diário","—"],
+    ["2026-03-13","4700627024","Anny Briane Pires Belfort","5598831561 78","—","800","1.120","320","40","80,00","14,0","0,0","2,6","210,00","0,00","23,0","Diário","2026-04-15"],
+    ["2026-03-23","4700627058","Aline Lima De Alencar","98962381007","—","800","1.120","320","40","80,00","14,0","0,0","13,0","1.040,00","0,00","4,0","Diário","—"],
+    ["2026-04-02","4700627023","Elaita Kisley Conceição Lopes","5598981481049","—","600","840","240","40","60,00","14,0","0,0","9,0","540,00","0,00","10,0","Diário","2026-04-08"],
+    ["2026-03-25","4700627049","Ana Flávia Pereira Moraes","98991571405","—","500","700","200","40","50,00","14,0","0,0","14,0","700,00","0,00","5,0","Diário","2026-04-08"],
+    ["2026-03-30","4700627089","Gelison Eduardo Rosa de Jesus","9885397102","—","700","980","280","40","70,00","14,0","0,0","9,0","630,00","0,00","13,0","Diário","2026-05-25"],
+    ["2026-04-16","4700627040","Daniele Teixeira Lindoso","5598996897036","—","1.000","1.400","400","40","100,00","14,0","0,0","9,0","900,00","0,00","13,0","Diário","—"],
+    ["2026-04-16","4700627025","Bianca de Araújo Alves","98983330893","—","300","420","120","40","30,00","14,0","0,0","14,0","420,00","0,00","3,0","Diário","2026-04-08"],
+    ["2026-03-28","4700627079","Ana Paula Marques De Oliveira","98986248424","—","500","700","200","40","50,00","14,0","0,0","14,0","700,00","0,00","14,0","DIÁRIO","2026-05-25"],
+  ];
+
+  autoTable(doc, {
+    startY: 18,
+    head: [[
+      "#","FECHA","NRO CREDITO","NOME DO CLIENTE","TELEFONE","DIRECCION",
+      "VL PRESTADO","VL A PAGAR","VL INTERESE","%","V.CUOTA","CUOTAS",
+      "C.PAGAS","C.RESTA","SALDO","SANÇÃO","VISITAS","FREC.","ULT.PAGO"
+    ]],
+    body: clientes.map((row, i) => [String(i + 1), ...row]),
+    styles: { fontSize: 6, cellPadding: 1.5, overflow: "linebreak" },
+    headStyles: { fillColor: [45, 84, 116], textColor: 255, fontStyle: "bold", fontSize: 6 },
+    alternateRowStyles: { fillColor: [240, 245, 255] },
+    columnStyles: {
+      0:  { cellWidth: 6 },
+      1:  { cellWidth: 18 },
+      2:  { cellWidth: 22 },
+      3:  { cellWidth: 32 },
+      4:  { cellWidth: 22 },
+      5:  { cellWidth: 38 },
+      6:  { cellWidth: 16 },
+      7:  { cellWidth: 16 },
+      8:  { cellWidth: 16 },
+      9:  { cellWidth: 8 },
+      10: { cellWidth: 14 },
+      11: { cellWidth: 13 },
+      12: { cellWidth: 13 },
+      13: { cellWidth: 13 },
+      14: { cellWidth: 16 },
+      15: { cellWidth: 12 },
+      16: { cellWidth: 13 },
+      17: { cellWidth: 12 },
+      18: { cellWidth: 18 },
+    },
+    margin: { left: 5, right: 5 },
+  });
+
+  doc.save(`lista-clientes-${hoje}.pdf`);
+}
+
 export default function DashboardPage() {
   const [, navigate] = useLocation();
   const [activeMain, setActiveMain] = useState("Liq. Diária");
@@ -6517,7 +6588,7 @@ export default function DashboardPage() {
               {([
                 { label: "⚙ Configurações", onClick: () => setConfigOpen(true) },
                 { label: "📊 Relatório Monitor", onClick: () => setActiveMain("Consolidados") },
-                { label: "👥 Lista Clientes", onClick: () => {} },
+                { label: "👥 Lista Clientes", onClick: () => gerarPDFListaClientes() },
                 { label: "🔒 Bloquear Unidade", onClick: () => {} },
                 { label: "🔑 Código Aprovações", onClick: () => {} },
                 { label: "📈 Ganância ( $0.00 )", onClick: () => {} },
