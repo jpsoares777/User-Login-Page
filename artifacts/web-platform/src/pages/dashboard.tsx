@@ -7268,7 +7268,7 @@ export default function DashboardPage() {
                   boxShadow:"0 1px 4px rgba(0,0,0,.09)", transition:"all .15s" }}
                 onMouseEnter={e => { e.currentTarget.style.background="#f0fdf4"; e.currentTarget.style.boxShadow="0 3px 10px rgba(22,163,74,.25)"; }}
                 onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.09)"; }}>
-                <span style={{ fontSize:16, lineHeight:1, flexShrink:0 }}>📈</span>
+                <img src="/icon-lucro.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} />
                 <span style={{ fontSize:12, fontWeight:700, color:"#1e293b" }}>Lucro</span>
                 <span style={{ marginLeft:"auto", fontSize:12, fontWeight:800, color:"#16a34a", whiteSpace:"nowrap" }}>
                   R$ {LUCRO_MOCK.reduce((s,r) => s + r.totalLucro, 0).toLocaleString("pt-BR", { minimumFractionDigits:2 })}
