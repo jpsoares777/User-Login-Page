@@ -4074,10 +4074,11 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
                       {/* valores */}
                       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
                         {[
-                          { label:"Valor Empréstimo", value:`R$ ${fmtBRL(it.valorPrestado)}`, color:"#2d5474" },
-                          { label:"Total a Pagar",    value:`R$ ${fmtBRL(it.valorPagar)}`,    color:"#1d4ed8" },
-                          { label:"Nº Parcelas",      value:String(it.parcelas),              color:"#475569" },
-                          { label:"Valor Parcela",    value:`R$ ${fmtBRL(it.vcuota)}`,        color:"#16a34a" },
+                          { label:"Valor Empréstimo", value:`R$ ${fmtBRL(it.valorPrestado)}`,              color:"#2d5474" },
+                          { label:"Total a Pagar",    value:`R$ ${fmtBRL(it.valorPagar)}`,                    color:"#1d4ed8" },
+                          { label:"Juros",            value:`R$ ${fmtBRL(it.valorPagar - it.valorPrestado)}`, color:"#d97706" },
+                          { label:"Nº Parcelas",      value:String(it.parcelas),                              color:"#475569" },
+                          { label:"Valor Parcela",    value:`R$ ${fmtBRL(it.vcuota)}`,                        color:"#16a34a" },
                         ].map(f => (
                           <div key={f.label} style={{ background:"#f8fafc", borderRadius:8,
                               padding:"8px 10px", border:"1px solid #e2e8f0" }}>
