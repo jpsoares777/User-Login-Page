@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { ClipboardCheck } from "lucide-react";
+import { ClipboardCheck, TrendingUp } from "lucide-react";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
 import iconGerenciar from "@assets/2205843-mobile-settings-icon-vetor_1781283702330.jpg";
 import iconGerenciarClientes from "@assets/4168988_1781283346707.png";
@@ -7268,7 +7268,7 @@ export default function DashboardPage() {
                   boxShadow:"0 1px 4px rgba(0,0,0,.09)", transition:"all .15s" }}
                 onMouseEnter={e => { e.currentTarget.style.background="#f0fdf4"; e.currentTarget.style.boxShadow="0 3px 10px rgba(22,163,74,.25)"; }}
                 onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.09)"; }}>
-                <img src="/icon-lucro.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} />
+                <TrendingUp size={16} color="#16a34a" strokeWidth={2.5} style={{ flexShrink:0 }} />
                 <span style={{ fontSize:12, fontWeight:700, color:"#1e293b" }}>Lucro</span>
                 <span style={{ marginLeft:"auto", fontSize:12, fontWeight:800, color:"#16a34a", whiteSpace:"nowrap" }}>
                   R$ {LUCRO_MOCK.reduce((s,r) => s + r.totalLucro, 0).toLocaleString("pt-BR", { minimumFractionDigits:2 })}
