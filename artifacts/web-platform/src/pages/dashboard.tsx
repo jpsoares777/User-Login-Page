@@ -7244,7 +7244,7 @@ export default function DashboardPage() {
                   label: caixaAberto ? "Fechar Caixa" : "Abrir Caixa",
                   accent: caixaAberto ? "#dc2626" : "#16a34a",
                   onClick: () => setCaixaModalOpen(true) },
-                { icon:<img src="/icon-aprovacoes.png" alt="" style={{ width:16, height:16, flexShrink:0, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)" }} />, label:"Código Aprovações", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
+                { icon:<img src="/icon-aprovacoes.png" alt="" style={{ width:16, height:16, flexShrink:0 }} />, label:"Código Aprovações", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
               ] as { icon:React.ReactNode; label:string; accent:string; onClick:()=>void }[]).map(item => (
                 <button key={item.label} onClick={item.onClick}
                   style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
