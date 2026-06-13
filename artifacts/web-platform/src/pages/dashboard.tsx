@@ -3767,9 +3767,7 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
 
         {/* Restrições section */}
         <div className="border-b border-gray-200">
-          <AccordionHeader title="Restrições" open={restricoesOpen} onToggle={() => setRestricoes(o => !o)} />
-          {restricoesOpen && (
-            <div className="px-5 py-5">
+          <div className="px-5 py-5">
               {/* Row 1 */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
                 {/* Validar Valor Máximo de Vendas */}
@@ -3933,7 +3931,6 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
                 </button>
               </div>
             </div>
-          )}
         </div>
 
         {/* Configuração do Vendedor */}
