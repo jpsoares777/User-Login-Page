@@ -3908,30 +3908,6 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
             </div>
           </div>
 
-          {/* Section 3 — Renovações */}
-          {sectionTitle("Renovações")}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, padding: "16px 20px 20px" }}>
-
-            {/* Renovação Dia Seguinte */}
-            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
-              {label("Renovação Dia Seguinte — Excede Parcelas")}
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                {sw(restVals.renovacaoDiaSeg, () => setRestVals(v => ({ ...v, renovacaoDiaSeg: !v.renovacaoDiaSeg })))}
-                <span style={{ fontSize: 11, color: restVals.renovacaoDiaSeg ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
-                  {restVals.renovacaoDiaSeg ? "Ativo" : "Inativo"}
-                </span>
-              </div>
-              <div style={{ display: "flex", gap: 6 }}>
-                <input type="number" defaultValue={0} style={{ width: 70, height: 34, border: "1px solid #e2e8f0",
-                    borderRadius: 6, padding: "0 8px", fontSize: 13, background: "#f8fafc", outline: "none" }} />
-                <select style={{ flex: 1, height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
-                    padding: "0 8px", fontSize: 12, color: "#1e293b", background: "#f8fafc" }}>
-                  <option>Selecione</option>
-                </select>
-              </div>
-            </div>
-
-          </div>
         </div>
 
         {/* Footer */}
