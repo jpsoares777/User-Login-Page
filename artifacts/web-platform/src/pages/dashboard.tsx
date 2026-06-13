@@ -3842,6 +3842,18 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
               {fieldInput(restVals.maxRendimentos, val => setRestVals(v => ({ ...v, maxRendimentos: val })))}
             </div>
 
+            {/* Validar Valor Máx. em Renovações */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Validar Valor Máx. em Renovações")}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                {sw(restVals.validarRenovacoes, () => setRestVals(v => ({ ...v, validarRenovacoes: !v.validarRenovacoes })))}
+                <span style={{ fontSize: 11, color: restVals.validarRenovacoes ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
+                  {restVals.validarRenovacoes ? "Ativo" : "Inativo"}
+                </span>
+              </div>
+              {fieldInput(restVals.maxRenovacoes, val => setRestVals(v => ({ ...v, maxRenovacoes: val })))}
+            </div>
+
           </div>
 
           {/* Section 2 — Controle de Parcelas */}
@@ -3899,18 +3911,6 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
           {/* Section 3 — Renovações */}
           {sectionTitle("Renovações")}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, padding: "16px 20px 20px" }}>
-
-            {/* Validar Valor Máx. em Renovações */}
-            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
-              {label("Validar Valor Máx. em Renovações")}
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                {sw(restVals.validarRenovacoes, () => setRestVals(v => ({ ...v, validarRenovacoes: !v.validarRenovacoes })))}
-                <span style={{ fontSize: 11, color: restVals.validarRenovacoes ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
-                  {restVals.validarRenovacoes ? "Ativo" : "Inativo"}
-                </span>
-              </div>
-              {fieldInput(restVals.maxRenovacoes, val => setRestVals(v => ({ ...v, maxRenovacoes: val })))}
-            </div>
 
             {/* Renovação Dia Seguinte */}
             <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
