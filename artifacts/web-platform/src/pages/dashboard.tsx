@@ -3682,6 +3682,126 @@ function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }
   );
 }
 
+// ── Configurações Modal ───────────────────────────────────────────────────────
+function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
+  const [opcoesOpen, setOpcoesOpen] = useState(true);
+  const [restricoesOpen, setRestricoes] = useState(false);
+  const [configVendOpen, setConfigVendOpen] = useState(false);
+
+  const toggles: { label: string; defaultOn?: boolean }[] = [
+    { label: "Ativar GPS" },
+    { label: "Ativar Botão Sem Pagamentos", defaultOn: true },
+    { label: "Ativar Adiar Parcelas" },
+    { label: "Ativar Auditoria Móvel" },
+    { label: "Abertura de Caixa Manual" },
+    { label: "Validar Endereço" },
+    { label: "Carregar Imagens só Wifi", defaultOn: true },
+    { label: "Atualizar Móvel na Renovação", defaultOn: true },
+    { label: "Somente Frequência Diária" },
+    { label: "Permitir Eliminação de Parcelas", defaultOn: true },
+    { label: "Validar Documento" },
+    { label: "Info Resumida no Móvel" },
+    { label: "Imprimir/Compartir Recibo" },
+    { label: "Inativar Info do Cliente ao Renovar" },
+  ];
+
+  const initState: Record<string, boolean> = {};
+  toggles.forEach(t => { initState[t.label] = t.defaultOn ?? false; });
+  const [vals, setVals] = useState<Record<string, boolean>>(initState);
+
+  const toggle = (label: string) => setVals(v => ({ ...v, [label]: !v[label] }));
+
+  const Toggle = ({ label }: { label: string }) => (
+    <label className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer select-none">
+      <div
+        onClick={() => toggle(label)}
+        style={{
+          width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer",
+          background: vals[label] ? "#22c55e" : "#d1d5db", transition: "background 0.2s", flexShrink: 0,
+        }}>
+        <div style={{
+          position: "absolute", top: 2, left: vals[label] ? 18 : 2, width: 16, height: 16,
+          borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+        }} />
+      </div>
+      {label}
+    </label>
+  );
+
+  const AccordionHeader = ({ title, open, onToggle }: { title: string; open: boolean; onToggle: () => void }) => (
+    <div
+      onClick={onToggle}
+      className="flex items-center justify-between px-4 py-3 cursor-pointer select-none"
+      style={{ background: "#f1f5f9", borderBottom: open ? "1px solid #e5e7eb" : "none" }}>
+      <span className="text-sm font-semibold text-gray-700">{title}</span>
+      <span className="text-lg font-bold text-gray-500 leading-none">{open ? "−" : "+"}</span>
+    </div>
+  );
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      background: "rgba(0,0,0,0.35)", display: "flex", alignItems: "center", justifyContent: "center",
+    }} onClick={onClose}>
+      <div style={{
+        background: "#fff", borderRadius: 10, width: 900, maxWidth: "95vw", maxHeight: "90vh",
+        overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+      }} onClick={e => e.stopPropagation()}>
+
+        {/* Main header */}
+        <div className="flex items-center justify-between px-5 py-3 border-b" style={{ background: "#2d5474" }}>
+          <span className="text-white font-bold text-sm">Configurações</span>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", lineHeight: 1 }}>−</button>
+        </div>
+
+        {/* Opções section */}
+        <div className="border-b border-gray-200">
+          <AccordionHeader title="Opções" open={opcoesOpen} onToggle={() => setOpcoesOpen(o => !o)} />
+          {opcoesOpen && (
+            <div className="px-5 py-4">
+              <div className="text-xs font-bold text-blue-700 mb-4 uppercase tracking-wide">Opções</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "14px 20px" }}>
+                {toggles.map(t => <Toggle key={t.label} label={t.label} />)}
+              </div>
+              <div className="flex justify-end gap-3 mt-5 pt-4 border-t border-gray-100">
+                <button
+                  onClick={onClose}
+                  className="px-5 py-2 text-sm font-semibold rounded"
+                  style={{ background: "#2563eb", color: "#fff", border: "none", cursor: "pointer" }}>
+                  Guardar
+                </button>
+                <button
+                  onClick={onClose}
+                  className="px-5 py-2 text-sm font-semibold rounded"
+                  style={{ background: "#ef4444", color: "#fff", border: "none", cursor: "pointer" }}>
+                  Fechar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Restrições section */}
+        <div className="border-b border-gray-200">
+          <AccordionHeader title="Restrições" open={restricoesOpen} onToggle={() => setRestricoes(o => !o)} />
+          {restricoesOpen && (
+            <div className="px-5 py-4 text-sm text-gray-500 italic">Sem restrições configuradas.</div>
+          )}
+        </div>
+
+        {/* Configuração do Vendedor */}
+        <div>
+          <AccordionHeader title="Configuração do Vendedor e Recibo de Pagamento" open={configVendOpen} onToggle={() => setConfigVendOpen(o => !o)} />
+          {configVendOpen && (
+            <div className="px-5 py-4 text-sm text-gray-500 italic">Sem configurações de vendedor.</div>
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const [, navigate] = useLocation();
   const [activeMain, setActiveMain] = useState("Liq. Diária");
@@ -3699,6 +3819,7 @@ export default function DashboardPage() {
     "BAHIA":      [{ cidade: "SALVADOR",       vendedor: "Rota Cred BA -" }],
     "PIAUÍ":      [{ cidade: "TERESINA",       vendedor: "Rota Cred PI -" }],
   };
+  const [configOpen, setConfigOpen] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
@@ -6266,18 +6387,19 @@ export default function DashboardPage() {
 
             {/* RIGHT: Action buttons + Micro Seguro */}
             <div className="w-48 shrink-0 bg-gray-50 flex flex-col gap-3 p-2 overflow-y-auto">
-              {[
-                "⚙ Configurações",
-                "📊 Relatório Monitor",
-                "👥 Lista Clientes",
-                "🔒 Bloquear Unidade",
-                "🔑 Código Aprovações",
-                "📈 Ganância ( $0.00 )",
-              ].map((label) => (
-                <button key={label}
+              {([
+                { label: "⚙ Configurações", onClick: () => setConfigOpen(true) },
+                { label: "📊 Relatório Monitor", onClick: () => {} },
+                { label: "👥 Lista Clientes", onClick: () => {} },
+                { label: "🔒 Bloquear Unidade", onClick: () => {} },
+                { label: "🔑 Código Aprovações", onClick: () => {} },
+                { label: "📈 Ganância ( $0.00 )", onClick: () => {} },
+              ] as { label: string; onClick: () => void }[]).map((item) => (
+                <button key={item.label}
+                  onClick={item.onClick}
                   className="w-full text-left px-3 py-2 text-xs font-medium rounded text-white hover:opacity-90"
                   style={{ background: "#6b7280" }}>
-                  {label}
+                  {item.label}
                 </button>
               ))}
             </div>
@@ -6292,6 +6414,9 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* ── MODAL: Configurações ── */}
+      {configOpen && <ConfiguracoesModal onClose={() => setConfigOpen(false)} />}
 
       {/* ── MODAL: Confirmar Exclusão ── */}
       {gaDeleteId !== null && (() => {
