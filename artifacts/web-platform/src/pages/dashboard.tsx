@@ -3889,10 +3889,10 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
             <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
               {label("Nº Celular — Solicitações de Aprovações")}
               <div style={{ height: 30, marginBottom: 10 }} />
-              <select style={{ width: "100%", height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
-                  padding: "0 10px", fontSize: 13, color: "#1e293b", background: "#f8fafc" }}>
-                <option>-- Selecione --</option>
-              </select>
+              <input type="tel" placeholder="Ex: (99) 99999-9999"
+                style={{ width: "100%", height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
+                  padding: "0 10px", fontSize: 13, color: "#1e293b", background: "#f8fafc",
+                  outline: "none", boxSizing: "border-box" }} />
             </div>
           </div>
 
