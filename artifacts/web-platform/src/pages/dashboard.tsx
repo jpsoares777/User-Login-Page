@@ -6516,7 +6516,7 @@ export default function DashboardPage() {
             <div className="w-48 shrink-0 bg-gray-50 flex flex-col gap-3 p-2 overflow-y-auto">
               {([
                 { label: "⚙ Configurações", onClick: () => setConfigOpen(true) },
-                { label: "📊 Relatório Monitor", onClick: () => {} },
+                { label: "📊 Relatório Monitor", onClick: () => setActiveMain("Consolidados") },
                 { label: "👥 Lista Clientes", onClick: () => {} },
                 { label: "🔒 Bloquear Unidade", onClick: () => {} },
                 { label: "🔑 Código Aprovações", onClick: () => {} },
