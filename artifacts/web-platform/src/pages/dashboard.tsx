@@ -3931,50 +3931,54 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-const CODIGOS_MOCK: { clave: string; fecha: string }[] = [
-  { clave:"rs9",  fecha:"2026-05-25" }, { clave:"c51",  fecha:"2026-05-25" },
-  { clave:"fhl",  fecha:"2026-05-25" }, { clave:"hcz",  fecha:"2026-05-25" },
-  { clave:"6md",  fecha:"2026-05-25" }, { clave:"262",  fecha:"2026-05-25" },
-  { clave:"swb",  fecha:"2026-05-25" }, { clave:"t11",  fecha:"2026-05-25" },
-  { clave:"1x3",  fecha:"2026-05-25" }, { clave:"szz",  fecha:"2026-05-25" },
-  { clave:"lgt",  fecha:"2026-05-25" }, { clave:"r2m",  fecha:"2026-05-25" },
-  { clave:"v7g",  fecha:"2026-06-12" }, { clave:"n3n",  fecha:"2026-06-12" },
-  { clave:"tbl",  fecha:"2026-06-12" }, { clave:"6mj",  fecha:"2026-06-12" },
-  { clave:"xl3",  fecha:"2026-06-12" }, { clave:"ycl",  fecha:"2026-06-12" },
-  { clave:"sla",  fecha:"2026-06-12" }, { clave:"p9x",  fecha:"2026-06-12" },
-];
+type AprovacaoStatus = "pendente" | "aceito" | "recusado";
+interface AprovacaoItem {
+  id: number; clave: string; cliente: string; fecha: string;
+  valorPrestado: number; valorPagar: number; parcelas: number;
+  vcuota: number; tipo: string; status: AprovacaoStatus;
+}
 
-const TIPO_OPS = ["Selecione","Renovar Cliente","Novo Empréstimo","Cancelar Venda","Ajuste de Parcela","Desconto Especial"];
+const APROVACOES_INICIAL: AprovacaoItem[] = [
+  { id:1,  clave:"rs9", cliente:"Andreia de Jesus Costa Araújo",   fecha:"2026-05-25", valorPrestado:1500, valorPagar:2100, parcelas:20, vcuota:105, tipo:"Renovar Cliente",   status:"pendente" },
+  { id:2,  clave:"c51", cliente:"Luciana Abreu Da Silva",           fecha:"2026-05-25", valorPrestado:500,  valorPagar:700,  parcelas:14, vcuota:50,  tipo:"Novo Empréstimo",  status:"pendente" },
+  { id:3,  clave:"fhl", cliente:"Mariana Beatriz Rabelo Barbosa",   fecha:"2026-05-25", valorPrestado:1000, valorPagar:1400, parcelas:14, vcuota:100, tipo:"Renovar Cliente",   status:"pendente" },
+  { id:4,  clave:"hcz", cliente:"Natanael Dos Santos Mendes",       fecha:"2026-05-25", valorPrestado:500,  valorPagar:700,  parcelas:14, vcuota:50,  tipo:"Novo Empréstimo",  status:"pendente" },
+  { id:5,  clave:"6md", cliente:"Rosângela Silvestre Silva",        fecha:"2026-05-25", valorPrestado:400,  valorPagar:560,  parcelas:14, vcuota:40,  tipo:"Cancelar Venda",   status:"pendente" },
+  { id:6,  clave:"262", cliente:"António Leite Neto",               fecha:"2026-05-25", valorPrestado:600,  valorPagar:840,  parcelas:14, vcuota:60,  tipo:"Ajuste de Parcela",status:"pendente" },
+  { id:7,  clave:"swb", cliente:"João Felipe Pereira",              fecha:"2026-05-25", valorPrestado:300,  valorPagar:420,  parcelas:14, vcuota:30,  tipo:"Renovar Cliente",   status:"pendente" },
+  { id:8,  clave:"t11", cliente:"José Francisco Chaves",            fecha:"2026-05-25", valorPrestado:500,  valorPagar:700,  parcelas:14, vcuota:50,  tipo:"Novo Empréstimo",  status:"pendente" },
+  { id:9,  clave:"v7g", cliente:"Kledon Viana Gonçalves",           fecha:"2026-06-12", valorPrestado:900,  valorPagar:1170, parcelas:13, vcuota:90,  tipo:"Renovar Cliente",   status:"pendente" },
+  { id:10, clave:"n3n", cliente:"Patrick Michael Sá Menezes",       fecha:"2026-06-12", valorPrestado:500,  valorPagar:700,  parcelas:14, vcuota:50,  tipo:"Novo Empréstimo",  status:"pendente" },
+  { id:11, clave:"tbl", cliente:"Borei Viana De Souza",             fecha:"2026-06-12", valorPrestado:400,  valorPagar:560,  parcelas:14, vcuota:40,  tipo:"Ajuste de Parcela",status:"pendente" },
+  { id:12, clave:"xl3", cliente:"Erick Pereira Santos",             fecha:"2026-06-12", valorPrestado:600,  valorPagar:840,  parcelas:14, vcuota:60,  tipo:"Renovar Cliente",   status:"pendente" },
+];
 
 function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
   const hoje = new Date().toLocaleDateString("pt-BR");
-  const [rows, setRows] = useState(() =>
-    CODIGOS_MOCK.map(c => ({ ...c, descricao:"", tipo:"Selecione", vrSolicitado:"" }))
-  );
+  const [items, setItems] = useState<AprovacaoItem[]>(APROVACOES_INICIAL);
+  const [filtro, setFiltro] = useState<"todos"|"pendente"|"aceito"|"recusado">("todos");
 
-  const setTipo = (i: number, v: string) =>
-    setRows(r => r.map((row, idx) => idx === i ? { ...row, tipo: v } : row));
-  const setDesc = (i: number, v: string) =>
-    setRows(r => r.map((row, idx) => idx === i ? { ...row, descricao: v } : row));
-  const setVr = (i: number, v: string) =>
-    setRows(r => r.map((row, idx) => idx === i ? { ...row, vrSolicitado: v } : row));
+  const mudar = (id: number, status: AprovacaoStatus) =>
+    setItems(prev => prev.map(it => it.id === id ? { ...it, status } : it));
 
-  const thS: React.CSSProperties = {
-    padding:"9px 12px", fontSize:11, fontWeight:700, color:"#fff",
-    background:"#3d6e8e", whiteSpace:"nowrap", borderRight:"1px solid #2d5474",
-    position:"sticky", top:0, zIndex:2, textAlign:"left",
+  const visíveis = filtro === "todos" ? items : items.filter(i => i.status === filtro);
+  const pendentes  = items.filter(i => i.status === "pendente").length;
+  const aceitos    = items.filter(i => i.status === "aceito").length;
+  const recusados  = items.filter(i => i.status === "recusado").length;
+
+  const fmtBRL = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits:2 });
+
+  const statusColor: Record<AprovacaoStatus, { bg: string; text: string; label: string }> = {
+    pendente: { bg:"#fef9c3", text:"#a16207",  label:"Pendente"  },
+    aceito:   { bg:"#dcfce7", text:"#16a34a",  label:"Aceito"    },
+    recusado: { bg:"#fee2e2", text:"#dc2626",  label:"Recusado"  },
   };
-  const tdS = (alt: boolean): React.CSSProperties => ({
-    padding:"5px 10px", fontSize:12, borderBottom:"1px solid #e8edf2",
-    borderRight:"1px solid #edf0f4", background: alt ? "#f8fafc" : "#fff",
-    whiteSpace:"nowrap", verticalAlign:"middle",
-  });
 
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(15,23,42,.6)", zIndex:1100,
         display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(2px)" }}>
       <div style={{ background:"#f1f5f9", borderRadius:14, boxShadow:"0 24px 80px rgba(0,0,0,.35)",
-          width:"92vw", maxWidth:1100, maxHeight:"92vh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+          width:"95vw", maxWidth:1200, maxHeight:"93vh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
 
         {/* ── Header ── */}
         <div style={{ background:"linear-gradient(135deg,#1e3a5f 0%,#2d5474 55%,#1d4ed8 100%)",
@@ -4001,99 +4005,136 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
             onMouseLeave={e => (e.currentTarget.style.background="rgba(255,255,255,.15)")}>✕</button>
         </div>
 
-        {/* ── Stats strip ── */}
-        <div style={{ display:"flex", gap:0, background:"#2d5474", flexShrink:0 }}>
-          {[
-            { label:"Total Códigos", value: String(rows.length) },
-            { label:"Atribuídos",    value: String(rows.length) },
-            { label:"Pendentes",     value: String(rows.filter(r => r.tipo === "Selecione").length) },
-            { label:"Processados",   value: String(rows.filter(r => r.tipo !== "Selecione").length) },
-          ].map((s, i) => (
-            <div key={i} style={{ flex:1, padding:"8px 16px", borderRight:"1px solid rgba(255,255,255,.12)",
-                display:"flex", flexDirection:"column", alignItems:"center" }}>
-              <div style={{ color:"rgba(255,255,255,.6)", fontSize:9, fontWeight:600, letterSpacing:.5, textTransform:"uppercase" }}>{s.label}</div>
-              <div style={{ color:"#fff", fontSize:18, fontWeight:800, lineHeight:1.2 }}>{s.value}</div>
-            </div>
+        {/* ── Stats + filtro ── */}
+        <div style={{ display:"flex", alignItems:"stretch", background:"#2d5474", flexShrink:0 }}>
+          {([
+            { key:"todos",    label:"Total",    value:items.length,  color:"#fff" },
+            { key:"pendente", label:"Pendentes",value:pendentes,     color:"#fde047" },
+            { key:"aceito",   label:"Aceitos",  value:aceitos,       color:"#86efac" },
+            { key:"recusado", label:"Recusados",value:recusados,     color:"#fca5a5" },
+          ] as { key: "todos"|"pendente"|"aceito"|"recusado"; label:string; value:number; color:string }[]).map(s => (
+            <button key={s.key} onClick={() => setFiltro(s.key)}
+              style={{ flex:1, padding:"10px 16px", border:"none", cursor:"pointer",
+                borderBottom: filtro === s.key ? "3px solid #60a5fa" : "3px solid transparent",
+                background: filtro === s.key ? "rgba(255,255,255,.12)" : "transparent",
+                display:"flex", flexDirection:"column", alignItems:"center", gap:2, transition:"background .15s" }}>
+              <span style={{ color:"rgba(255,255,255,.6)", fontSize:9, fontWeight:700,
+                  letterSpacing:.8, textTransform:"uppercase" }}>{s.label}</span>
+              <span style={{ color:s.color, fontSize:20, fontWeight:800, lineHeight:1 }}>{s.value}</span>
+            </button>
           ))}
         </div>
 
-        {/* ── Table ── */}
-        <div style={{ overflow:"auto", flex:1 }}>
-          <table style={{ borderCollapse:"collapse", width:"100%" }}>
-            <thead>
-              <tr>
-                <th style={{ ...thS, width:36, textAlign:"center" }}>#</th>
-                <th style={{ ...thS, width:80 }}>CLAVE</th>
-                <th style={{ ...thS, width:100 }}>ESTADO</th>
-                <th style={{ ...thS, width:130 }}>FECHA ASIGNACIÓN</th>
-                <th style={{ ...thS, width:110 }}>USUÁRIO</th>
-                <th style={{ ...thS }}>DESCRIÇÃO OPERAÇÃO</th>
-                <th style={{ ...thS, width:190 }}>TIPO</th>
-                <th style={{ ...thS, width:150 }}>VR SOLICITADO</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r, i) => {
-                const alt = i % 2 === 1;
-                const processado = r.tipo !== "Selecione";
+        {/* ── Cards grid ── */}
+        <div style={{ overflow:"auto", flex:1, padding:"16px 18px" }}>
+          {visíveis.length === 0 ? (
+            <div style={{ textAlign:"center", padding:"60px", color:"#94a3b8", fontSize:14 }}>
+              Nenhuma solicitação neste filtro.
+            </div>
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:14 }}>
+              {visíveis.map(it => {
+                const sc = statusColor[it.status];
                 return (
-                  <tr key={r.clave}
-                    onMouseEnter={e => (e.currentTarget.style.background="#dbeafe")}
-                    onMouseLeave={e => (e.currentTarget.style.background="")}>
-                    <td style={{ ...tdS(alt), textAlign:"center", color:"#94a3b8", fontWeight:700, fontSize:11 }}>{i+1}</td>
-                    <td style={{ ...tdS(alt) }}>
-                      <span style={{ background:"#1e3a5f", color:"#fff", borderRadius:5,
-                          padding:"2px 8px", fontSize:11, fontWeight:700, letterSpacing:.5 }}>{r.clave}</span>
-                    </td>
-                    <td style={{ ...tdS(alt) }}>
-                      <span style={{ background: processado ? "#dcfce7" : "#fef9c3",
-                          color: processado ? "#16a34a" : "#a16207",
-                          borderRadius:5, padding:"2px 8px", fontSize:10, fontWeight:700 }}>
-                        {processado ? "Processado" : "Atribuído"}
-                      </span>
-                    </td>
-                    <td style={{ ...tdS(alt), color:"#475569", fontSize:11 }}>{r.fecha}</td>
-                    <td style={{ ...tdS(alt) }}>
-                      <span style={{ background:"#e0f2fe", color:"#0369a1",
-                          borderRadius:5, padding:"2px 8px", fontSize:11, fontWeight:600 }}>CREDBANK</span>
-                    </td>
-                    <td style={{ ...tdS(alt) }}>
-                      <input value={r.descricao} onChange={e => setDesc(i, e.target.value)}
-                        placeholder="Descrição…"
-                        style={{ width:"100%", height:28, border:"1px solid #e2e8f0", borderRadius:6,
-                          padding:"0 8px", fontSize:11, color:"#1e293b", background:"#fff",
-                          outline:"none", boxSizing:"border-box" }} />
-                    </td>
-                    <td style={{ ...tdS(alt) }}>
-                      <select value={r.tipo} onChange={e => setTipo(i, e.target.value)}
-                        style={{ width:"100%", height:28, border:"1px solid #e2e8f0", borderRadius:6,
-                          padding:"0 6px", fontSize:11, color:"#1e293b", background:"#fff", outline:"none" }}>
-                        {TIPO_OPS.map(op => <option key={op}>{op}</option>)}
-                      </select>
-                    </td>
-                    <td style={{ ...tdS(alt) }}>
-                      <input value={r.vrSolicitado} onChange={e => setVr(i, e.target.value)}
-                        placeholder="0,00"
-                        style={{ width:"100%", height:28, border:"1px solid #e2e8f0", borderRadius:6,
-                          padding:"0 8px", fontSize:11, textAlign:"right",
-                          color: r.vrSolicitado ? "#dc2626" : "#1e293b",
-                          fontWeight: r.vrSolicitado ? 700 : 400,
-                          background:"#fff", outline:"none", boxSizing:"border-box" }} />
-                    </td>
-                  </tr>
+                  <div key={it.id} style={{ background:"#fff", borderRadius:12,
+                      boxShadow:"0 2px 8px rgba(0,0,0,.08)", border:"1px solid #e2e8f0",
+                      overflow:"hidden", display:"flex", flexDirection:"column" }}>
+
+                    {/* card header */}
+                    <div style={{ background:"#f8fafc", padding:"10px 14px",
+                        borderBottom:"1px solid #e2e8f0",
+                        display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                        <span style={{ background:"#1e3a5f", color:"#fff", borderRadius:6,
+                            padding:"3px 9px", fontSize:12, fontWeight:800, letterSpacing:.5 }}>
+                          {it.clave}
+                        </span>
+                        <span style={{ background:sc.bg, color:sc.text, borderRadius:5,
+                            padding:"2px 8px", fontSize:10, fontWeight:700 }}>{sc.label}</span>
+                      </div>
+                      <span style={{ fontSize:10, color:"#94a3b8" }}>{it.fecha}</span>
+                    </div>
+
+                    {/* card body */}
+                    <div style={{ padding:"12px 14px", flex:1 }}>
+                      {/* cliente */}
+                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
+                        <div style={{ background:"#e0f2fe", borderRadius:"50%", width:34, height:34,
+                            display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                          <svg viewBox="0 0 24 24" style={{ width:18, height:18, fill:"#0369a1" }}>
+                            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <div style={{ fontSize:13, fontWeight:700, color:"#1e293b", lineHeight:1.2 }}>{it.cliente}</div>
+                          <div style={{ fontSize:10, color:"#64748b", marginTop:1 }}>{it.tipo}</div>
+                        </div>
+                      </div>
+
+                      {/* valores */}
+                      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
+                        {[
+                          { label:"Valor Empréstimo", value:`R$ ${fmtBRL(it.valorPrestado)}`, color:"#2d5474" },
+                          { label:"Total a Pagar",    value:`R$ ${fmtBRL(it.valorPagar)}`,    color:"#1d4ed8" },
+                          { label:"Nº Parcelas",      value:String(it.parcelas),              color:"#475569" },
+                          { label:"Valor Parcela",    value:`R$ ${fmtBRL(it.vcuota)}`,        color:"#16a34a" },
+                        ].map(f => (
+                          <div key={f.label} style={{ background:"#f8fafc", borderRadius:8,
+                              padding:"8px 10px", border:"1px solid #e2e8f0" }}>
+                            <div style={{ fontSize:9, color:"#94a3b8", fontWeight:600,
+                                textTransform:"uppercase", letterSpacing:.4 }}>{f.label}</div>
+                            <div style={{ fontSize:14, fontWeight:800, color:f.color, marginTop:2 }}>{f.value}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* botões */}
+                      {it.status === "pendente" ? (
+                        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                          <button onClick={() => mudar(it.id, "recusado")}
+                            style={{ padding:"9px 0", background:"#fee2e2", color:"#dc2626",
+                              border:"1px solid #fca5a5", borderRadius:8, fontSize:12, fontWeight:700,
+                              cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
+                            <svg viewBox="0 0 24 24" style={{ width:14, height:14, fill:"#dc2626" }}>
+                              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                            </svg>
+                            Recusar
+                          </button>
+                          <button onClick={() => mudar(it.id, "aceito")}
+                            style={{ padding:"9px 0", background:"#dcfce7", color:"#16a34a",
+                              border:"1px solid #86efac", borderRadius:8, fontSize:12, fontWeight:700,
+                              cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
+                            <svg viewBox="0 0 24 24" style={{ width:14, height:14, fill:"#16a34a" }}>
+                              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                            Aceitar
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ textAlign:"center", padding:"8px 0" }}>
+                          <button onClick={() => mudar(it.id, "pendente")}
+                            style={{ padding:"6px 18px", background:"#f1f5f9", color:"#64748b",
+                              border:"1px solid #cbd5e1", borderRadius:7, fontSize:11, fontWeight:600,
+                              cursor:"pointer" }}>
+                            ↩ Desfazer
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 );
               })}
-            </tbody>
-          </table>
+            </div>
+          )}
         </div>
 
         {/* ── Footer ── */}
         <div style={{ display:"flex", alignItems:"center", padding:"10px 20px",
             borderTop:"1px solid #e2e8f0", background:"#fff", flexShrink:0, gap:10 }}>
           <span style={{ fontSize:12, color:"#64748b" }}>
-            <strong style={{ color:"#1e293b" }}>{rows.length}</strong> códigos &nbsp;·&nbsp;
-            <strong style={{ color:"#16a34a" }}>{rows.filter(r => r.tipo !== "Selecione").length}</strong> processados &nbsp;·&nbsp;
-            <strong style={{ color:"#d97706" }}>{rows.filter(r => r.tipo === "Selecione").length}</strong> pendentes
+            <strong style={{ color:"#d97706" }}>{pendentes}</strong> pendentes &nbsp;·&nbsp;
+            <strong style={{ color:"#16a34a" }}>{aceitos}</strong> aceitos &nbsp;·&nbsp;
+            <strong style={{ color:"#dc2626" }}>{recusados}</strong> recusados
           </span>
           <div style={{ flex:1 }} />
           <button onClick={onClose}
