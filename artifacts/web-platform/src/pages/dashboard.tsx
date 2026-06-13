@@ -7232,28 +7232,45 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* RIGHT: Action buttons + Micro Seguro */}
-            <div className="w-48 shrink-0 bg-gray-50 flex flex-col gap-3 p-2 overflow-y-auto">
+            {/* RIGHT: Action buttons */}
+            <div style={{ width:190, flexShrink:0, background:"#f1f5f9", display:"flex",
+                flexDirection:"column", gap:6, padding:"10px 8px", overflowY:"auto",
+                borderLeft:"1px solid #e2e8f0" }}>
               {([
-                { label: "⚙ Configurações", onClick: () => setConfigOpen(true) },
-                { label: "📊 Relatório Monitor", onClick: () => setActiveMain("Consolidados") },
-                { label: "👥 Lista Clientes", onClick: () => setListaClientesOpen(true) },
-                { label: caixaAberto ? "🔒 Fechar Caixa" : "🔓 Abrir Caixa", onClick: () => setCaixaModalOpen(true) },
-                { label: "🔑 Código Aprovações", onClick: () => setCodigosOpen(true) },
-              ] as { label: string; onClick: () => void }[]).map((item) => (
-                <button key={item.label}
-                  onClick={item.onClick}
-                  className="w-full text-left px-3 py-2 text-xs font-medium rounded text-white hover:opacity-90"
-                  style={{ background: "#6b7280" }}>
-                  {item.label}
+                { icon:"⚙",  label:"Configurações",     accent:"#2d5474", onClick: () => setConfigOpen(true) },
+                { icon:"📊", label:"Relatório Monitor",  accent:"#1d4ed8", onClick: () => setActiveMain("Consolidados") },
+                { icon:"👥", label:"Lista Clientes",      accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
+                { icon: caixaAberto ? "🔒" : "🔓",
+                  label: caixaAberto ? "Fechar Caixa" : "Abrir Caixa",
+                  accent: caixaAberto ? "#dc2626" : "#16a34a",
+                  onClick: () => setCaixaModalOpen(true) },
+                { icon:"🔑", label:"Código Aprovações",  accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
+              ] as { icon:string; label:string; accent:string; onClick:()=>void }[]).map(item => (
+                <button key={item.label} onClick={item.onClick}
+                  style={{ width:"100%", display:"flex", alignItems:"center", gap:8, padding:"8px 10px",
+                    background:"#fff", border:`1px solid ${item.accent}22`,
+                    borderLeft:`3px solid ${item.accent}`, borderRadius:7,
+                    cursor:"pointer", textAlign:"left",
+                    boxShadow:"0 1px 3px rgba(0,0,0,.08)", transition:"all .15s" }}
+                  onMouseEnter={e => { e.currentTarget.style.background=`${item.accent}12`; e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,.12)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,.08)"; }}>
+                  <span style={{ fontSize:14, lineHeight:1 }}>{item.icon}</span>
+                  <span style={{ fontSize:11, fontWeight:700, color:"#1e293b", letterSpacing:".01em" }}>{item.label}</span>
                 </button>
               ))}
+              {/* Lucro — botão especial */}
               <button onClick={() => setLucroOpen(true)}
-                className="w-full text-left px-3 py-2 text-xs font-medium rounded hover:opacity-90"
-                style={{ background:"#6b7280", color:"#fff" }}>
-                📈 Lucro{" "}
-                <span style={{ color:"#86efac", fontWeight:700 }}>
-                  ( R$ {LUCRO_MOCK.reduce((s,r) => s + r.totalLucro, 0).toLocaleString("pt-BR", { minimumFractionDigits:2 })} )
+                style={{ width:"100%", display:"flex", alignItems:"center", gap:8, padding:"8px 10px",
+                  background:"#fff", border:"1px solid #16a34a33",
+                  borderLeft:"3px solid #16a34a", borderRadius:7,
+                  cursor:"pointer", textAlign:"left",
+                  boxShadow:"0 1px 3px rgba(0,0,0,.08)", transition:"all .15s" }}
+                onMouseEnter={e => { e.currentTarget.style.background="#f0fdf4"; e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,.12)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,.08)"; }}>
+                <span style={{ fontSize:14, lineHeight:1 }}>📈</span>
+                <span style={{ fontSize:11, fontWeight:700, color:"#1e293b" }}>Lucro</span>
+                <span style={{ marginLeft:"auto", fontSize:11, fontWeight:800, color:"#16a34a" }}>
+                  R$ {LUCRO_MOCK.reduce((s,r) => s + r.totalLucro, 0).toLocaleString("pt-BR", { minimumFractionDigits:2 })}
                 </span>
               </button>
             </div>
