@@ -3931,20 +3931,6 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
               </div>
             </div>
 
-            {/* Tope Renovações — spans last 2 cols, aligned bottom */}
-            <div style={{ gridColumn: "span 2", display: "flex", alignItems: "flex-end", justifyContent: "flex-end" }}>
-              <button style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px",
-                  background: "linear-gradient(135deg,#2d5474,#2563eb)", color: "#fff", border: "none",
-                  borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(37,99,235,.3)" }}>
-                <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}>
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
-                </svg>
-                Tope Renovações por Cliente
-                <span style={{ background: "#ef4444", borderRadius: "50%", width: 16, height: 16,
-                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800 }}>✕</span>
-              </button>
-            </div>
           </div>
         </div>
 
