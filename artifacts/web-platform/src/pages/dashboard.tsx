@@ -3749,190 +3749,232 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
     </div>
   );
 
-  return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 9999,
-      background: "rgba(0,0,0,0.35)", display: "flex", alignItems: "center", justifyContent: "center",
-    }} onClick={onClose}>
-      <div style={{
-        background: "#fff", borderRadius: 10, width: 900, maxWidth: "95vw", maxHeight: "90vh",
-        overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-      }} onClick={e => e.stopPropagation()}>
+  const sw = (on: boolean, toggle: () => void) => (
+    <div onClick={toggle} style={{ width: 40, height: 22, borderRadius: 11, position: "relative", cursor: "pointer",
+        background: on ? "#2563eb" : "#cbd5e1", transition: "background .2s", flexShrink: 0 }}>
+      <div style={{ position: "absolute", top: 3, left: on ? 21 : 3, width: 16, height: 16,
+          borderRadius: "50%", background: "#fff", transition: "left .2s", boxShadow: "0 1px 4px rgba(0,0,0,.25)" }} />
+    </div>
+  );
 
-        {/* Main header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b" style={{ background: "#2d5474" }}>
-          <span className="text-white font-bold text-sm">Configurações</span>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", lineHeight: 1 }}>−</button>
+  const fieldInput = (val: string, onChange: (v: string) => void) => (
+    <input type="number" value={val} onChange={e => onChange(e.target.value)}
+      style={{ width: "100%", height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
+        padding: "0 10px", fontSize: 13, color: "#1e293b", background: "#f8fafc", outline: "none", boxSizing: "border-box" }} />
+  );
+
+  const label = (text: string) => (
+    <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", textTransform: "uppercase",
+        letterSpacing: ".04em", marginBottom: 6 }}>{text}</div>
+  );
+
+  const sectionTitle = (text: string) => (
+    <div style={{ fontSize: 11, fontWeight: 700, color: "#2d5474", textTransform: "uppercase",
+        letterSpacing: ".08em", padding: "10px 20px 8px",
+        borderBottom: "2px solid #e2e8f0", background: "#f1f5f9", display: "flex", alignItems: "center", gap: 6 }}>
+      <div style={{ width: 3, height: 14, background: "#2563eb", borderRadius: 2 }} />
+      {text}
+    </div>
+  );
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999,
+        background: "rgba(15,23,42,.5)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        onClick={onClose}>
+      <div style={{ background: "#fff", borderRadius: 12, width: 960, maxWidth: "96vw",
+          maxHeight: "92vh", display: "flex", flexDirection: "column",
+          boxShadow: "0 25px 80px rgba(0,0,0,.35)", overflow: "hidden" }}
+          onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{ background: "linear-gradient(135deg,#2d5474,#3d6e8e)", padding: "14px 20px",
+            display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "#fff", opacity: .9 }}>
+              <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+            </svg>
+            <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, letterSpacing: ".02em" }}>Configurações</span>
+          </div>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,.15)", border: "none", borderRadius: 6,
+              color: "#fff", width: 28, height: 28, cursor: "pointer", fontSize: 16, display: "flex",
+              alignItems: "center", justifyContent: "center", lineHeight: 1 }}>✕</button>
         </div>
 
-        {/* Restrições section */}
-        <div className="border-b border-gray-200">
-          <div className="px-5 py-5">
-              {/* Row 1 */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
-                {/* Validar Valor Máximo de Vendas */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Validar Valor Máximo de Vendas :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div onClick={() => setRestVals(v => ({ ...v, validarVendas: !v.validarVendas }))}
-                      style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarVendas ? "#22c55e" : "#d1d5db", flexShrink: 0 }}>
-                      <div style={{ position: "absolute", top: 2, left: restVals.validarVendas ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-                    </div>
-                  </div>
-                  <input type="number" value={restVals.maxVendas} onChange={e => setRestVals(v => ({ ...v, maxVendas: e.target.value }))}
-                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
-                </div>
-                {/* Validar Valor Gastos */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Validar Valor Gastos :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <div onClick={() => setRestVals(v => ({ ...v, validarGastos: !v.validarGastos }))}
-                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarGastos ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
-                    <div style={{ position: "absolute", top: 2, left: restVals.validarGastos ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-                  </div>
-                  <input type="number" value={restVals.maxGastos} onChange={e => setRestVals(v => ({ ...v, maxGastos: e.target.value }))}
-                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
-                </div>
-                {/* Validar Valor Rendimentos */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Validar Valor Rendimentos :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <div onClick={() => setRestVals(v => ({ ...v, validarRendimentos: !v.validarRendimentos }))}
-                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarRendimentos ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
-                    <div style={{ position: "absolute", top: 2, left: restVals.validarRendimentos ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-                  </div>
-                  <input type="number" value={restVals.maxRendimentos} onChange={e => setRestVals(v => ({ ...v, maxRendimentos: e.target.value }))}
-                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
-                </div>
-                {/* Validar Clientes em Outros Vendedores */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Validar Clientes em Outros Vendedores :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <div onClick={() => setRestVals(v => ({ ...v, validarClientesOutros: !v.validarClientesOutros }))}
-                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarClientesOutros ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 6 }}>
-                    <div style={{ position: "absolute", top: 2, left: restVals.validarClientesOutros ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-                  </div>
-                  <button className="text-xs font-semibold px-2 py-1.5 rounded text-white" style={{ background: "#2563eb", whiteSpace: "nowrap" }}>
-                    📋 Promover clientes Vários Vendedores
-                  </button>
-                </div>
-              </div>
+        {/* Body */}
+        <div style={{ overflowY: "auto", flex: 1 }}>
 
-              {/* Row 2 */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
-                {/* Nº Máx. Parcelas Cancelar Venda */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Nº Máx. Parcelas Cancelar Venda :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <div onClick={() => setRestVals(v => ({ ...v, validarParcelasCancelar: !v.validarParcelasCancelar }))}
-                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarParcelasCancelar ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
-                    <div style={{ position: "absolute", top: 2, left: restVals.validarParcelasCancelar ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-                  </div>
-                  <input type="number" value={restVals.maxParcelasCancelar} onChange={e => setRestVals(v => ({ ...v, maxParcelasCancelar: e.target.value }))}
-                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
-                </div>
-                {/* Nº Máximo Parcelas por Dia */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Nº Máximo Parcelas por Dia :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <div onClick={() => setRestVals(v => ({ ...v, validarParcelasDia: !v.validarParcelasDia }))}
-                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarParcelasDia ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
-                    <div style={{ position: "absolute", top: 2, left: restVals.validarParcelasDia ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-                  </div>
-                  <select className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }}>
-                    <option>Selecione</option>
-                    <option>1</option><option>2</option><option>3</option><option>5</option><option>10</option>
-                  </select>
-                </div>
-                {/* Número Parcelas */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Número Parcelas :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <input type="number" defaultValue={99}
-                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm mt-6" style={{ background: "#f9fafb" }} />
-                </div>
-                {/* Nº Celular Solicitações de Aprovações */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Nº Celular Solicitações de Aprovações :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <select className="w-full h-8 border border-gray-300 rounded px-2 text-sm mt-6" style={{ background: "#f9fafb" }}>
-                    <option>--Selecione--</option>
-                  </select>
-                </div>
+          {/* Section 1 — Limites de Valores */}
+          {sectionTitle("Limites de Valores")}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, padding: "16px 20px" }}>
+            {/* Validar Valor Máximo de Vendas */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Validar Valor Máximo de Vendas")}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                {sw(restVals.validarVendas, () => setRestVals(v => ({ ...v, validarVendas: !v.validarVendas })))}
+                <span style={{ fontSize: 11, color: restVals.validarVendas ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
+                  {restVals.validarVendas ? "Ativo" : "Inativo"}
+                </span>
               </div>
+              {fieldInput(restVals.maxVendas, val => setRestVals(v => ({ ...v, maxVendas: val })))}
+            </div>
 
-              {/* Row 3 */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
-                {/* Validar Valor Máx. em Renovações */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Validar Valor Máx. em Renovações :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <div onClick={() => setRestVals(v => ({ ...v, validarRenovacoes: !v.validarRenovacoes }))}
-                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarRenovacoes ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
-                    <div style={{ position: "absolute", top: 2, left: restVals.validarRenovacoes ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-                  </div>
-                  <input type="number" value={restVals.maxRenovacoes} onChange={e => setRestVals(v => ({ ...v, maxRenovacoes: e.target.value }))}
-                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
-                </div>
-                {/* Renovação Dia Seguinte */}
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-xs font-semibold text-gray-700">Renovação Dia Seguinte se excede parcelas ao Cancelar Venda :</span>
-                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
-                  </div>
-                  <div onClick={() => setRestVals(v => ({ ...v, renovacaoDiaSeg: !v.renovacaoDiaSeg }))}
-                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.renovacaoDiaSeg ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
-                    <div style={{ position: "absolute", top: 2, left: restVals.renovacaoDiaSeg ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-                  </div>
-                  <div className="flex gap-2">
-                    <input type="number" defaultValue={0} className="w-20 h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
-                    <select className="flex-1 h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }}>
-                      <option>Selecione</option>
-                    </select>
-                  </div>
-                </div>
-                {/* Tope Renovações */}
-                <div className="flex items-end col-span-2 justify-end gap-2">
-                  <button className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded text-white" style={{ background: "#2563eb" }}>
-                    📊 Tope Renovações por Cliente
-                    <span className="ml-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">✕</span>
-                  </button>
-                </div>
+            {/* Validar Valor Gastos */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Validar Valor Gastos")}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                {sw(restVals.validarGastos, () => setRestVals(v => ({ ...v, validarGastos: !v.validarGastos })))}
+                <span style={{ fontSize: 11, color: restVals.validarGastos ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
+                  {restVals.validarGastos ? "Ativo" : "Inativo"}
+                </span>
               </div>
+              {fieldInput(restVals.maxGastos, val => setRestVals(v => ({ ...v, maxGastos: val })))}
+            </div>
 
-              {/* Footer buttons */}
-              <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
-                <button onClick={onClose} className="px-5 py-2 text-sm font-semibold rounded"
-                  style={{ background: "#2563eb", color: "#fff", border: "none", cursor: "pointer" }}>
-                  Guardar
-                </button>
-                <button onClick={onClose} className="px-5 py-2 text-sm font-semibold rounded"
-                  style={{ background: "#ef4444", color: "#fff", border: "none", cursor: "pointer" }}>
-                  Fechar
-                </button>
+            {/* Validar Valor Rendimentos */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Validar Valor Rendimentos")}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                {sw(restVals.validarRendimentos, () => setRestVals(v => ({ ...v, validarRendimentos: !v.validarRendimentos })))}
+                <span style={{ fontSize: 11, color: restVals.validarRendimentos ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
+                  {restVals.validarRendimentos ? "Ativo" : "Inativo"}
+                </span>
+              </div>
+              {fieldInput(restVals.maxRendimentos, val => setRestVals(v => ({ ...v, maxRendimentos: val })))}
+            </div>
+
+            {/* Validar Clientes em Outros Vendedores */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Validar Clientes em Outros Vendedores")}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                {sw(restVals.validarClientesOutros, () => setRestVals(v => ({ ...v, validarClientesOutros: !v.validarClientesOutros })))}
+                <span style={{ fontSize: 11, color: restVals.validarClientesOutros ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
+                  {restVals.validarClientesOutros ? "Ativo" : "Inativo"}
+                </span>
+              </div>
+              <button style={{ width: "100%", padding: "7px 10px", background: "#2563eb", color: "#fff",
+                  border: "none", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer" }}>
+                Promover clientes — Vários Vendedores
+              </button>
+            </div>
+          </div>
+
+          {/* Section 2 — Controle de Parcelas */}
+          {sectionTitle("Controle de Parcelas")}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, padding: "16px 20px" }}>
+
+            {/* Nº Máx. Parcelas Cancelar Venda */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Nº Máx. Parcelas — Cancelar Venda")}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                {sw(restVals.validarParcelasCancelar, () => setRestVals(v => ({ ...v, validarParcelasCancelar: !v.validarParcelasCancelar })))}
+                <span style={{ fontSize: 11, color: restVals.validarParcelasCancelar ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
+                  {restVals.validarParcelasCancelar ? "Ativo" : "Inativo"}
+                </span>
+              </div>
+              {fieldInput(restVals.maxParcelasCancelar, val => setRestVals(v => ({ ...v, maxParcelasCancelar: val })))}
+            </div>
+
+            {/* Nº Máximo Parcelas por Dia */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Nº Máximo Parcelas por Dia")}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                {sw(restVals.validarParcelasDia, () => setRestVals(v => ({ ...v, validarParcelasDia: !v.validarParcelasDia })))}
+                <span style={{ fontSize: 11, color: restVals.validarParcelasDia ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
+                  {restVals.validarParcelasDia ? "Ativo" : "Inativo"}
+                </span>
+              </div>
+              <select style={{ width: "100%", height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
+                  padding: "0 10px", fontSize: 13, color: "#1e293b", background: "#f8fafc" }}>
+                <option>Selecione</option>
+                {[1,2,3,5,10].map(n => <option key={n}>{n}</option>)}
+              </select>
+            </div>
+
+            {/* Número Parcelas */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Número de Parcelas")}
+              <div style={{ height: 30, marginBottom: 10 }} />
+              <input type="number" defaultValue={99} style={{ width: "100%", height: 34, border: "1px solid #e2e8f0",
+                  borderRadius: 6, padding: "0 10px", fontSize: 13, color: "#1e293b", background: "#f8fafc",
+                  outline: "none", boxSizing: "border-box" }} />
+            </div>
+
+            {/* Nº Celular Solicitações de Aprovações */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Nº Celular — Solicitações de Aprovações")}
+              <div style={{ height: 30, marginBottom: 10 }} />
+              <select style={{ width: "100%", height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
+                  padding: "0 10px", fontSize: 13, color: "#1e293b", background: "#f8fafc" }}>
+                <option>-- Selecione --</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Section 3 — Renovações */}
+          {sectionTitle("Renovações")}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, padding: "16px 20px 20px" }}>
+
+            {/* Validar Valor Máx. em Renovações */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Validar Valor Máx. em Renovações")}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                {sw(restVals.validarRenovacoes, () => setRestVals(v => ({ ...v, validarRenovacoes: !v.validarRenovacoes })))}
+                <span style={{ fontSize: 11, color: restVals.validarRenovacoes ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
+                  {restVals.validarRenovacoes ? "Ativo" : "Inativo"}
+                </span>
+              </div>
+              {fieldInput(restVals.maxRenovacoes, val => setRestVals(v => ({ ...v, maxRenovacoes: val })))}
+            </div>
+
+            {/* Renovação Dia Seguinte */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
+              {label("Renovação Dia Seguinte — Excede Parcelas")}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                {sw(restVals.renovacaoDiaSeg, () => setRestVals(v => ({ ...v, renovacaoDiaSeg: !v.renovacaoDiaSeg })))}
+                <span style={{ fontSize: 11, color: restVals.renovacaoDiaSeg ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
+                  {restVals.renovacaoDiaSeg ? "Ativo" : "Inativo"}
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <input type="number" defaultValue={0} style={{ width: 70, height: 34, border: "1px solid #e2e8f0",
+                    borderRadius: 6, padding: "0 8px", fontSize: 13, background: "#f8fafc", outline: "none" }} />
+                <select style={{ flex: 1, height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
+                    padding: "0 8px", fontSize: 12, color: "#1e293b", background: "#f8fafc" }}>
+                  <option>Selecione</option>
+                </select>
               </div>
             </div>
+
+            {/* Tope Renovações — spans last 2 cols, aligned bottom */}
+            <div style={{ gridColumn: "span 2", display: "flex", alignItems: "flex-end", justifyContent: "flex-end" }}>
+              <button style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px",
+                  background: "linear-gradient(135deg,#2d5474,#2563eb)", color: "#fff", border: "none",
+                  borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer",
+                  boxShadow: "0 4px 12px rgba(37,99,235,.3)" }}>
+                <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}>
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
+                </svg>
+                Tope Renovações por Cliente
+                <span style={{ background: "#ef4444", borderRadius: "50%", width: 16, height: 16,
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800 }}>✕</span>
+              </button>
+            </div>
+          </div>
         </div>
 
+        {/* Footer */}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "12px 20px",
+            borderTop: "1px solid #e2e8f0", background: "#f8fafc", flexShrink: 0 }}>
+          <button onClick={onClose} style={{ padding: "9px 28px", background: "#2563eb", color: "#fff",
+              border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(37,99,235,.3)" }}>
+            Guardar
+          </button>
+          <button onClick={onClose} style={{ padding: "9px 28px", background: "#fff", color: "#64748b",
+              border: "1px solid #e2e8f0", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+            Fechar
+          </button>
+        </div>
 
       </div>
     </div>
