@@ -4078,7 +4078,7 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
                       {[
                         { label:"Valor Empréstimo", value:`R$ ${fmtBRL(it.valorPrestado)}`, color:"#2d5474" },
                         { label:"Total a Pagar",    value:`R$ ${fmtBRL(it.valorPagar)}`,    color:"#1d4ed8" },
-                        { label:"Juros",            value:`R$ ${fmtBRL(it.valorPagar - it.valorPrestado)}`, color:"#d97706" },
+                        { label:"Juros", value:`${Math.round((it.valorPagar - it.valorPrestado) / it.valorPrestado * 100)}% · R$ ${fmtBRL(it.valorPagar - it.valorPrestado)}`, color:"#d97706" },
                         { label:"Nº Parcelas",      value:String(it.parcelas),              color:"#475569" },
                         { label:"Valor Parcela",    value:`R$ ${fmtBRL(it.vcuota)}`,        color:"#16a34a" },
                       ].map(f => (
