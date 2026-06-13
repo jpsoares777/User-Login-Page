@@ -3765,33 +3765,6 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
           <button onClick={onClose} style={{ background: "none", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", lineHeight: 1 }}>−</button>
         </div>
 
-        {/* Opções section */}
-        <div className="border-b border-gray-200">
-          <AccordionHeader title="Opções" open={opcoesOpen} onToggle={() => setOpcoesOpen(o => !o)} />
-          {opcoesOpen && (
-            <div className="px-5 py-4">
-              <div className="text-xs font-bold text-blue-700 mb-4 uppercase tracking-wide">Opções</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "14px 20px" }}>
-                {toggles.map(t => <Toggle key={t.label} label={t.label} />)}
-              </div>
-              <div className="flex justify-end gap-3 mt-5 pt-4 border-t border-gray-100">
-                <button
-                  onClick={onClose}
-                  className="px-5 py-2 text-sm font-semibold rounded"
-                  style={{ background: "#2563eb", color: "#fff", border: "none", cursor: "pointer" }}>
-                  Guardar
-                </button>
-                <button
-                  onClick={onClose}
-                  className="px-5 py-2 text-sm font-semibold rounded"
-                  style={{ background: "#ef4444", color: "#fff", border: "none", cursor: "pointer" }}>
-                  Fechar
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* Restrições section */}
         <div className="border-b border-gray-200">
           <AccordionHeader title="Restrições" open={restricoesOpen} onToggle={() => setRestricoes(o => !o)} />
