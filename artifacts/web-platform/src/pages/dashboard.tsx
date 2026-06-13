@@ -3999,25 +3999,31 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* Filtro strip */}
-        <div style={{ display:"flex", alignItems:"stretch", background:"#f1f5f9",
-            borderBottom:"1px solid #e2e8f0", flexShrink:0 }}>
+        <div style={{ display:"flex", gap:10, padding:"10px 20px",
+            borderBottom:"1px solid #e2e8f0", background:"#f1f5f9", flexShrink:0 }}>
           {([
-            { key:"todos",    label:"Todos",    value:items.length, color:"#2d5474"  },
-            { key:"pendente", label:"Pendentes",value:pendentes,    color:"#a16207"  },
-            { key:"aceito",   label:"Aceitos",  value:aceitos,      color:"#16a34a"  },
-            { key:"recusado", label:"Recusados",value:recusados,    color:"#dc2626"  },
-          ] as { key:"todos"|"pendente"|"aceito"|"recusado"; label:string; value:number; color:string }[]).map(s => (
-            <button key={s.key} onClick={() => setFiltro(s.key)}
-              style={{ flex:1, padding:"9px 12px", border:"none", cursor:"pointer",
-                borderBottom: filtro === s.key ? `2px solid ${s.color}` : "2px solid transparent",
-                background: filtro === s.key ? "#fff" : "transparent",
-                display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-              <span style={{ fontSize:11, fontWeight:700, color: filtro === s.key ? s.color : "#64748b" }}>{s.label}</span>
-              <span style={{ background: filtro === s.key ? s.color : "#e2e8f0",
-                  color: filtro === s.key ? "#fff" : "#64748b",
-                  borderRadius:10, padding:"1px 7px", fontSize:11, fontWeight:700 }}>{s.value}</span>
-            </button>
-          ))}
+            { key:"todos",    label:"Todos",     value:items.length, bg:"#1e3a5f", bgOff:"#e2e8f0", textOff:"#475569" },
+            { key:"pendente", label:"Pendentes", value:pendentes,    bg:"#d97706", bgOff:"#fef3c7", textOff:"#92400e" },
+            { key:"aceito",   label:"Aceitos",   value:aceitos,      bg:"#16a34a", bgOff:"#dcfce7", textOff:"#166534" },
+            { key:"recusado", label:"Recusados", value:recusados,    bg:"#dc2626", bgOff:"#fee2e2", textOff:"#991b1b" },
+          ] as { key:"todos"|"pendente"|"aceito"|"recusado"; label:string; value:number; bg:string; bgOff:string; textOff:string }[]).map(s => {
+            const ativo = filtro === s.key;
+            return (
+              <button key={s.key} onClick={() => setFiltro(s.key)}
+                style={{ flex:1, padding:"8px 10px", border:"none", cursor:"pointer", borderRadius:8,
+                  background: ativo ? s.bg : s.bgOff,
+                  display:"flex", alignItems:"center", justifyContent:"center", gap:8,
+                  boxShadow: ativo ? `0 2px 8px ${s.bg}55` : "none",
+                  transition:"all .15s" }}>
+                <span style={{ fontSize:12, fontWeight:700, color: ativo ? "#fff" : s.textOff }}>{s.label}</span>
+                <span style={{ background: ativo ? "rgba(255,255,255,.25)" : "rgba(0,0,0,.1)",
+                    color: ativo ? "#fff" : s.textOff,
+                    borderRadius:20, padding:"1px 8px", fontSize:12, fontWeight:800, minWidth:22, textAlign:"center" }}>
+                  {s.value}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Body */}
