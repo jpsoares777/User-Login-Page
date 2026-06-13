@@ -7103,7 +7103,7 @@ export default function DashboardPage() {
                 { label: "👥 Lista Clientes", onClick: () => setListaClientesOpen(true) },
                 { label: caixaAberto ? "🔒 Fechar Caixa" : "🔓 Abrir Caixa", onClick: () => setCaixaModalOpen(true) },
                 { label: "🔑 Código Aprovações", onClick: () => setCodigosOpen(true) },
-                { label: "📈 Ganância ( $0.00 )", onClick: () => {} },
+                { label: "📈 Lucro ( $0.00 )", onClick: () => {} },
               ] as { label: string; onClick: () => void }[]).map((item) => (
                 <button key={item.label}
                   onClick={item.onClick}
