@@ -6885,7 +6885,7 @@ export default function DashboardPage() {
                 { label: "⚙ Configurações", onClick: () => setConfigOpen(true) },
                 { label: "📊 Relatório Monitor", onClick: () => setActiveMain("Consolidados") },
                 { label: "👥 Lista Clientes", onClick: () => setListaClientesOpen(true) },
-                { label: caixaAberto ? "🔒 Fechar Caixa" : "🔓 Abrir Caixa", onClick: () => setCaixaModalOpen(true) },
+                { label: caixaAberto ? "🔒 Fechar Caixa" : "🔓 Abrir Caixa", onClick: () => setCaixaAberto(a => !a) },
                 { label: "🔑 Código Aprovações", onClick: () => {} },
                 { label: "📈 Ganância ( $0.00 )", onClick: () => {} },
               ] as { label: string; onClick: () => void }[]).map((item) => (
