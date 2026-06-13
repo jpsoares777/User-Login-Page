@@ -3931,6 +3931,60 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+function CaixaModal({ aberto, onConfirm, onClose }: { aberto: boolean; onConfirm: () => void; onClose: () => void }) {
+  const acao = aberto ? "Fechar" : "Abrir";
+  const cor  = aberto ? "#dc2626" : "#16a34a";
+  const icon = aberto ? "🔒" : "🔓";
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(15,23,42,.6)", zIndex:1100,
+        display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(2px)" }}>
+      <div style={{ background:"#fff", borderRadius:14, boxShadow:"0 24px 60px rgba(0,0,0,.3)",
+          width:380, overflow:"hidden", display:"flex", flexDirection:"column" }}>
+        {/* Header */}
+        <div style={{ background: aberto
+            ? "linear-gradient(135deg,#7f1d1d,#dc2626)"
+            : "linear-gradient(135deg,#14532d,#16a34a)",
+            padding:"18px 20px", display:"flex", alignItems:"center", gap:12 }}>
+          <div style={{ background:"rgba(255,255,255,.2)", borderRadius:10, width:40, height:40,
+              display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>{icon}</div>
+          <div>
+            <div style={{ color:"#fff", fontSize:15, fontWeight:800 }}>{acao} Caixa</div>
+            <div style={{ color:"rgba(255,255,255,.7)", fontSize:11, marginTop:2 }}>
+              {aberto ? "Encerrar o caixa da unidade" : "Reabrir o caixa da unidade"}
+            </div>
+          </div>
+        </div>
+        {/* Body */}
+        <div style={{ padding:"22px 24px 8px" }}>
+          <div style={{ background: aberto ? "#fef2f2" : "#f0fdf4", borderRadius:10,
+              border:`1px solid ${aberto ? "#fca5a5" : "#86efac"}`,
+              padding:"14px 16px", display:"flex", alignItems:"flex-start", gap:10 }}>
+            <span style={{ fontSize:18, marginTop:1 }}>{aberto ? "⚠️" : "ℹ️"}</span>
+            <div style={{ fontSize:12, color: aberto ? "#991b1b" : "#166534", lineHeight:1.6 }}>
+              {aberto
+                ? "Deseja realmente fechar o caixa? Nenhuma nova operação poderá ser registrada até que ele seja aberto novamente."
+                : "Deseja reabrir o caixa? Novas operações voltarão a ser permitidas na unidade."}
+            </div>
+          </div>
+          <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:16, marginBottom:20, justifyContent:"flex-end" }}>
+            <button onClick={onClose}
+              style={{ padding:"8px 22px", background:"#f1f5f9", color:"#475569",
+                border:"1px solid #cbd5e1", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer" }}>
+              Cancelar
+            </button>
+            <button onClick={onConfirm}
+              style={{ padding:"8px 22px", background:cor, color:"#fff",
+                border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer",
+                boxShadow:`0 2px 8px ${aberto ? "rgba(220,38,38,.35)" : "rgba(22,163,74,.35)"}` }}>
+              {icon} {acao} Caixa
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const CLIENTES_MOCK = [
   { fecha:"2026-04-08", nro:"4700627026", nome:"Andreia de Jesus Costa Araújo",   tel:"89985014328",   dir:"Rua gama lobon nº 10 quarto", prest:"1.500", apagar:"2.100", inter:"600", pct:"40", vcuota:"105,00", cuotas:"20", cpagas:"0", cresta:"7,6",  saldo:"800,00",  san:"0,00", vis:"5",  frec:"Diário", ult:"2026-04-17" },
   { fecha:"2026-03-28", nro:"4700627080", nome:"Luciana Abreu Da Silva",           tel:"55988834576",   dir:"—",                          prest:"500",   apagar:"700",   inter:"200", pct:"40", vcuota:"50,00",  cuotas:"14", cpagas:"0", cresta:"14,0", saldo:"700,00",  san:"0,00", vis:"14", frec:"Diário", ult:"—" },
@@ -4258,6 +4312,8 @@ export default function DashboardPage() {
   };
   const [configOpen, setConfigOpen] = useState(false);
   const [listaClientesOpen, setListaClientesOpen] = useState(false);
+  const [caixaAberto, setCaixaAberto] = useState(true);
+  const [caixaModalOpen, setCaixaModalOpen] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
@@ -6829,7 +6885,7 @@ export default function DashboardPage() {
                 { label: "⚙ Configurações", onClick: () => setConfigOpen(true) },
                 { label: "📊 Relatório Monitor", onClick: () => setActiveMain("Consolidados") },
                 { label: "👥 Lista Clientes", onClick: () => setListaClientesOpen(true) },
-                { label: "🔒 Bloquear Unidade", onClick: () => {} },
+                { label: caixaAberto ? "🔒 Fechar Caixa" : "🔓 Abrir Caixa", onClick: () => setCaixaModalOpen(true) },
                 { label: "🔑 Código Aprovações", onClick: () => {} },
                 { label: "📈 Ganância ( $0.00 )", onClick: () => {} },
               ] as { label: string; onClick: () => void }[]).map((item) => (
@@ -6858,6 +6914,15 @@ export default function DashboardPage() {
 
       {/* ── MODAL: Lista Clientes ── */}
       {listaClientesOpen && <ListaClientesModal onClose={() => setListaClientesOpen(false)} />}
+
+      {/* ── MODAL: Caixa ── */}
+      {caixaModalOpen && (
+        <CaixaModal
+          aberto={caixaAberto}
+          onConfirm={() => { setCaixaAberto(a => !a); setCaixaModalOpen(false); }}
+          onClose={() => setCaixaModalOpen(false)}
+        />
+      )}
 
       {/* ── MODAL: Confirmar Exclusão ── */}
       {gaDeleteId !== null && (() => {
