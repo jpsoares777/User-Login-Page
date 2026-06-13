@@ -4053,8 +4053,6 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
                     {/* topo do card */}
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                        <span style={{ background:"#2d5474", color:"#fff", borderRadius:5,
-                            padding:"2px 8px", fontSize:11, fontWeight:800, letterSpacing:.5 }}>{it.clave}</span>
                         <span style={{ background:sc.bg, color:sc.text, borderRadius:5,
                             padding:"2px 7px", fontSize:10, fontWeight:700 }}>{sc.label}</span>
                       </div>
