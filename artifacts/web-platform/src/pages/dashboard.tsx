@@ -3916,7 +3916,7 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
           <button onClick={onClose} style={{ padding: "9px 28px", background: "#2563eb", color: "#fff",
               border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer",
               boxShadow: "0 2px 8px rgba(37,99,235,.3)" }}>
-            Guardar
+            Salvar
           </button>
           <button onClick={onClose} style={{ padding: "9px 28px", background: "#fff", color: "#64748b",
               border: "1px solid #e2e8f0", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
