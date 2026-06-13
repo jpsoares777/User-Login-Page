@@ -7240,7 +7240,7 @@ export default function DashboardPage() {
                 { icon:<img src="/icon-config.png" alt="" style={{ width:16, height:16, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)", flexShrink:0 }} />, label:"Configurações", accent:"#2d5474", onClick: () => setConfigOpen(true) },
                 { icon:<img src="/icon-relatorio6.png" alt="" style={{ width:16, height:16, flexShrink:0, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)" }} />, label:"Relatório Geral", accent:"#1d4ed8", onClick: () => setActiveMain("Consolidados") },
                 { icon:<img src="/icon-clientes3.png" alt="" style={{ width:16, height:16, flexShrink:0 }} />, label:"Lista Clientes", accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
-                { icon: caixaAberto ? "🔒" : "🔓",
+                { icon: caixaAberto ? "🔒" : <img src="/icon-abrir-caixa.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} />,
                   label: caixaAberto ? "Fechar Caixa" : "Abrir Caixa",
                   accent: caixaAberto ? "#dc2626" : "#16a34a",
                   onClick: () => setCaixaModalOpen(true) },
