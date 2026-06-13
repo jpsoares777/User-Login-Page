@@ -4316,6 +4316,7 @@ export default function DashboardPage() {
   const [listaClientesOpen, setListaClientesOpen] = useState(false);
   const [caixaAberto, setCaixaAberto] = useState(true);
   const [caixaModalOpen, setCaixaModalOpen] = useState(false);
+  const [dataFechamentoCaixa, setDataFechamentoCaixa] = useState<string | null>(null);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
@@ -6802,7 +6803,10 @@ export default function DashboardPage() {
                 <span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">2026-04-17 00:41:52</span>
               </Row>
               <Row label="Data de Fechamento de Cobrança" index={2}>
-                <CalIcon /><span className="text-amber-600 font-medium">Sistema sem Fechar</span>
+                <CalIcon />
+                {dataFechamentoCaixa
+                  ? <span className="bg-red-100 text-red-700 px-2 rounded text-[11px] font-medium">{dataFechamentoCaixa}</span>
+                  : <span className="text-amber-600 font-medium">Sistema sem Fechar</span>}
               </Row>
               <Row label="Último Acesso Móvel" index={3}>
                 <CalIcon /> 2026-04-17 00:41:52
@@ -6921,7 +6925,12 @@ export default function DashboardPage() {
       {caixaModalOpen && (
         <CaixaModal
           aberto={caixaAberto}
-          onConfirm={() => { setCaixaAberto(a => !a); setCaixaModalOpen(false); }}
+          onConfirm={() => {
+            const agora = new Date().toLocaleString("pt-BR");
+            if (caixaAberto) { setDataFechamentoCaixa(agora); } else { setDataFechamentoCaixa(null); }
+            setCaixaAberto(a => !a);
+            setCaixaModalOpen(false);
+          }}
           onClose={() => setCaixaModalOpen(false)}
         />
       )}
