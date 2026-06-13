@@ -3931,6 +3931,182 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+const CODIGOS_MOCK: { clave: string; fecha: string }[] = [
+  { clave:"rs9",  fecha:"2026-05-25" }, { clave:"c51",  fecha:"2026-05-25" },
+  { clave:"fhl",  fecha:"2026-05-25" }, { clave:"hcz",  fecha:"2026-05-25" },
+  { clave:"6md",  fecha:"2026-05-25" }, { clave:"262",  fecha:"2026-05-25" },
+  { clave:"swb",  fecha:"2026-05-25" }, { clave:"t11",  fecha:"2026-05-25" },
+  { clave:"1x3",  fecha:"2026-05-25" }, { clave:"szz",  fecha:"2026-05-25" },
+  { clave:"lgt",  fecha:"2026-05-25" }, { clave:"r2m",  fecha:"2026-05-25" },
+  { clave:"v7g",  fecha:"2026-06-12" }, { clave:"n3n",  fecha:"2026-06-12" },
+  { clave:"tbl",  fecha:"2026-06-12" }, { clave:"6mj",  fecha:"2026-06-12" },
+  { clave:"xl3",  fecha:"2026-06-12" }, { clave:"ycl",  fecha:"2026-06-12" },
+  { clave:"sla",  fecha:"2026-06-12" }, { clave:"p9x",  fecha:"2026-06-12" },
+];
+
+const TIPO_OPS = ["Selecione","Renovar Cliente","Novo Empréstimo","Cancelar Venda","Ajuste de Parcela","Desconto Especial"];
+
+function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
+  const hoje = new Date().toLocaleDateString("pt-BR");
+  const [rows, setRows] = useState(() =>
+    CODIGOS_MOCK.map(c => ({ ...c, descricao:"", tipo:"Selecione", vrSolicitado:"" }))
+  );
+
+  const setTipo = (i: number, v: string) =>
+    setRows(r => r.map((row, idx) => idx === i ? { ...row, tipo: v } : row));
+  const setDesc = (i: number, v: string) =>
+    setRows(r => r.map((row, idx) => idx === i ? { ...row, descricao: v } : row));
+  const setVr = (i: number, v: string) =>
+    setRows(r => r.map((row, idx) => idx === i ? { ...row, vrSolicitado: v } : row));
+
+  const thS: React.CSSProperties = {
+    padding:"9px 12px", fontSize:11, fontWeight:700, color:"#fff",
+    background:"#3d6e8e", whiteSpace:"nowrap", borderRight:"1px solid #2d5474",
+    position:"sticky", top:0, zIndex:2, textAlign:"left",
+  };
+  const tdS = (alt: boolean): React.CSSProperties => ({
+    padding:"5px 10px", fontSize:12, borderBottom:"1px solid #e8edf2",
+    borderRight:"1px solid #edf0f4", background: alt ? "#f8fafc" : "#fff",
+    whiteSpace:"nowrap", verticalAlign:"middle",
+  });
+
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(15,23,42,.6)", zIndex:1100,
+        display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(2px)" }}>
+      <div style={{ background:"#f1f5f9", borderRadius:14, boxShadow:"0 24px 80px rgba(0,0,0,.35)",
+          width:"92vw", maxWidth:1100, maxHeight:"92vh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+
+        {/* ── Header ── */}
+        <div style={{ background:"linear-gradient(135deg,#1e3a5f 0%,#2d5474 55%,#1d4ed8 100%)",
+            padding:"15px 22px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+            <div style={{ background:"rgba(255,255,255,.15)", borderRadius:10, padding:"8px 10px",
+                border:"1px solid rgba(255,255,255,.2)" }}>
+              <svg viewBox="0 0 24 24" style={{ width:20, height:20, fill:"#fff" }}>
+                <path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ color:"#fff", fontSize:15, fontWeight:800, letterSpacing:.3 }}>Códigos de Aprovação</div>
+              <div style={{ color:"rgba(255,255,255,.65)", fontSize:11, marginTop:1 }}>
+                {hoje} &nbsp;·&nbsp; Vendedor: <strong style={{ color:"rgba(255,255,255,.9)" }}>SystemPay</strong>
+              </div>
+            </div>
+          </div>
+          <button onClick={onClose}
+            style={{ background:"rgba(255,255,255,.15)", border:"1px solid rgba(255,255,255,.25)",
+              borderRadius:8, color:"#fff", width:32, height:32, cursor:"pointer",
+              display:"flex", alignItems:"center", justifyContent:"center", fontSize:17, fontWeight:700 }}
+            onMouseEnter={e => (e.currentTarget.style.background="rgba(255,255,255,.28)")}
+            onMouseLeave={e => (e.currentTarget.style.background="rgba(255,255,255,.15)")}>✕</button>
+        </div>
+
+        {/* ── Stats strip ── */}
+        <div style={{ display:"flex", gap:0, background:"#2d5474", flexShrink:0 }}>
+          {[
+            { label:"Total Códigos", value: String(rows.length) },
+            { label:"Atribuídos",    value: String(rows.length) },
+            { label:"Pendentes",     value: String(rows.filter(r => r.tipo === "Selecione").length) },
+            { label:"Processados",   value: String(rows.filter(r => r.tipo !== "Selecione").length) },
+          ].map((s, i) => (
+            <div key={i} style={{ flex:1, padding:"8px 16px", borderRight:"1px solid rgba(255,255,255,.12)",
+                display:"flex", flexDirection:"column", alignItems:"center" }}>
+              <div style={{ color:"rgba(255,255,255,.6)", fontSize:9, fontWeight:600, letterSpacing:.5, textTransform:"uppercase" }}>{s.label}</div>
+              <div style={{ color:"#fff", fontSize:18, fontWeight:800, lineHeight:1.2 }}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Table ── */}
+        <div style={{ overflow:"auto", flex:1 }}>
+          <table style={{ borderCollapse:"collapse", width:"100%" }}>
+            <thead>
+              <tr>
+                <th style={{ ...thS, width:36, textAlign:"center" }}>#</th>
+                <th style={{ ...thS, width:80 }}>CLAVE</th>
+                <th style={{ ...thS, width:100 }}>ESTADO</th>
+                <th style={{ ...thS, width:130 }}>FECHA ASIGNACIÓN</th>
+                <th style={{ ...thS, width:110 }}>USUÁRIO</th>
+                <th style={{ ...thS }}>DESCRIÇÃO OPERAÇÃO</th>
+                <th style={{ ...thS, width:190 }}>TIPO</th>
+                <th style={{ ...thS, width:150 }}>VR SOLICITADO</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, i) => {
+                const alt = i % 2 === 1;
+                const processado = r.tipo !== "Selecione";
+                return (
+                  <tr key={r.clave}
+                    onMouseEnter={e => (e.currentTarget.style.background="#dbeafe")}
+                    onMouseLeave={e => (e.currentTarget.style.background="")}>
+                    <td style={{ ...tdS(alt), textAlign:"center", color:"#94a3b8", fontWeight:700, fontSize:11 }}>{i+1}</td>
+                    <td style={{ ...tdS(alt) }}>
+                      <span style={{ background:"#1e3a5f", color:"#fff", borderRadius:5,
+                          padding:"2px 8px", fontSize:11, fontWeight:700, letterSpacing:.5 }}>{r.clave}</span>
+                    </td>
+                    <td style={{ ...tdS(alt) }}>
+                      <span style={{ background: processado ? "#dcfce7" : "#fef9c3",
+                          color: processado ? "#16a34a" : "#a16207",
+                          borderRadius:5, padding:"2px 8px", fontSize:10, fontWeight:700 }}>
+                        {processado ? "Processado" : "Atribuído"}
+                      </span>
+                    </td>
+                    <td style={{ ...tdS(alt), color:"#475569", fontSize:11 }}>{r.fecha}</td>
+                    <td style={{ ...tdS(alt) }}>
+                      <span style={{ background:"#e0f2fe", color:"#0369a1",
+                          borderRadius:5, padding:"2px 8px", fontSize:11, fontWeight:600 }}>CREDBANK</span>
+                    </td>
+                    <td style={{ ...tdS(alt) }}>
+                      <input value={r.descricao} onChange={e => setDesc(i, e.target.value)}
+                        placeholder="Descrição…"
+                        style={{ width:"100%", height:28, border:"1px solid #e2e8f0", borderRadius:6,
+                          padding:"0 8px", fontSize:11, color:"#1e293b", background:"#fff",
+                          outline:"none", boxSizing:"border-box" }} />
+                    </td>
+                    <td style={{ ...tdS(alt) }}>
+                      <select value={r.tipo} onChange={e => setTipo(i, e.target.value)}
+                        style={{ width:"100%", height:28, border:"1px solid #e2e8f0", borderRadius:6,
+                          padding:"0 6px", fontSize:11, color:"#1e293b", background:"#fff", outline:"none" }}>
+                        {TIPO_OPS.map(op => <option key={op}>{op}</option>)}
+                      </select>
+                    </td>
+                    <td style={{ ...tdS(alt) }}>
+                      <input value={r.vrSolicitado} onChange={e => setVr(i, e.target.value)}
+                        placeholder="0,00"
+                        style={{ width:"100%", height:28, border:"1px solid #e2e8f0", borderRadius:6,
+                          padding:"0 8px", fontSize:11, textAlign:"right",
+                          color: r.vrSolicitado ? "#dc2626" : "#1e293b",
+                          fontWeight: r.vrSolicitado ? 700 : 400,
+                          background:"#fff", outline:"none", boxSizing:"border-box" }} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* ── Footer ── */}
+        <div style={{ display:"flex", alignItems:"center", padding:"10px 20px",
+            borderTop:"1px solid #e2e8f0", background:"#fff", flexShrink:0, gap:10 }}>
+          <span style={{ fontSize:12, color:"#64748b" }}>
+            <strong style={{ color:"#1e293b" }}>{rows.length}</strong> códigos &nbsp;·&nbsp;
+            <strong style={{ color:"#16a34a" }}>{rows.filter(r => r.tipo !== "Selecione").length}</strong> processados &nbsp;·&nbsp;
+            <strong style={{ color:"#d97706" }}>{rows.filter(r => r.tipo === "Selecione").length}</strong> pendentes
+          </span>
+          <div style={{ flex:1 }} />
+          <button onClick={onClose}
+            style={{ padding:"8px 30px", background:"#f1f5f9", color:"#374151",
+              border:"1px solid #cbd5e1", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer" }}>
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CaixaModal({ aberto, onConfirm, onClose }: { aberto: boolean; onConfirm: () => void; onClose: () => void }) {
   const acao = aberto ? "Fechar" : "Abrir";
   const cor  = aberto ? "#dc2626" : "#16a34a";
@@ -4317,6 +4493,7 @@ export default function DashboardPage() {
   const [caixaAberto, setCaixaAberto] = useState(true);
   const [caixaModalOpen, setCaixaModalOpen] = useState(false);
   const [dataFechamentoCaixa, setDataFechamentoCaixa] = useState<string | null>(null);
+  const [codigosOpen, setCodigosOpen] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
@@ -6892,7 +7069,7 @@ export default function DashboardPage() {
                 { label: "📊 Relatório Monitor", onClick: () => setActiveMain("Consolidados") },
                 { label: "👥 Lista Clientes", onClick: () => setListaClientesOpen(true) },
                 { label: caixaAberto ? "🔒 Fechar Caixa" : "🔓 Abrir Caixa", onClick: () => setCaixaModalOpen(true) },
-                { label: "🔑 Código Aprovações", onClick: () => {} },
+                { label: "🔑 Código Aprovações", onClick: () => setCodigosOpen(true) },
                 { label: "📈 Ganância ( $0.00 )", onClick: () => {} },
               ] as { label: string; onClick: () => void }[]).map((item) => (
                 <button key={item.label}
@@ -6920,6 +7097,9 @@ export default function DashboardPage() {
 
       {/* ── MODAL: Lista Clientes ── */}
       {listaClientesOpen && <ListaClientesModal onClose={() => setListaClientesOpen(false)} />}
+
+      {/* ── MODAL: Códigos de Aprovação ── */}
+      {codigosOpen && <CodigosAprovacaoModal onClose={() => setCodigosOpen(false)} />}
 
       {/* ── MODAL: Caixa ── */}
       {caixaModalOpen && (
