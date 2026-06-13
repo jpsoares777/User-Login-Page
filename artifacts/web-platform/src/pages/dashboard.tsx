@@ -4133,11 +4133,6 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
         {/* Footer */}
         <div style={{ display:"flex", alignItems:"center", padding:"10px 20px",
             borderTop:"1px solid #e2e8f0", background:"#f8fafc", flexShrink:0, gap:10 }}>
-          <span style={{ fontSize:12, color:"#64748b" }}>
-            <strong style={{ color:"#a16207" }}>{pendentes}</strong> pendentes &nbsp;·&nbsp;
-            <strong style={{ color:"#16a34a" }}>{aceitos}</strong> aceitos &nbsp;·&nbsp;
-            <strong style={{ color:"#dc2626" }}>{recusados}</strong> recusados
-          </span>
           <div style={{ flex:1 }} />
           <button onClick={onClose}
             style={{ padding:"8px 28px", background:"#fff", color:"#374151",
