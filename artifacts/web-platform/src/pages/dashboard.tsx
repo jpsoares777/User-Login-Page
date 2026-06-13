@@ -4295,85 +4295,80 @@ function ListaClientesModal({ onClose }: { onClose: () => void }) {
   ];
 
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(15,23,42,.65)", zIndex:1000,
-        display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(2px)" }}>
-      <div style={{ background:"#f1f5f9", borderRadius:14, boxShadow:"0 24px 80px rgba(0,0,0,.4)",
-          width:"98vw", maxWidth:1560, maxHeight:"95vh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+    <div style={{ position:"fixed", inset:0, zIndex:9999,
+        background:"rgba(15,23,42,.5)", display:"flex", alignItems:"center", justifyContent:"center" }}
+        onClick={onClose}>
+      <div style={{ background:"#fff", borderRadius:12, width:"96vw", maxWidth:1560,
+          maxHeight:"92vh", display:"flex", flexDirection:"column",
+          boxShadow:"0 25px 80px rgba(0,0,0,.35)", overflow:"hidden" }}
+          onClick={e => e.stopPropagation()}>
 
-        {/* ── Header ── */}
-        <div style={{ background:"linear-gradient(135deg,#1e3a5f 0%,#2d5474 50%,#1d4ed8 100%)",
-            padding:"16px 22px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            <div style={{ background:"rgba(255,255,255,.15)", borderRadius:10, padding:"8px 10px",
-                border:"1px solid rgba(255,255,255,.2)" }}>
-              <svg viewBox="0 0 24 24" style={{ width:22, height:22, fill:"#fff" }}>
-                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-              </svg>
-            </div>
-            <div>
-              <div style={{ color:"#fff", fontSize:16, fontWeight:800, letterSpacing:.4 }}>Lista de Clientes</div>
-              <div style={{ color:"rgba(255,255,255,.65)", fontSize:11, marginTop:1 }}>
-                {hoje} &nbsp;·&nbsp; Vendedor: <strong style={{ color:"rgba(255,255,255,.9)" }}>SystemPay</strong>
-              </div>
-            </div>
+        {/* Header */}
+        <div style={{ background:"linear-gradient(135deg,#2d5474,#3d6e8e)", padding:"14px 20px",
+            display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <svg viewBox="0 0 24 24" style={{ width:18, height:18, fill:"#fff", opacity:.9 }}>
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+            <span style={{ color:"#fff", fontWeight:700, fontSize:15, letterSpacing:".02em" }}>Lista de Clientes</span>
+            <span style={{ color:"rgba(255,255,255,.55)", fontSize:11 }}>{hoje}</span>
           </div>
-          <button onClick={onClose}
-            style={{ background:"rgba(255,255,255,.15)", border:"1px solid rgba(255,255,255,.25)",
-              borderRadius:8, color:"#fff", width:32, height:32, cursor:"pointer",
-              display:"flex", alignItems:"center", justifyContent:"center", fontSize:17, fontWeight:700,
-              transition:"background .15s" }}
-            onMouseEnter={e => (e.currentTarget.style.background="rgba(255,255,255,.28)")}
-            onMouseLeave={e => (e.currentTarget.style.background="rgba(255,255,255,.15)")}>✕</button>
+          <button onClick={onClose} style={{ background:"rgba(255,255,255,.15)", border:"none", borderRadius:6,
+              color:"#fff", width:28, height:28, cursor:"pointer", fontSize:16, display:"flex",
+              alignItems:"center", justifyContent:"center", lineHeight:1 }}>✕</button>
         </div>
 
-        {/* ── Toolbar ── */}
-        <div style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 18px",
-            borderBottom:"1px solid #e2e8f0", flexShrink:0, marginTop:10, background:"#f8fafc" }}>
-          <div style={{ position:"relative", width:320 }}>
-            <svg viewBox="0 0 24 24" style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)",
-                width:14, height:14, fill:"#94a3b8", pointerEvents:"none" }}>
+        {/* Toolbar */}
+        <div style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 20px",
+            borderBottom:"2px solid #e2e8f0", flexShrink:0, background:"#f1f5f9" }}>
+          <div style={{ width:3, height:14, background:"#2563eb", borderRadius:2, flexShrink:0 }} />
+          <span style={{ fontSize:11, fontWeight:700, color:"#2d5474", textTransform:"uppercase",
+              letterSpacing:".08em" }}>Clientes</span>
+          <div style={{ position:"relative", width:280, marginLeft:6 }}>
+            <svg viewBox="0 0 24 24" style={{ position:"absolute", left:9, top:"50%", transform:"translateY(-50%)",
+                width:13, height:13, fill:"#94a3b8", pointerEvents:"none" }}>
               <path d="M21 19l-4.35-4.35A7 7 0 1 0 5 5a7 7 0 0 0 9.65 9.65L19 19l2 2zM7 12A5 5 0 1 1 12 7 5 5 0 0 1 7 12z"/>
             </svg>
             <input value={busca} onChange={e => setBusca(e.target.value)}
               placeholder="Buscar nome, crédito ou telefone…"
-              style={{ width:"100%", height:34, paddingLeft:30, paddingRight:10, border:"1px solid #cbd5e1",
-                borderRadius:8, fontSize:12, color:"#1e293b", background:"#fff", outline:"none", boxSizing:"border-box" }} />
+              style={{ width:"100%", height:32, paddingLeft:28, paddingRight:10, border:"1px solid #e2e8f0",
+                borderRadius:6, fontSize:12, color:"#1e293b", background:"#fff", outline:"none", boxSizing:"border-box" }} />
           </div>
-          <div style={{ background:"#e2e8f0", borderRadius:6, padding:"4px 12px", fontSize:12,
+          <span style={{ background:"#e2e8f0", borderRadius:5, padding:"3px 10px", fontSize:11,
               color:"#475569", fontWeight:600 }}>
-            {filtrados.length} de {CLIENTES_MOCK.length} clientes
-          </div>
+            {filtrados.length} / {CLIENTES_MOCK.length}
+          </span>
           <div style={{ flex:1 }} />
           <button onClick={handleCSV}
-            style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", fontSize:12, fontWeight:600,
-              background:"#fff", color:"#374151", border:"1px solid #d1d5db", borderRadius:7, cursor:"pointer" }}>
-            <svg viewBox="0 0 24 24" style={{ width:14, height:14, fill:"#16a34a" }}>
+            style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 13px", fontSize:12, fontWeight:600,
+              background:"#fff", color:"#374151", border:"1px solid #d1d5db", borderRadius:6, cursor:"pointer" }}>
+            <svg viewBox="0 0 24 24" style={{ width:13, height:13, fill:"#16a34a" }}>
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 9H9v-1h2v1zm4 0h-2v-1h2v1zm1-3H8v-1h8v1z"/>
             </svg>
             CSV
           </button>
           <button onClick={handlePDF}
-            style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 18px", fontSize:12, fontWeight:700,
-              background:"linear-gradient(135deg,#2d5474,#2563eb)", color:"#fff",
-              border:"none", borderRadius:7, cursor:"pointer", boxShadow:"0 2px 8px rgba(37,99,235,.35)" }}>
-            <svg viewBox="0 0 24 24" style={{ width:14, height:14, fill:"#fff" }}>
+            style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 14px", fontSize:12, fontWeight:700,
+              background:"linear-gradient(135deg,#2d5474,#3d6e8e)", color:"#fff",
+              border:"none", borderRadius:6, cursor:"pointer" }}>
+            <svg viewBox="0 0 24 24" style={{ width:13, height:13, fill:"#fff" }}>
               <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
             </svg>
             Imprimir PDF
           </button>
         </div>
 
-        {/* ── Table ── */}
+        {/* Table */}
         <div style={{ overflow:"auto", flex:1 }}>
           <table style={{ borderCollapse:"collapse", width:"max-content", minWidth:"100%" }}>
             <thead>
               <tr>
                 <th style={{ position:"sticky", top:0, zIndex:2, background:"#2d5474", color:"#fff",
-                    padding:"9px 10px", fontSize:10, fontWeight:700, textAlign:"center",
+                    padding:"8px 10px", fontSize:10, fontWeight:700, textAlign:"center",
                     borderRight:"1px solid #3d6e8e", whiteSpace:"nowrap", width:42 }}>#</th>
                 {COL.map(c => (
                   <th key={c.key} style={{ position:"sticky", top:0, zIndex:2, background:"#2d5474", color:"#fff",
-                      padding:"9px 10px", fontSize:10, fontWeight:700,
+                      padding:"8px 10px", fontSize:10, fontWeight:700,
                       textAlign: c.right ? "right" : "center",
                       borderRight:"1px solid #3d6e8e", whiteSpace:"nowrap", width:c.w }}>
                     {c.label}
@@ -4384,7 +4379,7 @@ function ListaClientesModal({ onClose }: { onClose: () => void }) {
             <tbody>
               {filtrados.length === 0 ? (
                 <tr><td colSpan={COL.length + 1}
-                  style={{ textAlign:"center", padding:"48px", color:"#94a3b8", fontSize:14 }}>
+                  style={{ textAlign:"center", padding:"48px", color:"#94a3b8", fontSize:13 }}>
                   Nenhum cliente encontrado.
                 </td></tr>
               ) : filtrados.map((c, i) => {
@@ -4422,17 +4417,17 @@ function ListaClientesModal({ onClose }: { onClose: () => void }) {
           </table>
         </div>
 
-        {/* ── Footer ── */}
+        {/* Footer */}
         <div style={{ display:"flex", alignItems:"center", padding:"10px 20px",
-            borderTop:"1px solid #e2e8f0", background:"#fff", flexShrink:0, gap:12 }}>
-          <div style={{ fontSize:12, color:"#64748b" }}>
+            borderTop:"1px solid #e2e8f0", background:"#f8fafc", flexShrink:0, gap:12 }}>
+          <span style={{ fontSize:12, color:"#64748b" }}>
             Exibindo <strong style={{ color:"#1e293b" }}>{filtrados.length}</strong> clientes
             {busca && ` — filtro: "${busca}"`}
-          </div>
+          </span>
           <div style={{ flex:1 }} />
           <button onClick={onClose}
-            style={{ padding:"8px 30px", background:"#f1f5f9", color:"#374151",
-              border:"1px solid #cbd5e1", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer" }}>
+            style={{ padding:"8px 28px", background:"#fff", color:"#374151",
+              border:"1px solid #cbd5e1", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
             Fechar
           </button>
         </div>
