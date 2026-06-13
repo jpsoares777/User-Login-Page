@@ -3842,20 +3842,6 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
               {fieldInput(restVals.maxRendimentos, val => setRestVals(v => ({ ...v, maxRendimentos: val })))}
             </div>
 
-            {/* Validar Clientes em Outros Vendedores */}
-            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
-              {label("Validar Clientes em Outros Vendedores")}
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                {sw(restVals.validarClientesOutros, () => setRestVals(v => ({ ...v, validarClientesOutros: !v.validarClientesOutros })))}
-                <span style={{ fontSize: 11, color: restVals.validarClientesOutros ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
-                  {restVals.validarClientesOutros ? "Ativo" : "Inativo"}
-                </span>
-              </div>
-              <button style={{ width: "100%", padding: "7px 10px", background: "#2563eb", color: "#fff",
-                  border: "none", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer" }}>
-                Promover clientes — Vários Vendedores
-              </button>
-            </div>
           </div>
 
           {/* Section 2 — Controle de Parcelas */}
