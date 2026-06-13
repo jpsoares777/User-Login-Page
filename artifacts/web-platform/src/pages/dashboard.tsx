@@ -3975,153 +3975,150 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(15,23,42,.6)", zIndex:1100,
-        display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(2px)" }}>
-      <div style={{ background:"#f1f5f9", borderRadius:14, boxShadow:"0 24px 80px rgba(0,0,0,.35)",
-          width:"95vw", maxWidth:1200, maxHeight:"93vh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+    <div style={{ position:"fixed", inset:0, zIndex:9999,
+        background:"rgba(15,23,42,.5)", display:"flex", alignItems:"center", justifyContent:"center" }}
+        onClick={onClose}>
+      <div style={{ background:"#fff", borderRadius:12, width:960, maxWidth:"96vw",
+          maxHeight:"92vh", display:"flex", flexDirection:"column",
+          boxShadow:"0 25px 80px rgba(0,0,0,.35)", overflow:"hidden" }}
+          onClick={e => e.stopPropagation()}>
 
-        {/* ── Header ── */}
-        <div style={{ background:"linear-gradient(135deg,#1e3a5f 0%,#2d5474 55%,#1d4ed8 100%)",
-            padding:"15px 22px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            <div style={{ background:"rgba(255,255,255,.15)", borderRadius:10, padding:"8px 10px",
-                border:"1px solid rgba(255,255,255,.2)" }}>
-              <svg viewBox="0 0 24 24" style={{ width:20, height:20, fill:"#fff" }}>
-                <path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
-              </svg>
-            </div>
-            <div>
-              <div style={{ color:"#fff", fontSize:15, fontWeight:800, letterSpacing:.3 }}>Códigos de Aprovação</div>
-              <div style={{ color:"rgba(255,255,255,.65)", fontSize:11, marginTop:1 }}>
-                {hoje} &nbsp;·&nbsp; Vendedor: <strong style={{ color:"rgba(255,255,255,.9)" }}>SystemPay</strong>
-              </div>
-            </div>
+        {/* Header */}
+        <div style={{ background:"linear-gradient(135deg,#2d5474,#3d6e8e)", padding:"14px 20px",
+            display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <svg viewBox="0 0 24 24" style={{ width:18, height:18, fill:"#fff", opacity:.9 }}>
+              <path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+            </svg>
+            <span style={{ color:"#fff", fontWeight:700, fontSize:15, letterSpacing:".02em" }}>Códigos de Aprovação</span>
+            <span style={{ color:"rgba(255,255,255,.55)", fontSize:11 }}>{hoje}</span>
           </div>
-          <button onClick={onClose}
-            style={{ background:"rgba(255,255,255,.15)", border:"1px solid rgba(255,255,255,.25)",
-              borderRadius:8, color:"#fff", width:32, height:32, cursor:"pointer",
-              display:"flex", alignItems:"center", justifyContent:"center", fontSize:17, fontWeight:700 }}
-            onMouseEnter={e => (e.currentTarget.style.background="rgba(255,255,255,.28)")}
-            onMouseLeave={e => (e.currentTarget.style.background="rgba(255,255,255,.15)")}>✕</button>
+          <button onClick={onClose} style={{ background:"rgba(255,255,255,.15)", border:"none", borderRadius:6,
+              color:"#fff", width:28, height:28, cursor:"pointer", fontSize:16, display:"flex",
+              alignItems:"center", justifyContent:"center", lineHeight:1 }}>✕</button>
         </div>
 
-        {/* ── Stats + filtro ── */}
-        <div style={{ display:"flex", alignItems:"stretch", background:"#2d5474", flexShrink:0 }}>
+        {/* Filtro strip */}
+        <div style={{ display:"flex", alignItems:"stretch", background:"#f1f5f9",
+            borderBottom:"1px solid #e2e8f0", flexShrink:0 }}>
           {([
-            { key:"todos",    label:"Total",    value:items.length,  color:"#fff" },
-            { key:"pendente", label:"Pendentes",value:pendentes,     color:"#fde047" },
-            { key:"aceito",   label:"Aceitos",  value:aceitos,       color:"#86efac" },
-            { key:"recusado", label:"Recusados",value:recusados,     color:"#fca5a5" },
-          ] as { key: "todos"|"pendente"|"aceito"|"recusado"; label:string; value:number; color:string }[]).map(s => (
+            { key:"todos",    label:"Todos",    value:items.length, color:"#2d5474"  },
+            { key:"pendente", label:"Pendentes",value:pendentes,    color:"#a16207"  },
+            { key:"aceito",   label:"Aceitos",  value:aceitos,      color:"#16a34a"  },
+            { key:"recusado", label:"Recusados",value:recusados,    color:"#dc2626"  },
+          ] as { key:"todos"|"pendente"|"aceito"|"recusado"; label:string; value:number; color:string }[]).map(s => (
             <button key={s.key} onClick={() => setFiltro(s.key)}
-              style={{ flex:1, padding:"10px 16px", border:"none", cursor:"pointer",
-                borderBottom: filtro === s.key ? "3px solid #60a5fa" : "3px solid transparent",
-                background: filtro === s.key ? "rgba(255,255,255,.12)" : "transparent",
-                display:"flex", flexDirection:"column", alignItems:"center", gap:2, transition:"background .15s" }}>
-              <span style={{ color:"rgba(255,255,255,.6)", fontSize:9, fontWeight:700,
-                  letterSpacing:.8, textTransform:"uppercase" }}>{s.label}</span>
-              <span style={{ color:s.color, fontSize:20, fontWeight:800, lineHeight:1 }}>{s.value}</span>
+              style={{ flex:1, padding:"9px 12px", border:"none", cursor:"pointer",
+                borderBottom: filtro === s.key ? `2px solid ${s.color}` : "2px solid transparent",
+                background: filtro === s.key ? "#fff" : "transparent",
+                display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+              <span style={{ fontSize:11, fontWeight:700, color: filtro === s.key ? s.color : "#64748b" }}>{s.label}</span>
+              <span style={{ background: filtro === s.key ? s.color : "#e2e8f0",
+                  color: filtro === s.key ? "#fff" : "#64748b",
+                  borderRadius:10, padding:"1px 7px", fontSize:11, fontWeight:700 }}>{s.value}</span>
             </button>
           ))}
         </div>
 
-        {/* ── Cards grid ── */}
-        <div style={{ overflow:"auto", flex:1, padding:"16px 18px" }}>
+        {/* Body */}
+        <div style={{ overflowY:"auto", flex:1 }}>
+
+          {/* section title */}
+          <div style={{ fontSize:11, fontWeight:700, color:"#2d5474", textTransform:"uppercase",
+              letterSpacing:".08em", padding:"10px 20px 8px",
+              borderBottom:"2px solid #e2e8f0", background:"#f1f5f9", display:"flex", alignItems:"center", gap:6 }}>
+            <div style={{ width:3, height:14, background:"#2563eb", borderRadius:2 }} />
+            Solicitações de Empréstimo
+          </div>
+
           {visíveis.length === 0 ? (
-            <div style={{ textAlign:"center", padding:"60px", color:"#94a3b8", fontSize:14 }}>
+            <div style={{ textAlign:"center", padding:"60px", color:"#94a3b8", fontSize:13 }}>
               Nenhuma solicitação neste filtro.
             </div>
           ) : (
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:14 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",
+                gap:16, padding:"16px 20px" }}>
               {visíveis.map(it => {
                 const sc = statusColor[it.status];
                 return (
-                  <div key={it.id} style={{ background:"#fff", borderRadius:12,
-                      boxShadow:"0 2px 8px rgba(0,0,0,.08)", border:"1px solid #e2e8f0",
-                      overflow:"hidden", display:"flex", flexDirection:"column" }}>
+                  <div key={it.id} style={{ background:"#f8fafc", border:"1px solid #e2e8f0",
+                      borderRadius:8, padding:"12px 14px", display:"flex", flexDirection:"column", gap:10 }}>
 
-                    {/* card header */}
-                    <div style={{ background:"#f8fafc", padding:"10px 14px",
-                        borderBottom:"1px solid #e2e8f0",
-                        display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                        <span style={{ background:"#1e3a5f", color:"#fff", borderRadius:6,
-                            padding:"3px 9px", fontSize:12, fontWeight:800, letterSpacing:.5 }}>
-                          {it.clave}
-                        </span>
+                    {/* topo do card */}
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                        <span style={{ background:"#2d5474", color:"#fff", borderRadius:5,
+                            padding:"2px 8px", fontSize:11, fontWeight:800, letterSpacing:.5 }}>{it.clave}</span>
                         <span style={{ background:sc.bg, color:sc.text, borderRadius:5,
-                            padding:"2px 8px", fontSize:10, fontWeight:700 }}>{sc.label}</span>
+                            padding:"2px 7px", fontSize:10, fontWeight:700 }}>{sc.label}</span>
                       </div>
                       <span style={{ fontSize:10, color:"#94a3b8" }}>{it.fecha}</span>
                     </div>
 
-                    {/* card body */}
-                    <div style={{ padding:"12px 14px", flex:1 }}>
-                      {/* cliente */}
-                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-                        <div style={{ background:"#e0f2fe", borderRadius:"50%", width:34, height:34,
-                            display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                          <svg viewBox="0 0 24 24" style={{ width:18, height:18, fill:"#0369a1" }}>
-                            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-                          </svg>
-                        </div>
-                        <div>
-                          <div style={{ fontSize:13, fontWeight:700, color:"#1e293b", lineHeight:1.2 }}>{it.cliente}</div>
-                          <div style={{ fontSize:10, color:"#64748b", marginTop:1 }}>{it.tipo}</div>
-                        </div>
+                    {/* cliente */}
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <div style={{ background:"#e0f2fe", borderRadius:"50%", width:30, height:30,
+                          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                        <svg viewBox="0 0 24 24" style={{ width:16, height:16, fill:"#0369a1" }}>
+                          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                        </svg>
                       </div>
-
-                      {/* valores */}
-                      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
-                        {[
-                          { label:"Valor Empréstimo", value:`R$ ${fmtBRL(it.valorPrestado)}`,              color:"#2d5474" },
-                          { label:"Total a Pagar",    value:`R$ ${fmtBRL(it.valorPagar)}`,                    color:"#1d4ed8" },
-                          { label:"Juros",            value:`R$ ${fmtBRL(it.valorPagar - it.valorPrestado)}`, color:"#d97706" },
-                          { label:"Nº Parcelas",      value:String(it.parcelas),                              color:"#475569" },
-                          { label:"Valor Parcela",    value:`R$ ${fmtBRL(it.vcuota)}`,                        color:"#16a34a" },
-                        ].map(f => (
-                          <div key={f.label} style={{ background:"#f8fafc", borderRadius:8,
-                              padding:"8px 10px", border:"1px solid #e2e8f0" }}>
-                            <div style={{ fontSize:9, color:"#94a3b8", fontWeight:600,
-                                textTransform:"uppercase", letterSpacing:.4 }}>{f.label}</div>
-                            <div style={{ fontSize:14, fontWeight:800, color:f.color, marginTop:2 }}>{f.value}</div>
-                          </div>
-                        ))}
+                      <div>
+                        <div style={{ fontSize:12, fontWeight:700, color:"#1e293b", lineHeight:1.2 }}>{it.cliente}</div>
+                        <div style={{ fontSize:10, color:"#64748b" }}>{it.tipo}</div>
                       </div>
-
-                      {/* botões */}
-                      {it.status === "pendente" ? (
-                        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-                          <button onClick={() => mudar(it.id, "recusado")}
-                            style={{ padding:"9px 0", background:"#fee2e2", color:"#dc2626",
-                              border:"1px solid #fca5a5", borderRadius:8, fontSize:12, fontWeight:700,
-                              cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
-                            <svg viewBox="0 0 24 24" style={{ width:14, height:14, fill:"#dc2626" }}>
-                              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                            </svg>
-                            Recusar
-                          </button>
-                          <button onClick={() => mudar(it.id, "aceito")}
-                            style={{ padding:"9px 0", background:"#dcfce7", color:"#16a34a",
-                              border:"1px solid #86efac", borderRadius:8, fontSize:12, fontWeight:700,
-                              cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
-                            <svg viewBox="0 0 24 24" style={{ width:14, height:14, fill:"#16a34a" }}>
-                              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                            </svg>
-                            Aceitar
-                          </button>
-                        </div>
-                      ) : (
-                        <div style={{ textAlign:"center", padding:"8px 0" }}>
-                          <button onClick={() => mudar(it.id, "pendente")}
-                            style={{ padding:"6px 18px", background:"#f1f5f9", color:"#64748b",
-                              border:"1px solid #cbd5e1", borderRadius:7, fontSize:11, fontWeight:600,
-                              cursor:"pointer" }}>
-                            ↩ Desfazer
-                          </button>
-                        </div>
-                      )}
                     </div>
+
+                    {/* valores */}
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
+                      {[
+                        { label:"Valor Empréstimo", value:`R$ ${fmtBRL(it.valorPrestado)}`, color:"#2d5474" },
+                        { label:"Total a Pagar",    value:`R$ ${fmtBRL(it.valorPagar)}`,    color:"#1d4ed8" },
+                        { label:"Juros",            value:`R$ ${fmtBRL(it.valorPagar - it.valorPrestado)}`, color:"#d97706" },
+                        { label:"Nº Parcelas",      value:String(it.parcelas),              color:"#475569" },
+                        { label:"Valor Parcela",    value:`R$ ${fmtBRL(it.vcuota)}`,        color:"#16a34a" },
+                      ].map(f => (
+                        <div key={f.label} style={{ background:"#fff", borderRadius:6,
+                            padding:"6px 8px", border:"1px solid #e2e8f0" }}>
+                          <div style={{ fontSize:9, color:"#94a3b8", fontWeight:600,
+                              textTransform:"uppercase", letterSpacing:.4 }}>{f.label}</div>
+                          <div style={{ fontSize:13, fontWeight:800, color:f.color, marginTop:1 }}>{f.value}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* botões */}
+                    {it.status === "pendente" ? (
+                      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                        <button onClick={() => mudar(it.id, "recusado")}
+                          style={{ padding:"8px 0", background:"#fee2e2", color:"#dc2626",
+                            border:"1px solid #fca5a5", borderRadius:6, fontSize:12, fontWeight:700,
+                            cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:4 }}>
+                          <svg viewBox="0 0 24 24" style={{ width:13, height:13, fill:"#dc2626" }}>
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                          </svg>
+                          Recusar
+                        </button>
+                        <button onClick={() => mudar(it.id, "aceito")}
+                          style={{ padding:"8px 0", background:"#dcfce7", color:"#16a34a",
+                            border:"1px solid #86efac", borderRadius:6, fontSize:12, fontWeight:700,
+                            cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:4 }}>
+                          <svg viewBox="0 0 24 24" style={{ width:13, height:13, fill:"#16a34a" }}>
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                          </svg>
+                          Aceitar
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ textAlign:"center" }}>
+                        <button onClick={() => mudar(it.id, "pendente")}
+                          style={{ padding:"6px 16px", background:"#fff", color:"#64748b",
+                            border:"1px solid #cbd5e1", borderRadius:6, fontSize:11, fontWeight:600,
+                            cursor:"pointer" }}>
+                          ↩ Desfazer
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -4129,18 +4126,18 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
           )}
         </div>
 
-        {/* ── Footer ── */}
+        {/* Footer */}
         <div style={{ display:"flex", alignItems:"center", padding:"10px 20px",
-            borderTop:"1px solid #e2e8f0", background:"#fff", flexShrink:0, gap:10 }}>
+            borderTop:"1px solid #e2e8f0", background:"#f8fafc", flexShrink:0, gap:10 }}>
           <span style={{ fontSize:12, color:"#64748b" }}>
-            <strong style={{ color:"#d97706" }}>{pendentes}</strong> pendentes &nbsp;·&nbsp;
+            <strong style={{ color:"#a16207" }}>{pendentes}</strong> pendentes &nbsp;·&nbsp;
             <strong style={{ color:"#16a34a" }}>{aceitos}</strong> aceitos &nbsp;·&nbsp;
             <strong style={{ color:"#dc2626" }}>{recusados}</strong> recusados
           </span>
           <div style={{ flex:1 }} />
           <button onClick={onClose}
-            style={{ padding:"8px 30px", background:"#f1f5f9", color:"#374151",
-              border:"1px solid #cbd5e1", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer" }}>
+            style={{ padding:"8px 28px", background:"#fff", color:"#374151",
+              border:"1px solid #cbd5e1", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
             Fechar
           </button>
         </div>
