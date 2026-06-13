@@ -3956,13 +3956,18 @@ const CLIENTES_MOCK = [
 
 function ListaClientesModal({ onClose }: { onClose: () => void }) {
   const [busca, setBusca] = useState("");
-  const hoje = new Date().toISOString().slice(0, 10);
+  const hoje = new Date().toLocaleDateString("pt-BR");
 
   const filtrados = CLIENTES_MOCK.filter(c =>
     c.nome.toLowerCase().includes(busca.toLowerCase()) ||
     c.nro.includes(busca) ||
     c.tel.includes(busca)
   );
+
+  const somarNum = (key: keyof typeof CLIENTES_MOCK[0]) =>
+    CLIENTES_MOCK.reduce((s, c) => s + parseFloat(String(c[key]).replace(".","").replace(",",".")||"0"), 0);
+
+  const fmtBRL = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 
   const handlePDF = () => {
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
@@ -3971,139 +3976,188 @@ function ListaClientesModal({ onClose }: { onClose: () => void }) {
     doc.text(`Lista de Clientes — ${hoje}   Vendedor: SystemPay`, 10, 12);
     autoTable(doc, {
       startY: 18,
-      head: [["#","FECHA","NRO CRÉDITO","NOME DO CLIENTE","TELEFONE","DIRECCIÓN","VL PRESTADO","VL A PAGAR","VL INTERESE","%","V.CUOTA","CUOTAS","C.PAGAS","C.RESTA","SALDO","SANÇÃO","VISITAS","FREC.","ÚLT.PAGO"]],
-      body: filtrados.map((c, i) => [i+1,c.fecha,c.nro,c.nome,c.tel,c.dir,c.prest,c.apagar,c.inter,c.pct,c.vcuota,c.cuotas,c.cpagas,c.cresta,c.saldo,c.san,c.vis,c.frec,c.ult]),
-      styles: { fontSize: 6, cellPadding: 1.5 },
-      headStyles: { fillColor: [45,84,116], textColor: 255, fontStyle: "bold", fontSize: 6 },
+      head: [["#","FECHA","NRO CRÉDITO","NOME DO CLIENTE","TELEFONE","VL PRESTADO","VL A PAGAR","VL INTERESE","%","V.CUOTA","CUOTAS","C.PAGAS","C.RESTA","SALDO","VISITAS","FREC.","ÚLT.PAGO"]],
+      body: filtrados.map((c,i) => [i+1,c.fecha,c.nro,c.nome,c.tel,c.prest,c.apagar,c.inter,c.pct,c.vcuota,c.cuotas,c.cpagas,c.cresta,c.saldo,c.vis,c.frec,c.ult]),
+      styles: { fontSize: 6.5, cellPadding: 2 },
+      headStyles: { fillColor: [45,84,116], textColor: 255, fontStyle: "bold" },
       alternateRowStyles: { fillColor: [240,245,255] },
       margin: { left: 5, right: 5 },
     });
-    doc.save(`lista-clientes-${hoje}.pdf`);
+    doc.save(`lista-clientes-${new Date().toISOString().slice(0,10)}.pdf`);
   };
 
   const handleCSV = () => {
-    const cols = ["#","FECHA","NRO CRÉDITO","NOME DO CLIENTE","TELEFONE","DIRECCIÓN","VL PRESTADO","VL A PAGAR","VL INTERESE","%","V.CUOTA","CUOTAS","C.PAGAS","C.RESTA","SALDO","SANÇÃO","VISITAS","FREC.","ÚLT.PAGO"];
-    const rows = filtrados.map((c, i) => [i+1,c.fecha,c.nro,c.nome,c.tel,c.dir,c.prest,c.apagar,c.inter,c.pct,c.vcuota,c.cuotas,c.cpagas,c.cresta,c.saldo,c.san,c.vis,c.frec,c.ult]);
-    const csv = [cols, ...rows].map(r => r.join(";")).join("\n");
+    const cols = ["#","FECHA","NRO CRÉDITO","NOME DO CLIENTE","TELEFONE","VL PRESTADO","VL A PAGAR","VL INTERESE","%","V.CUOTA","CUOTAS","C.PAGAS","C.RESTA","SALDO","VISITAS","FREC.","ÚLT.PAGO"];
+    const rows = filtrados.map((c,i) => [i+1,c.fecha,c.nro,c.nome,c.tel,c.prest,c.apagar,c.inter,c.pct,c.vcuota,c.cuotas,c.cpagas,c.cresta,c.saldo,c.vis,c.frec,c.ult]);
+    const csv = [cols,...rows].map(r => r.join(";")).join("\n");
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-    a.download = `lista-clientes-${hoje}.csv`;
+    a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+    a.download = `lista-clientes-${new Date().toISOString().slice(0,10)}.csv`;
     a.click();
   };
 
-  const COL: { key: keyof typeof CLIENTES_MOCK[0]; label: string; w?: number }[] = [
-    { key: "fecha",   label: "FECHA",        w: 90 },
-    { key: "nro",     label: "NRO CRÉDITO",  w: 105 },
-    { key: "nome",    label: "NOME DO CLIENTE", w: 200 },
-    { key: "tel",     label: "TELEFONE",     w: 115 },
-    { key: "prest",   label: "VL PRESTADO",  w: 90 },
-    { key: "apagar",  label: "VL A PAGAR",   w: 85 },
-    { key: "inter",   label: "VL INTERESE",  w: 85 },
-    { key: "pct",     label: "%",            w: 40 },
-    { key: "vcuota",  label: "V.CUOTA",      w: 72 },
-    { key: "cuotas",  label: "CUOTAS",       w: 60 },
-    { key: "cpagas",  label: "C.PAGAS",      w: 62 },
-    { key: "cresta",  label: "C.RESTA",      w: 62 },
-    { key: "saldo",   label: "SALDO",        w: 78 },
-    { key: "vis",     label: "VISITAS",      w: 60 },
-    { key: "frec",    label: "FREC.",        w: 62 },
-    { key: "ult",     label: "ÚLT.PAGO",    w: 95 },
+  const COL: { key: keyof typeof CLIENTES_MOCK[0]; label: string; w: number; right?: boolean }[] = [
+    { key:"fecha",  label:"FECHA",          w:95 },
+    { key:"nro",    label:"NRO CRÉDITO",    w:110 },
+    { key:"nome",   label:"NOME DO CLIENTE",w:210 },
+    { key:"tel",    label:"TELEFONE",       w:120 },
+    { key:"prest",  label:"VL PRESTADO",    w:95,  right:true },
+    { key:"apagar", label:"VL A PAGAR",     w:90,  right:true },
+    { key:"inter",  label:"VL INTERESE",    w:90,  right:true },
+    { key:"pct",    label:"%",              w:44 },
+    { key:"vcuota", label:"V.CUOTA",        w:78,  right:true },
+    { key:"cuotas", label:"CUOTAS",         w:62 },
+    { key:"cpagas", label:"C.PAGAS",        w:66 },
+    { key:"cresta", label:"C.RESTA",        w:66 },
+    { key:"saldo",  label:"SALDO",          w:84,  right:true },
+    { key:"vis",    label:"VISITAS",        w:64 },
+    { key:"frec",   label:"FREC.",          w:68 },
+    { key:"ult",    label:"ÚLT.PAGO",       w:98 },
   ];
 
-  const thStyle: React.CSSProperties = {
-    padding: "7px 8px", fontSize: 10, fontWeight: 700, color: "#fff",
-    background: "#3d6e8e", textAlign: "center", whiteSpace: "nowrap",
-    borderRight: "1px solid #2d5474", position: "sticky", top: 0, zIndex: 2,
-  };
-  const tdStyle = (alt: boolean, right?: boolean): React.CSSProperties => ({
-    padding: "5px 8px", fontSize: 11, color: "#1e293b", whiteSpace: "nowrap",
-    background: alt ? "#f0f5ff" : "#fff", borderBottom: "1px solid #e8edf2",
-    borderRight: "1px solid #e8edf2", textAlign: right ? "right" : "left",
-  });
+  const summaryCards = [
+    { label:"Total Clientes",   value: String(CLIENTES_MOCK.length),          color:"#2d5474", icon:"👥" },
+    { label:"Total Prestado",   value:`R$ ${fmtBRL(somarNum("prest"))}`,      color:"#16a34a", icon:"💰" },
+    { label:"Total a Pagar",    value:`R$ ${fmtBRL(somarNum("apagar"))}`,     color:"#2563eb", icon:"📋" },
+    { label:"Total Interese",   value:`R$ ${fmtBRL(somarNum("inter"))}`,      color:"#d97706", icon:"📈" },
+    { label:"Saldo Restante",   value:`R$ ${fmtBRL(somarNum("saldo"))}`,      color:"#7c3aed", icon:"💳" },
+  ];
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 1000,
-        display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 20px 60px rgba(0,0,0,.35)",
-          width: "97vw", maxWidth: 1500, maxHeight: "93vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ position:"fixed", inset:0, background:"rgba(15,23,42,.65)", zIndex:1000,
+        display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(2px)" }}>
+      <div style={{ background:"#f1f5f9", borderRadius:14, boxShadow:"0 24px 80px rgba(0,0,0,.4)",
+          width:"98vw", maxWidth:1560, maxHeight:"95vh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
 
-        {/* Header */}
-        <div style={{ background: "linear-gradient(135deg,#2d5474 0%,#3d6e8e 60%,#2563eb 100%)",
-            padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ background: "rgba(255,255,255,.18)", borderRadius: 8, padding: "6px 8px" }}>
-              <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff" }}>
+        {/* ── Header ── */}
+        <div style={{ background:"linear-gradient(135deg,#1e3a5f 0%,#2d5474 50%,#1d4ed8 100%)",
+            padding:"16px 22px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+            <div style={{ background:"rgba(255,255,255,.15)", borderRadius:10, padding:"8px 10px",
+                border:"1px solid rgba(255,255,255,.2)" }}>
+              <svg viewBox="0 0 24 24" style={{ width:22, height:22, fill:"#fff" }}>
                 <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
               </svg>
             </div>
             <div>
-              <div style={{ color: "#fff", fontSize: 15, fontWeight: 700, letterSpacing: .3 }}>Lista de Clientes</div>
-              <div style={{ color: "rgba(255,255,255,.75)", fontSize: 11 }}>Fecha: {hoje} &nbsp;|&nbsp; Vendedor: SystemPay</div>
+              <div style={{ color:"#fff", fontSize:16, fontWeight:800, letterSpacing:.4 }}>Lista de Clientes</div>
+              <div style={{ color:"rgba(255,255,255,.65)", fontSize:11, marginTop:1 }}>
+                {hoje} &nbsp;·&nbsp; Vendedor: <strong style={{ color:"rgba(255,255,255,.9)" }}>SystemPay</strong>
+              </div>
             </div>
           </div>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,.18)", border: "none",
-              borderRadius: 6, color: "#fff", width: 28, height: 28, cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700 }}>✕</button>
+          <button onClick={onClose}
+            style={{ background:"rgba(255,255,255,.15)", border:"1px solid rgba(255,255,255,.25)",
+              borderRadius:8, color:"#fff", width:32, height:32, cursor:"pointer",
+              display:"flex", alignItems:"center", justifyContent:"center", fontSize:17, fontWeight:700,
+              transition:"background .15s" }}
+            onMouseEnter={e => (e.currentTarget.style.background="rgba(255,255,255,.28)")}
+            onMouseLeave={e => (e.currentTarget.style.background="rgba(255,255,255,.15)")}>✕</button>
         </div>
 
-        {/* Toolbar */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px",
-            borderBottom: "1px solid #e2e8f0", background: "#f8fafc", flexShrink: 0 }}>
-          <div style={{ position: "relative", flex: 1, maxWidth: 340 }}>
-            <svg viewBox="0 0 24 24" style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)",
-                width: 15, height: 15, fill: "#94a3b8", pointerEvents: "none" }}>
-              <path d="M21 19l-4.35-4.35A7 7 0 1 0 5 5a7 7 0 0 0 9.65 9.65L19 19l2 2zM7 12A5 5 0 1 1 12 7 5 5 0 0 1 7 12z"/>
-            </svg>
-            <input value={busca} onChange={e => setBusca(e.target.value)}
-              placeholder="Buscar por nome, crédito ou telefone…"
-              style={{ width: "100%", height: 34, paddingLeft: 32, paddingRight: 10, border: "1px solid #e2e8f0",
-                borderRadius: 7, fontSize: 12, color: "#1e293b", background: "#fff", outline: "none", boxSizing: "border-box" }} />
-          </div>
-          <span style={{ fontSize: 12, color: "#64748b", marginLeft: 4 }}>{filtrados.length} clientes</span>
-          <div style={{ flex: 1 }} />
-          {[
-            { label: "🖨 Imprimir", onClick: handlePDF, primary: true },
-            { label: "📄 CSV",     onClick: handleCSV, primary: false },
-          ].map(btn => (
-            <button key={btn.label} onClick={btn.onClick}
-              style={{ padding: "6px 16px", fontSize: 12, fontWeight: 600, borderRadius: 6, cursor: "pointer",
-                background: btn.primary ? "#2563eb" : "#fff",
-                color: btn.primary ? "#fff" : "#374151",
-                border: btn.primary ? "none" : "1px solid #d1d5db",
-                boxShadow: btn.primary ? "0 2px 6px rgba(37,99,235,.3)" : "none" }}>
-              {btn.label}
-            </button>
+        {/* ── Summary Cards ── */}
+        <div style={{ display:"flex", gap:10, padding:"12px 18px 0", flexShrink:0 }}>
+          {summaryCards.map(sc => (
+            <div key={sc.label} style={{ flex:1, background:"#fff", borderRadius:10, padding:"10px 14px",
+                boxShadow:"0 1px 4px rgba(0,0,0,.08)", borderLeft:`4px solid ${sc.color}`,
+                display:"flex", flexDirection:"column", gap:3 }}>
+              <div style={{ fontSize:11, color:"#64748b", fontWeight:600, display:"flex", alignItems:"center", gap:5 }}>
+                <span>{sc.icon}</span>{sc.label}
+              </div>
+              <div style={{ fontSize:15, fontWeight:800, color:sc.color }}>{sc.value}</div>
+            </div>
           ))}
         </div>
 
-        {/* Table */}
-        <div style={{ overflow: "auto", flex: 1 }}>
-          <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }}>
+        {/* ── Toolbar ── */}
+        <div style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 18px",
+            borderBottom:"1px solid #e2e8f0", flexShrink:0, marginTop:10, background:"#f8fafc" }}>
+          <div style={{ position:"relative", width:320 }}>
+            <svg viewBox="0 0 24 24" style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)",
+                width:14, height:14, fill:"#94a3b8", pointerEvents:"none" }}>
+              <path d="M21 19l-4.35-4.35A7 7 0 1 0 5 5a7 7 0 0 0 9.65 9.65L19 19l2 2zM7 12A5 5 0 1 1 12 7 5 5 0 0 1 7 12z"/>
+            </svg>
+            <input value={busca} onChange={e => setBusca(e.target.value)}
+              placeholder="Buscar nome, crédito ou telefone…"
+              style={{ width:"100%", height:34, paddingLeft:30, paddingRight:10, border:"1px solid #cbd5e1",
+                borderRadius:8, fontSize:12, color:"#1e293b", background:"#fff", outline:"none", boxSizing:"border-box" }} />
+          </div>
+          <div style={{ background:"#e2e8f0", borderRadius:6, padding:"4px 12px", fontSize:12,
+              color:"#475569", fontWeight:600 }}>
+            {filtrados.length} de {CLIENTES_MOCK.length} clientes
+          </div>
+          <div style={{ flex:1 }} />
+          <button onClick={handleCSV}
+            style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", fontSize:12, fontWeight:600,
+              background:"#fff", color:"#374151", border:"1px solid #d1d5db", borderRadius:7, cursor:"pointer" }}>
+            <svg viewBox="0 0 24 24" style={{ width:14, height:14, fill:"#16a34a" }}>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 9H9v-1h2v1zm4 0h-2v-1h2v1zm1-3H8v-1h8v1z"/>
+            </svg>
+            CSV
+          </button>
+          <button onClick={handlePDF}
+            style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 18px", fontSize:12, fontWeight:700,
+              background:"linear-gradient(135deg,#2d5474,#2563eb)", color:"#fff",
+              border:"none", borderRadius:7, cursor:"pointer", boxShadow:"0 2px 8px rgba(37,99,235,.35)" }}>
+            <svg viewBox="0 0 24 24" style={{ width:14, height:14, fill:"#fff" }}>
+              <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+            </svg>
+            Imprimir PDF
+          </button>
+        </div>
+
+        {/* ── Table ── */}
+        <div style={{ overflow:"auto", flex:1 }}>
+          <table style={{ borderCollapse:"collapse", width:"max-content", minWidth:"100%" }}>
             <thead>
               <tr>
-                <th style={{ ...thStyle, width: 36 }}>#</th>
-                {COL.map(c => <th key={c.key} style={{ ...thStyle, width: c.w }}>{c.label}</th>)}
+                <th style={{ position:"sticky", top:0, zIndex:2, background:"#2d5474", color:"#fff",
+                    padding:"9px 10px", fontSize:10, fontWeight:700, textAlign:"center",
+                    borderRight:"1px solid #3d6e8e", whiteSpace:"nowrap", width:42 }}>#</th>
+                {COL.map(c => (
+                  <th key={c.key} style={{ position:"sticky", top:0, zIndex:2, background:"#2d5474", color:"#fff",
+                      padding:"9px 10px", fontSize:10, fontWeight:700,
+                      textAlign: c.right ? "right" : "center",
+                      borderRight:"1px solid #3d6e8e", whiteSpace:"nowrap", width:c.w }}>
+                    {c.label}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {filtrados.length === 0 ? (
                 <tr><td colSpan={COL.length + 1}
-                  style={{ textAlign: "center", padding: "32px", color: "#94a3b8", fontSize: 13 }}>
+                  style={{ textAlign:"center", padding:"48px", color:"#94a3b8", fontSize:14 }}>
                   Nenhum cliente encontrado.
                 </td></tr>
               ) : filtrados.map((c, i) => {
                 const alt = i % 2 === 1;
-                const numCols = new Set(["prest","apagar","inter","vcuota","saldo","san"]);
                 return (
-                  <tr key={c.nro} style={{ transition: "background .1s" }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "#dbeafe")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "")}>
-                    <td style={{ ...tdStyle(alt), textAlign: "center", color: "#64748b", fontWeight: 600 }}>{i + 1}</td>
-                    {COL.map(col => (
-                      <td key={col.key} style={tdStyle(alt, numCols.has(col.key))}>
-                        {c[col.key]}
-                      </td>
-                    ))}
+                  <tr key={c.nro}
+                    onMouseEnter={e => (e.currentTarget.style.background="#dbeafe")}
+                    onMouseLeave={e => (e.currentTarget.style.background="")}>
+                    <td style={{ padding:"6px 8px", fontSize:11, textAlign:"center", fontWeight:700,
+                        color:"#94a3b8", background: alt ? "#f8fafc" : "#fff",
+                        borderBottom:"1px solid #e8edf2", borderRight:"1px solid #e8edf2" }}>{i+1}</td>
+                    {COL.map(col => {
+                      const val = c[col.key];
+                      const isFrec = col.key === "frec";
+                      const isNome = col.key === "nome";
+                      const isNum = col.right;
+                      return (
+                        <td key={col.key} style={{ padding:"6px 10px", fontSize:11, whiteSpace:"nowrap",
+                            background: alt ? "#f8fafc" : "#fff",
+                            borderBottom:"1px solid #e8edf2", borderRight:"1px solid #e8edf2",
+                            textAlign: isNum ? "right" : "left",
+                            fontWeight: isNome ? 600 : 400,
+                            color: isNum ? "#1e3a5f" : "#334155" }}>
+                          {isFrec ? (
+                            <span style={{ background:"#dcfce7", color:"#16a34a", borderRadius:4,
+                                padding:"2px 7px", fontSize:10, fontWeight:700 }}>{val}</span>
+                          ) : val}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}
@@ -4111,15 +4165,17 @@ function ListaClientesModal({ onClose }: { onClose: () => void }) {
           </table>
         </div>
 
-        {/* Footer */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 10,
-            padding: "10px 20px", borderTop: "1px solid #e2e8f0", background: "#f8fafc", flexShrink: 0 }}>
-          <span style={{ fontSize: 12, color: "#64748b", marginRight: "auto" }}>
-            Total: <strong>{filtrados.length}</strong> clientes
-          </span>
+        {/* ── Footer ── */}
+        <div style={{ display:"flex", alignItems:"center", padding:"10px 20px",
+            borderTop:"1px solid #e2e8f0", background:"#fff", flexShrink:0, gap:12 }}>
+          <div style={{ fontSize:12, color:"#64748b" }}>
+            Exibindo <strong style={{ color:"#1e293b" }}>{filtrados.length}</strong> clientes
+            {busca && ` — filtro: "${busca}"`}
+          </div>
+          <div style={{ flex:1 }} />
           <button onClick={onClose}
-            style={{ padding: "8px 28px", background: "#fff", color: "#374151",
-              border: "1px solid #d1d5db", borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            style={{ padding:"8px 30px", background:"#f1f5f9", color:"#374151",
+              border:"1px solid #cbd5e1", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer" }}>
             Fechar
           </button>
         </div>
