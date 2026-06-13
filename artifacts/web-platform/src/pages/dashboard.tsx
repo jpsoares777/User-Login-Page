@@ -3933,13 +3933,6 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
             </div>
         </div>
 
-        {/* Configuração do Vendedor */}
-        <div>
-          <AccordionHeader title="Configuração do Vendedor e Recibo de Pagamento" open={configVendOpen} onToggle={() => setConfigVendOpen(o => !o)} />
-          {configVendOpen && (
-            <div className="px-5 py-4 text-sm text-gray-500 italic">Sem configurações de vendedor.</div>
-          )}
-        </div>
 
       </div>
     </div>
