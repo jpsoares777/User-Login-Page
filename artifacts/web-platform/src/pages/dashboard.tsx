@@ -4145,6 +4145,142 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+const LUCRO_MOCK = [
+  { cliente:"Ana Paula Marques De Oliveira", estado:"Cancelado-2026-05-25", valorVenda:700,   totalPago:700,  saldo:0,   lucroDiario:200, totalLucro:200 },
+  { cliente:"Anny Briane Pires Belfort",     estado:"Ativo",                valorVenda:1120,  totalPago:910,  saldo:210, lucroDiario:0,   totalLucro:110 },
+  { cliente:"Kledon Viana Gonçalves",        estado:"Ativo",                valorVenda:900,   totalPago:450,  saldo:450, lucroDiario:90,  totalLucro:90  },
+  { cliente:"Luciana Abreu Da Silva",        estado:"Ativo",                valorVenda:500,   totalPago:200,  saldo:300, lucroDiario:50,  totalLucro:50  },
+  { cliente:"Mariana Beatriz Rabelo Barbosa",estado:"Ativo",                valorVenda:1000,  totalPago:600,  saldo:400, lucroDiario:100, totalLucro:100 },
+];
+
+function LucroModal({ onClose }: { onClose: () => void }) {
+  const hoje = new Date().toLocaleDateString("pt-BR");
+  const fmtBRL = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits:2 });
+
+  const totVenda   = LUCRO_MOCK.reduce((s, r) => s + r.valorVenda,   0);
+  const totPago    = LUCRO_MOCK.reduce((s, r) => s + r.totalPago,    0);
+  const totSaldo   = LUCRO_MOCK.reduce((s, r) => s + r.saldo,        0);
+  const totDiario  = LUCRO_MOCK.reduce((s, r) => s + r.lucroDiario,  0);
+  const totLucro   = LUCRO_MOCK.reduce((s, r) => s + r.totalLucro,   0);
+
+  const thS: React.CSSProperties = {
+    padding:"9px 12px", fontSize:10, fontWeight:700, color:"#fff",
+    background:"#2d5474", whiteSpace:"nowrap", borderRight:"1px solid #3d6e8e",
+    position:"sticky", top:0, zIndex:2, textAlign:"left",
+  };
+
+  return (
+    <div style={{ position:"fixed", inset:0, zIndex:9999,
+        background:"rgba(15,23,42,.5)", display:"flex", alignItems:"center", justifyContent:"center" }}
+        onClick={onClose}>
+      <div style={{ background:"#fff", borderRadius:12, width:960, maxWidth:"96vw",
+          maxHeight:"92vh", display:"flex", flexDirection:"column",
+          boxShadow:"0 25px 80px rgba(0,0,0,.35)", overflow:"hidden" }}
+          onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{ background:"linear-gradient(135deg,#2d5474,#3d6e8e)", padding:"14px 20px",
+            display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <svg viewBox="0 0 24 24" style={{ width:18, height:18, fill:"#fff", opacity:.9 }}>
+              <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+            </svg>
+            <span style={{ color:"#fff", fontWeight:700, fontSize:15, letterSpacing:".02em" }}>Lucro diário de Vendas</span>
+            <span style={{ color:"rgba(255,255,255,.55)", fontSize:11 }}>{hoje}</span>
+          </div>
+          <button onClick={onClose} style={{ background:"rgba(255,255,255,.15)", border:"none", borderRadius:6,
+              color:"#fff", width:28, height:28, cursor:"pointer", fontSize:16, display:"flex",
+              alignItems:"center", justifyContent:"center", lineHeight:1 }}>✕</button>
+        </div>
+
+        {/* Body */}
+        <div style={{ overflowY:"auto", flex:1 }}>
+          <div style={{ fontSize:11, fontWeight:700, color:"#2d5474", textTransform:"uppercase",
+              letterSpacing:".08em", padding:"10px 20px 8px",
+              borderBottom:"2px solid #e2e8f0", background:"#f1f5f9", display:"flex", alignItems:"center", gap:6 }}>
+            <div style={{ width:3, height:14, background:"#2563eb", borderRadius:2 }} />
+            Vendas do Dia
+          </div>
+
+          <div style={{ overflow:"auto" }}>
+            <table style={{ borderCollapse:"collapse", width:"100%", minWidth:700 }}>
+              <thead>
+                <tr>
+                  <th style={{ ...thS, width:260 }}>CLIENTE</th>
+                  <th style={{ ...thS, width:200 }}>ESTADO</th>
+                  <th style={{ ...thS, width:110, textAlign:"right" }}>VALOR VENDA</th>
+                  <th style={{ ...thS, width:110, textAlign:"right" }}>TOTAL PAGO</th>
+                  <th style={{ ...thS, width:90,  textAlign:"right" }}>SALDO</th>
+                  <th style={{ ...thS, width:110, textAlign:"right" }}>LUCRO DIÁRIO</th>
+                  <th style={{ ...thS, width:110, textAlign:"right", borderRight:"none" }}>TOTAL LUCRO</th>
+                </tr>
+              </thead>
+              <tbody>
+                {LUCRO_MOCK.map((r, i) => {
+                  const alt = i % 2 === 1;
+                  const bg = alt ? "#f8fafc" : "#fff";
+                  const tdBase: React.CSSProperties = {
+                    padding:"8px 12px", fontSize:12, borderBottom:"1px solid #e8edf2",
+                    borderRight:"1px solid #edf0f4", background:bg, whiteSpace:"nowrap",
+                  };
+                  const isAtivo = r.estado === "Ativo";
+                  return (
+                    <tr key={i}
+                      onMouseEnter={e => (e.currentTarget.style.background="#dbeafe")}
+                      onMouseLeave={e => (e.currentTarget.style.background="")}>
+                      <td style={{ ...tdBase, fontWeight:600, color:"#1e293b" }}>{r.cliente}</td>
+                      <td style={{ ...tdBase }}>
+                        <span style={{ background: isAtivo ? "#dcfce7" : "#fee2e2",
+                            color: isAtivo ? "#16a34a" : "#dc2626",
+                            borderRadius:5, padding:"2px 8px", fontSize:10, fontWeight:700 }}>
+                          {r.estado}
+                        </span>
+                      </td>
+                      <td style={{ ...tdBase, textAlign:"right", color:"#1e3a5f", fontWeight:600 }}>{fmtBRL(r.valorVenda)}</td>
+                      <td style={{ ...tdBase, textAlign:"right", color:"#1e3a5f", fontWeight:600 }}>{fmtBRL(r.totalPago)}</td>
+                      <td style={{ ...tdBase, textAlign:"right", color: r.saldo > 0 ? "#d97706" : "#64748b" }}>{fmtBRL(r.saldo)}</td>
+                      <td style={{ ...tdBase, textAlign:"right", color:"#16a34a", fontWeight:700 }}>{fmtBRL(r.lucroDiario)}</td>
+                      <td style={{ ...tdBase, textAlign:"right", color:"#16a34a", fontWeight:700, borderRight:"none" }}>{fmtBRL(r.totalLucro)}</td>
+                    </tr>
+                  );
+                })}
+                {/* Totais */}
+                <tr style={{ background:"#f1f5f9" }}>
+                  <td colSpan={2} style={{ padding:"8px 12px", fontSize:12, fontWeight:700,
+                      color:"#2d5474", borderTop:"2px solid #e2e8f0", borderRight:"1px solid #e2e8f0",
+                      textAlign:"right", textTransform:"uppercase", letterSpacing:".04em" }}>
+                    Total Lucro
+                  </td>
+                  <td style={{ padding:"8px 12px", fontSize:12, fontWeight:800, color:"#1e3a5f",
+                      borderTop:"2px solid #e2e8f0", borderRight:"1px solid #e2e8f0", textAlign:"right" }}>{fmtBRL(totVenda)}</td>
+                  <td style={{ padding:"8px 12px", fontSize:12, fontWeight:800, color:"#1e3a5f",
+                      borderTop:"2px solid #e2e8f0", borderRight:"1px solid #e2e8f0", textAlign:"right" }}>{fmtBRL(totPago)}</td>
+                  <td style={{ padding:"8px 12px", fontSize:12, fontWeight:800, color:"#d97706",
+                      borderTop:"2px solid #e2e8f0", borderRight:"1px solid #e2e8f0", textAlign:"right" }}>{fmtBRL(totSaldo)}</td>
+                  <td style={{ padding:"8px 12px", fontSize:13, fontWeight:800, color:"#16a34a",
+                      borderTop:"2px solid #e2e8f0", borderRight:"1px solid #e2e8f0", textAlign:"right" }}>{fmtBRL(totDiario)}</td>
+                  <td style={{ padding:"8px 12px", fontSize:13, fontWeight:800, color:"#16a34a",
+                      borderTop:"2px solid #e2e8f0", textAlign:"right" }}>{fmtBRL(totLucro)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", padding:"10px 20px",
+            borderTop:"1px solid #e2e8f0", background:"#f8fafc", flexShrink:0 }}>
+          <button onClick={onClose}
+            style={{ padding:"8px 28px", background:"#fff", color:"#374151",
+              border:"1px solid #cbd5e1", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CaixaModal({ aberto, onConfirm, onClose }: { aberto: boolean; onConfirm: () => void; onClose: () => void }) {
   const acao = aberto ? "Fechar" : "Abrir";
   const cor  = aberto ? "#dc2626" : "#16a34a";
@@ -4527,6 +4663,7 @@ export default function DashboardPage() {
   const [caixaModalOpen, setCaixaModalOpen] = useState(false);
   const [dataFechamentoCaixa, setDataFechamentoCaixa] = useState<string | null>(null);
   const [codigosOpen, setCodigosOpen] = useState(false);
+  const [lucroOpen, setLucroOpen] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
@@ -7103,7 +7240,7 @@ export default function DashboardPage() {
                 { label: "👥 Lista Clientes", onClick: () => setListaClientesOpen(true) },
                 { label: caixaAberto ? "🔒 Fechar Caixa" : "🔓 Abrir Caixa", onClick: () => setCaixaModalOpen(true) },
                 { label: "🔑 Código Aprovações", onClick: () => setCodigosOpen(true) },
-                { label: "📈 Lucro ( $0.00 )", onClick: () => {} },
+                { label: "📈 Lucro ( $0.00 )", onClick: () => setLucroOpen(true) },
               ] as { label: string; onClick: () => void }[]).map((item) => (
                 <button key={item.label}
                   onClick={item.onClick}
@@ -7133,6 +7270,9 @@ export default function DashboardPage() {
 
       {/* ── MODAL: Códigos de Aprovação ── */}
       {codigosOpen && <CodigosAprovacaoModal onClose={() => setCodigosOpen(false)} />}
+
+      {/* ── MODAL: Lucro ── */}
+      {lucroOpen && <LucroModal onClose={() => setLucroOpen(false)} />}
 
       {/* ── MODAL: Caixa ── */}
       {caixaModalOpen && (
