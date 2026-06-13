@@ -7237,7 +7237,7 @@ export default function DashboardPage() {
                 flexDirection:"column", gap:7, padding:"12px 10px", overflowY:"auto",
                 borderLeft:"1px solid #e2e8f0" }}>
               {([
-                { icon:"⚙",  label:"Configurações",     accent:"#2d5474", onClick: () => setConfigOpen(true) },
+                { icon:<img src="/icon-config.png" alt="" style={{ width:16, height:16, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)", flexShrink:0 }} />, label:"Configurações", accent:"#2d5474", onClick: () => setConfigOpen(true) },
                 { icon:"📊", label:"Relatório Monitor",  accent:"#1d4ed8", onClick: () => setActiveMain("Consolidados") },
                 { icon:"👥", label:"Lista Clientes",      accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
                 { icon: caixaAberto ? "🔒" : "🔓",
@@ -7245,7 +7245,7 @@ export default function DashboardPage() {
                   accent: caixaAberto ? "#dc2626" : "#16a34a",
                   onClick: () => setCaixaModalOpen(true) },
                 { icon:"🔑", label:"Código Aprovações",  accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
-              ] as { icon:string; label:string; accent:string; onClick:()=>void }[]).map(item => (
+              ] as { icon:React.ReactNode; label:string; accent:string; onClick:()=>void }[]).map(item => (
                 <button key={item.label} onClick={item.onClick}
                   style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
                     background:"#fff", border:`1px solid ${item.accent}30`,
@@ -7254,7 +7254,7 @@ export default function DashboardPage() {
                     boxShadow:"0 1px 4px rgba(0,0,0,.09)", transition:"all .15s" }}
                   onMouseEnter={e => { e.currentTarget.style.background=`${item.accent}10`; e.currentTarget.style.boxShadow=`0 3px 10px ${item.accent}30`; }}
                   onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.09)"; }}>
-                  <span style={{ fontSize:16, lineHeight:1, flexShrink:0 }}>{item.icon}</span>
+                  <span style={{ display:"flex", alignItems:"center", justifyContent:"center", width:18, height:18, flexShrink:0, fontSize:16, lineHeight:1 }}>{item.icon}</span>
                   <span style={{ fontSize:12, fontWeight:700, color:"#1e293b", letterSpacing:".01em" }}>{item.label}</span>
                 </button>
               ))}
