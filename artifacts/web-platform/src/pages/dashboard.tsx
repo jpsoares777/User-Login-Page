@@ -3711,6 +3711,17 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
 
   const toggle = (label: string) => setVals(v => ({ ...v, [label]: !v[label] }));
 
+  const [restVals, setRestVals] = useState({
+    validarVendas: true,       maxVendas: "500",
+    validarGastos: false,      maxGastos: "0",
+    validarRendimentos: false,  maxRendimentos: "0",
+    validarClientesOutros: false,
+    validarParcelasCancelar: false, maxParcelasCancelar: "0",
+    validarParcelasDia: false,
+    validarRenovacoes: true,   maxRenovacoes: "500",
+    renovacaoDiaSeg: false,
+  });
+
   const Toggle = ({ label }: { label: string }) => (
     <label className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer select-none">
       <div
@@ -3785,7 +3796,170 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
         <div className="border-b border-gray-200">
           <AccordionHeader title="Restrições" open={restricoesOpen} onToggle={() => setRestricoes(o => !o)} />
           {restricoesOpen && (
-            <div className="px-5 py-4 text-sm text-gray-500 italic">Sem restrições configuradas.</div>
+            <div className="px-5 py-5">
+              {/* Row 1 */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
+                {/* Validar Valor Máximo de Vendas */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Validar Valor Máximo de Vendas :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div onClick={() => setRestVals(v => ({ ...v, validarVendas: !v.validarVendas }))}
+                      style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarVendas ? "#22c55e" : "#d1d5db", flexShrink: 0 }}>
+                      <div style={{ position: "absolute", top: 2, left: restVals.validarVendas ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                    </div>
+                  </div>
+                  <input type="number" value={restVals.maxVendas} onChange={e => setRestVals(v => ({ ...v, maxVendas: e.target.value }))}
+                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
+                </div>
+                {/* Validar Valor Gastos */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Validar Valor Gastos :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <div onClick={() => setRestVals(v => ({ ...v, validarGastos: !v.validarGastos }))}
+                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarGastos ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
+                    <div style={{ position: "absolute", top: 2, left: restVals.validarGastos ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <input type="number" value={restVals.maxGastos} onChange={e => setRestVals(v => ({ ...v, maxGastos: e.target.value }))}
+                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
+                </div>
+                {/* Validar Valor Rendimentos */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Validar Valor Rendimentos :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <div onClick={() => setRestVals(v => ({ ...v, validarRendimentos: !v.validarRendimentos }))}
+                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarRendimentos ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
+                    <div style={{ position: "absolute", top: 2, left: restVals.validarRendimentos ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <input type="number" value={restVals.maxRendimentos} onChange={e => setRestVals(v => ({ ...v, maxRendimentos: e.target.value }))}
+                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
+                </div>
+                {/* Validar Clientes em Outros Vendedores */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Validar Clientes em Outros Vendedores :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <div onClick={() => setRestVals(v => ({ ...v, validarClientesOutros: !v.validarClientesOutros }))}
+                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarClientesOutros ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 6 }}>
+                    <div style={{ position: "absolute", top: 2, left: restVals.validarClientesOutros ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <button className="text-xs font-semibold px-2 py-1.5 rounded text-white" style={{ background: "#2563eb", whiteSpace: "nowrap" }}>
+                    📋 Promover clientes Vários Vendedores
+                  </button>
+                </div>
+              </div>
+
+              {/* Row 2 */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
+                {/* Nº Máx. Parcelas Cancelar Venda */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Nº Máx. Parcelas Cancelar Venda :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <div onClick={() => setRestVals(v => ({ ...v, validarParcelasCancelar: !v.validarParcelasCancelar }))}
+                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarParcelasCancelar ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
+                    <div style={{ position: "absolute", top: 2, left: restVals.validarParcelasCancelar ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <input type="number" value={restVals.maxParcelasCancelar} onChange={e => setRestVals(v => ({ ...v, maxParcelasCancelar: e.target.value }))}
+                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
+                </div>
+                {/* Nº Máximo Parcelas por Dia */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Nº Máximo Parcelas por Dia :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <div onClick={() => setRestVals(v => ({ ...v, validarParcelasDia: !v.validarParcelasDia }))}
+                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarParcelasDia ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
+                    <div style={{ position: "absolute", top: 2, left: restVals.validarParcelasDia ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <select className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }}>
+                    <option>Selecione</option>
+                    <option>1</option><option>2</option><option>3</option><option>5</option><option>10</option>
+                  </select>
+                </div>
+                {/* Número Parcelas */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Número Parcelas :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <input type="number" defaultValue={99}
+                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm mt-6" style={{ background: "#f9fafb" }} />
+                </div>
+                {/* Nº Celular Solicitações de Aprovações */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Nº Celular Solicitações de Aprovações :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <select className="w-full h-8 border border-gray-300 rounded px-2 text-sm mt-6" style={{ background: "#f9fafb" }}>
+                    <option>--Selecione--</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 3 */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
+                {/* Validar Valor Máx. em Renovações */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Validar Valor Máx. em Renovações :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <div onClick={() => setRestVals(v => ({ ...v, validarRenovacoes: !v.validarRenovacoes }))}
+                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.validarRenovacoes ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
+                    <div style={{ position: "absolute", top: 2, left: restVals.validarRenovacoes ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <input type="number" value={restVals.maxRenovacoes} onChange={e => setRestVals(v => ({ ...v, maxRenovacoes: e.target.value }))}
+                    className="w-full h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
+                </div>
+                {/* Renovação Dia Seguinte */}
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-xs font-semibold text-gray-700">Renovação Dia Seguinte se excede parcelas ao Cancelar Venda :</span>
+                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                  </div>
+                  <div onClick={() => setRestVals(v => ({ ...v, renovacaoDiaSeg: !v.renovacaoDiaSeg }))}
+                    style={{ width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", background: restVals.renovacaoDiaSeg ? "#22c55e" : "#d1d5db", flexShrink: 0, marginBottom: 4 }}>
+                    <div style={{ position: "absolute", top: 2, left: restVals.renovacaoDiaSeg ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                  </div>
+                  <div className="flex gap-2">
+                    <input type="number" defaultValue={0} className="w-20 h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }} />
+                    <select className="flex-1 h-8 border border-gray-300 rounded px-2 text-sm" style={{ background: "#f9fafb" }}>
+                      <option>Selecione</option>
+                    </select>
+                  </div>
+                </div>
+                {/* Tope Renovações */}
+                <div className="flex items-end col-span-2 justify-end gap-2">
+                  <button className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded text-white" style={{ background: "#2563eb" }}>
+                    📊 Tope Renovações por Cliente
+                    <span className="ml-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">✕</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Footer buttons */}
+              <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+                <button onClick={onClose} className="px-5 py-2 text-sm font-semibold rounded"
+                  style={{ background: "#2563eb", color: "#fff", border: "none", cursor: "pointer" }}>
+                  Guardar
+                </button>
+                <button onClick={onClose} className="px-5 py-2 text-sm font-semibold rounded"
+                  style={{ background: "#ef4444", color: "#fff", border: "none", cursor: "pointer" }}>
+                  Fechar
+                </button>
+              </div>
+            </div>
           )}
         </div>
 
