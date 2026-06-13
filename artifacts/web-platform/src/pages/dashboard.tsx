@@ -3973,9 +3973,11 @@ function CaixaModal({ aberto, onConfirm, onClose }: { aberto: boolean; onConfirm
               Cancelar
             </button>
             <button onClick={onConfirm}
-              style={{ padding:"8px 22px", background:cor, color:"#fff",
-                border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer",
-                boxShadow:`0 2px 8px ${aberto ? "rgba(220,38,38,.35)" : "rgba(22,163,74,.35)"}` }}>
+              style={{ padding:"8px 22px",
+                background: aberto ? "#fee2e2" : "#dcfce7",
+                color: aberto ? "#991b1b" : "#166534",
+                border: `1px solid ${aberto ? "#fca5a5" : "#86efac"}`,
+                borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer" }}>
               {icon} {acao} Caixa
             </button>
           </div>
