@@ -3942,14 +3942,14 @@ function CaixaModal({ aberto, onConfirm, onClose }: { aberto: boolean; onConfirm
           width:380, overflow:"hidden", display:"flex", flexDirection:"column" }}>
         {/* Header */}
         <div style={{ background: aberto
-            ? "linear-gradient(135deg,#7f1d1d,#dc2626)"
-            : "linear-gradient(135deg,#14532d,#16a34a)",
+            ? "linear-gradient(135deg,#fee2e2,#fecaca)"
+            : "linear-gradient(135deg,#dcfce7,#bbf7d0)",
             padding:"18px 20px", display:"flex", alignItems:"center", gap:12 }}>
           <div style={{ background:"rgba(255,255,255,.2)", borderRadius:10, width:40, height:40,
               display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>{icon}</div>
           <div>
-            <div style={{ color:"#fff", fontSize:15, fontWeight:800 }}>{acao} Caixa</div>
-            <div style={{ color:"rgba(255,255,255,.7)", fontSize:11, marginTop:2 }}>
+            <div style={{ color: aberto ? "#991b1b" : "#166534", fontSize:15, fontWeight:800 }}>{acao} Caixa</div>
+            <div style={{ color: aberto ? "#b91c1c" : "#15803d", fontSize:11, marginTop:2, opacity:.8 }}>
               {aberto ? "Encerrar o caixa da unidade" : "Reabrir o caixa da unidade"}
             </div>
           </div>
