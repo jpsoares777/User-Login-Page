@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { ClipboardCheck } from "lucide-react";
 import menuIcon from "@assets/windows_104558_1776473182467.webp";
 import iconGerenciar from "@assets/2205843-mobile-settings-icon-vetor_1781283702330.jpg";
 import iconGerenciarClientes from "@assets/4168988_1781283346707.png";
@@ -7244,7 +7245,7 @@ export default function DashboardPage() {
                   label: caixaAberto ? "Fechar Caixa" : "Abrir Caixa",
                   accent: caixaAberto ? "#dc2626" : "#16a34a",
                   onClick: () => setCaixaModalOpen(true) },
-                { icon:<img src="/icon-aprovacoes.png" alt="" style={{ width:16, height:16, flexShrink:0 }} />, label:"Código Aprovações", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
+                { icon:<ClipboardCheck size={16} color="#7c3aed" strokeWidth={2} style={{ flexShrink:0 }} />, label:"Código Aprovações", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
               ] as { icon:React.ReactNode; label:string; accent:string; onClick:()=>void }[]).map(item => (
                 <button key={item.label} onClick={item.onClick}
                   style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
