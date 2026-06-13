@@ -4055,20 +4055,6 @@ function ListaClientesModal({ onClose }: { onClose: () => void }) {
             onMouseLeave={e => (e.currentTarget.style.background="rgba(255,255,255,.15)")}>✕</button>
         </div>
 
-        {/* ── Summary Cards ── */}
-        <div style={{ display:"flex", gap:10, padding:"12px 18px 0", flexShrink:0 }}>
-          {summaryCards.map(sc => (
-            <div key={sc.label} style={{ flex:1, background:"#fff", borderRadius:10, padding:"10px 14px",
-                boxShadow:"0 1px 4px rgba(0,0,0,.08)", borderLeft:`4px solid ${sc.color}`,
-                display:"flex", flexDirection:"column", gap:3 }}>
-              <div style={{ fontSize:11, color:"#64748b", fontWeight:600, display:"flex", alignItems:"center", gap:5 }}>
-                <span>{sc.icon}</span>{sc.label}
-              </div>
-              <div style={{ fontSize:15, fontWeight:800, color:sc.color }}>{sc.value}</div>
-            </div>
-          ))}
-        </div>
-
         {/* ── Toolbar ── */}
         <div style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 18px",
             borderBottom:"1px solid #e2e8f0", flexShrink:0, marginTop:10, background:"#f8fafc" }}>
