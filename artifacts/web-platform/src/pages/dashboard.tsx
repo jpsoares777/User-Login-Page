@@ -7245,7 +7245,7 @@ export default function DashboardPage() {
                 <button key={item.label}
                   onClick={item.onClick}
                   className="w-full text-left px-3 py-2 text-xs font-medium rounded text-white hover:opacity-90"
-                  style={{ background: "#6b7280" }}>
+                  style={{ background: item.label.startsWith("📈") ? "#16a34a" : "#6b7280" }}>
                   {item.label}
                 </button>
               ))}
