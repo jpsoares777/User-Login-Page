@@ -7239,7 +7239,7 @@ export default function DashboardPage() {
               {([
                 { icon:<img src="/icon-config.png" alt="" style={{ width:16, height:16, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)", flexShrink:0 }} />, label:"Configurações", accent:"#2d5474", onClick: () => setConfigOpen(true) },
                 { icon:<img src="/icon-relatorio6.png" alt="" style={{ width:16, height:16, flexShrink:0, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)" }} />, label:"Relatório Geral", accent:"#1d4ed8", onClick: () => setActiveMain("Consolidados") },
-                { icon:<img src="/icon-clientes3.png" alt="" style={{ width:16, height:16, flexShrink:0, filter:"invert(20%) sepia(80%) saturate(600%) hue-rotate(185deg) brightness(55%) contrast(1.4)" }} />, label:"Lista Clientes", accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
+                { icon:<img src="/icon-clientes3.png" alt="" style={{ width:16, height:16, flexShrink:0 }} />, label:"Lista Clientes", accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
                 { icon: caixaAberto ? "🔒" : "🔓",
                   label: caixaAberto ? "Fechar Caixa" : "Abrir Caixa",
                   accent: caixaAberto ? "#dc2626" : "#16a34a",
