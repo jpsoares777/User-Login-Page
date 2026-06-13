@@ -7240,15 +7240,22 @@ export default function DashboardPage() {
                 { label: "👥 Lista Clientes", onClick: () => setListaClientesOpen(true) },
                 { label: caixaAberto ? "🔒 Fechar Caixa" : "🔓 Abrir Caixa", onClick: () => setCaixaModalOpen(true) },
                 { label: "🔑 Código Aprovações", onClick: () => setCodigosOpen(true) },
-                { label: `📈 Lucro ( R$ ${LUCRO_MOCK.reduce((s,r) => s + r.totalLucro, 0).toLocaleString("pt-BR", { minimumFractionDigits:2 })} )`, onClick: () => setLucroOpen(true) },
               ] as { label: string; onClick: () => void }[]).map((item) => (
                 <button key={item.label}
                   onClick={item.onClick}
                   className="w-full text-left px-3 py-2 text-xs font-medium rounded text-white hover:opacity-90"
-                  style={{ background: item.label.startsWith("📈") ? "#16a34a" : "#6b7280" }}>
+                  style={{ background: "#6b7280" }}>
                   {item.label}
                 </button>
               ))}
+              <button onClick={() => setLucroOpen(true)}
+                className="w-full text-left px-3 py-2 text-xs font-medium rounded hover:opacity-90"
+                style={{ background:"#6b7280", color:"#fff" }}>
+                📈 Lucro{" "}
+                <span style={{ color:"#86efac", fontWeight:700 }}>
+                  ( R$ {LUCRO_MOCK.reduce((s,r) => s + r.totalLucro, 0).toLocaleString("pt-BR", { minimumFractionDigits:2 })} )
+                </span>
+              </button>
             </div>
           </>
         ) : (
