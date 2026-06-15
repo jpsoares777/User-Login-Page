@@ -1,0 +1,68 @@
+# Contexto Atual do Projeto
+
+Antes de realizar qualquer alteração, entenda que estou desenvolvendo dois sistemas separados que futuramente serão integrados em um único ecossistema.
+
+## Sistema 1 – Aplicativo do Cobrador
+
+Este sistema já está praticamente concluído e será utilizado pelos cobradores em campo.
+
+Principais funcionalidades:
+
+* Cadastro de clientes.
+* Consulta de clientes.
+* Registro de cobranças.
+* Controle de parcelas.
+* Histórico de pagamentos.
+* Operação diária do cobrador.
+
+## Sistema 2 – Plataforma Web Administrativa
+
+Este sistema está com o front-end praticamente finalizado.
+
+A partir de agora, quero desenvolver o funcionamento real da plataforma, implementando regras de negócio, banco de dados, autenticação, APIs e demais funcionalidades necessárias.
+
+Principais funções:
+
+* Gestão de cobradores.
+* Gestão de clientes.
+* Controle financeiro.
+* Relatórios.
+* Configurações do sistema.
+* Monitoramento das operações.
+
+## Situação Atual
+
+Neste momento, os dois sistemas ainda são independentes.
+
+O aplicativo do cobrador possui sua própria estrutura.
+
+A plataforma web possui sua própria estrutura.
+
+Ainda não foi realizada nenhuma integração entre eles.
+
+## Objetivo Futuro
+
+A plataforma web será o sistema principal de gerenciamento.
+
+O aplicativo do cobrador será conectado futuramente através de APIs e sincronização de dados.
+
+Quando a integração for realizada:
+
+* O administrador poderá criar vários cobradores dentro da plataforma web.
+* Cada cobrador terá seu próprio acesso ao aplicativo.
+* Cada cobrador poderá trabalhar em uma cidade, região ou rota específica.
+* Os dados registrados no aplicativo serão enviados para a plataforma web.
+* A plataforma web centralizará e gerenciará todas as informações.
+* Um único painel administrativo poderá controlar vários cobradores simultaneamente.
+
+## Instrução Importante
+
+Neste momento NÃO quero realizar a integração entre os dois sistemas.
+
+Quero apenas continuar o desenvolvimento da plataforma web, implementando seu funcionamento real.
+
+Porém, toda a arquitetura deve ser criada de forma organizada e escalável, preparando o sistema para que a integração futura com o aplicativo do cobrador aconteça sem a necessidade de grandes mudanças estruturais.
+
+Sempre considere que existem dois projetos independentes que serão unificados futuramente através de APIs e sincronização de dados.
+
+Antes de qualquer alteração, analise a estrutura existente e preserve ao máximo o que já foi desenvolvido.
