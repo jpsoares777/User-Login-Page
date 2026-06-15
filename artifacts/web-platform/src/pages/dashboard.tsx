@@ -4655,6 +4655,9 @@ export default function DashboardPage() {
   const [liqInicio, setLiqInicio] = useState(() => { const d = new Date(); d.setDate(1); return d.toISOString().slice(0,10); });
   const [liqFim,    setLiqFim]    = useState(() => new Date().toISOString().slice(0,10));
   const [diarioData, setDiarioData] = useState(() => new Date().toISOString().slice(0,10));
+  const [buscarRotaOpen, setBuscarRotaOpen] = useState(false);
+  const emptyBuscarRota = { nome: "", codigo: "", estadoFechamento: "", uf: "" };
+  const [buscarRotaForm, setBuscarRotaForm] = useState(emptyBuscarRota);
   const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
   const [selectedEstado, setSelectedEstado] = useState("MARANHÃO");
   const estadosData: Record<string, { cidade: string; vendedor: string }[]> = {
@@ -5390,7 +5393,7 @@ export default function DashboardPage() {
           <button className="flex items-center justify-center w-8 h-8 rounded" style={{ background: "#16a34a", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
           </button>
-          <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
+          <button onClick={() => { setBuscarRotaForm(emptyBuscarRota); setBuscarRotaOpen(true); }} className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             Rota
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white opacity-70"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
@@ -7479,6 +7482,59 @@ export default function DashboardPage() {
                   Salvar
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: Buscar Rota ── */}
+      {buscarRotaOpen && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: "#fff", borderRadius: 6, width: "100%", maxWidth: 480, boxShadow: "0 8px 32px rgba(0,0,0,0.25)", overflow: "hidden" }}>
+            <div style={{ background: "#3d6e8e", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Buscar Rota</span>
+              <button onClick={() => setBuscarRotaOpen(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: 20, lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ padding: "22px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Nome da Rota:</label>
+                <input value={buscarRotaForm.nome} onChange={e => setBuscarRotaForm(f => ({ ...f, nome: e.target.value }))}
+                  style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%", boxSizing: "border-box" }} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Código da Rota:</label>
+                <input value={buscarRotaForm.codigo} onChange={e => setBuscarRotaForm(f => ({ ...f, codigo: e.target.value }))}
+                  style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%", boxSizing: "border-box" }} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Estado de Fechamento:</label>
+                <select value={buscarRotaForm.estadoFechamento} onChange={e => setBuscarRotaForm(f => ({ ...f, estadoFechamento: e.target.value }))}
+                  style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%" }}>
+                  <option value="">-- Estado --</option>
+                  <option value="aberto">Aberto</option>
+                  <option value="fechado">Fechado</option>
+                </select>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Estado (UF) <span style={{ color: "#dc2626" }}>(*)</span>:</label>
+                <select value={buscarRotaForm.uf} onChange={e => setBuscarRotaForm(f => ({ ...f, uf: e.target.value }))}
+                  style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%" }}>
+                  <option value="">--- Selecione ---</option>
+                  {["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"].map(uf => (
+                    <option key={uf} value={uf}>{uf}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "12px 24px 18px", borderTop: "1px solid #f1f5f9" }}>
+              <button onClick={() => setBuscarRotaOpen(false)}
+                style={{ height: 34, padding: "0 20px", borderRadius: 4, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                Cancelar
+              </button>
+              <button onClick={() => setBuscarRotaOpen(false)}
+                style={{ height: 34, padding: "0 24px", borderRadius: 4, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                Buscar
+              </button>
             </div>
           </div>
         </div>
