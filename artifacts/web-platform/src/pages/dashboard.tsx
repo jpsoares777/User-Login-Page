@@ -4839,9 +4839,9 @@ export default function DashboardPage() {
   const [gaEditId, setGaEditId] = useState<number | null>(null);
   const [gaDeleteId, setGaDeleteId] = useState<number | null>(null);
   const [gaLoading, setGaLoading] = useState(false);
-  const emptyGaForm = { empresa: "", nome: "", vencimento: "", valorMax: "", saldoInicial: "", codigoAcesso: "", confirmarCodigo: "", estado: "Ativo" };
+  const emptyGaForm = { empresa: "", nome: "", vencimento: "", valorMax: "", saldoInicial: "", codigoAcesso: "", confirmarCodigo: "", estado: "Ativo", estadoUF: "", cidade: "" };
   const [gaForm, setGaForm] = useState(emptyGaForm);
-  type GaRow = { id: number; rota: string; cobrador: string; codigo: string; vencimento: string; ativo: boolean; valorVendaMax: string | null; saldoInicial: string | null };
+  type GaRow = { id: number; rota: string; cobrador: string; codigo: string; vencimento: string; ativo: boolean; valorVendaMax: string | null; saldoInicial: string | null; estadoUF: string | null; cidade: string | null };
   const [gaRows, setGaRows] = useState<GaRow[]>([]);
 
   const gaFetch = async (rota?: string, nome?: string, codigo?: string) => {
@@ -4855,7 +4855,7 @@ export default function DashboardPage() {
       const res = await fetch(`/api/aplicativos${qs ? "?" + qs : ""}`);
       const data = await res.json();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setGaRows(data.map((d: any) => ({ id: d.id, rota: d.rota, cobrador: d.cobradorNome, codigo: d.codigoAcesso, vencimento: d.vencimento, ativo: d.ativo, valorVendaMax: d.valorVendaMax, saldoInicial: d.saldoInicial })));
+      setGaRows(data.map((d: any) => ({ id: d.id, rota: d.rota, cobrador: d.cobradorNome, codigo: d.codigoAcesso, vencimento: d.vencimento, ativo: d.ativo, valorVendaMax: d.valorVendaMax, saldoInicial: d.saldoInicial, estadoUF: d.estado, cidade: d.cidade })));
     } catch { /* silent */ } finally { setGaLoading(false); }
   };
 
@@ -7095,7 +7095,7 @@ export default function DashboardPage() {
                             <button title="Editar"
                               onClick={() => {
                                 setGaEditId(row.id);
-                                setGaForm({ empresa: row.rota, nome: row.cobrador, vencimento: row.vencimento, valorMax: row.valorVendaMax ?? "", saldoInicial: row.saldoInicial ?? "", codigoAcesso: row.codigo, confirmarCodigo: row.codigo, estado: row.ativo ? "Ativo" : "Inativo" });
+                                setGaForm({ empresa: row.rota, nome: row.cobrador, vencimento: row.vencimento, valorMax: row.valorVendaMax ?? "", saldoInicial: row.saldoInicial ?? "", codigoAcesso: row.codigo, confirmarCodigo: row.codigo, estado: row.ativo ? "Ativo" : "Inativo", estadoUF: row.estadoUF ?? "", cidade: row.cidade ?? "" });
                                 setGaModalOpen(true);
                               }}
                               style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -7394,7 +7394,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Row 2: Valor Venda Máx | Saldo Inicial */}
+              {/* Row 2: Valor Venda Máx | Saldo Inicial | Estado | Cidade */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12 }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Valor Venda Máxima:</label>
@@ -7404,6 +7404,21 @@ export default function DashboardPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Saldo Inicial <span style={{ color: "#dc2626" }}>(*)</span></label>
                   <input value={gaForm.saldoInicial} onChange={e => setGaForm(f => ({ ...f, saldoInicial: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Estado (UF):</label>
+                  <select value={gaForm.estadoUF} onChange={e => setGaForm(f => ({ ...f, estadoUF: e.target.value }))}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
+                    <option value="">-- Selecione --</option>
+                    {["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"].map(uf => (
+                      <option key={uf} value={uf}>{uf}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Cidade:</label>
+                  <input value={gaForm.cidade} onChange={e => setGaForm(f => ({ ...f, cidade: e.target.value }))} placeholder=""
                     style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
                 </div>
               </div>
@@ -7448,6 +7463,8 @@ export default function DashboardPage() {
                     vencimento: gaForm.vencimento,
                     valorVendaMax: gaForm.valorMax || "0",
                     saldoInicial: gaForm.saldoInicial || "0",
+                    estado: gaForm.estadoUF || null,
+                    cidade: gaForm.cidade || null,
                     ativo: gaForm.estado === "Ativo",
                   };
                   if (gaEditId !== null) {

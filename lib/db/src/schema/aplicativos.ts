@@ -10,6 +10,8 @@ export const aplicativosTable = pgTable("aplicativos", {
   vencimento:     text("vencimento").notNull(),
   valorVendaMax:  numeric("valor_venda_max", { precision: 12, scale: 2 }).default("0"),
   saldoInicial:   numeric("saldo_inicial",   { precision: 12, scale: 2 }).default("0"),
+  estado:         text("estado"),
+  cidade:         text("cidade"),
   ativo:          boolean("ativo").notNull().default(true),
   criadoEm:       timestamp("criado_em").defaultNow(),
 });
