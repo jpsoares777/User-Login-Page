@@ -5,6 +5,7 @@ import cobradoresRouter from "./cobradores";
 import emprestimosRouter from "./emprestimos";
 import pagamentosRouter from "./pagamentos";
 import caixaRouter from "./caixa";
+import aplicativosRouter from "./aplicativos";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(cobradoresRouter);
 router.use(emprestimosRouter);
 router.use(pagamentosRouter);
 router.use(caixaRouter);
+router.use(aplicativosRouter);
 
 export default router;

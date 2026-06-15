@@ -4831,20 +4831,35 @@ export default function DashboardPage() {
     { id: 9,  consec: "4700627025", nome: "Bianca de Araújo Alves",           doc: "60974118397",    nasc: "1997-03-19", tel1: "60974118397",    tel2: "98765432101",  endereco: "Rua Oswaldo Cruz, nº 45, Bequimão – São Luís – MA",            obs: "", freq: "Diário", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
     { id: 10, consec: "4700627022", nome: "Klailton Viana Gonçalves",         doc: "88899900011",    nasc: "1983-08-11", tel1: "88899900011",    tel2: "98700112233",  endereco: "Av. dos Holandeses, nº 300, Calhau – São Luís – MA",          obs: "", freq: "Diário", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
   ]);
-  const [gaEmpresa, setGaEmpresa] = useState("CREDBANK");
+  const [gaEmpresa, setGaEmpresa] = useState("");
   const [gaNome, setGaNome] = useState("");
   const [gaSobrenome, setGaSobrenome] = useState("");
   const [gaCodigo, setGaCodigo] = useState("");
   const [gaModalOpen, setGaModalOpen] = useState(false);
   const [gaEditId, setGaEditId] = useState<number | null>(null);
   const [gaDeleteId, setGaDeleteId] = useState<number | null>(null);
+  const [gaLoading, setGaLoading] = useState(false);
   const emptyGaForm = { empresa: "", nome: "", vencimento: "", valorMax: "", saldoInicial: "", codigoAcesso: "", confirmarCodigo: "", estado: "Ativo" };
   const [gaForm, setGaForm] = useState(emptyGaForm);
-  const [gaRows, setGaRows] = useState([
-    { id: 1, rota: "Rota Cred Bank",  cobrador: "Carlos Alberto Souza",   codigo: "10600", vencimento: "2026-05-28", ativo: false },
-    { id: 2, rota: "SystemPay Demo",  cobrador: "Marcos Antônio Lima",    codigo: "10601", vencimento: "2026-12-31", ativo: true  },
-    { id: 3, rota: "Filial Norte",    cobrador: "Fernanda Costa Ribeiro", codigo: "10602", vencimento: "2026-09-15", ativo: true  },
-  ]);
+  type GaRow = { id: number; rota: string; cobrador: string; codigo: string; vencimento: string; ativo: boolean; valorVendaMax: string | null; saldoInicial: string | null };
+  const [gaRows, setGaRows] = useState<GaRow[]>([]);
+
+  const gaFetch = async (rota?: string, nome?: string, codigo?: string) => {
+    setGaLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (rota)   params.set("rota",   rota);
+      if (nome)   params.set("nome",   nome);
+      if (codigo) params.set("codigo", codigo);
+      const qs = params.toString();
+      const res = await fetch(`/api/aplicativos${qs ? "?" + qs : ""}`);
+      const data = await res.json();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setGaRows(data.map((d: any) => ({ id: d.id, rota: d.rota, cobrador: d.cobradorNome, codigo: d.codigoAcesso, vencimento: d.vencimento, ativo: d.ativo, valorVendaMax: d.valorVendaMax, saldoInicial: d.saldoInicial })));
+    } catch { /* silent */ } finally { setGaLoading(false); }
+  };
+
+  useEffect(() => { if (activeMain === "Gerenciar Aplicativos") gaFetch(); }, [activeMain]);
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
@@ -5323,11 +5338,9 @@ export default function DashboardPage() {
       {activeMain === "Gerenciar Aplicativos" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 140 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
-            <select value={gaEmpresa} onChange={e => setGaEmpresa(e.target.value)}
-              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }}>
-              <option>CREDBANK</option>
-            </select>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota:</label>
+            <input type="text" value={gaEmpresa} onChange={e => setGaEmpresa(e.target.value)} placeholder="Filtrar por rota…"
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }} />
           </div>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
             <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Nome:</label>
@@ -5340,7 +5353,7 @@ export default function DashboardPage() {
               className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 170 }} />
           </div>
           <div className="flex items-end pb-0.5 gap-2" style={{ alignSelf: "flex-end" }}>
-            <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
+            <button onClick={() => gaFetch(gaEmpresa, gaNome, gaCodigo)} className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
             <button onClick={() => { setGaEditId(null); setGaForm(emptyGaForm); setGaModalOpen(true); }} className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
@@ -7022,9 +7035,13 @@ export default function DashboardPage() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* count bar */}
             <div className="shrink-0 flex items-center gap-2 px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
-              <span className="text-xs text-gray-500">
-                <span className="font-bold text-gray-800">{gaRows.length}</span> registro{gaRows.length !== 1 ? "s" : ""} encontrado{gaRows.length !== 1 ? "s" : ""}
-              </span>
+              {gaLoading ? (
+                <span className="text-xs text-blue-500 font-medium">Carregando…</span>
+              ) : (
+                <span className="text-xs text-gray-500">
+                  <span className="font-bold text-gray-800">{gaRows.length}</span> registro{gaRows.length !== 1 ? "s" : ""} encontrado{gaRows.length !== 1 ? "s" : ""}
+                </span>
+              )}
             </div>
             {/* table */}
             <div className="flex-1 overflow-auto bg-white">
@@ -7078,7 +7095,7 @@ export default function DashboardPage() {
                             <button title="Editar"
                               onClick={() => {
                                 setGaEditId(row.id);
-                                setGaForm({ empresa: row.rota, nome: row.cobrador, vencimento: row.vencimento, valorMax: "", saldoInicial: "", codigoAcesso: row.codigo, confirmarCodigo: row.codigo, estado: row.ativo ? "Ativo" : "Inativo" });
+                                setGaForm({ empresa: row.rota, nome: row.cobrador, vencimento: row.vencimento, valorMax: row.valorVendaMax ?? "", saldoInicial: row.saldoInicial ?? "", codigoAcesso: row.codigo, confirmarCodigo: row.codigo, estado: row.ativo ? "Ativo" : "Inativo" });
                                 setGaModalOpen(true);
                               }}
                               style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -7327,7 +7344,11 @@ export default function DashboardPage() {
                   style={{ height: 34, padding: "0 20px", borderRadius: 5, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                   Cancelar
                 </button>
-                <button onClick={() => { setGaRows(prev => prev.filter(r => r.id !== gaDeleteId)); setGaDeleteId(null); }}
+                <button onClick={async () => {
+                  await fetch(`/api/aplicativos/${gaDeleteId}`, { method: "DELETE" });
+                  setGaDeleteId(null);
+                  gaFetch();
+                }}
                   style={{ height: 34, padding: "0 20px", borderRadius: 5, border: "none", background: "#dc2626", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                   Excluir
                 </button>
@@ -7418,16 +7439,24 @@ export default function DashboardPage() {
                   style={{ height: 32, padding: "0 18px", borderRadius: 4, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
                   Cancelar
                 </button>
-                <button onClick={() => {
+                <button onClick={async () => {
+                  if (!gaForm.empresa || !gaForm.codigoAcesso || !gaForm.vencimento) return;
+                  const body = {
+                    rota: gaForm.empresa,
+                    cobradorNome: gaForm.nome,
+                    codigoAcesso: gaForm.codigoAcesso,
+                    vencimento: gaForm.vencimento,
+                    valorVendaMax: gaForm.valorMax || "0",
+                    saldoInicial: gaForm.saldoInicial || "0",
+                    ativo: gaForm.estado === "Ativo",
+                  };
                   if (gaEditId !== null) {
-                    setGaRows(prev => prev.map(r => r.id === gaEditId
-                      ? { ...r, rota: gaForm.empresa || r.rota, cobrador: gaForm.nome || r.cobrador, codigo: gaForm.codigoAcesso || r.codigo, vencimento: gaForm.vencimento || r.vencimento, ativo: gaForm.estado === "Ativo" }
-                      : r));
+                    await fetch(`/api/aplicativos/${gaEditId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
                   } else {
-                    const newId = Math.max(0, ...gaRows.map(r => r.id)) + 1;
-                    setGaRows(prev => [...prev, { id: newId, rota: gaForm.empresa || "Nova Rota", cobrador: gaForm.nome || "—", codigo: gaForm.codigoAcesso || "—", vencimento: gaForm.vencimento || "", ativo: gaForm.estado === "Ativo" }]);
+                    await fetch("/api/aplicativos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
                   }
                   setGaModalOpen(false); setGaEditId(null); setGaForm(emptyGaForm);
+                  gaFetch();
                 }}
                   style={{ height: 32, padding: "0 20px", borderRadius: 4, border: "none", background: "#2563eb", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                   Salvar

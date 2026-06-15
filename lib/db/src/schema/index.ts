@@ -4,3 +4,4 @@ export * from "./clientes";
 export * from "./emprestimos";
 export * from "./pagamentos";
 export * from "./movimentos_caixa";
+export * from "./aplicativos";

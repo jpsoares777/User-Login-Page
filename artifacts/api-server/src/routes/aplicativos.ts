@@ -1,0 +1,75 @@
+import { Router, type IRouter } from "express";
+import { eq, ilike, and, or } from "drizzle-orm";
+import { db, aplicativosTable } from "@workspace/db";
+
+const router: IRouter = Router();
+
+router.get("/aplicativos", async (req, res): Promise<void> => {
+  const { rota, nome, codigo } = req.query;
+  let rows = await db.select().from(aplicativosTable).orderBy(aplicativosTable.id);
+
+  if (rota && String(rota).trim()) {
+    rows = rows.filter(r => r.rota.toLowerCase().includes(String(rota).toLowerCase()));
+  }
+  if (nome && String(nome).trim()) {
+    rows = rows.filter(r => r.cobradorNome.toLowerCase().includes(String(nome).toLowerCase()));
+  }
+  if (codigo && String(codigo).trim()) {
+    rows = rows.filter(r => r.codigoAcesso.toLowerCase().includes(String(codigo).toLowerCase()));
+  }
+
+  res.json(rows);
+});
+
+router.get("/aplicativos/:id", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(raw, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "ID inválido" }); return; }
+  const [row] = await db.select().from(aplicativosTable).where(eq(aplicativosTable.id, id));
+  if (!row) { res.status(404).json({ error: "Aplicativo não encontrado" }); return; }
+  res.json(row);
+});
+
+router.post("/aplicativos", async (req, res): Promise<void> => {
+  const { rota, cobradorNome, codigoAcesso, vencimento, valorVendaMax, saldoInicial, ativo } = req.body;
+  if (!rota || !cobradorNome || !codigoAcesso || !vencimento) {
+    res.status(400).json({ error: "Campos obrigatórios: rota, cobradorNome, codigoAcesso, vencimento" });
+    return;
+  }
+  const [row] = await db.insert(aplicativosTable).values({
+    rota, cobradorNome, codigoAcesso, vencimento,
+    valorVendaMax: String(valorVendaMax ?? 0),
+    saldoInicial: String(saldoInicial ?? 0),
+    ativo: ativo !== false,
+  }).returning();
+  res.status(201).json(row);
+});
+
+router.patch("/aplicativos/:id", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(raw, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "ID inválido" }); return; }
+  const { rota, cobradorNome, codigoAcesso, vencimento, valorVendaMax, saldoInicial, ativo } = req.body;
+  const updates: Partial<typeof aplicativosTable.$inferInsert> = {};
+  if (rota !== undefined) updates.rota = rota;
+  if (cobradorNome !== undefined) updates.cobradorNome = cobradorNome;
+  if (codigoAcesso !== undefined) updates.codigoAcesso = codigoAcesso;
+  if (vencimento !== undefined) updates.vencimento = vencimento;
+  if (valorVendaMax !== undefined) updates.valorVendaMax = String(valorVendaMax);
+  if (saldoInicial !== undefined) updates.saldoInicial = String(saldoInicial);
+  if (ativo !== undefined) updates.ativo = Boolean(ativo);
+  const [row] = await db.update(aplicativosTable).set(updates).where(eq(aplicativosTable.id, id)).returning();
+  if (!row) { res.status(404).json({ error: "Aplicativo não encontrado" }); return; }
+  res.json(row);
+});
+
+router.delete("/aplicativos/:id", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(raw, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "ID inválido" }); return; }
+  const [deleted] = await db.delete(aplicativosTable).where(eq(aplicativosTable.id, id)).returning();
+  if (!deleted) { res.status(404).json({ error: "Aplicativo não encontrado" }); return; }
+  res.sendStatus(204);
+});
+
+export default router;
