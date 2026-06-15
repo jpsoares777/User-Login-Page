@@ -2215,7 +2215,7 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
       {/* CENTER: Sectioned data rows */}
       <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
         <SectionHeader title="Dados da Rota" color="#2563eb" />
-        <Row label="Rota" index={0}>
+        <Row label="Cobrador" index={0}>
           <strong className="text-gray-800">Rota Cred Bank -</strong>
           <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
         </Row>
@@ -7165,7 +7165,7 @@ export default function DashboardPage() {
             {/* CENTER: Grouped data rows */}
             <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
               <SectionHeader title="Dados da Rota" color="#2563eb" />
-              <Row label="Rota" index={0}>
+              <Row label="Cobrador" index={0}>
                 <strong className="text-gray-800">Rota Cred Bank</strong>&nbsp;— Cod: 10600
                 <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
               </Row>
