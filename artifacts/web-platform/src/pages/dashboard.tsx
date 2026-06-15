@@ -2186,13 +2186,17 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
   estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]>;
   onCloseDropdown: () => void;
 }) {
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set((estadosData[selectedEstado] ?? []).map(i => i.cidade)));
   const [collapsedEstado, setCollapsedEstado] = useState(false);
   const toggleCidade = (cidade: string) => setCollapsed(prev => {
     const next = new Set(prev);
     next.has(cidade) ? next.delete(cidade) : next.add(cidade);
     return next;
   });
+  React.useEffect(() => {
+    setCollapsed(new Set((estadosData[selectedEstado] ?? []).map(i => i.cidade)));
+    setCollapsedEstado(false);
+  }, [selectedEstado]);
   return (
     <>
       {/* LEFT: Tree */}
@@ -5452,7 +5456,7 @@ export default function DashboardPage() {
             {estadoDropdownOpen && (
               <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 9999, background: "#fff", border: "1px solid #d1d5db", borderRadius: 6, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", minWidth: 180, overflow: "hidden" }}>
                 {Object.keys(estadosData).map(est => (
-                  <button key={est} onClick={() => { setSelectedEstado(est); setEstadoDropdownOpen(false); }}
+                  <button key={est} onClick={() => { setSelectedEstado(est); setEstadoDropdownOpen(false); setCollapsedCidades(new Set((estadosData[est] ?? []).map(i => i.cidade))); setCollapsedEstadoMain(false); }}
                     style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: est === selectedEstado ? "#eff6ff" : "#fff", border: "none", cursor: "pointer", fontSize: 13, fontWeight: est === selectedEstado ? 700 : 500, color: est === selectedEstado ? "#1d4ed8" : "#374151", textAlign: "left" }}>
                     {est === selectedEstado && <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#2563eb", flexShrink: 0 }}><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>}
                     {est !== selectedEstado && <span style={{ width: 14, flexShrink: 0 }} />}
