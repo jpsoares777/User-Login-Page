@@ -389,6 +389,10 @@ function DesempenhoContent() {
       {/* Row 2: 2 pie charts + empty third */}
       <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
+        <ChartCard subtitle="Gastos por Conceito 2026" year="2026" showMonth>
+          <Pie3DChart data={gastosPieData} />
+        </ChartCard>
+
         <ChartCard subtitle="Ingressos por Conceito 2026" year="2026" showMonth>
           <Pie3DChart data={ingresosPieData} />
         </ChartCard>
