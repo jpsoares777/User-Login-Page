@@ -146,6 +146,13 @@ const ingresosPieData = [
   { name: "Outro (3780)", value: 3780, color: "#2e2e2e" },
 ];
 
+const despesasCatData = [
+  { name: "Empréstimos (4200)", value: 4200, color: "#3d9cd2" },
+  { name: "Operacional (980)",  value: 980,  color: "#4cae4c" },
+  { name: "Administrativo (620)", value: 620, color: "#e8a838" },
+  { name: "Outros (340)",       value: 340,  color: "#2e2e2e" },
+];
+
 // ── 3D Pie Chart ─────────────────────────────────────────────────────────────
 
 function expandHex(hex: string) {
@@ -390,8 +397,9 @@ function DesempenhoContent() {
           <Pie3DChart data={ingresosPieData} />
         </ChartCard>
 
-        {/* Empty third column */}
-        <div className="flex-1" />
+        <ChartCard subtitle="Despesas por Categoria – 2026" year="2026" showMonth>
+          <Pie3DChart data={despesasCatData} />
+        </ChartCard>
 
       </div>
     </div>
