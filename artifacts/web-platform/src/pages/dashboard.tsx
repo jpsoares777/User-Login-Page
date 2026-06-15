@@ -2186,6 +2186,12 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
   estadosData: Record<string, { cidade: string; vendedor: string }[]>;
   onCloseDropdown: () => void;
 }) {
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const toggleCidade = (cidade: string) => setCollapsed(prev => {
+    const next = new Set(prev);
+    next.has(cidade) ? next.delete(cidade) : next.add(cidade);
+    return next;
+  });
   return (
     <>
       {/* LEFT: Tree */}
@@ -2199,15 +2205,20 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
         {/* Cities + vendors for selected estado */}
         {(estadosData[selectedEstado] ?? []).map((item, idx) => (
           <div key={idx}>
-            <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50">
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
+            <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50"
+              onClick={e => { e.stopPropagation(); toggleCidade(item.cidade); }}>
+              {collapsed.has(item.cidade)
+                ? <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
+                : <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>}
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
               {item.cidade}
             </div>
-            <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-              <span className="text-gray-700 text-sm whitespace-nowrap">{item.vendedor}</span>
-            </div>
+            {!collapsed.has(item.cidade) && (
+              <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span className="text-gray-700 text-sm whitespace-nowrap">{item.vendedor}</span>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -4658,6 +4669,12 @@ export default function DashboardPage() {
   const [buscarRotaOpen, setBuscarRotaOpen] = useState(false);
   const emptyBuscarRota = { nome: "", codigo: "", estadoFechamento: "", uf: "" };
   const [buscarRotaForm, setBuscarRotaForm] = useState(emptyBuscarRota);
+  const [collapsedCidades, setCollapsedCidades] = useState<Set<string>>(new Set());
+  const toggleCidadeMain = (cidade: string) => setCollapsedCidades(prev => {
+    const next = new Set(prev);
+    next.has(cidade) ? next.delete(cidade) : next.add(cidade);
+    return next;
+  });
   const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
   const [selectedEstado, setSelectedEstado] = useState("MARANHÃO");
   const estadosData: Record<string, { cidade: string; vendedor: string }[]> = {
@@ -7151,16 +7168,21 @@ export default function DashboardPage() {
               </div>
               {(estadosData[selectedEstado] ?? []).map((item, idx) => (
                 <div key={idx}>
-                  <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
+                  <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50"
+                    onClick={e => { e.stopPropagation(); toggleCidadeMain(item.cidade); }}>
+                    {collapsedCidades.has(item.cidade)
+                      ? <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
+                      : <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>}
                     <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                     {item.cidade}
                   </div>
-                  <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                    <span className="text-gray-700 text-sm whitespace-nowrap">{item.vendedor}</span>
-                    <span className="flex-1 ml-2 text-center text-[11px] bg-green-500 text-white py-0.5 rounded font-medium">2026-04-17</span>
-                  </div>
+                  {!collapsedCidades.has(item.cidade) && (
+                    <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                      <span className="text-gray-700 text-sm whitespace-nowrap">{item.vendedor}</span>
+                      <span className="flex-1 ml-2 text-center text-[11px] bg-green-500 text-white py-0.5 rounded font-medium">2026-04-17</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
