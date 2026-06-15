@@ -2183,7 +2183,7 @@ function ClientesContent() {
 
 function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdown }: {
   selectedEstado: string;
-  estadosData: Record<string, { cidade: string; vendedor: string }[]>;
+  estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]>;
   onCloseDropdown: () => void;
 }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
@@ -2208,25 +2208,33 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
           {selectedEstado.charAt(0).toUpperCase() + selectedEstado.slice(1).toLowerCase()}
         </div>
         {/* Cities + vendors for selected estado */}
-        {!collapsedEstado && (estadosData[selectedEstado] ?? []).map((item, idx) => (
-          <div key={idx}>
-            <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50"
-              onClick={e => { e.stopPropagation(); toggleCidade(item.cidade); }}>
-              {collapsed.has(item.cidade)
-                ? <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                : <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>}
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-              {item.cidade}
-            </div>
-            {!collapsed.has(item.cidade) && (
-              <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span className="text-gray-700 text-sm whitespace-nowrap">{item.vendedor}</span>
+        {!collapsedEstado && (() => {
+          const allItems = estadosData[selectedEstado] ?? [];
+          const cidades = Array.from(new Set(allItems.map(i => i.cidade)));
+          return cidades.map(cidade => {
+            const rotas = allItems.filter(i => i.cidade === cidade);
+            return (
+              <div key={cidade}>
+                <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50"
+                  onClick={e => { e.stopPropagation(); toggleCidade(cidade); }}>
+                  {collapsed.has(cidade)
+                    ? <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                    : <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>}
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                  {cidade}
+                </div>
+                {!collapsed.has(cidade) && rotas.map((rota, ri) => (
+                  <div key={ri} className="pl-12 py-1.5 flex items-center pr-2 cursor-pointer hover:bg-blue-50 border-l-2 border-blue-500">
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <span className="text-gray-700 text-xs flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{rota.vendedor}</span>
+                    <span className={`ml-1.5 shrink-0 text-[10px] px-1.5 py-0.5 rounded font-semibold text-white ${rota.ativa ? "bg-green-500" : "bg-red-500"}`}>{rota.data}</span>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
-        ))}
+            );
+          });
+        })()}
       </div>
 
       {/* CENTER: Sectioned data rows */}
@@ -3468,7 +3476,7 @@ function ConsolidadosContent() {
   );
 }
 
-function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDropdown }: { activeSub: string; selectedEstado: string; estadosData: Record<string, { cidade: string; vendedor: string }[]>; onCloseDropdown: () => void }) {
+function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDropdown }: { activeSub: string; selectedEstado: string; estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]>; onCloseDropdown: () => void }) {
   if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView selectedEstado={selectedEstado} estadosData={estadosData} onCloseDropdown={onCloseDropdown} />;
   if (activeSub === "Pagamentos")          return <LiqPeriodosPagamentosContent />;
   if (activeSub === "Empr. por Períodos")  return <VendasPorPeriodosContent />;
@@ -4684,12 +4692,52 @@ export default function DashboardPage() {
   });
   const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
   const [selectedEstado, setSelectedEstado] = useState("MARANHÃO");
-  const estadosData: Record<string, { cidade: string; vendedor: string }[]> = {
-    "MARANHÃO":   [{ cidade: "SAO LUIS",      vendedor: "Rota Cred Bank -" }],
-    "PARÁ":       [{ cidade: "BELÉM",          vendedor: "Rota Norte -" }],
-    "CEARÁ":      [{ cidade: "FORTALEZA",      vendedor: "Rota Cred CE -" }],
-    "BAHIA":      [{ cidade: "SALVADOR",       vendedor: "Rota Cred BA -" }],
-    "PIAUÍ":      [{ cidade: "TERESINA",       vendedor: "Rota Cred PI -" }],
+  const estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]> = {
+    "MARANHÃO": [
+      { cidade: "SAO LUIS",    vendedor: "Rota Cred Bank A",        data: "2026-06-10", ativa: true  },
+      { cidade: "SAO LUIS",    vendedor: "Rota Cred Bank B",        data: "2026-05-20", ativa: true  },
+      { cidade: "SAO LUIS",    vendedor: "Rota Norte SL",           data: "2025-11-30", ativa: false },
+      { cidade: "IMPERATRIZ",  vendedor: "Rota Cred Imp A",         data: "2026-06-01", ativa: true  },
+      { cidade: "IMPERATRIZ",  vendedor: "Rota Cred Imp B",         data: "2025-08-15", ativa: false },
+      { cidade: "CAXIAS",      vendedor: "Rota Caxias Sul",         data: "2026-04-10", ativa: true  },
+      { cidade: "TIMON",       vendedor: "Rota Timon Centro",       data: "2025-12-01", ativa: false },
+    ],
+    "PARÁ": [
+      { cidade: "BELÉM",       vendedor: "Rota Norte A",            data: "2026-06-05", ativa: true  },
+      { cidade: "BELÉM",       vendedor: "Rota Norte B",            data: "2026-03-22", ativa: true  },
+      { cidade: "BELÉM",       vendedor: "Rota Docas Belém",        data: "2025-09-10", ativa: false },
+      { cidade: "ANANINDEUA",  vendedor: "Rota Ananindeua A",       data: "2026-05-18", ativa: true  },
+      { cidade: "ANANINDEUA",  vendedor: "Rota Ananindeua B",       data: "2025-07-30", ativa: false },
+      { cidade: "MARABÁ",      vendedor: "Rota Marabá Centro",      data: "2026-06-12", ativa: true  },
+      { cidade: "SANTARÉM",    vendedor: "Rota Santarém Rio",       data: "2025-10-05", ativa: false },
+    ],
+    "CEARÁ": [
+      { cidade: "FORTALEZA",   vendedor: "Rota Cred CE A",          data: "2026-06-08", ativa: true  },
+      { cidade: "FORTALEZA",   vendedor: "Rota Cred CE B",          data: "2026-05-30", ativa: true  },
+      { cidade: "FORTALEZA",   vendedor: "Rota Litoral CE",         data: "2025-12-20", ativa: false },
+      { cidade: "CAUCAIA",     vendedor: "Rota Caucaia A",          data: "2026-04-25", ativa: true  },
+      { cidade: "CAUCAIA",     vendedor: "Rota Caucaia B",          data: "2025-06-14", ativa: false },
+      { cidade: "JUAZEIRO",    vendedor: "Rota Juazeiro Norte",     data: "2026-05-05", ativa: true  },
+      { cidade: "SOBRAL",      vendedor: "Rota Sobral Centro",      data: "2025-11-11", ativa: false },
+    ],
+    "BAHIA": [
+      { cidade: "SALVADOR",    vendedor: "Rota Cred BA A",          data: "2026-06-07", ativa: true  },
+      { cidade: "SALVADOR",    vendedor: "Rota Cred BA B",          data: "2026-04-18", ativa: true  },
+      { cidade: "SALVADOR",    vendedor: "Rota Pelourinho",         data: "2025-10-30", ativa: false },
+      { cidade: "FEIRA",       vendedor: "Rota Feira Santana A",    data: "2026-05-22", ativa: true  },
+      { cidade: "FEIRA",       vendedor: "Rota Feira Santana B",    data: "2025-08-05", ativa: false },
+      { cidade: "VITÓRIA DA CONQUISTA", vendedor: "Rota VC Centro", data: "2026-06-01", ativa: true  },
+      { cidade: "ILHÉUS",      vendedor: "Rota Ilhéus Sul",         data: "2025-09-28", ativa: false },
+    ],
+    "PIAUÍ": [
+      { cidade: "TERESINA",    vendedor: "Rota Cred PI A",          data: "2026-06-09", ativa: true  },
+      { cidade: "TERESINA",    vendedor: "Rota Cred PI B",          data: "2026-05-14", ativa: true  },
+      { cidade: "TERESINA",    vendedor: "Rota Rio Parnaíba",       data: "2025-11-02", ativa: false },
+      { cidade: "PARNAÍBA",    vendedor: "Rota Parnaíba Norte",     data: "2026-04-30", ativa: true  },
+      { cidade: "PARNAÍBA",    vendedor: "Rota Parnaíba Sul",       data: "2025-07-19", ativa: false },
+      { cidade: "PICOS",       vendedor: "Rota Picos Centro",       data: "2026-05-28", ativa: true  },
+      { cidade: "FLORIANO",    vendedor: "Rota Floriano A",         data: "2025-12-15", ativa: false },
+    ],
   };
   const [configOpen, setConfigOpen] = useState(false);
   const [listaClientesOpen, setListaClientesOpen] = useState(false);
@@ -7177,26 +7225,33 @@ export default function DashboardPage() {
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-blue-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
                 {selectedEstado.charAt(0).toUpperCase() + selectedEstado.slice(1).toLowerCase()}
               </div>
-              {!collapsedEstadoMain && (estadosData[selectedEstado] ?? []).map((item, idx) => (
-                <div key={idx}>
-                  <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50"
-                    onClick={e => { e.stopPropagation(); toggleCidadeMain(item.cidade); }}>
-                    {collapsedCidades.has(item.cidade)
-                      ? <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                      : <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>}
-                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                    {item.cidade}
-                  </div>
-                  {!collapsedCidades.has(item.cidade) && (
-                    <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
-                      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                      <span className="text-gray-700 text-sm whitespace-nowrap">{item.vendedor}</span>
-                      <span className="flex-1 ml-2 text-center text-[11px] bg-green-500 text-white py-0.5 rounded font-medium">2026-04-17</span>
+              {!collapsedEstadoMain && (() => {
+                const allItems = estadosData[selectedEstado] ?? [];
+                const cidades = Array.from(new Set(allItems.map(i => i.cidade)));
+                return cidades.map(cidade => {
+                  const rotas = allItems.filter(i => i.cidade === cidade);
+                  return (
+                    <div key={cidade}>
+                      <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50"
+                        onClick={e => { e.stopPropagation(); toggleCidadeMain(cidade); }}>
+                        {collapsedCidades.has(cidade)
+                          ? <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                          : <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>}
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        {cidade}
+                      </div>
+                      {!collapsedCidades.has(cidade) && rotas.map((rota, ri) => (
+                        <div key={ri} className="pl-12 py-1.5 flex items-center pr-2 cursor-pointer hover:bg-blue-50 border-l-2 border-blue-500">
+                          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                          <span className="text-gray-700 text-xs flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{rota.vendedor}</span>
+                          <span className={`ml-1.5 shrink-0 text-[10px] px-1.5 py-0.5 rounded font-semibold text-white ${rota.ativa ? "bg-green-500" : "bg-red-500"}`}>{rota.data}</span>
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </div>
-              ))}
+                  );
+                });
+              })()}
             </div>
 
             {/* CENTER: Grouped data rows */}
