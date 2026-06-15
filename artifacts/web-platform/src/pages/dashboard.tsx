@@ -4658,6 +4658,8 @@ export default function DashboardPage() {
   const [buscarRotaOpen, setBuscarRotaOpen] = useState(false);
   const emptyBuscarRota = { nome: "", codigo: "", estadoFechamento: "", uf: "" };
   const [buscarRotaForm, setBuscarRotaForm] = useState(emptyBuscarRota);
+  const [buscarRotaResults, setBuscarRotaResults] = useState<any[]>([]);
+  const [selectedRota, setSelectedRota] = useState<any>(null);
   const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
   const [selectedEstado, setSelectedEstado] = useState("MARANHÃO");
   const estadosData: Record<string, { cidade: string; vendedor: string }[]> = {
@@ -5390,10 +5392,10 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
-          <button className="flex items-center justify-center w-8 h-8 rounded" style={{ background: "#16a34a", color: "#fff" }}>
+          <button onClick={() => { setBuscarRotaForm(emptyBuscarRota); setBuscarRotaResults([]); setBuscarRotaOpen(true); }} className="flex items-center justify-center w-8 h-8 rounded" style={{ background: "#16a34a", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
           </button>
-          <button onClick={() => { setBuscarRotaForm(emptyBuscarRota); setBuscarRotaOpen(true); }} className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
+          <button onClick={() => { setBuscarRotaForm(emptyBuscarRota); setBuscarRotaResults([]); setBuscarRotaOpen(true); }} className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             Rota
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white opacity-70"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
@@ -7140,36 +7142,51 @@ export default function DashboardPage() {
           <AgendadosContent />
         ) : showRelatorios ? (
           <RelatóriosContent />
-        ) : showContent ? (
+        ) : showContent && !selectedRota ? (
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, color: "#94a3b8", background: "#f8fafc" }}>
+            <svg viewBox="0 0 24 24" style={{ width: 56, height: 56, fill: "#cbd5e1" }}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <div style={{ textAlign: "center" }}>
+              <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "#64748b" }}>Nenhuma rota selecionada</p>
+              <p style={{ margin: "6px 0 0", fontSize: 13, color: "#94a3b8" }}>Clique em <strong>🔍 Rota</strong> ou na bolinha <span style={{ color: "#16a34a", fontWeight: 700 }}>verde</span> para buscar</p>
+            </div>
+            <button onClick={() => { setBuscarRotaForm(emptyBuscarRota); setBuscarRotaResults([]); setBuscarRotaOpen(true); }}
+              style={{ height: 36, padding: "0 24px", borderRadius: 6, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+              <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              Buscar Rota
+            </button>
+          </div>
+        ) : showContent && selectedRota ? (
           <>
             {/* LEFT: Tree */}
             <div className="w-64 shrink-0 border-r border-gray-200 bg-white overflow-y-auto" onClick={() => setEstadoDropdownOpen(false)}>
               <div className="px-3 py-2 flex items-center gap-1.5 text-gray-800 font-bold text-sm cursor-pointer hover:bg-gray-50">
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-blue-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                {selectedEstado.charAt(0).toUpperCase() + selectedEstado.slice(1).toLowerCase()}
+                {selectedRota?.estadoUF
+                  ? (selectedRota.estadoUF.charAt(0).toUpperCase() + selectedRota.estadoUF.slice(1).toLowerCase())
+                  : "—"}
               </div>
-              {(estadosData[selectedEstado] ?? []).map((item, idx) => (
-                <div key={idx}>
+              <div>
+                {selectedRota?.cidade && (
                   <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50">
                     <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
                     <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-400 shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                    {item.cidade}
+                    {selectedRota.cidade}
                   </div>
-                  <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                    <span className="text-gray-700 text-sm whitespace-nowrap">{item.vendedor}</span>
-                    <span className="flex-1 ml-2 text-center text-[11px] bg-green-500 text-white py-0.5 rounded font-medium">2026-04-17</span>
-                  </div>
+                )}
+                <div className="pl-12 py-2 flex items-center pr-2 cursor-pointer bg-blue-50 border-l-2 border-blue-500">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  <span className="text-gray-700 text-sm whitespace-nowrap">{selectedRota?.rota ?? "—"}</span>
+                  <span className="flex-1 ml-2 text-center text-[11px] bg-green-500 text-white py-0.5 rounded font-medium">{selectedRota?.vencimento ?? ""}</span>
                 </div>
-              ))}
+              </div>
             </div>
 
             {/* CENTER: Grouped data rows */}
             <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
               <SectionHeader title="Dados da Rota" color="#2563eb" />
               <Row label="Cobrador" index={0}>
-                <strong className="text-gray-800">Rota Cred Bank</strong>&nbsp;— Cod: 10600
+                <strong className="text-gray-800">{selectedRota?.rota ?? "—"}</strong>&nbsp;— Cod: {selectedRota?.codigo ?? "—"}
                 <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
               </Row>
               <Row label="Data de Início de Cobrança" index={1}>
@@ -7526,16 +7543,65 @@ export default function DashboardPage() {
                 </select>
               </div>
             </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "12px 24px 18px", borderTop: "1px solid #f1f5f9" }}>
-              <button onClick={() => setBuscarRotaOpen(false)}
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "12px 24px 12px", borderTop: "1px solid #f1f5f9" }}>
+              <button onClick={() => { setBuscarRotaOpen(false); setBuscarRotaResults([]); }}
                 style={{ height: 34, padding: "0 20px", borderRadius: 4, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                 Cancelar
               </button>
-              <button onClick={() => setBuscarRotaOpen(false)}
+              <button onClick={() => {
+                const f = buscarRotaForm;
+                const results = gaRows.filter(r => {
+                  if (f.nome && !r.rota.toLowerCase().includes(f.nome.toLowerCase())) return false;
+                  if (f.codigo && !r.codigo.toLowerCase().includes(f.codigo.toLowerCase())) return false;
+                  if (f.estadoFechamento === "aberto" && !r.ativo) return false;
+                  if (f.estadoFechamento === "fechado" && r.ativo) return false;
+                  if (f.uf && (r.estadoUF ?? "").toUpperCase() !== f.uf.toUpperCase()) return false;
+                  return true;
+                });
+                setBuscarRotaResults(results);
+              }}
                 style={{ height: 34, padding: "0 24px", borderRadius: 4, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                 Buscar
               </button>
             </div>
+
+            {/* Results list */}
+            {buscarRotaResults.length > 0 && (
+              <div style={{ borderTop: "1px solid #e2e8f0", maxHeight: 220, overflowY: "auto" }}>
+                <div style={{ padding: "6px 24px 4px", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  {buscarRotaResults.length} rota(s) encontrada(s)
+                </div>
+                {buscarRotaResults.map((r, i) => (
+                  <div key={r.id ?? i}
+                    onClick={() => {
+                      setSelectedRota(r);
+                      setBuscarRotaOpen(false);
+                      setBuscarRotaResults([]);
+                      setActiveSub("Relatório Diário");
+                    }}
+                    style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 24px", cursor: "pointer", borderBottom: "1px solid #f1f5f9", background: "#fff", transition: "background 0.12s" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "#fff")}>
+                    <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#2563eb", flexShrink: 0 }}><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 13, color: "#1e293b", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.rota}</div>
+                      <div style={{ fontSize: 11, color: "#64748b" }}>{r.cobrador || "—"} · {r.estadoUF ?? ""} {r.cidade ?? ""}</div>
+                    </div>
+                    <span style={{ fontSize: 11, fontFamily: "monospace", background: "#f1f5f9", color: "#2d5474", border: "1px solid #e2e8f0", borderRadius: 4, padding: "2px 7px", fontWeight: 700 }}>{r.codigo}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: r.ativo ? "#16a34a" : "#dc2626", background: r.ativo ? "#f0fdf4" : "#fef2f2", border: `1px solid ${r.ativo ? "#bbf7d0" : "#fecaca"}`, borderRadius: 12, padding: "1px 8px" }}>
+                      {r.ativo ? "Aberto" : "Fechado"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {buscarRotaResults.length === 0 && buscarRotaForm.nome === "" && buscarRotaForm.codigo === "" && buscarRotaForm.uf === "" && buscarRotaForm.estadoFechamento === "" ? null : (
+              buscarRotaResults.length === 0 && (buscarRotaForm.nome !== "" || buscarRotaForm.codigo !== "" || buscarRotaForm.uf !== "" || buscarRotaForm.estadoFechamento !== "") ? (
+                <div style={{ padding: "14px 24px 18px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>
+                  Nenhuma rota encontrada.
+                </div>
+              ) : null
+            )}
           </div>
         </div>
       )}
