@@ -393,7 +393,7 @@ function DesempenhoContent() {
           <Pie3DChart data={gastosPieData} />
         </ChartCard>
 
-        <ChartCard subtitle="Ingressos por Conceito 2026" year="2026" showMonth>
+        <ChartCard subtitle="Rendimentos por Categoria 2026" year="2026" showMonth>
           <Pie3DChart data={ingresosPieData} />
         </ChartCard>
 
