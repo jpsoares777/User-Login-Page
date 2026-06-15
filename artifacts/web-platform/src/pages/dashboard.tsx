@@ -4673,28 +4673,6 @@ export default function DashboardPage() {
   const [buscarRotaOpen, setBuscarRotaOpen] = useState(false);
   const emptyBuscarRota = { nome: "", codigo: "", estadoFechamento: "", uf: "" };
   const [buscarRotaForm, setBuscarRotaForm] = useState(emptyBuscarRota);
-  const [buscarRotaResults, setBuscarRotaResults] = useState<null | { estado: string; uf: string; cidade: string; rota: string }[]>(null);
-  const ufToEstado: Record<string, string> = {
-    AC:"ACRE", AL:"ALAGOAS", AM:"AMAZONAS", AP:"AMAPÁ", BA:"BAHIA", CE:"CEARÁ",
-    DF:"DISTRITO FEDERAL", ES:"ESPÍRITO SANTO", GO:"GOIÁS", MA:"MARANHÃO",
-    MG:"MINAS GERAIS", MS:"MATO GROSSO DO SUL", MT:"MATO GROSSO", PA:"PARÁ",
-    PB:"PARAÍBA", PE:"PERNAMBUCO", PI:"PIAUÍ", PR:"PARANÁ", RJ:"RIO DE JANEIRO",
-    RN:"RIO GRANDE DO NORTE", RO:"RONDÔNIA", RR:"RORAIMA", RS:"RIO GRANDE DO SUL",
-    SC:"SANTA CATARINA", SE:"SERGIPE", SP:"SÃO PAULO", TO:"TOCANTINS",
-  };
-  const handleBuscarRota = () => {
-    const { nome, uf } = buscarRotaForm;
-    const results: { estado: string; uf: string; cidade: string; rota: string }[] = [];
-    Object.entries(estadosData).forEach(([estado, items]) => {
-      const estadoUf = Object.entries(ufToEstado).find(([, e]) => e === estado)?.[0] ?? "";
-      if (uf && estadoUf !== uf) return;
-      items.forEach(item => {
-        if (nome && !item.vendedor.toLowerCase().includes(nome.toLowerCase())) return;
-        results.push({ estado, uf: estadoUf, cidade: item.cidade, rota: item.vendedor });
-      });
-    });
-    setBuscarRotaResults(results);
-  };
   const [collapsedCidades, setCollapsedCidades] = useState<Set<string>>(new Set());
   const [collapsedEstadoMain, setCollapsedEstadoMain] = useState(false);
   const toggleCidadeMain = (cidade: string) => setCollapsedCidades(prev => {
@@ -7542,88 +7520,52 @@ export default function DashboardPage() {
       {/* ── MODAL: Buscar Rota ── */}
       {buscarRotaOpen && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ background: "#fff", borderRadius: 6, width: "100%", maxWidth: 520, boxShadow: "0 8px 32px rgba(0,0,0,0.25)", overflow: "hidden", maxHeight: "90vh", display: "flex", flexDirection: "column" }}>
-            <div style={{ background: "#3d6e8e", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <div style={{ background: "#fff", borderRadius: 6, width: "100%", maxWidth: 480, boxShadow: "0 8px 32px rgba(0,0,0,0.25)", overflow: "hidden" }}>
+            <div style={{ background: "#3d6e8e", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Buscar Rota</span>
-              <button onClick={() => { setBuscarRotaOpen(false); setBuscarRotaResults(null); }} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: 20, lineHeight: 1 }}>×</button>
+              <button onClick={() => setBuscarRotaOpen(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: 20, lineHeight: 1 }}>×</button>
             </div>
-            <div style={{ padding: "18px 24px", display: "flex", flexDirection: "column", gap: 12, flexShrink: 0 }}>
-              <div style={{ display: "flex", gap: 12 }}>
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Nome da Rota:</label>
-                  <input value={buscarRotaForm.nome} onChange={e => { setBuscarRotaForm(f => ({ ...f, nome: e.target.value })); setBuscarRotaResults(null); }}
-                    style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%", boxSizing: "border-box" }} />
-                </div>
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Código da Rota:</label>
-                  <input value={buscarRotaForm.codigo} onChange={e => { setBuscarRotaForm(f => ({ ...f, codigo: e.target.value })); setBuscarRotaResults(null); }}
-                    style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%", boxSizing: "border-box" }} />
-                </div>
+            <div style={{ padding: "22px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Nome da Rota:</label>
+                <input value={buscarRotaForm.nome} onChange={e => setBuscarRotaForm(f => ({ ...f, nome: e.target.value }))}
+                  style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%", boxSizing: "border-box" }} />
               </div>
-              <div style={{ display: "flex", gap: 12 }}>
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Estado de Fechamento:</label>
-                  <select value={buscarRotaForm.estadoFechamento} onChange={e => { setBuscarRotaForm(f => ({ ...f, estadoFechamento: e.target.value })); setBuscarRotaResults(null); }}
-                    style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%" }}>
-                    <option value="">-- Estado --</option>
-                    <option value="aberto">Aberto</option>
-                    <option value="fechado">Fechado</option>
-                  </select>
-                </div>
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Estado (UF):</label>
-                  <select value={buscarRotaForm.uf} onChange={e => { setBuscarRotaForm(f => ({ ...f, uf: e.target.value })); setBuscarRotaResults(null); }}
-                    style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%" }}>
-                    <option value="">--- Todos ---</option>
-                    {["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"].map(uf => (
-                      <option key={uf} value={uf}>{uf}</option>
-                    ))}
-                  </select>
-                </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Código da Rota:</label>
+                <input value={buscarRotaForm.codigo} onChange={e => setBuscarRotaForm(f => ({ ...f, codigo: e.target.value }))}
+                  style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%", boxSizing: "border-box" }} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Estado de Fechamento:</label>
+                <select value={buscarRotaForm.estadoFechamento} onChange={e => setBuscarRotaForm(f => ({ ...f, estadoFechamento: e.target.value }))}
+                  style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%" }}>
+                  <option value="">-- Estado --</option>
+                  <option value="aberto">Aberto</option>
+                  <option value="fechado">Fechado</option>
+                </select>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Estado (UF) <span style={{ color: "#dc2626" }}>(*)</span>:</label>
+                <select value={buscarRotaForm.uf} onChange={e => setBuscarRotaForm(f => ({ ...f, uf: e.target.value }))}
+                  style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%" }}>
+                  <option value="">--- Selecione ---</option>
+                  {["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"].map(uf => (
+                    <option key={uf} value={uf}>{uf}</option>
+                  ))}
+                </select>
               </div>
             </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "10px 24px 14px", borderTop: "1px solid #f1f5f9", flexShrink: 0 }}>
-              <button onClick={() => { setBuscarRotaOpen(false); setBuscarRotaResults(null); setBuscarRotaForm(emptyBuscarRota); }}
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "12px 24px 18px", borderTop: "1px solid #f1f5f9" }}>
+              <button onClick={() => setBuscarRotaOpen(false)}
                 style={{ height: 34, padding: "0 20px", borderRadius: 4, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                 Cancelar
               </button>
-              <button onClick={handleBuscarRota}
+              <button onClick={() => setBuscarRotaOpen(false)}
                 style={{ height: 34, padding: "0 24px", borderRadius: 4, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                 Buscar
               </button>
             </div>
-            {buscarRotaResults !== null && (
-              <div style={{ borderTop: "2px solid #e5e7eb", overflowY: "auto", maxHeight: 300 }}>
-                {buscarRotaResults.length === 0 ? (
-                  <div style={{ padding: "28px 24px", textAlign: "center", color: "#6b7280", fontSize: 13 }}>
-                    Nenhuma rota encontrada para os filtros informados.
-                  </div>
-                ) : (
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-                    <thead>
-                      <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e5e7eb" }}>
-                        <th style={{ padding: "8px 14px", textAlign: "left", color: "#374151", fontWeight: 700, fontSize: 12 }}>UF</th>
-                        <th style={{ padding: "8px 14px", textAlign: "left", color: "#374151", fontWeight: 700, fontSize: 12 }}>Estado</th>
-                        <th style={{ padding: "8px 14px", textAlign: "left", color: "#374151", fontWeight: 700, fontSize: 12 }}>Cidade</th>
-                        <th style={{ padding: "8px 14px", textAlign: "left", color: "#374151", fontWeight: 700, fontSize: 12 }}>Rota</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {buscarRotaResults.map((r, i) => (
-                        <tr key={i} style={{ borderBottom: "1px solid #f1f5f9", cursor: "pointer", background: i % 2 === 0 ? "#fff" : "#f9fafb" }}
-                          onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
-                          onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f9fafb")}>
-                          <td style={{ padding: "8px 14px", color: "#2563eb", fontWeight: 700 }}>{r.uf}</td>
-                          <td style={{ padding: "8px 14px", color: "#374151" }}>{r.estado}</td>
-                          <td style={{ padding: "8px 14px", color: "#374151" }}>{r.cidade}</td>
-                          <td style={{ padding: "8px 14px", color: "#374151" }}>{r.rota}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            )}
           </div>
         </div>
       )}
