@@ -2193,10 +2193,10 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
     next.has(cidade) ? next.delete(cidade) : next.add(cidade);
     return next;
   });
-  React.useEffect(() => {
+  useEffect(() => {
     setCollapsed(new Set((estadosData[selectedEstado] ?? []).map(i => i.cidade)));
     setCollapsedEstado(false);
-  }, [selectedEstado]);
+  }, [selectedEstado]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <>
       {/* LEFT: Tree */}
