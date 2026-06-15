@@ -4696,6 +4696,45 @@ export default function DashboardPage() {
   });
   const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
   const [selectedEstado, setSelectedEstado] = useState("MARANHÃO");
+  type RotaFakeData = { cod:number; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; };
+  const rotasFakeData: Record<string, RotaFakeData> = {
+    "Rota Cred Bank A":    { cod:10600, dataInicio:"2026-04-17 00:41:52", dataFechamento:null,                  ultimoAcesso:"2026-06-10 08:30:00", clientesIniciais:20, sincronizados:1,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:2979,  carteiraInicial:12660, recebPrevisto:1245, recebAtual:200,  pagos:1,  noPagos:0, efetivo:200,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:0,   retirada:0,   caixaFinal:3179,  carteiraFinal:12460, sancao:0 },
+    "Rota Cred Bank B":    { cod:10601, dataInicio:"2026-03-10 09:15:00", dataFechamento:null,                  ultimoAcesso:"2026-06-10 09:45:00", clientesIniciais:18, sincronizados:18, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:1850,  carteiraInicial:9800,  recebPrevisto:980,  recebAtual:680,  pagos:8,  noPagos:2, efetivo:580,  transferencia:100, novosEmp:400, juros:160, rendimentos:50,  despesas:0,   retirada:0,   caixaFinal:2980,  carteiraFinal:9540,  sancao:0 },
+    "Rota Norte SL":       { cod:10602, dataInicio:"2025-08-01 07:00:00", dataFechamento:"2025-11-30 18:00:00", ultimoAcesso:"2025-11-30 17:30:00", clientesIniciais:12, sincronizados:12, clientesNovos:0, renovados:0, cancelados:2, caixaInicial:500,   carteiraInicial:4200,  recebPrevisto:420,  recebAtual:420,  pagos:10, noPagos:0, efetivo:420,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:80,  retirada:200, caixaFinal:640,   carteiraFinal:3780,  sancao:0 },
+    "Rota Cred Imp A":     { cod:10610, dataInicio:"2026-02-15 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-01 10:00:00", clientesIniciais:25, sincronizados:25, clientesNovos:3, renovados:2, cancelados:1, caixaInicial:3200,  carteiraInicial:15400, recebPrevisto:1540, recebAtual:1100, pagos:12, noPagos:3, efetivo:900,  transferencia:200, novosEmp:600, juros:240, rendimentos:100, despesas:120, retirada:300, caixaFinal:4280,  carteiraFinal:15100, sancao:0 },
+    "Rota Cred Imp B":     { cod:10611, dataInicio:"2025-03-20 09:00:00", dataFechamento:"2025-08-15 17:45:00", ultimoAcesso:"2025-08-15 17:00:00", clientesIniciais:10, sincronizados:10, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:800,   carteiraInicial:5100,  recebPrevisto:510,  recebAtual:510,  pagos:10, noPagos:0, efetivo:510,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:50,  retirada:150, caixaFinal:1110,  carteiraFinal:4590,  sancao:0 },
+    "Rota Caxias Sul":     { cod:10620, dataInicio:"2026-01-08 07:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-10 08:50:00", clientesIniciais:16, sincronizados:16, clientesNovos:1, renovados:1, cancelados:0, caixaInicial:2100,  carteiraInicial:10200, recebPrevisto:1020, recebAtual:750,  pagos:9,  noPagos:2, efetivo:650,  transferencia:100, novosEmp:300, juros:120, rendimentos:0,   despesas:90,  retirada:0,   caixaFinal:3060,  carteiraFinal:9780,  sancao:0 },
+    "Rota Timon Centro":   { cod:10625, dataInicio:"2025-04-10 08:00:00", dataFechamento:"2025-12-01 17:00:00", ultimoAcesso:"2025-12-01 16:30:00", clientesIniciais:8,  sincronizados:8,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:600,   carteiraInicial:3800,  recebPrevisto:380,  recebAtual:380,  pagos:8,  noPagos:0, efetivo:380,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:40,  retirada:100, caixaFinal:840,   carteiraFinal:3420,  sancao:0 },
+    "Rota Norte A":        { cod:20600, dataInicio:"2026-03-01 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-05 09:10:00", clientesIniciais:22, sincronizados:22, clientesNovos:2, renovados:3, cancelados:0, caixaInicial:3100,  carteiraInicial:13500, recebPrevisto:1350, recebAtual:980,  pagos:11, noPagos:1, efetivo:880,  transferencia:100, novosEmp:500, juros:200, rendimentos:80,  despesas:100, retirada:200, caixaFinal:3860,  carteiraFinal:13200, sancao:0 },
+    "Rota Norte B":        { cod:20601, dataInicio:"2026-02-20 09:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-05 10:20:00", clientesIniciais:19, sincronizados:19, clientesNovos:1, renovados:2, cancelados:0, caixaInicial:2450,  carteiraInicial:11200, recebPrevisto:1120, recebAtual:820,  pagos:9,  noPagos:2, efetivo:720,  transferencia:100, novosEmp:350, juros:140, rendimentos:60,  despesas:80,  retirada:0,   caixaFinal:3250,  carteiraFinal:10920, sancao:0 },
+    "Rota Docas Belém":    { cod:20602, dataInicio:"2025-05-10 07:00:00", dataFechamento:"2025-09-10 17:00:00", ultimoAcesso:"2025-09-10 16:00:00", clientesIniciais:14, sincronizados:14, clientesNovos:0, renovados:0, cancelados:2, caixaInicial:900,   carteiraInicial:6200,  recebPrevisto:620,  recebAtual:620,  pagos:12, noPagos:0, efetivo:620,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:60,  retirada:180, caixaFinal:1280,  carteiraFinal:5580,  sancao:0 },
+    "Rota Ananindeua A":   { cod:20610, dataInicio:"2026-02-01 08:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-05 09:00:00", clientesIniciais:17, sincronizados:17, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:2300,  carteiraInicial:10800, recebPrevisto:1080, recebAtual:760,  pagos:10, noPagos:1, efetivo:660,  transferencia:100, novosEmp:320, juros:128, rendimentos:40,  despesas:70,  retirada:0,   caixaFinal:3030,  carteiraFinal:10560, sancao:0 },
+    "Rota Ananindeua B":   { cod:20611, dataInicio:"2025-02-14 09:00:00", dataFechamento:"2025-07-30 17:00:00", ultimoAcesso:"2025-07-30 16:30:00", clientesIniciais:9,  sincronizados:9,  clientesNovos:0, renovados:0, cancelados:1, caixaInicial:700,   carteiraInicial:4500,  recebPrevisto:450,  recebAtual:450,  pagos:9,  noPagos:0, efetivo:450,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:45,  retirada:120, caixaFinal:985,   carteiraFinal:4050,  sancao:0 },
+    "Rota Marabá Centro":  { cod:20620, dataInicio:"2026-04-05 07:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-12 08:40:00", clientesIniciais:28, sincronizados:28, clientesNovos:4, renovados:2, cancelados:0, caixaInicial:4100,  carteiraInicial:17800, recebPrevisto:1780, recebAtual:1400, pagos:15, noPagos:2, efetivo:1200, transferencia:200, novosEmp:700, juros:280, rendimentos:120, despesas:150, retirada:400, caixaFinal:5170,  carteiraFinal:17500, sancao:0 },
+    "Rota Santarém Rio":   { cod:20625, dataInicio:"2025-06-15 08:00:00", dataFechamento:"2025-10-05 17:00:00", ultimoAcesso:"2025-10-05 15:30:00", clientesIniciais:11, sincronizados:11, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:750,   carteiraInicial:5000,  recebPrevisto:500,  recebAtual:500,  pagos:10, noPagos:0, efetivo:500,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:55,  retirada:150, caixaFinal:1045,  carteiraFinal:4500,  sancao:0 },
+    "Rota Cred CE A":      { cod:30600, dataInicio:"2026-03-15 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-08 09:00:00", clientesIniciais:24, sincronizados:24, clientesNovos:3, renovados:2, cancelados:0, caixaInicial:3500,  carteiraInicial:14600, recebPrevisto:1460, recebAtual:1100, pagos:13, noPagos:2, efetivo:950,  transferencia:150, novosEmp:550, juros:220, rendimentos:90,  despesas:110, retirada:250, caixaFinal:4380,  carteiraFinal:14350, sancao:0 },
+    "Rota Cred CE B":      { cod:30601, dataInicio:"2026-03-01 09:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-08 10:15:00", clientesIniciais:20, sincronizados:20, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:2800,  carteiraInicial:12000, recebPrevisto:1200, recebAtual:900,  pagos:10, noPagos:2, efetivo:800,  transferencia:100, novosEmp:400, juros:160, rendimentos:70,  despesas:95,  retirada:200, caixaFinal:3475,  carteiraFinal:11760, sancao:0 },
+    "Rota Litoral CE":     { cod:30602, dataInicio:"2025-07-01 07:30:00", dataFechamento:"2025-12-20 17:00:00", ultimoAcesso:"2025-12-20 16:00:00", clientesIniciais:13, sincronizados:13, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:850,   carteiraInicial:5800,  recebPrevisto:580,  recebAtual:580,  pagos:12, noPagos:0, efetivo:580,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:65,  retirada:160, caixaFinal:1225,  carteiraFinal:5220,  sancao:0 },
+    "Rota Caucaia A":      { cod:30610, dataInicio:"2026-01-20 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-08 09:30:00", clientesIniciais:21, sincronizados:21, clientesNovos:2, renovados:2, cancelados:0, caixaInicial:2950,  carteiraInicial:13200, recebPrevisto:1320, recebAtual:1000, pagos:11, noPagos:2, efetivo:880,  transferencia:120, novosEmp:480, juros:192, rendimentos:85,  despesas:105, retirada:220, caixaFinal:3790,  carteiraFinal:12960, sancao:0 },
+    "Rota Caucaia B":      { cod:30611, dataInicio:"2025-01-15 09:00:00", dataFechamento:"2025-06-14 17:00:00", ultimoAcesso:"2025-06-14 16:30:00", clientesIniciais:7,  sincronizados:7,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:500,   carteiraInicial:3200,  recebPrevisto:320,  recebAtual:320,  pagos:7,  noPagos:0, efetivo:320,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:30,  retirada:80,  caixaFinal:710,   carteiraFinal:2880,  sancao:0 },
+    "Rota Juazeiro Norte": { cod:30620, dataInicio:"2026-02-10 07:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-08 08:50:00", clientesIniciais:23, sincronizados:23, clientesNovos:3, renovados:1, cancelados:0, caixaInicial:3300,  carteiraInicial:13800, recebPrevisto:1380, recebAtual:1050, pagos:12, noPagos:2, efetivo:900,  transferencia:150, novosEmp:520, juros:208, rendimentos:75,  despesas:115, retirada:230, caixaFinal:4100,  carteiraFinal:13560, sancao:0 },
+    "Rota Sobral Centro":  { cod:30625, dataInicio:"2025-05-20 08:00:00", dataFechamento:"2025-11-11 17:30:00", ultimoAcesso:"2025-11-11 16:45:00", clientesIniciais:10, sincronizados:10, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:680,   carteiraInicial:4600,  recebPrevisto:460,  recebAtual:460,  pagos:10, noPagos:0, efetivo:460,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:48,  retirada:130, caixaFinal:962,   carteiraFinal:4140,  sancao:0 },
+    "Rota Cred BA A":      { cod:40600, dataInicio:"2026-03-20 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-07 09:20:00", clientesIniciais:26, sincronizados:26, clientesNovos:3, renovados:2, cancelados:0, caixaInicial:3800,  carteiraInicial:16200, recebPrevisto:1620, recebAtual:1200, pagos:14, noPagos:2, efetivo:1050, transferencia:150, novosEmp:580, juros:232, rendimentos:95,  despesas:120, retirada:280, caixaFinal:4773,  carteiraFinal:15940, sancao:0 },
+    "Rota Cred BA B":      { cod:40601, dataInicio:"2026-02-05 09:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-07 10:30:00", clientesIniciais:20, sincronizados:20, clientesNovos:2, renovados:2, cancelados:0, caixaInicial:2700,  carteiraInicial:11800, recebPrevisto:1180, recebAtual:870,  pagos:10, noPagos:2, efetivo:750,  transferencia:120, novosEmp:420, juros:168, rendimentos:65,  despesas:90,  retirada:200, caixaFinal:3365,  carteiraFinal:11560, sancao:0 },
+    "Rota Pelourinho":     { cod:40602, dataInicio:"2025-06-01 07:00:00", dataFechamento:"2025-10-30 17:00:00", ultimoAcesso:"2025-10-30 16:30:00", clientesIniciais:15, sincronizados:15, clientesNovos:0, renovados:0, cancelados:2, caixaInicial:1000,  carteiraInicial:6800,  recebPrevisto:680,  recebAtual:680,  pagos:13, noPagos:0, efetivo:680,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:72,  retirada:200, caixaFinal:1408,  carteiraFinal:6120,  sancao:0 },
+    "Rota Feira Santana A":{ cod:40610, dataInicio:"2026-02-28 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-07 09:10:00", clientesIniciais:22, sincronizados:22, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:3050,  carteiraInicial:12800, recebPrevisto:1280, recebAtual:960,  pagos:11, noPagos:2, efetivo:840,  transferencia:120, novosEmp:460, juros:184, rendimentos:80,  despesas:100, retirada:210, caixaFinal:3780,  carteiraFinal:12560, sancao:0 },
+    "Rota Feira Santana B":{ cod:40611, dataInicio:"2025-03-05 09:00:00", dataFechamento:"2025-08-05 17:00:00", ultimoAcesso:"2025-08-05 16:00:00", clientesIniciais:11, sincronizados:11, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:760,   carteiraInicial:5200,  recebPrevisto:520,  recebAtual:520,  pagos:11, noPagos:0, efetivo:520,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:55,  retirada:140, caixaFinal:1085,  carteiraFinal:4680,  sancao:0 },
+    "Rota VC Centro":      { cod:40620, dataInicio:"2026-01-15 07:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-07 08:30:00", clientesIniciais:18, sincronizados:18, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:2500,  carteiraInicial:11000, recebPrevisto:1100, recebAtual:820,  pagos:10, noPagos:1, efetivo:720,  transferencia:100, novosEmp:380, juros:152, rendimentos:60,  despesas:88,  retirada:190, caixaFinal:3102,  carteiraFinal:10760, sancao:0 },
+    "Rota Ilhéus Sul":     { cod:40625, dataInicio:"2025-04-25 08:00:00", dataFechamento:"2025-09-28 17:00:00", ultimoAcesso:"2025-09-28 16:30:00", clientesIniciais:9,  sincronizados:9,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:620,   carteiraInicial:4100,  recebPrevisto:410,  recebAtual:410,  pagos:9,  noPagos:0, efetivo:410,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:42,  retirada:110, caixaFinal:878,   carteiraFinal:3690,  sancao:0 },
+    "Rota Cred PI A":      { cod:50600, dataInicio:"2026-03-25 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-09 09:10:00", clientesIniciais:21, sincronizados:21, clientesNovos:2, renovados:2, cancelados:0, caixaInicial:3000,  carteiraInicial:13000, recebPrevisto:1300, recebAtual:980,  pagos:11, noPagos:2, efetivo:850,  transferencia:130, novosEmp:480, juros:192, rendimentos:75,  despesas:100, retirada:220, caixaFinal:3735,  carteiraFinal:12760, sancao:0 },
+    "Rota Cred PI B":      { cod:50601, dataInicio:"2026-03-05 09:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-09 10:30:00", clientesIniciais:17, sincronizados:17, clientesNovos:1, renovados:1, cancelados:0, caixaInicial:2200,  carteiraInicial:10200, recebPrevisto:1020, recebAtual:760,  pagos:9,  noPagos:2, efetivo:660,  transferencia:100, novosEmp:360, juros:144, rendimentos:55,  despesas:85,  retirada:180, caixaFinal:2750,  carteiraFinal:9960,  sancao:0 },
+    "Rota Rio Parnaíba":   { cod:50602, dataInicio:"2025-08-10 07:30:00", dataFechamento:"2025-11-02 17:00:00", ultimoAcesso:"2025-11-02 16:30:00", clientesIniciais:12, sincronizados:12, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:780,   carteiraInicial:5300,  recebPrevisto:530,  recebAtual:530,  pagos:11, noPagos:0, efetivo:530,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:58,  retirada:150, caixaFinal:1102,  carteiraFinal:4770,  sancao:0 },
+    "Rota Parnaíba Norte": { cod:50610, dataInicio:"2026-01-30 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-09 09:20:00", clientesIniciais:19, sincronizados:19, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:2600,  carteiraInicial:11500, recebPrevisto:1150, recebAtual:860,  pagos:10, noPagos:2, efetivo:760,  transferencia:100, novosEmp:400, juros:160, rendimentos:65,  despesas:92,  retirada:200, caixaFinal:3233,  carteiraFinal:11260, sancao:0 },
+    "Rota Parnaíba Sul":   { cod:50611, dataInicio:"2025-02-20 09:00:00", dataFechamento:"2025-07-19 17:00:00", ultimoAcesso:"2025-07-19 16:30:00", clientesIniciais:8,  sincronizados:8,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:540,   carteiraInicial:3600,  recebPrevisto:360,  recebAtual:360,  pagos:8,  noPagos:0, efetivo:360,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:36,  retirada:90,  caixaFinal:774,   carteiraFinal:3240,  sancao:0 },
+    "Rota Picos Centro":   { cod:50620, dataInicio:"2026-02-18 07:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-09 08:40:00", clientesIniciais:20, sincronizados:20, clientesNovos:2, renovados:2, cancelados:0, caixaInicial:2750,  carteiraInicial:12100, recebPrevisto:1210, recebAtual:900,  pagos:11, noPagos:2, efetivo:780,  transferencia:120, novosEmp:440, juros:176, rendimentos:70,  despesas:98,  retirada:210, caixaFinal:3452,  carteiraFinal:11860, sancao:0 },
+    "Rota Floriano A":     { cod:50625, dataInicio:"2025-07-12 08:00:00", dataFechamento:"2025-12-15 17:00:00", ultimoAcesso:"2025-12-15 16:30:00", clientesIniciais:10, sincronizados:10, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:690,   carteiraInicial:4800,  recebPrevisto:480,  recebAtual:480,  pagos:10, noPagos:0, efetivo:480,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:50,  retirada:130, caixaFinal:990,   carteiraFinal:4320,  sancao:0 },
+  };
+  const [selectedRota, setSelectedRota] = useState("Rota Cred Bank A");
   const estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]> = {
     "MARANHÃO": [
       { cidade: "SAO LUIS",    vendedor: "Rota Cred Bank A",        data: "2026-06-10", ativa: true  },
@@ -7268,7 +7307,9 @@ export default function DashboardPage() {
                         {cidade}
                       </div>
                       {!collapsedCidades.has(cidade) && rotas.map((rota, ri) => (
-                        <div key={ri} className="pl-12 py-1.5 flex items-center pr-2 cursor-pointer hover:bg-blue-50 border-l-2 border-blue-500">
+                        <div key={ri} onClick={() => setSelectedRota(rota.vendedor)}
+                          className="pl-12 py-1.5 flex items-center pr-2 cursor-pointer hover:bg-blue-50 border-l-2"
+                          style={{ borderColor: selectedRota === rota.vendedor ? "#2563eb" : "#3b82f6", background: selectedRota === rota.vendedor ? "#eff6ff" : undefined }}>
                           <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                           <span className="text-gray-700 text-xs flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{rota.vendedor}</span>
                           <span className={`ml-1.5 shrink-0 text-[10px] px-1.5 py-0.5 rounded font-semibold text-white ${rota.ativa ? "bg-green-500" : "bg-red-500"}`}>{rota.data}</span>
@@ -7282,96 +7323,105 @@ export default function DashboardPage() {
 
             {/* CENTER: Grouped data rows */}
             <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
-              <SectionHeader title="Dados da Rota" color="#2563eb" />
-              <Row label="Cobrador" index={0}>
-                <strong className="text-gray-800">Rota Cred Bank</strong>&nbsp;— Cod: 10600
-                <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
-              </Row>
-              <Row label="Data de Início de Cobrança" index={1}>
-                <CalIcon />
-                <span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">2026-04-17 00:41:52</span>
-              </Row>
-              <Row label="Data de Fechamento de Cobrança" index={2}>
-                <CalIcon />
-                {dataFechamentoCaixa
-                  ? <span className="bg-red-100 text-red-700 px-2 rounded text-[11px] font-medium">{dataFechamentoCaixa}</span>
-                  : <span className="text-amber-600 font-medium">Sistema sem Fechar</span>}
-              </Row>
-              <Row label="Último Acesso Móvel" index={3}>
-                <CalIcon /> 2026-04-17 00:41:52
-              </Row>
+              {(() => {
+                const rd = rotasFakeData[selectedRota] ?? rotasFakeData["Rota Cred Bank A"];
+                const fmtV = (n: number) => `$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+                const pct = rd.recebPrevisto > 0 ? Math.round((rd.recebAtual / rd.recebPrevisto) * 100) : 0;
+                const pctBg = pct >= 80 ? "#dbeafe" : pct >= 50 ? "#fef3c7" : "#fee2e2";
+                const pctTxt = pct >= 80 ? "#1d4ed8" : pct >= 50 ? "#d97706" : "#dc2626";
+                const totalClientes = rd.clientesIniciais + rd.clientesNovos;
+                return (<>
+                  <SectionHeader title="Dados da Rota" color="#2563eb" />
+                  <Row label="Cobrador" index={0}>
+                    <strong className="text-gray-800">{selectedRota}</strong>&nbsp;— Cod: {rd.cod}
+                    <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
+                  </Row>
+                  <Row label="Data de Início de Cobrança" index={1}>
+                    <CalIcon />
+                    <span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">{rd.dataInicio}</span>
+                  </Row>
+                  <Row label="Data de Fechamento de Cobrança" index={2}>
+                    <CalIcon />
+                    {rd.dataFechamento
+                      ? <span className="bg-red-100 text-red-700 px-2 rounded text-[11px] font-medium">{rd.dataFechamento}</span>
+                      : <span className="text-amber-600 font-medium">Sistema sem Fechar</span>}
+                  </Row>
+                  <Row label="Último Acesso Móvel" index={3}>
+                    <CalIcon /> {rd.ultimoAcesso}
+                  </Row>
 
-              <SectionHeader title="Clientes" color="#16a34a" />
-              <Row label="Clientes Iniciais" index={0}>
-                <PersonIcon /> <strong className="text-gray-800">20</strong>
-                <span className="text-gray-400 text-[11px]">( 1 Sincronizados / 20 )</span>
-                <svg viewBox="0 0 24 24" className="w-3 h-3 fill-blue-400 cursor-pointer shrink-0"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-              </Row>
-              <Row label="Clientes Novos" index={1}>
-                <PersonIcon /> <strong className="text-gray-800">0</strong> <span className="text-gray-400 text-[11px]">(0/0)</span>
-              </Row>
+                  <SectionHeader title="Clientes" color="#16a34a" />
+                  <Row label="Clientes Iniciais" index={0}>
+                    <PersonIcon /> <strong className="text-gray-800">{rd.clientesIniciais}</strong>
+                    <span className="text-gray-400 text-[11px]">( {rd.sincronizados} Sincronizados / {rd.clientesIniciais} )</span>
+                    <svg viewBox="0 0 24 24" className="w-3 h-3 fill-blue-400 cursor-pointer shrink-0"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                  </Row>
+                  <Row label="Clientes Novos" index={1}>
+                    <PersonIcon /> <strong className="text-gray-800">{rd.clientesNovos}</strong> <span className="text-gray-400 text-[11px]">(0/{rd.clientesNovos})</span>
+                  </Row>
+                  <Row label="Clientes Renovados" index={2}>
+                    <PersonIcon /> <strong className="text-gray-800">{rd.renovados}</strong>
+                  </Row>
+                  <Row label="Clientes Cancelados" index={3}>
+                    <PersonIcon /> <strong className="text-gray-800">{rd.cancelados}</strong>
+                  </Row>
+                  <Row label="Total de Clientes" index={4}>
+                    <PersonIcon /> <strong className="text-gray-800">{totalClientes}</strong>
+                  </Row>
 
-              <Row label="Clientes Renovados" index={2}>
-                <PersonIcon /> <strong className="text-gray-800">0</strong>
-              </Row>
-              <Row label="Clientes Cancelados" index={3}>
-                <PersonIcon /> <strong className="text-gray-800">0</strong>
-              </Row>
-              <Row label="Total de Clientes" index={4}>
-                <PersonIcon /> <strong className="text-gray-800">20</strong>
-              </Row>
-
-              <SectionHeader title="Financeiro" color="#7c3aed" />
-              <Row label="Caixa Inicial" bold index={0}>
-                <span className="text-green-700">$ 2.979,00</span>
-              </Row>
-              <Row label="Carteira Inicial" bold index={1}>
-                <span className="text-green-700">$ 12.660,00</span>
-              </Row>
-              <Row label="Recebimento Previsto do Dia" index={2}>
-                <span className="font-semibold text-gray-800">$ 1.245,00</span>
-                <span className="text-[11px] bg-blue-100 text-blue-700 px-1.5 rounded font-medium">100 %</span>
-              </Row>
-              <Row label="Recebimento Atual do Dia" index={3}>
-                <span className="font-semibold text-gray-800">$ 200,00</span>
-                <span className="text-[11px] bg-orange-100 text-orange-700 px-1.5 rounded font-medium">16,1 %</span>
-                <span className="text-[11px] text-gray-500">Pagos: <strong className="text-gray-800">1</strong></span>
-                <span className="text-[11px] text-gray-500">No Pagos: <strong className="text-red-500">0</strong></span>
-              </Row>
-              <Row label="Recebimento por Tipo Pagto" index={4}>
-                <span className="text-[11px] text-gray-500">Efetivo:</span>
-                <span className="text-red-500 font-semibold">$ 200,00</span>
-                <span className="text-gray-300 mx-0.5">|</span>
-                <span className="text-[11px] text-gray-500">Transferência:</span>
-                <span className="text-red-500 font-semibold">$ 0,00</span>
-              </Row>
-              <Row label="Novos Empréstimos" index={5}>
-                <span className="font-semibold text-gray-800">$ 0,00</span>
-                <span className="text-gray-400 text-[11px]">( Juros: $ 0,00 )</span>
-              </Row>
-              <Row label="Rendimentos" index={6}>
-                <span className="text-blue-600 font-bold text-sm">+</span>
-                <span className="font-semibold text-blue-700">0,00</span>
-              </Row>
-              <Row label="Despesas" index={7}>
-                <span className="text-gray-500 font-bold text-sm">−</span>
-                <span className="font-semibold text-gray-600">0,00</span>
-              </Row>
-              <Row label="Retirada de Caixa" index={8}>
-                <span className="text-gray-500 font-bold text-sm">−</span>
-                <span className="font-semibold text-gray-600">0,00</span>
-              </Row>
-              <Row label="Caixa Final" bold index={9}>
-                <span className="text-green-700">$ 3.179,00</span>
-                <span className="text-red-400 text-sm cursor-pointer ml-1" title="Detalhes do cálculo">❓</span>
-              </Row>
-              <div className="flex items-center mx-2 mt-0.5 mb-1.5 rounded px-3 py-2"
-                style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderLeftWidth: 4, borderLeftColor: "#16a34a" }}>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Carteira Final</span>
-                <span className="text-[11px] text-gray-400 ml-2">( Sanção: 0,00 )</span>
-                <div className="flex-1" />
-                <span className="text-base font-bold text-green-700">$ 12.460,00</span>
-              </div>
+                  <SectionHeader title="Financeiro" color="#7c3aed" />
+                  <Row label="Caixa Inicial" bold index={0}>
+                    <span className="text-green-700">{fmtV(rd.caixaInicial)}</span>
+                  </Row>
+                  <Row label="Carteira Inicial" bold index={1}>
+                    <span className="text-green-700">{fmtV(rd.carteiraInicial)}</span>
+                  </Row>
+                  <Row label="Recebimento Previsto do Dia" index={2}>
+                    <span className="font-semibold text-gray-800">{fmtV(rd.recebPrevisto)}</span>
+                    <span className="text-[11px] px-1.5 rounded font-medium" style={{ background: pctBg, color: pctTxt }}>{pct} %</span>
+                  </Row>
+                  <Row label="Recebimento Atual do Dia" index={3}>
+                    <span className="font-semibold text-gray-800">{fmtV(rd.recebAtual)}</span>
+                    <span className="text-[11px] px-1.5 rounded font-medium" style={{ background: pctBg, color: pctTxt }}>{pct.toFixed(1)} %</span>
+                    <span className="text-[11px] text-gray-500">Pagos: <strong className="text-gray-800">{rd.pagos}</strong></span>
+                    <span className="text-[11px] text-gray-500">No Pagos: <strong className="text-red-500">{rd.noPagos}</strong></span>
+                  </Row>
+                  <Row label="Recebimento por Tipo Pagto" index={4}>
+                    <span className="text-[11px] text-gray-500">Efetivo:</span>
+                    <span className="text-red-500 font-semibold">{fmtV(rd.efetivo)}</span>
+                    <span className="text-gray-300 mx-0.5">|</span>
+                    <span className="text-[11px] text-gray-500">Transferência:</span>
+                    <span className="text-red-500 font-semibold">{fmtV(rd.transferencia)}</span>
+                  </Row>
+                  <Row label="Novos Empréstimos" index={5}>
+                    <span className="font-semibold text-gray-800">{fmtV(rd.novosEmp)}</span>
+                    <span className="text-gray-400 text-[11px]">( Juros: {fmtV(rd.juros)} )</span>
+                  </Row>
+                  <Row label="Rendimentos" index={6}>
+                    <span className="text-blue-600 font-bold text-sm">+</span>
+                    <span className="font-semibold text-blue-700">{rd.rendimentos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                  </Row>
+                  <Row label="Despesas" index={7}>
+                    <span className="text-gray-500 font-bold text-sm">−</span>
+                    <span className="font-semibold text-gray-600">{rd.despesas.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                  </Row>
+                  <Row label="Retirada de Caixa" index={8}>
+                    <span className="text-gray-500 font-bold text-sm">−</span>
+                    <span className="font-semibold text-gray-600">{rd.retirada.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                  </Row>
+                  <Row label="Caixa Final" bold index={9}>
+                    <span className="text-green-700">{fmtV(rd.caixaFinal)}</span>
+                    <span className="text-red-400 text-sm cursor-pointer ml-1" title="Detalhes do cálculo">❓</span>
+                  </Row>
+                  <div className="flex items-center mx-2 mt-0.5 mb-1.5 rounded px-3 py-2"
+                    style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderLeftWidth: 4, borderLeftColor: "#16a34a" }}>
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Carteira Final</span>
+                    <span className="text-[11px] text-gray-400 ml-2">( Sanção: {rd.sancao.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} )</span>
+                    <div className="flex-1" />
+                    <span className="text-base font-bold text-green-700">{fmtV(rd.carteiraFinal)}</span>
+                  </div>
+                </>);
+              })()}
             </div>
 
             {/* RIGHT: Action buttons */}
