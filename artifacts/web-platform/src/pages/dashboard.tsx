@@ -1476,7 +1476,7 @@ function AgendadosContent() {
             </div>
             <div style={{ padding: "20px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
               <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Vendedor</label>
+                <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Rota</label>
                 <select value={newForm.vendedor} onChange={e => setNewForm(f => ({ ...f, vendedor: e.target.value }))}
                   style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151" }}>
                   <option>Rota Cred Bank -</option>
@@ -2214,8 +2214,8 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
 
       {/* CENTER: Sectioned data rows */}
       <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
-        <SectionHeader title="Dados do Vendedor" color="#2563eb" />
-        <Row label="Vendedor" index={0}>
+        <SectionHeader title="Dados da Rota" color="#2563eb" />
+        <Row label="Rota" index={0}>
           <strong className="text-gray-800">Rota Cred Bank -</strong>
           <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
         </Row>
@@ -2324,7 +2324,7 @@ function LiqPeriodosPagamentosContent() {
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
 
   const cols = [
-    { label: "Vendedor",        w: "11%", align: "left"   as const },
+    { label: "Rota",            w: "11%", align: "left"   as const },
     { label: "Nro.",            w: "4%",  align: "center" as const },
     { label: "Consecutivo",     w: "9%",  align: "left"   as const },
     { label: "Cliente",         w: "17%", align: "left"   as const },
@@ -2500,7 +2500,7 @@ function VendasPorPeriodosContent() {
   };
 
   const cols = [
-    { label: "Vendedor",       w: "9%",  align: "left"   as const },
+    { label: "Rota",           w: "9%",  align: "left"   as const },
     { label: "Consec.",        w: "7%",  align: "left"   as const },
     { label: "Frec.",          w: "5%",  align: "center" as const },
     { label: "Valor Ant.",     w: "5%",  align: "right"  as const },
@@ -2647,7 +2647,7 @@ function LiqPeriodosClientesContent() {
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
 
   const cols = [
-    { label: "Vendedor",      w: "8%",  align: "left"   as const },
+    { label: "Rota",          w: "8%",  align: "left"   as const },
     { label: "Data Venda",    w: "7%",  align: "center" as const },
     { label: "Consec.",       w: "13%", align: "left"   as const },
     { label: "Cliente",       w: "13%", align: "left"   as const },
@@ -4386,7 +4386,7 @@ function ListaClientesModal({ onClose }: { onClose: () => void }) {
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
     doc.setFontSize(10);
     doc.setTextColor(45, 84, 116);
-    doc.text(`Lista de Clientes — ${hoje}   Vendedor: SystemPay`, 10, 12);
+    doc.text(`Lista de Clientes — ${hoje}   Rota: SystemPay`, 10, 12);
     autoTable(doc, {
       startY: 18,
       head: [["#","FECHA","NRO CRÉDITO","NOME DO CLIENTE","TELEFONE","VL PRESTADO","VL A PAGAR","VL INTERESE","%","V.CUOTA","CUOTAS","C.PAGAS","C.RESTA","SALDO","VISITAS","FREC.","ÚLT.PAGO"]],
@@ -4584,7 +4584,7 @@ function gerarPDFListaClientes() {
 
   doc.setFontSize(11);
   doc.setTextColor(45, 84, 116);
-  doc.text(`Fecha Lista: ${hoje}   Vendedor: SystemPay`, 10, 12);
+  doc.text(`Fecha Lista: ${hoje}   Rota: SystemPay`, 10, 12);
 
   const clientes = [
     ["2026-04-08","4700627026","Andreia de Jesus Costa Araújo","89985014328","Rua gama lobon nº 10 quarto","1.500","2.100","600","40","105,00","20,0","0,0","7,6","800,00","0,00","5,0","Diário","2026-04-17"],
@@ -5192,7 +5192,7 @@ export default function DashboardPage() {
       {activeMain === "Gerenciar Rendimentos" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Vendedor (*):</label>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
             <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
               <option>– Rota Cred Bank –</option>
             </select>
@@ -5226,7 +5226,7 @@ export default function DashboardPage() {
       {activeMain === "Gerenciar Despesas" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Vendedor (*):</label>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
             <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
               <option>– Rota Cred Bank –</option>
             </select>
@@ -5260,7 +5260,7 @@ export default function DashboardPage() {
       {activeMain === "Rendimentos Períodos" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Vendedor (*):</label>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
             <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
               <option>– Rota Cred Bank –</option>
             </select>
@@ -5299,7 +5299,7 @@ export default function DashboardPage() {
       {activeMain === "Gastos Períodos" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Vendedor (*):</label>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
             <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
               <option>– Rota Cred Bank –</option>
             </select>
@@ -5392,7 +5392,7 @@ export default function DashboardPage() {
           </button>
           <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium rounded" style={{ background: "#2563eb", color: "#fff" }}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white opacity-90"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            Vendedor
+            Rota
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white opacity-70"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
             <span className="text-xs bg-white/25 rounded-full w-5 h-5 flex items-center justify-center font-bold">1</span>
           </button>
@@ -7164,8 +7164,8 @@ export default function DashboardPage() {
 
             {/* CENTER: Grouped data rows */}
             <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
-              <SectionHeader title="Dados do Vendedor" color="#2563eb" />
-              <Row label="Vendedor" index={0}>
+              <SectionHeader title="Dados da Rota" color="#2563eb" />
+              <Row label="Rota" index={0}>
                 <strong className="text-gray-800">Rota Cred Bank</strong>&nbsp;— Cod: 10600
                 <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
               </Row>
