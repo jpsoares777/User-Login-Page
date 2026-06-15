@@ -7534,7 +7534,22 @@ export default function DashboardPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 <label style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>Estado (UF) <span style={{ color: "#dc2626" }}>(*)</span>:</label>
-                <select value={buscarRotaForm.uf} onChange={e => setBuscarRotaForm(f => ({ ...f, uf: e.target.value }))}
+                <select value={buscarRotaForm.uf} onChange={e => {
+                  const newUf = e.target.value;
+                  setBuscarRotaForm(f => {
+                    const newForm = { ...f, uf: newUf };
+                    const results = gaRows.filter(r => {
+                      if (newForm.nome && !r.rota.toLowerCase().includes(newForm.nome.toLowerCase())) return false;
+                      if (newForm.codigo && !r.codigo.toLowerCase().includes(newForm.codigo.toLowerCase())) return false;
+                      if (newForm.estadoFechamento === "aberto" && !r.ativo) return false;
+                      if (newForm.estadoFechamento === "fechado" && r.ativo) return false;
+                      if (newUf && (r.estadoUF ?? "").toUpperCase() !== newUf.toUpperCase()) return false;
+                      return true;
+                    });
+                    setBuscarRotaResults(results);
+                    return newForm;
+                  });
+                }}
                   style={{ height: 34, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 10px", fontSize: 13, color: "#374151", outline: "none", width: "100%" }}>
                   <option value="">--- Selecione ---</option>
                   {["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"].map(uf => (
