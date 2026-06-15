@@ -7259,20 +7259,6 @@ export default function DashboardPage() {
                   <span style={{ fontSize:12, fontWeight:700, color:"#1e293b", letterSpacing:".01em" }}>{item.label}</span>
                 </button>
               ))}
-              {/* Lucro — botão especial */}
-              <button onClick={() => setLucroOpen(true)}
-                style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
-                  background:"#fff", border:"1px solid #16a34a40",
-                  borderLeft:"4px solid #16a34a", borderRadius:8,
-                  cursor:"pointer", textAlign:"left",
-                  boxShadow:"0 1px 4px rgba(0,0,0,.09)", transition:"all .15s" }}
-                onMouseEnter={e => { e.currentTarget.style.background="#f0fdf4"; e.currentTarget.style.boxShadow="0 3px 10px rgba(22,163,74,.25)"; }}
-                onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.09)"; }}>
-                <span style={{ fontSize:12, fontWeight:700, color:"#1e293b" }}>Lucro</span>
-                <span style={{ marginLeft:"auto", fontSize:12, fontWeight:800, color:"#16a34a", whiteSpace:"nowrap" }}>
-                  R$ {LUCRO_MOCK.reduce((s,r) => s + r.totalLucro, 0).toLocaleString("pt-BR", { minimumFractionDigits:2 })}
-                </span>
-              </button>
             </div>
           </>
         ) : (
