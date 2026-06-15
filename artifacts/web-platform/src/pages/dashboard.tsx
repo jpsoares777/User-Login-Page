@@ -2187,6 +2187,7 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
   onCloseDropdown: () => void;
 }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [collapsedEstado, setCollapsedEstado] = useState(false);
   const toggleCidade = (cidade: string) => setCollapsed(prev => {
     const next = new Set(prev);
     next.has(cidade) ? next.delete(cidade) : next.add(cidade);
@@ -2197,13 +2198,16 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
       {/* LEFT: Tree */}
       <div className="w-64 shrink-0 border-r border-gray-200 bg-white overflow-y-auto" onClick={onCloseDropdown}>
         {/* Estado node */}
-        <div className="px-3 py-2 flex items-center gap-1.5 text-gray-800 font-bold text-sm cursor-pointer hover:bg-gray-50">
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <div className="px-3 py-2 flex items-center gap-1.5 text-gray-800 font-bold text-sm cursor-pointer hover:bg-gray-50"
+          onClick={e => { e.stopPropagation(); setCollapsedEstado(v => !v); }}>
+          {collapsedEstado
+            ? <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+            : <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>}
           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-blue-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
           {selectedEstado.charAt(0).toUpperCase() + selectedEstado.slice(1).toLowerCase()}
         </div>
         {/* Cities + vendors for selected estado */}
-        {(estadosData[selectedEstado] ?? []).map((item, idx) => (
+        {!collapsedEstado && (estadosData[selectedEstado] ?? []).map((item, idx) => (
           <div key={idx}>
             <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50"
               onClick={e => { e.stopPropagation(); toggleCidade(item.cidade); }}>
@@ -4670,6 +4674,7 @@ export default function DashboardPage() {
   const emptyBuscarRota = { nome: "", codigo: "", estadoFechamento: "", uf: "" };
   const [buscarRotaForm, setBuscarRotaForm] = useState(emptyBuscarRota);
   const [collapsedCidades, setCollapsedCidades] = useState<Set<string>>(new Set());
+  const [collapsedEstadoMain, setCollapsedEstadoMain] = useState(false);
   const toggleCidadeMain = (cidade: string) => setCollapsedCidades(prev => {
     const next = new Set(prev);
     next.has(cidade) ? next.delete(cidade) : next.add(cidade);
@@ -7161,12 +7166,15 @@ export default function DashboardPage() {
           <>
             {/* LEFT: Tree */}
             <div className="w-64 shrink-0 border-r border-gray-200 bg-white overflow-y-auto" onClick={() => setEstadoDropdownOpen(false)}>
-              <div className="px-3 py-2 flex items-center gap-1.5 text-gray-800 font-bold text-sm cursor-pointer hover:bg-gray-50">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              <div className="px-3 py-2 flex items-center gap-1.5 text-gray-800 font-bold text-sm cursor-pointer hover:bg-gray-50"
+                onClick={e => { e.stopPropagation(); setCollapsedEstadoMain(v => !v); }}>
+                {collapsedEstadoMain
+                  ? <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                  : <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>}
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-blue-500 shrink-0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
                 {selectedEstado.charAt(0).toUpperCase() + selectedEstado.slice(1).toLowerCase()}
               </div>
-              {(estadosData[selectedEstado] ?? []).map((item, idx) => (
+              {!collapsedEstadoMain && (estadosData[selectedEstado] ?? []).map((item, idx) => (
                 <div key={idx}>
                   <div className="pl-6 py-2 flex items-center gap-1.5 text-gray-600 text-sm cursor-pointer hover:bg-gray-50"
                     onClick={e => { e.stopPropagation(); toggleCidadeMain(item.cidade); }}>
