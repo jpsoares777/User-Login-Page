@@ -5037,6 +5037,35 @@ export default function DashboardPage() {
   const [gaDeleteId, setGaDeleteId] = useState<number | null>(null);
   const [gaLoading, setGaLoading] = useState(false);
   const emptyGaForm = { empresa: "", nome: "", vencimento: "", valorMax: "", saldoInicial: "", codigoAcesso: "", confirmarCodigo: "", estado: "Ativo", estadoUF: "", cidade: "" };
+  const cidadesPorUF: Record<string, string[]> = {
+    AC: ["Rio Branco","Cruzeiro do Sul","Sena Madureira","Tarauacá","Feijó"],
+    AL: ["Maceió","Arapiraca","Rio Largo","Palmeira dos Índios","União dos Palmares"],
+    AM: ["Manaus","Parintins","Itacoatiara","Manacapuru","Coari"],
+    AP: ["Macapá","Santana","Laranjal do Jari","Oiapoque","Porto Grande"],
+    BA: ["Salvador","Feira de Santana","Vitória da Conquista","Camaçari","Ilhéus","Juazeiro","Lauro de Freitas","Jequié","Teixeira de Freitas"],
+    CE: ["Fortaleza","Caucaia","Juazeiro do Norte","Maracanaú","Sobral","Crato","Itapipoca","Maranguape","Iguatu"],
+    DF: ["Brasília","Ceilândia","Taguatinga","Samambaia","Planaltina"],
+    ES: ["Vitória","Vila Velha","Cariacica","Serra","Cachoeiro de Itapemirim"],
+    GO: ["Goiânia","Aparecida de Goiânia","Anápolis","Rio Verde","Luziânia"],
+    MA: ["São Luís","Imperatriz","São José de Ribamar","Timon","Caxias","Codó","Açailândia"],
+    MG: ["Belo Horizonte","Uberlândia","Contagem","Juiz de Fora","Betim","Montes Claros","Ribeirão das Neves","Uberaba"],
+    MS: ["Campo Grande","Dourados","Três Lagoas","Corumbá","Ponta Porã"],
+    MT: ["Cuiabá","Várzea Grande","Rondonópolis","Sinop","Tangará da Serra"],
+    PA: ["Belém","Ananindeua","Santarém","Marabá","Castanhal","Parauapebas","Abaetetuba"],
+    PB: ["João Pessoa","Campina Grande","Santa Rita","Patos","Bayeux"],
+    PE: ["Recife","Caruaru","Olinda","Petrolina","Paulista","Jaboatão dos Guararapes"],
+    PI: ["Teresina","Parnaíba","Picos","Piripiri","Floriano"],
+    PR: ["Curitiba","Londrina","Maringá","Ponta Grossa","Cascavel","São José dos Pinhais","Foz do Iguaçu"],
+    RJ: ["Rio de Janeiro","São Gonçalo","Duque de Caxias","Nova Iguaçu","Niterói","Belford Roxo","Campos dos Goytacazes"],
+    RN: ["Natal","Mossoró","Parnamirim","São Gonçalo do Amarante","Caicó"],
+    RO: ["Porto Velho","Ji-Paraná","Ariquemes","Vilhena","Cacoal"],
+    RR: ["Boa Vista","Rorainópolis","Caracaraí","Alto Alegre","Mucajaí"],
+    RS: ["Porto Alegre","Caxias do Sul","Pelotas","Canoas","Santa Maria","Novo Hamburgo","São Leopoldo"],
+    SC: ["Florianópolis","Joinville","Blumenau","São José","Criciúma","Chapecó","Itajaí"],
+    SE: ["Aracaju","Nossa Senhora do Socorro","Lagarto","Itabaiana","São Cristóvão"],
+    SP: ["São Paulo","Guarulhos","Campinas","São Bernardo do Campo","Santo André","Osasco","Sorocaba","Ribeirão Preto","São José dos Campos"],
+    TO: ["Palmas","Araguaína","Gurupi","Porto Nacional","Paraíso do Tocantins"],
+  };
   const [gaForm, setGaForm] = useState(emptyGaForm);
   type GaRow = { id: number; rota: string; cobrador: string; codigo: string; vencimento: string; ativo: boolean; valorVendaMax: string | null; saldoInicial: string | null; estadoUF: string | null; cidade: string | null };
   const [gaRows, setGaRows] = useState<GaRow[]>([]);
@@ -7661,12 +7690,8 @@ export default function DashboardPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Rota <span style={{ color: "#dc2626" }}>(*)</span></label>
-                  <select value={gaForm.empresa} onChange={e => setGaForm(f => ({ ...f, empresa: e.target.value }))}
-                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
-                    <option value="">-- Selecione --</option>
-                    <option>CREDBANK</option>
-                    <option>SystemPay Demo</option>
-                  </select>
+                  <input value={gaForm.empresa} onChange={e => setGaForm(f => ({ ...f, empresa: e.target.value }))} placeholder="Nome da rota"
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Nome Cobrador:</label>
@@ -7694,7 +7719,7 @@ export default function DashboardPage() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Estado (UF):</label>
-                  <select value={gaForm.estadoUF} onChange={e => setGaForm(f => ({ ...f, estadoUF: e.target.value }))}
+                  <select value={gaForm.estadoUF} onChange={e => setGaForm(f => ({ ...f, estadoUF: e.target.value, cidade: "" }))}
                     style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }}>
                     <option value="">-- Selecione --</option>
                     {["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"].map(uf => (
@@ -7704,8 +7729,14 @@ export default function DashboardPage() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <label style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>Cidade:</label>
-                  <input value={gaForm.cidade} onChange={e => setGaForm(f => ({ ...f, cidade: e.target.value }))} placeholder=""
-                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: "#374151", outline: "none" }} />
+                  <select value={gaForm.cidade} onChange={e => setGaForm(f => ({ ...f, cidade: e.target.value }))}
+                    disabled={!gaForm.estadoUF}
+                    style={{ height: 30, border: "1px solid #d1d5db", borderRadius: 4, padding: "0 8px", fontSize: 12, color: gaForm.estadoUF ? "#374151" : "#9ca3af", outline: "none", background: gaForm.estadoUF ? "#fff" : "#f9fafb" }}>
+                    <option value="">{gaForm.estadoUF ? "-- Selecione --" : "Selecione o estado primeiro"}</option>
+                    {(cidadesPorUF[gaForm.estadoUF] ?? []).map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
