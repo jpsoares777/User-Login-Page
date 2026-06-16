@@ -2282,7 +2282,6 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
                     style={{ borderColor: periodoConfirmado?.rota === rota.vendedor ? "#2563eb" : "#3b82f6", background: periodoConfirmado?.rota === rota.vendedor ? "#eff6ff" : undefined }}>
                     <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     <span className="text-gray-700 text-xs flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{rota.vendedor}</span>
-                    <span className={`ml-1.5 shrink-0 text-[10px] px-1.5 py-0.5 rounded font-semibold text-white ${rota.ativa ? "bg-green-500" : "bg-red-500"}`}>{rota.data}</span>
                   </div>
                 ))}
               </div>
