@@ -5547,10 +5547,41 @@ export default function DashboardPage() {
       {/* ── FILTER BAR (Gerenciar Aplicativos) ── */}
       {activeMain === "Gerenciar Aplicativos" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
-          <div className="flex flex-col" style={{ minWidth: 140 }}>
+          <div className="flex flex-col" style={{ minWidth: 180 }}>
             <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota:</label>
-            <input type="text" value={gaEmpresa} onChange={e => setGaEmpresa(e.target.value)} placeholder="Filtrar por rota…"
-              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 120 }} />
+            <select value={gaEmpresa} onChange={e => setGaEmpresa(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 170 }}>
+              <option value="">Todas as rotas</option>
+              <option>Rota Cred Bank A</option>
+              <option>Rota Cred Bank B</option>
+              <option>Rota Norte SL</option>
+              <option>Rota Cred Imp A</option>
+              <option>Rota Cred Imp B</option>
+              <option>Rota Caxias Sul</option>
+              <option>Rota Timon Centro</option>
+              <option>Rota Norte A</option>
+              <option>Rota Norte B</option>
+              <option>Rota Docas Belém</option>
+              <option>Rota Ananindeua A</option>
+              <option>Rota Ananindeua B</option>
+              <option>Rota Marabá Centro</option>
+              <option>Rota Santarém Rio</option>
+              <option>Rota Cred CE A</option>
+              <option>Rota Cred CE B</option>
+              <option>Rota Litoral CE</option>
+              <option>Rota Caucaia A</option>
+              <option>Rota Caucaia B</option>
+              <option>Rota Juazeiro Norte</option>
+              <option>Rota Sobral Centro</option>
+              <option>Rota Cred BA A</option>
+              <option>Rota Cred BA B</option>
+              <option>Rota Pelourinho</option>
+              <option>Rota Feira Santana A</option>
+              <option>Rota Feira Santana B</option>
+              <option>Rota VC Centro</option>
+              <option>Rota Ilhéus Sul</option>
+              <option>Rota Cred PI A</option>
+            </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
             <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Nome:</label>
