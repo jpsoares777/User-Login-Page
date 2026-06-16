@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -64,7 +64,7 @@ const PersonIcon = () => (
 
 // ── Chart card wrapper ────────────────────────────────────────────────────────
 
-function ChartCard({ children, year = "2026", subtitle, showMonth = false }: { children: React.ReactNode; year?: string; subtitle?: string; showMonth?: boolean }) {
+function ChartCard({ children, year = "2026", subtitle, showMonth = false, rotas = [] }: { children: React.ReactNode; year?: string; subtitle?: string; showMonth?: boolean; rotas?: string[] }) {
   return (
     <div className="bg-white border border-gray-200 rounded flex flex-col flex-1 min-w-0 min-h-0" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
       {/* Toolbar */}
@@ -75,7 +75,7 @@ function ChartCard({ children, year = "2026", subtitle, showMonth = false }: { c
           </svg>
         </button>
         <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
-          <option>Rota Cred Bank -</option>
+          {rotas.length > 0 ? rotas.map(r => <option key={r}>{r}</option>) : <option>— Selecione —</option>}
         </select>
         <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
           <option>{year}</option>
@@ -329,14 +329,14 @@ const RotatedYLabel = ({ value, viewBox }: any) => {
   );
 };
 
-function DesempenhoContent() {
+function DesempenhoContent({ rotas = [] }: { rotas?: string[] }) {
   return (
     <div className="flex-1 flex flex-col min-h-0" style={{ background: "#f0f2f5", gap: 16, padding: 12 }}>
 
       {/* Row 1: 3 bar charts */}
       <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
-        <ChartCard>
+        <ChartCard rotas={rotas}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={clientesData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
@@ -351,7 +351,7 @@ function DesempenhoContent() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard>
+        <ChartCard rotas={rotas}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={ventasData} margin={{ top: 14, right: 20, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
@@ -368,7 +368,7 @@ function DesempenhoContent() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard>
+        <ChartCard rotas={rotas}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={gastosIngresosData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
@@ -389,11 +389,11 @@ function DesempenhoContent() {
       {/* Row 2: 2 pie charts + empty third */}
       <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
-        <ChartCard subtitle="Despesas por Categoria – 2026" year="2026" showMonth>
+        <ChartCard subtitle="Despesas por Categoria – 2026" year="2026" showMonth rotas={rotas}>
           <Pie3DChart data={gastosPieData} />
         </ChartCard>
 
-        <ChartCard subtitle="Rendimentos por Categoria 2026" year="2026" showMonth>
+        <ChartCard subtitle="Rendimentos por Categoria 2026" year="2026" showMonth rotas={rotas}>
           <Pie3DChart data={ingresosPieData} />
         </ChartCard>
 
@@ -1344,7 +1344,7 @@ const statusAgendColor: Record<string, { bg: string; color: string; border: stri
   "Cancelado": { bg: "#fef2f2", color: "#b91c1c", border: "#fecaca" },
 };
 
-function AgendadosContent() {
+function AgendadosContent({ rotas = [] }: { rotas?: string[] }) {
   const [filterDate, setFilterDate] = useState("");
   const [tempDate,   setTempDate]   = useState("");
   const [showFilter, setShowFilter] = useState(false);
@@ -1479,7 +1479,7 @@ function AgendadosContent() {
                 <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Rota</label>
                 <select value={newForm.vendedor} onChange={e => setNewForm(f => ({ ...f, vendedor: e.target.value }))}
                   style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 5, padding: "7px 10px", fontSize: 13, color: "#374151" }}>
-                  <option>Rota Cred Bank -</option>
+                  {rotas.length > 0 ? rotas.map(r => <option key={r}>{r}</option>) : <option>Rota Cred Bank -</option>}
                 </select>
               </div>
               <div>
@@ -1526,7 +1526,7 @@ function AgendadosContent() {
 }
 
 // ── Relatórios ────────────────────────────────────────────────────────────────
-function RelatóriosContent() {
+function RelatóriosContent({ rotas = [] }: { rotas?: string[] }) {
   const selStyle: React.CSSProperties = {
     width: "100%", border: "1px solid #d1d5db", borderRadius: 3,
     padding: "3px 6px", fontSize: 11, color: "#374151",
@@ -1591,7 +1591,7 @@ function RelatóriosContent() {
   const HIST    = "M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z";
   const CANCEL  = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z";
 
-  const vend = ["Rota Cred Bank -"];
+  const vend = rotas.length > 0 ? rotas : ["Rota Cred Bank -"];
   const parc = ["Menos de 1 Parcela", "Menos de 2 Parcelas", "Menos de 3 Parcelas"];
   const juro = ["Juros menor que %", "Juros maior que %"];
 
@@ -4814,7 +4814,7 @@ export default function DashboardPage() {
   const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
   const [selectedEstado, setSelectedEstado] = useState("MARANHÃO");
   const [selectedRota, setSelectedRota] = useState<string | null>(null);
-  const estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]> = {
+  const estadosDataBase: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]> = {
     "MARANHÃO": [
       { cidade: "SAO LUIS",    vendedor: "Rota Cred Bank A",        data: "2026-06-10", ativa: true  },
       { cidade: "SAO LUIS",    vendedor: "Rota Cred Bank B",        data: "2026-05-20", ativa: true  },
@@ -5051,6 +5051,45 @@ export default function DashboardPage() {
   }, [gaForm.estadoUF]);
   type GaRow = { id: number; rota: string; cobrador: string; codigo: string; vencimento: string; ativo: boolean; valorVendaMax: string | null; saldoInicial: string | null; estadoUF: string | null; cidade: string | null };
   const [gaRows, setGaRows] = useState<GaRow[]>([]);
+  const [rotasAPI, setRotasAPI] = useState<{ rota: string; estadoUF: string | null; cidade: string | null; ativo: boolean }[]>([]);
+  useEffect(() => {
+    fetch('/api/aplicativos')
+      .then(r => r.json())
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .then((data: any[]) => setRotasAPI(data.map((d: any) => ({ rota: d.rota, estadoUF: d.estado, cidade: d.cidade, ativo: d.ativo }))))
+      .catch(() => {});
+  }, []);
+  const ufToEstadoNome: Record<string, string> = {
+    AC:"ACRE",AL:"ALAGOAS",AM:"AMAZONAS",AP:"AMAPÁ",BA:"BAHIA",CE:"CEARÁ",
+    DF:"DISTRITO FEDERAL",ES:"ESPÍRITO SANTO",GO:"GOIÁS",MA:"MARANHÃO",
+    MG:"MINAS GERAIS",MS:"MATO GROSSO DO SUL",MT:"MATO GROSSO",PA:"PARÁ",
+    PB:"PARAÍBA",PE:"PERNAMBUCO",PI:"PIAUÍ",PR:"PARANÁ",RJ:"RIO DE JANEIRO",
+    RN:"RIO GRANDE DO NORTE",RO:"RONDÔNIA",RR:"RORAIMA",RS:"RIO GRANDE DO SUL",
+    SC:"SANTA CATARINA",SE:"SERGIPE",SP:"SÃO PAULO",TO:"TOCANTINS",
+  };
+  const estadosData = useMemo(() => {
+    const merged: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]> =
+      Object.fromEntries(Object.entries(estadosDataBase).map(([k, v]) => [k, [...v]]));
+    for (const r of rotasAPI) {
+      const estadoNome = r.estadoUF ? (ufToEstadoNome[r.estadoUF] ?? r.estadoUF.toUpperCase()) : null;
+      if (!estadoNome) continue;
+      if (!merged[estadoNome]) merged[estadoNome] = [];
+      if (!merged[estadoNome].some(i => i.vendedor === r.rota)) {
+        merged[estadoNome].push({
+          cidade: r.cidade ? r.cidade.toUpperCase() : estadoNome,
+          vendedor: r.rota,
+          data: new Date().toISOString().slice(0, 10),
+          ativa: r.ativo,
+        });
+      }
+    }
+    return merged;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rotasAPI]);
+  const todasRotas = useMemo(() => {
+    const fromEstados = Object.values(estadosData).flat().map(i => i.vendedor);
+    return Array.from(new Set(fromEstados));
+  }, [estadosData]);
 
   const gaFetch = async (rota?: string, nome?: string, codigo?: string) => {
     setGaLoading(true);
@@ -5563,35 +5602,7 @@ export default function DashboardPage() {
             <select value={gaEmpresa} onChange={e => setGaEmpresa(e.target.value)}
               className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 170 }}>
               <option value="">Todas as rotas</option>
-              <option>Rota Cred Bank A</option>
-              <option>Rota Cred Bank B</option>
-              <option>Rota Norte SL</option>
-              <option>Rota Cred Imp A</option>
-              <option>Rota Cred Imp B</option>
-              <option>Rota Caxias Sul</option>
-              <option>Rota Timon Centro</option>
-              <option>Rota Norte A</option>
-              <option>Rota Norte B</option>
-              <option>Rota Docas Belém</option>
-              <option>Rota Ananindeua A</option>
-              <option>Rota Ananindeua B</option>
-              <option>Rota Marabá Centro</option>
-              <option>Rota Santarém Rio</option>
-              <option>Rota Cred CE A</option>
-              <option>Rota Cred CE B</option>
-              <option>Rota Litoral CE</option>
-              <option>Rota Caucaia A</option>
-              <option>Rota Caucaia B</option>
-              <option>Rota Juazeiro Norte</option>
-              <option>Rota Sobral Centro</option>
-              <option>Rota Cred BA A</option>
-              <option>Rota Cred BA B</option>
-              <option>Rota Pelourinho</option>
-              <option>Rota Feira Santana A</option>
-              <option>Rota Feira Santana B</option>
-              <option>Rota VC Centro</option>
-              <option>Rota Ilhéus Sul</option>
-              <option>Rota Cred PI A</option>
+              {todasRotas.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
@@ -7370,7 +7381,7 @@ export default function DashboardPage() {
             <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
           </div>
         ) : isDesempenho ? (
-          <DesempenhoContent />
+          <DesempenhoContent rotas={todasRotas} />
         ) : activeMain === "Liq. Períodos" ? (
           <LiqPeriodosContent activeSub={activeSubPeriodos} selectedEstado={selectedEstado} estadosData={estadosData} onCloseDropdown={() => setEstadoDropdownOpen(false)} />
         ) : activeMain === "Consolidados" ? (
@@ -7386,9 +7397,9 @@ export default function DashboardPage() {
         ) : showClientes ? (
           <ClientesContent />
         ) : showAgendados ? (
-          <AgendadosContent />
+          <AgendadosContent rotas={todasRotas} />
         ) : showRelatorios ? (
-          <RelatóriosContent />
+          <RelatóriosContent rotas={todasRotas} />
         ) : showContent ? (
           <>
             {/* LEFT: Tree */}
