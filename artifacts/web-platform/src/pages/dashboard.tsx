@@ -4812,7 +4812,7 @@ export default function DashboardPage() {
   });
   const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
   const [selectedEstado, setSelectedEstado] = useState("MARANHÃO");
-  const [selectedRota, setSelectedRota] = useState("Rota Cred Bank A");
+  const [selectedRota, setSelectedRota] = useState<string | null>(null);
   const estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]> = {
     "MARANHÃO": [
       { cidade: "SAO LUIS",    vendedor: "Rota Cred Bank A",        data: "2026-06-10", ativa: true  },
@@ -7392,7 +7392,13 @@ export default function DashboardPage() {
 
             {/* CENTER: Grouped data rows */}
             <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
-              {(() => {
+              {!selectedRota ? (
+                <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
+                  <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                  <p className="text-sm font-medium text-gray-500">Selecione uma rota e o período</p>
+                  <p className="text-xs text-gray-400">Clique em qualquer rota na árvore à esquerda</p>
+                </div>
+              ) : (() => {
                 const rd = rotasFakeData[selectedRota] ?? rotasFakeData["Rota Cred Bank A"];
                 const fmtV = (n: number) => `$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
                 const pct = rd.recebPrevisto > 0 ? Math.round((rd.recebAtual / rd.recebPrevisto) * 100) : 0;
