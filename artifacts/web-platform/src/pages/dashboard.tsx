@@ -2228,9 +2228,6 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set((estadosData[selectedEstado] ?? []).map(i => i.cidade)));
   const [collapsedEstado, setCollapsedEstado] = useState(false);
   const [selectedRotaPer, setSelectedRotaPer] = useState<string | null>(null);
-  const [periodoModalOpen, setPeriodoModalOpen] = useState(false);
-  const [periodoForm, setPeriodoForm] = useState({ inicio: "", fim: "" });
-  const [periodoConfirmado, setPeriodoConfirmado] = useState<{ rota: string; inicio: string; fim: string } | null>(null);
   const toggleCidade = (cidade: string) => setCollapsed(prev => {
     const next = new Set(prev);
     next.has(cidade) ? next.delete(cidade) : next.add(cidade);
@@ -2239,13 +2236,8 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
   useEffect(() => {
     setCollapsed(new Set((estadosData[selectedEstado] ?? []).map(i => i.cidade)));
     setCollapsedEstado(false);
+    setSelectedRotaPer(null);
   }, [selectedEstado]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleRotaClick = (vendedor: string) => {
-    setSelectedRotaPer(vendedor);
-    setPeriodoForm({ inicio: "", fim: "" });
-    setPeriodoModalOpen(true);
-  };
 
   return (
     <>
@@ -2277,9 +2269,9 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
                   {cidade}
                 </div>
                 {!collapsed.has(cidade) && rotas.map((rota, ri) => (
-                  <div key={ri} onClick={() => handleRotaClick(rota.vendedor)}
+                  <div key={ri} onClick={() => setSelectedRotaPer(rota.vendedor)}
                     className="pl-12 py-1.5 flex items-center pr-2 cursor-pointer hover:bg-blue-50 border-l-2"
-                    style={{ borderColor: periodoConfirmado?.rota === rota.vendedor ? "#2563eb" : "#3b82f6", background: periodoConfirmado?.rota === rota.vendedor ? "#eff6ff" : undefined }}>
+                    style={{ borderColor: "#3b82f6", background: selectedRotaPer === rota.vendedor ? "#eff6ff" : undefined }}>
                     <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-gray-500 shrink-0 mr-1.5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     <span className="text-gray-700 text-xs flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{rota.vendedor}</span>
                     <span className={`ml-1.5 shrink-0 text-[10px] px-1.5 py-0.5 rounded font-semibold text-white ${rota.ativa ? "bg-green-500" : "bg-red-500"}`}>{rota.data}</span>
@@ -2293,16 +2285,17 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
 
       {/* CENTER: Data panel */}
       <div className="flex-1 overflow-y-auto border-r border-gray-200" style={{ background: "#f8fafc" }}>
-        {!periodoConfirmado ? (
-          <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
-            <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-            <p className="text-sm font-medium text-gray-500">Selecione uma rota e o período</p>
-            <p className="text-xs text-gray-400">Clique em qualquer rota na árvore à esquerda</p>
+        {!selectedRotaPer ? (
+          <div className="flex flex-col items-center justify-center h-full gap-3">
+            <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <p className="text-sm font-medium text-gray-500">Selecione uma rota na árvore</p>
           </div>
         ) : (() => {
-          const rd = rotasFakeData[periodoConfirmado.rota] ?? rotasFakeData["Rota Cred Bank A"];
-          const d1 = new Date(periodoConfirmado.inicio);
-          const d2 = new Date(periodoConfirmado.fim);
+          const rd = rotasFakeData[selectedRotaPer] ?? rotasFakeData["Rota Cred Bank A"];
+          const dataIni = rd.dataInicio.slice(0, 10);
+          const dataFim = rd.dataFechamento ? rd.dataFechamento.slice(0, 10) : new Date().toISOString().slice(0, 10);
+          const d1 = new Date(dataIni);
+          const d2 = new Date(dataFim);
           const days = Math.max(1, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
           const sc = days / 30;
           const fmtV = (n: number) => `$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
@@ -2326,14 +2319,14 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
           return (<>
             <SectionHeader title="Dados da Rota" color="#2563eb" />
             <Row label="Cobrador" index={0}>
-              <strong className="text-gray-800">{periodoConfirmado.rota}</strong>
+              <strong className="text-gray-800">{selectedRotaPer}</strong>
               <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
             </Row>
             <Row label="Data Inicial" index={1}>
-              <CalIcon /><span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">{periodoConfirmado.inicio}</span>
+              <CalIcon /><span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">{dataIni}</span>
             </Row>
             <Row label="Data Final" index={2}>
-              <CalIcon /><span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">{periodoConfirmado.fim}</span>
+              <CalIcon /><span className="bg-cyan-500 text-white px-2 rounded text-[11px] font-medium">{dataFim}</span>
             </Row>
             <Row label="Dias" index={3}>
               <CalIcon /> <strong className="text-gray-800">{days}</strong>
@@ -2375,10 +2368,10 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
               <span className="text-blue-600 font-bold text-sm">+</span>
               <span className="font-semibold text-blue-700">{fmtN(ingressos)}</span>
             </Row>
-            <Row label={`Caixa Inicial de ${periodoConfirmado.inicio}`} index={6}>
+            <Row label={`Caixa Inicial de ${dataIni}`} index={6}>
               <span className="font-semibold text-gray-800">{fmtV(caixaInicial)}</span>
             </Row>
-            <Row label={`Caixa Final de ${periodoConfirmado.fim}`} bold index={7}>
+            <Row label={`Caixa Final de ${dataFim}`} bold index={7}>
               <span className="text-green-700">{fmtV(caixaFinal)}</span>
             </Row>
             <div className="flex items-center mx-2 mt-0.5 mb-1.5 rounded px-3 py-2 border-l-4"
@@ -2391,50 +2384,6 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
         })()}
       </div>
 
-      {/* MODAL: Período */}
-      {periodoModalOpen && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.55)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
-          onClick={() => setPeriodoModalOpen(false)}>
-          <div style={{ background: "#fff", borderRadius: 14, width: 400, boxShadow: "0 25px 70px rgba(0,0,0,0.35)", overflow: "hidden" }}
-            onClick={e => e.stopPropagation()}>
-            <div style={{ background: "linear-gradient(135deg,#2563eb,#1d4ed8)", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-                <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Período de Consulta</span>
-              </div>
-              <button onClick={() => setPeriodoModalOpen(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 6, width: 28, height: 28, cursor: "pointer", fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
-            </div>
-            <div style={{ padding: "22px 24px" }}>
-              <div style={{ background: "#eff6ff", borderRadius: 8, padding: "10px 14px", marginBottom: 20, border: "1px solid #bfdbfe" }}>
-                <span style={{ fontSize: 11, color: "#64748b", fontWeight: 600, display: "block", marginBottom: 2 }}>Rota selecionada</span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#1e40af" }}>{selectedRotaPer}</span>
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>Data Inicial *</label>
-                <input type="date" value={periodoForm.inicio} onChange={e => setPeriodoForm(f => ({ ...f, inicio: e.target.value }))}
-                  style={{ width: "100%", height: 38, border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "0 12px", fontSize: 13, color: "#334155", background: "#f8fafc", outline: "none", boxSizing: "border-box" }} />
-              </div>
-              <div style={{ marginBottom: 24 }}>
-                <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>Data Final *</label>
-                <input type="date" value={periodoForm.fim} onChange={e => setPeriodoForm(f => ({ ...f, fim: e.target.value }))}
-                  style={{ width: "100%", height: 38, border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "0 12px", fontSize: 13, color: "#334155", background: "#f8fafc", outline: "none", boxSizing: "border-box" }} />
-              </div>
-              <div style={{ display: "flex", gap: 10 }}>
-                <button onClick={() => setPeriodoModalOpen(false)}
-                  style={{ flex: 1, height: 40, border: "1.5px solid #e2e8f0", borderRadius: 8, background: "#f8fafc", color: "#64748b", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
-                  Cancelar
-                </button>
-                <button
-                  disabled={!periodoForm.inicio || !periodoForm.fim || periodoForm.fim < periodoForm.inicio}
-                  onClick={() => { setPeriodoConfirmado({ rota: selectedRotaPer!, inicio: periodoForm.inicio, fim: periodoForm.fim }); setPeriodoModalOpen(false); }}
-                  style={{ flex: 2, height: 40, border: "none", borderRadius: 8, background: !periodoForm.inicio || !periodoForm.fim || periodoForm.fim < periodoForm.inicio ? "#cbd5e1" : "#2563eb", color: "#fff", fontWeight: 700, fontSize: 13, cursor: !periodoForm.inicio || !periodoForm.fim || periodoForm.fim < periodoForm.inicio ? "not-allowed" : "pointer" }}>
-                  Ver Dados do Período
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
