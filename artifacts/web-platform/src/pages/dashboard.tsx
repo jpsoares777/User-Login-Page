@@ -5052,13 +5052,14 @@ export default function DashboardPage() {
   type GaRow = { id: number; rota: string; cobrador: string; codigo: string; vencimento: string; ativo: boolean; valorVendaMax: string | null; saldoInicial: string | null; estadoUF: string | null; cidade: string | null };
   const [gaRows, setGaRows] = useState<GaRow[]>([]);
   const [rotasAPI, setRotasAPI] = useState<{ rota: string; estadoUF: string | null; cidade: string | null; ativo: boolean }[]>([]);
-  useEffect(() => {
+  const fetchRotasAPI = () => {
     fetch('/api/aplicativos')
       .then(r => r.json())
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((data: any[]) => setRotasAPI(data.map((d: any) => ({ rota: d.rota, estadoUF: d.estado, cidade: d.cidade, ativo: d.ativo }))))
       .catch(() => {});
-  }, []);
+  };
+  useEffect(() => { fetchRotasAPI(); }, []);
   const ufToEstadoNome: Record<string, string> = {
     AC:"ACRE",AL:"ALAGOAS",AM:"AMAZONAS",AP:"AMAPÁ",BA:"BAHIA",CE:"CEARÁ",
     DF:"DISTRITO FEDERAL",ES:"ESPÍRITO SANTO",GO:"GOIÁS",MA:"MARANHÃO",
@@ -7656,6 +7657,7 @@ export default function DashboardPage() {
                   await fetch(`/api/aplicativos/${gaDeleteId}`, { method: "DELETE" });
                   setGaDeleteId(null);
                   gaFetch();
+                  fetchRotasAPI();
                 }}
                   style={{ height: 34, padding: "0 20px", borderRadius: 5, border: "none", background: "#dc2626", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                   Excluir
@@ -7786,6 +7788,7 @@ export default function DashboardPage() {
                   }
                   setGaModalOpen(false); setGaEditId(null); setGaForm(emptyGaForm);
                   gaFetch();
+                  fetchRotasAPI();
                 }}
                   style={{ height: 32, padding: "0 20px", borderRadius: 4, border: "none", background: "#2563eb", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                   Salvar
