@@ -5006,7 +5006,7 @@ export default function DashboardPage() {
     (despFiltroCategoria === "-- Selecione --" || r.categoria === despFiltroCategoria) &&
     (!despFiltroData || r.data === despFiltroData)
   );
-  const [gcConsecutivo, setGcConsecutivo] = useState("");
+  const [gcRota, setGcRota] = useState("-- Todas --");
   const [gcDocumento, setGcDocumento] = useState("");
   const [gcNome, setGcNome] = useState("");
   const [gcSobrenome, setGcSobrenome] = useState("");
@@ -5017,17 +5017,25 @@ export default function DashboardPage() {
   const [gcHistRowId, setGcHistRowId] = useState<number | null>(null);
   const [gcDeleteId, setGcDeleteId] = useState<number | null>(null);
   const [gcRows] = useState([
-    { id: 1,  consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "012.345.678-90", nasc: "1985-03-12", tel1: "91633427315",   tel2: "98985014328",  endereco: "Rua Gama Lobo, nº 10, Quarto, Centro – São Luís – MA",        obs: "Cliente pontual. Prefere contato pelo WhatsApp.", freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
-    { id: 2,  consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    nasc: "1990-07-22", tel1: "5599883457671",  tel2: "03270213301",  endereco: "Av. Colares Moreira, nº 500, Renascença II – São Luís – MA",  obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
-    { id: 3,  consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    doc: "852592284372",   nasc: "1988-11-05", tel1: "989896248424",   tel2: "852592284372", endereco: "Rua do Sol, nº 35, Centro – São Luís – MA",                   obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
-    { id: 4,  consec: "4700627078", nome: "Mariana Beatriz Rabelo Barbosa",   doc: "073.604.383-73", nasc: "1992-04-18", tel1: "98985721207",    tel2: "985721297",    endereco: "Rua da Paz, nº 120, Cohama – São Luís – MA",                  obs: "Prefere receber boletos por e-mail.", freq: "Diário", valorEmp: 1000, jurosPorc: 40, total: 1400, parcelas: 14, atrasadas: 4,  pagas: 0,  rest: 14, sancao: 0, visitas: 4,  valorParc: 100, saldo: 1400 },
-    { id: 5,  consec: "4700627077", nome: "Natanael Dos Santos Mendes",       doc: "11971269742",    nasc: "1986-09-30", tel1: "5511971269742",  tel2: "11971269742",  endereco: "Rua Jaime Tavares, nº 67, Tirirical – São Luís – MA",         obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 13, pagas: 1,  rest: 13, sancao: 0, visitas: 14, valorParc: 50,  saldo: 650  },
-    { id: 6,  consec: "4700627058", nome: "Aline Lima De Alencar",            doc: "034.286.733-44", nasc: "1994-02-14", tel1: "034286733440",   tel2: "98856332110",  endereco: "Rua das Flores, nº 22, Cohajap – São Luís – MA",              obs: "", freq: "Diário", valorEmp: 800,  jurosPorc: 40, total: 1120, parcelas: 14, atrasadas: 2,  pagas: 4,  rest: 10, sancao: 0, visitas: 6,  valorParc: 80,  saldo: 570  },
-    { id: 7,  consec: "4700627049", nome: "Ana Flávia Pereira Moraes",        doc: "61538186302",    nasc: "1991-06-08", tel1: "61538186302",    tel2: "98745612300",  endereco: "Trav. São Francisco, nº 8, Vila Embratel – São Luís – MA",    obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 0,  pagas: 0,  rest: 14, sancao: 0, visitas: 0,  valorParc: 50,  saldo: 700  },
-    { id: 8,  consec: "4700627027", nome: "Antônio Leite Neto",               doc: "00523478355",    nasc: "1980-12-25", tel1: "00523478355",    tel2: "99612345678",  endereco: "Rua Santa Clara, nº 100, Centro – São Luís – MA",             obs: "Pagamento sempre em dia.", freq: "Diário", valorEmp: 600,  jurosPorc: 25, total: 750,  parcelas: 15, atrasadas: 3,  pagas: 2,  rest: 13, sancao: 0, visitas: 5,  valorParc: 50,  saldo: 500  },
-    { id: 9,  consec: "4700627025", nome: "Bianca de Araújo Alves",           doc: "60974118397",    nasc: "1997-03-19", tel1: "60974118397",    tel2: "98765432101",  endereco: "Rua Oswaldo Cruz, nº 45, Bequimão – São Luís – MA",            obs: "", freq: "Diário", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
-    { id: 10, consec: "4700627022", nome: "Klailton Viana Gonçalves",         doc: "88899900011",    nasc: "1983-08-11", tel1: "88899900011",    tel2: "98700112233",  endereco: "Av. dos Holandeses, nº 300, Calhau – São Luís – MA",          obs: "", freq: "Diário", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
+    { id: 1,  rota: "Rota Cred Bank A", consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "012.345.678-90", nasc: "1985-03-12", tel1: "91633427315",   tel2: "98985014328",  endereco: "Rua Gama Lobo, nº 10, Quarto, Centro – São Luís – MA",        obs: "Cliente pontual. Prefere contato pelo WhatsApp.", freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
+    { id: 2,  rota: "Rota Cred Bank A", consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    nasc: "1990-07-22", tel1: "5599883457671",  tel2: "03270213301",  endereco: "Av. Colares Moreira, nº 500, Renascença II – São Luís – MA",  obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
+    { id: 3,  rota: "Rota Cred Bank A", consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    doc: "852592284372",   nasc: "1988-11-05", tel1: "989896248424",   tel2: "852592284372", endereco: "Rua do Sol, nº 35, Centro – São Luís – MA",                   obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
+    { id: 4,  rota: "Rota Cred Bank A", consec: "4700627078", nome: "Mariana Beatriz Rabelo Barbosa",   doc: "073.604.383-73", nasc: "1992-04-18", tel1: "98985721207",    tel2: "985721297",    endereco: "Rua da Paz, nº 120, Cohama – São Luís – MA",                  obs: "Prefere receber boletos por e-mail.", freq: "Diário", valorEmp: 1000, jurosPorc: 40, total: 1400, parcelas: 14, atrasadas: 4,  pagas: 0,  rest: 14, sancao: 0, visitas: 4,  valorParc: 100, saldo: 1400 },
+    { id: 5,  rota: "Rota Cred Bank B", consec: "4700627077", nome: "Natanael Dos Santos Mendes",       doc: "11971269742",    nasc: "1986-09-30", tel1: "5511971269742",  tel2: "11971269742",  endereco: "Rua Jaime Tavares, nº 67, Tirirical – São Luís – MA",         obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 13, pagas: 1,  rest: 13, sancao: 0, visitas: 14, valorParc: 50,  saldo: 650  },
+    { id: 6,  rota: "Rota Cred Bank B", consec: "4700627058", nome: "Aline Lima De Alencar",            doc: "034.286.733-44", nasc: "1994-02-14", tel1: "034286733440",   tel2: "98856332110",  endereco: "Rua das Flores, nº 22, Cohajap – São Luís – MA",              obs: "", freq: "Diário", valorEmp: 800,  jurosPorc: 40, total: 1120, parcelas: 14, atrasadas: 2,  pagas: 4,  rest: 10, sancao: 0, visitas: 6,  valorParc: 80,  saldo: 570  },
+    { id: 7,  rota: "Rota Cred Bank B", consec: "4700627049", nome: "Ana Flávia Pereira Moraes",        doc: "61538186302",    nasc: "1991-06-08", tel1: "61538186302",    tel2: "98745612300",  endereco: "Trav. São Francisco, nº 8, Vila Embratel – São Luís – MA",    obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 0,  pagas: 0,  rest: 14, sancao: 0, visitas: 0,  valorParc: 50,  saldo: 700  },
+    { id: 8,  rota: "Rota Norte SL",    consec: "4700627027", nome: "Antônio Leite Neto",               doc: "00523478355",    nasc: "1980-12-25", tel1: "00523478355",    tel2: "99612345678",  endereco: "Rua Santa Clara, nº 100, Centro – São Luís – MA",             obs: "Pagamento sempre em dia.", freq: "Diário", valorEmp: 600,  jurosPorc: 25, total: 750,  parcelas: 15, atrasadas: 3,  pagas: 2,  rest: 13, sancao: 0, visitas: 5,  valorParc: 50,  saldo: 500  },
+    { id: 9,  rota: "Rota Norte SL",    consec: "4700627025", nome: "Bianca de Araújo Alves",           doc: "60974118397",    nasc: "1997-03-19", tel1: "60974118397",    tel2: "98765432101",  endereco: "Rua Oswaldo Cruz, nº 45, Bequimão – São Luís – MA",            obs: "", freq: "Diário", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
+    { id: 10, rota: "Rota Norte SL",    consec: "4700627022", nome: "Klailton Viana Gonçalves",         doc: "88899900011",    nasc: "1983-08-11", tel1: "88899900011",    tel2: "98700112233",  endereco: "Av. dos Holandeses, nº 300, Calhau – São Luís – MA",          obs: "", freq: "Diário", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
   ]);
+  const gcFiltered = useMemo(() => gcRows.filter(r =>
+    (gcRota === "-- Todas --" || r.rota === gcRota) &&
+    (!gcNome || r.nome.toLowerCase().includes(gcNome.toLowerCase())) &&
+    (!gcSobrenome || r.nome.toLowerCase().includes(gcSobrenome.toLowerCase())) &&
+    (!gcDocumento || r.doc.includes(gcDocumento)) &&
+    (gcEstado === "-- Todos --" || gcEstado === "Activo") &&
+    (gcFrequencia === "-- Todas --" || r.freq === gcFrequencia)
+  ), [gcRows, gcRota, gcNome, gcSobrenome, gcDocumento, gcEstado, gcFrequencia]);
   const [gaEmpresa, setGaEmpresa] = useState("");
   const [gaNome, setGaNome] = useState("");
   const [gaSobrenome, setGaSobrenome] = useState("");
@@ -5395,9 +5403,12 @@ export default function DashboardPage() {
           {/* filter bar */}
           <div className="flex items-center flex-wrap px-3 py-2 gap-3 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
             <div className="flex flex-col gap-0.5">
-              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>Consecutivo</label>
-              <input type="text" placeholder="Ex: 4700627026" value={gcConsecutivo} onChange={e => setGcConsecutivo(e.target.value)}
-                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400" style={{ width: 130 }} />
+              <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>Rota</label>
+              <select value={gcRota} onChange={e => setGcRota(e.target.value)}
+                className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400" style={{ width: 170 }}>
+                <option>-- Todas --</option>
+                {todasRotas.map(r => <option key={r}>{r}</option>)}
+              </select>
             </div>
             <div className="flex flex-col gap-0.5">
               <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>Nome</label>
@@ -5436,7 +5447,7 @@ export default function DashboardPage() {
               </select>
             </div>
             <div className="flex items-end gap-2" style={{ alignSelf: "flex-end" }}>
-              <button onClick={() => { setGcConsecutivo(""); setGcNome(""); setGcSobrenome(""); setGcDocumento(""); setGcEstado("-- Todos --"); setGcFrequencia("-- Todas --"); }}
+              <button onClick={() => { setGcRota("-- Todas --"); setGcNome(""); setGcSobrenome(""); setGcDocumento(""); setGcEstado("-- Todos --"); setGcFrequencia("-- Todas --"); }}
                 className="h-7 px-3 rounded text-xs font-medium border border-gray-300 bg-white text-gray-600 hover:bg-gray-50">
                 Limpar
               </button>
@@ -7143,7 +7154,7 @@ export default function DashboardPage() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* count bar */}
             <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb" }}>
-              <span className="text-xs text-gray-600 font-medium">{gcRows.length} registros encontrados</span>
+              <span className="text-xs text-gray-600 font-medium">{gcFiltered.length} registro{gcFiltered.length !== 1 ? "s" : ""} encontrado{gcFiltered.length !== 1 ? "s" : ""}</span>
             </div>
             {/* table */}
             <div className="flex-1 overflow-auto" style={{ background: "#fff" }}>
@@ -7169,7 +7180,7 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {gcRows.map((row, i) => (
+                  {gcFiltered.map((row, i) => (
                     <tr key={row.id} style={{ borderBottom: "1px solid #e5e7eb", verticalAlign: "top", background: i % 2 === 0 ? "#fff" : "#f9fafb" }}
                       onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
                       onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f9fafb")}>
