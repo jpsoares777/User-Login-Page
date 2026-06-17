@@ -7181,11 +7181,12 @@ export default function DashboardPage() {
                 </thead>
                 <tbody>
                   {gcFiltered.map((row, i) => (
-                    <tr key={row.id} style={{ borderBottom: "1px solid #e5e7eb", verticalAlign: "top", background: i % 2 === 0 ? "#fff" : "#f9fafb" }}
+                    <tr key={row.id} style={{ borderBottom: "1px solid #e5e7eb", verticalAlign: "top", background: i % 2 === 0 ? "#fff" : "#f9fafb", cursor: "pointer" }}
+                      onClick={() => { setGcModalRowId(row.id); setGcModalOpen(true); }}
                       onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
                       onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f9fafb")}>
                       <td style={{ padding: "10px 10px", textAlign: "center" }}>
-                        <button onClick={() => setGcHistRowId(row.id)}
+                        <button onClick={e => { e.stopPropagation(); setGcHistRowId(row.id); }}
                           style={{ background: "#0e7490", color: "#fff", border: "none", borderRadius: 4, padding: "4px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
                           Histórico
                         </button>
@@ -7222,11 +7223,11 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ padding: "8px 10px", textAlign: "center", verticalAlign: "middle" }}>
                         <div style={{ display: "inline-flex", gap: 5 }}>
-                          <button onClick={() => { setGcModalRowId(row.id); setGcModalOpen(true); }} title="Editar"
+                          <button onClick={e => { e.stopPropagation(); setGcModalRowId(row.id); setGcModalOpen(true); }} title="Editar"
                             style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                           </button>
-                          <button title="Excluir" onClick={() => setGcDeleteId(row.id)}
+                          <button title="Excluir" onClick={e => { e.stopPropagation(); setGcDeleteId(row.id); }}
                             style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                           </button>
