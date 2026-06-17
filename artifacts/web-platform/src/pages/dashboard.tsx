@@ -3715,7 +3715,7 @@ function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }) {
+function GcFichaClienteModal({ mr, onClose, viewMode = false }: { mr: GcRow; onClose: () => void; viewMode?: boolean }) {
   const nameColor = mr.atrasadas === 0 ? "#15803d" : mr.atrasadas >= 5 ? "#b91c1c" : "#b45309";
   const initials = mr.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 
@@ -3748,10 +3748,12 @@ function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }
                 </div>
                 <div style={{ fontSize: 12, color: "#6b7280" }}>Doc: <b style={{ color: "#374151" }}>{mr.doc}</b> &nbsp;|&nbsp; Nasc.: <b style={{ color: "#374151" }}>{mr.nasc}</b></div>
               </div>
-              <button style={{ flexShrink: 0, background: "#b91c1c", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
-                onClick={() => { alert(`Cliente ${mr.nome} marcado como INACTIVO.`); onClose(); }}>
-                🚫 Inativar Cliente
-              </button>
+              {!viewMode && (
+                <button style={{ flexShrink: 0, background: "#b91c1c", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                  onClick={() => { alert(`Cliente ${mr.nome} marcado como INACTIVO.`); onClose(); }}>
+                  🚫 Inativar Cliente
+                </button>
+              )}
             </div>
 
             <div style={{ borderTop: "1px solid #e5e7eb" }} />
@@ -3820,14 +3822,23 @@ function GcFichaClienteModal({ mr, onClose }: { mr: GcRow; onClose: () => void }
             })()}
 
             {/* Botões */}
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
-              <button onClick={onClose} style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-                Cancelar
-              </button>
-              <button onClick={onClose} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-                Salvar
-              </button>
-            </div>
+            {viewMode ? (
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
+                <button onClick={onClose} style={{ background: "#0e7490", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#fff" }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                  Documentos
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
+                <button onClick={onClose} style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                  Cancelar
+                </button>
+                <button onClick={onClose} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                  Salvar
+                </button>
+              </div>
+            )}
 
           </div>
         </div>
@@ -5014,6 +5025,7 @@ export default function DashboardPage() {
   const [gcFrequencia, setGcFrequencia] = useState("-- Todas --");
   const [gcModalOpen, setGcModalOpen] = useState(false);
   const [gcModalRowId, setGcModalRowId] = useState<number | null>(null);
+  const [gcModalMode, setGcModalMode] = useState<"view" | "edit">("view");
   const [gcHistRowId, setGcHistRowId] = useState<number | null>(null);
   const [gcDeleteId, setGcDeleteId] = useState<number | null>(null);
   const [gcRows] = useState([
@@ -7182,7 +7194,7 @@ export default function DashboardPage() {
                 <tbody>
                   {gcFiltered.map((row, i) => (
                     <tr key={row.id} style={{ borderBottom: "1px solid #e5e7eb", verticalAlign: "top", background: i % 2 === 0 ? "#fff" : "#f9fafb", cursor: "pointer" }}
-                      onClick={() => { setGcModalRowId(row.id); setGcModalOpen(true); }}
+                      onClick={() => { setGcModalRowId(row.id); setGcModalMode("view"); setGcModalOpen(true); }}
                       onMouseEnter={e => (e.currentTarget.style.background = "#eff6ff")}
                       onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#f9fafb")}>
                       <td style={{ padding: "10px 10px", textAlign: "center" }}>
@@ -7223,7 +7235,7 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ padding: "8px 10px", textAlign: "center", verticalAlign: "middle" }}>
                         <div style={{ display: "inline-flex", gap: 5 }}>
-                          <button onClick={e => { e.stopPropagation(); setGcModalRowId(row.id); setGcModalOpen(true); }} title="Editar"
+                          <button onClick={e => { e.stopPropagation(); setGcModalRowId(row.id); setGcModalMode("edit"); setGcModalOpen(true); }} title="Editar"
                             style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                           </button>
@@ -7304,7 +7316,7 @@ export default function DashboardPage() {
             {gcModalOpen && (() => {
               const mr = gcRows.find(r => r.id === gcModalRowId);
               if (!mr) return null;
-              return <GcFichaClienteModal mr={mr} onClose={() => setGcModalOpen(false)} />;
+              return <GcFichaClienteModal mr={mr} onClose={() => setGcModalOpen(false)} viewMode={gcModalMode === "view"} />;
             })()}
           </div>
         ) : activeMain === "Gerenciar Aplicativos" ? (
