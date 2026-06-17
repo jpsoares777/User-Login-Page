@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -3614,6 +3614,7 @@ function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDro
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 type GcRow = { id: number; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number };
+type GcDoc = { id: string; name: string; url: string; type: string };
 
 function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
   const fieldStyle: React.CSSProperties = {
@@ -3715,7 +3716,7 @@ function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function GcFichaClienteModal({ mr, onClose, viewMode = false }: { mr: GcRow; onClose: () => void; viewMode?: boolean }) {
+function GcFichaClienteModal({ mr, onClose, viewMode = false, onDocumentos }: { mr: GcRow; onClose: () => void; viewMode?: boolean; onDocumentos?: () => void }) {
   const nameColor = mr.atrasadas === 0 ? "#15803d" : mr.atrasadas >= 5 ? "#b91c1c" : "#b45309";
   const initials = mr.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 
@@ -3824,7 +3825,7 @@ function GcFichaClienteModal({ mr, onClose, viewMode = false }: { mr: GcRow; onC
             {/* Botões */}
             {viewMode ? (
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
-                <button onClick={onClose} style={{ background: "#0e7490", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
+                <button onClick={() => { onClose(); onDocumentos?.(); }} style={{ background: "#0e7490", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
                   <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: "#fff" }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                   Documentos
                 </button>
@@ -3844,6 +3845,82 @@ function GcFichaClienteModal({ mr, onClose, viewMode = false }: { mr: GcRow; onC
         </div>
       </div>
     </>
+  );
+}
+
+// ── Documentos Modal ──────────────────────────────────────────────────────────
+function GcDocumentosModal({ mr, docs, onAddDoc, onRemoveDoc, onClose }: {
+  mr: GcRow; docs: GcDoc[]; onAddDoc: (doc: GcDoc) => void; onRemoveDoc: (id: string) => void; onClose: () => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const initials = mr.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    Array.from(files).forEach(file => {
+      const url = URL.createObjectURL(file);
+      onAddDoc({ id: `${Date.now()}-${Math.random()}`, name: file.name, url, type: file.type });
+    });
+  };
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+      <div style={{ background: "#fff", borderRadius: 8, width: 680, maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", display: "flex", flexDirection: "column" }} onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div style={{ background: "#0e7490", borderRadius: "8px 8px 0 0", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "#fff" }}>{initials}</div>
+            <div>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>DOCUMENTOS DO CLIENTE</div>
+              <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11 }}>{mr.nome}</div>
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
+        </div>
+        <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Upload area */}
+          <div style={{ border: "2px dashed #bae6fd", borderRadius: 8, padding: "24px 16px", textAlign: "center", cursor: "pointer", background: "#f0f9ff" }}
+            onClick={() => fileRef.current?.click()}
+            onDragOver={e => e.preventDefault()}
+            onDrop={e => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}>
+            <svg viewBox="0 0 24 24" style={{ width: 36, height: 36, fill: "#0e7490", margin: "0 auto 8px", display: "block" }}><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+            <div style={{ color: "#0e7490", fontWeight: 700, fontSize: 13 }}>Clique para selecionar fotos ou arraste aqui</div>
+            <div style={{ color: "#6b7280", fontSize: 11, marginTop: 4 }}>JPG, PNG, PDF aceitos</div>
+            <input ref={fileRef} type="file" accept="image/*,application/pdf" multiple style={{ display: "none" }} onChange={e => { handleFiles(e.target.files); e.target.value = ""; }} />
+          </div>
+          {/* Gallery */}
+          {docs.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "28px 0", color: "#9ca3af" }}>
+              <svg viewBox="0 0 24 24" style={{ width: 40, height: 40, fill: "#d1d5db", margin: "0 auto 8px", display: "block" }}><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>Nenhum documento anexado</div>
+              <div style={{ fontSize: 11, marginTop: 3 }}>Use o botão acima para adicionar fotos</div>
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 10 }}>
+              {docs.map(doc => (
+                <div key={doc.id} style={{ position: "relative", borderRadius: 6, overflow: "hidden", border: "1px solid #e5e7eb", background: "#f9fafb" }}>
+                  {doc.type.startsWith("image/") ? (
+                    <img src={doc.url} alt={doc.name} style={{ width: "100%", height: 120, objectFit: "cover", display: "block", cursor: "pointer" }} onClick={() => window.open(doc.url, "_blank")} />
+                  ) : (
+                    <div style={{ width: "100%", height: 120, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "#f3f4f6" }} onClick={() => window.open(doc.url, "_blank")}>
+                      <svg viewBox="0 0 24 24" style={{ width: 36, height: 36, fill: "#6b7280" }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+                      <span style={{ fontSize: 10, color: "#6b7280", marginTop: 4 }}>PDF</span>
+                    </div>
+                  )}
+                  <div style={{ padding: "5px 8px", fontSize: 10, color: "#374151", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{doc.name}</div>
+                  <button onClick={() => onRemoveDoc(doc.id)} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.6)", border: "none", borderRadius: "50%", width: 20, height: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg viewBox="0 0 24 24" style={{ width: 11, height: 11, fill: "#fff" }}><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 4 }}>
+            <button onClick={onClose} style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+              Fechar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -5026,6 +5103,8 @@ export default function DashboardPage() {
   const [gcModalOpen, setGcModalOpen] = useState(false);
   const [gcModalRowId, setGcModalRowId] = useState<number | null>(null);
   const [gcModalMode, setGcModalMode] = useState<"view" | "edit">("view");
+  const [gcDocClientId, setGcDocClientId] = useState<number | null>(null);
+  const [gcDocMap, setGcDocMap] = useState<Record<number, GcDoc[]>>({});
   const [gcHistRowId, setGcHistRowId] = useState<number | null>(null);
   const [gcDeleteId, setGcDeleteId] = useState<number | null>(null);
   const [gcRows] = useState([
@@ -7316,7 +7395,22 @@ export default function DashboardPage() {
             {gcModalOpen && (() => {
               const mr = gcRows.find(r => r.id === gcModalRowId);
               if (!mr) return null;
-              return <GcFichaClienteModal mr={mr} onClose={() => setGcModalOpen(false)} viewMode={gcModalMode === "view"} />;
+              return <GcFichaClienteModal mr={mr} onClose={() => setGcModalOpen(false)} viewMode={gcModalMode === "view"} onDocumentos={() => setGcDocClientId(mr.id)} />;
+            })()}
+            {/* ── DOCUMENTOS MODAL ── */}
+            {gcDocClientId !== null && (() => {
+              const mr = gcRows.find(r => r.id === gcDocClientId);
+              if (!mr) return null;
+              const docs = gcDocMap[gcDocClientId] ?? [];
+              return (
+                <GcDocumentosModal
+                  mr={mr}
+                  docs={docs}
+                  onAddDoc={doc => setGcDocMap(prev => ({ ...prev, [gcDocClientId]: [...(prev[gcDocClientId] ?? []), doc] }))}
+                  onRemoveDoc={id => setGcDocMap(prev => ({ ...prev, [gcDocClientId]: (prev[gcDocClientId] ?? []).filter(d => d.id !== id) }))}
+                  onClose={() => setGcDocClientId(null)}
+                />
+              );
             })()}
           </div>
         ) : activeMain === "Gerenciar Aplicativos" ? (
