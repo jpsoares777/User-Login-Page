@@ -1893,26 +1893,10 @@ function ClientesContent() {
                     </div>
                     <div style={{ fontSize: 12, color: "#6b7280" }}>Doc: <b style={{ color: "#374151" }}>{c.documento}</b> &nbsp;|&nbsp; Nasc.: <b style={{ color: "#374151" }}>{c.dataNasc}</b></div>
                   </div>
-                  {/* Inactivate button */}
-                  <button style={{ flexShrink: 0, background: "#b91c1c", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", letterSpacing: "0.02em" }}
-                    onClick={() => { alert(`Cliente ${c.nome} marcado como INACTIVO.`); setSelectedCliente(null); }}>
-                    🚫 Inativar Cliente
-                  </button>
                 </div>
 
                 {/* Divider */}
                 <div style={{ borderTop: "1px solid #e5e7eb" }} />
-
-                {/* Contact + address */}
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#3d6e8e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Contato e Endereço</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 16px", fontSize: 12 }}>
-                    <div><span style={{ color: "#9ca3af" }}>Tel 1:</span> <b style={{ color: "#111827" }}>{c.tel1}</b></div>
-                    <div><span style={{ color: "#9ca3af" }}>Tel 2:</span> <b style={{ color: "#111827" }}>{c.tel2}</b></div>
-                    <div style={{ gridColumn: "1/-1" }}><span style={{ color: "#9ca3af" }}>Endereço:</span> <b style={{ color: "#111827" }}>{c.endereco}, {c.bairro} – {c.cidade}</b></div>
-                    <div><span style={{ color: "#9ca3af" }}>Verificação:</span> <b style={{ color: c.estadoVerif === "Verificado" ? "#15803d" : "#d97706" }}>{c.estadoVerif}</b></div>
-                  </div>
-                </div>
 
                 {/* Buttons row */}
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -1920,11 +1904,6 @@ function ClientesContent() {
                     onClick={() => setShowParcelas(true)}
                     style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "9px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 }}>
                     <span style={{ fontSize: 15 }}>📋</span> Ver Parcelas Pagas — Empréstimo Ativo
-                  </button>
-                  <button
-                    onClick={() => setShowDocumentos(true)}
-                    style={{ background: "#e8f0f7", color: "#2d5474", border: "1px solid #a8c4d8", borderRadius: 5, padding: "7px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
-                    <span style={{ fontSize: 12 }}>📷</span> Documentos
                   </button>
                 </div>
 
