@@ -6273,42 +6273,6 @@ export default function DashboardPage() {
                   </div>
                 )}
 
-                {/* Preview de clientes */}
-                {importarPreviewClientes.length > 0 && (
-                  <div style={{ margin: "0 32px 20px", overflowX: "auto" }}>
-                    <p style={{ margin: "0 0 6px", fontSize: 12, fontWeight: 600, color: "#334155" }}>
-                      Prévia: {importarPreviewClientes.length} cliente(s) encontrado(s)
-                    </p>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
-                      <thead>
-                        <tr style={{ background: "#2d5474", color: "#fff" }}>
-                          {["#","Nome","Telefone","Consecutivo","Data","Val. Prest.","Total Pagar","Parcelas","Saldo"].map(h => (
-                            <th key={h} style={{ padding: "5px 8px", textAlign: "left", fontWeight: 600, whiteSpace: "nowrap" }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {importarPreviewClientes.slice(0, 10).map((r, i) => (
-                          <tr key={i} style={{ background: i % 2 === 0 ? "#f8fafc" : "#fff", borderBottom: "1px solid #e2e8f0" }}>
-                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{i + 1}</td>
-                            <td style={{ padding: "4px 8px", color: "#1e293b", fontWeight: 500 }}>{r.nome}</td>
-                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{r.telefone}</td>
-                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{r.consecutivo}</td>
-                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{r.dataInicio}</td>
-                            <td style={{ padding: "4px 8px", color: "#15803d" }}>R$ {r.valorProduto.toFixed(2)}</td>
-                            <td style={{ padding: "4px 8px", color: "#7c3aed" }}>R$ {r.totalAPagar.toFixed(2)}</td>
-                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{r.numParcelas}</td>
-                            <td style={{ padding: "4px 8px", color: "#b45309" }}>R$ {r.saldo.toFixed(2)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {importarPreviewClientes.length > 10 && (
-                      <p style={{ margin: "4px 0 0", fontSize: 10, color: "#94a3b8" }}>... e mais {importarPreviewClientes.length - 10} linha(s)</p>
-                    )}
-                  </div>
-                )}
-
                 {/* Status */}
                 {importarStatus && (
                   <div style={{ margin: "0 32px 16px", padding: "10px 16px", borderRadius: 6, background: importarStatus.ok ? "#f0fdf4" : "#fef2f2", border: `1px solid ${importarStatus.ok ? "#86efac" : "#fca5a5"}`, color: importarStatus.ok ? "#15803d" : "#dc2626", fontSize: 13, fontWeight: 600 }}>
