@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, type ChangeEvent } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import * as XLSX from "xlsx";
 import { useLocation } from "wouter";
 import jsPDF from "jspdf";
@@ -5023,50 +5023,6 @@ export default function DashboardPage() {
   };
   const [importedRotaData, setImportedRotaData] = useState<Record<string, RotaFakeData>>({});
   const [importedRotas, setImportedRotas] = useState<Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]>>({});
-  const [importResumoStatus, setImportResumoStatus] = useState<{ msg: string; ok: boolean } | null>(null);
-  const importResumoRef = useRef<HTMLInputElement>(null);
-
-  const handleImportResumo = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!importResumoRef.current) return;
-    importResumoRef.current.value = "";
-    if (!file) return;
-    setImportResumoStatus({ msg: "Importando...", ok: true });
-    try {
-      const form = new FormData();
-      form.append("arquivo", file);
-      const res = await fetch(`${import.meta.env.BASE_URL}api/importar-resumo`, { method: "POST", body: form });
-      const json = await res.json();
-      if (!res.ok || !json.ok) {
-        setImportResumoStatus({ msg: json.error ?? "Erro ao importar", ok: false });
-        return;
-      }
-      const { data } = json as { data: RotaFakeData & { vendedor: string } };
-      const vendedor = (data as unknown as Record<string, string>).vendedor ?? file.name.replace(/\.xlsx$/i, "");
-      setImportedRotaData(prev => ({ ...prev, [vendedor]: data }));
-      setImportedRotas(prev => {
-        const estadoKey = selectedEstado || "IMPORTADO";
-        const existing = prev[estadoKey] ?? [];
-        if (existing.some(r => r.vendedor === vendedor)) return prev;
-        return {
-          ...prev,
-          [estadoKey]: [...existing, {
-            cidade: (estadosData[selectedEstado]?.[0]?.cidade) ?? estadoKey,
-            vendedor,
-            data: data.dataInicio ?? new Date().toISOString().slice(0, 10),
-            ativa: !data.dataFechamento,
-          }],
-        };
-      });
-      setSelectedRota(vendedor);
-      setHasSearched(true);
-      setCollapsedEstadoMain(false);
-      setImportResumoStatus({ msg: `Importado: ${vendedor}`, ok: true });
-      setTimeout(() => setImportResumoStatus(null), 4000);
-    } catch {
-      setImportResumoStatus({ msg: "Erro de conexão com o servidor", ok: false });
-    }
-  };
 
   const [configOpen, setConfigOpen] = useState(false);
   const [listaClientesOpen, setListaClientesOpen] = useState(false);
@@ -5428,20 +5384,65 @@ export default function DashboardPage() {
   };
 
   const handleImportarRota = async () => {
-    if (!importarVendedor || !importarArquivoClientes) return;
-    const ap = gaRows.find(r => r.rota === importarVendedor);
-    if (!ap) { setImportarStatus({ ok: false, msg: "Selecione uma rota válida." }); return; }
-    let clientes = importarPreviewClientes;
-    if (clientes.length === 0) {
-      try {
-        const rows = await parseFileToRows(importarArquivoClientes);
-        clientes = mapClienteRows(rows);
-      } catch { setImportarStatus({ ok: false, msg: "Erro ao ler arquivo de clientes." }); return; }
-    }
-    if (clientes.length === 0) { setImportarStatus({ ok: false, msg: "Nenhum cliente encontrado no arquivo." }); return; }
+    if (!importarVendedor && !importarArquivo) return;
     setImportarLoading(true);
     setImportarStatus(null);
     try {
+      // ── Importar Resumen XLS → Relatório Diário ──
+      if (importarArquivo) {
+        const form = new FormData();
+        form.append("arquivo", importarArquivo);
+        const res = await fetch(`${import.meta.env.BASE_URL}api/importar-resumo`, { method: "POST", body: form });
+        const json = await res.json();
+        if (!res.ok || !json.ok) {
+          setImportarStatus({ ok: false, msg: json.error ?? "Erro ao processar arquivo de rota." });
+          return;
+        }
+        const { data } = json as { data: RotaFakeData & { vendedor: string } };
+        const vendedor = (data as unknown as Record<string, string>).vendedor ?? importarArquivo.name.replace(/\.xlsx?$/i, "");
+        setImportedRotaData(prev => ({ ...prev, [vendedor]: data }));
+        setImportedRotas(prev => {
+          const estadoKey = selectedEstado || "IMPORTADO";
+          const existing = prev[estadoKey] ?? [];
+          if (existing.some(r => r.vendedor === vendedor)) return prev;
+          return {
+            ...prev,
+            [estadoKey]: [...existing, {
+              cidade: estadosData[selectedEstado]?.[0]?.cidade ?? estadoKey,
+              vendedor,
+              data: data.dataInicio ?? new Date().toISOString().slice(0, 10),
+              ativa: !data.dataFechamento,
+            }],
+          };
+        });
+        setImportarStatus({ ok: true, msg: `Resumen importado: ${vendedor} — abrindo Relatório Diário...` });
+        setImportarArquivo(null);
+        // Navigate to Relatório Diário with the imported rota
+        setTimeout(() => {
+          setSelectedRota(vendedor);
+          setHasSearched(true);
+          setCollapsedEstadoMain(false);
+          setActiveMain("Liq. Diária");
+          setActiveSub("Relatório Diário");
+        }, 800);
+        return;
+      }
+
+      // ── Importar lista de clientes ──
+      if (!importarVendedor || !importarArquivoClientes) {
+        setImportarStatus({ ok: false, msg: "Selecione uma rota e um arquivo de clientes." });
+        return;
+      }
+      const ap = gaRows.find(r => r.rota === importarVendedor);
+      if (!ap) { setImportarStatus({ ok: false, msg: "Selecione uma rota válida." }); return; }
+      let clientes = importarPreviewClientes;
+      if (clientes.length === 0) {
+        try {
+          const rows = await parseFileToRows(importarArquivoClientes);
+          clientes = mapClienteRows(rows);
+        } catch { setImportarStatus({ ok: false, msg: "Erro ao ler arquivo de clientes." }); return; }
+      }
+      if (clientes.length === 0) { setImportarStatus({ ok: false, msg: "Nenhum cliente encontrado no arquivo." }); return; }
       const res = await fetch("/api/importar-rota", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -5450,7 +5451,6 @@ export default function DashboardPage() {
       const json = await res.json();
       if (!res.ok) { setImportarStatus({ ok: false, msg: json.error ?? "Erro ao importar." }); return; }
       setImportarStatus({ ok: true, msg: `${json.importados} cliente(s) importado(s) com sucesso!${json.erros?.length ? ` (${json.erros.length} erro(s))` : ""}` });
-      setImportarArquivo(null);
       setImportarArquivoClientes(null);
       setImportarPreviewClientes([]);
       setImportarVendedor("");
@@ -6271,7 +6271,7 @@ export default function DashboardPage() {
                 )}
 
                 {/* Import button */}
-                {(importarArquivo || importarArquivoClientes) && importarVendedor && (
+                {(importarArquivo || (importarArquivoClientes && importarVendedor)) && (
                   <div style={{ padding: "0 32px 28px", display: "flex", gap: 10 }}>
                     <button
                       onClick={handleImportarRota}
@@ -7994,19 +7994,7 @@ export default function DashboardPage() {
             <div style={{ width:210, flexShrink:0, background:"#f1f5f9", display:"flex",
                 flexDirection:"column", gap:7, padding:"12px 10px", overflowY:"auto",
                 borderLeft:"1px solid #e2e8f0" }}>
-              <input ref={importResumoRef} type="file" accept=".xlsx,.xls" style={{ display:"none" }} onChange={handleImportResumo} />
-              {importResumoStatus && (
-                <div style={{ padding:"8px 10px", borderRadius:6, fontSize:11, fontWeight:600,
-                  background: importResumoStatus.ok ? "#dcfce7" : "#fee2e2",
-                  color: importResumoStatus.ok ? "#15803d" : "#dc2626",
-                  border: `1px solid ${importResumoStatus.ok ? "#bbf7d0" : "#fca5a5"}`,
-                  wordBreak:"break-all", lineHeight:1.4 }}>
-                  {importResumoStatus.msg}
-                </div>
-              )}
               {([
-                { icon:<svg viewBox="0 0 24 24" style={{ width:16, height:16, fill:"#16a34a", flexShrink:0 }}><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>,
-                  label:"Importar XLS Rota", accent:"#16a34a", onClick: () => importResumoRef.current?.click() },
                 { icon:<img src="/icon-config.png" alt="" style={{ width:16, height:16, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)", flexShrink:0 }} />, label:"Configurações", accent:"#2d5474", onClick: () => setConfigOpen(true) },
                 { icon:<img src="/icon-relatorio6.png" alt="" style={{ width:16, height:16, flexShrink:0, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)" }} />, label:"Relatório Geral", accent:"#1d4ed8", onClick: () => setActiveMain("Consolidados") },
                 { icon:<img src="/icon-clientes3.png" alt="" style={{ width:16, height:16, flexShrink:0 }} />, label:"Lista Clientes", accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
