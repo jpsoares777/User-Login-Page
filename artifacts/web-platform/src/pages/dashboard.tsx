@@ -5316,33 +5316,50 @@ export default function DashboardPage() {
   };
 
   const parseFileToRows = (file: File): Promise<Record<string, string>[]> => {
+    const processBuffer = (wb: ReturnType<typeof XLSX.read>): Record<string, string>[] => {
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const raw: unknown[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "", raw: true });
+      if (raw.length < 2) return [];
+      const headers = (raw[0] as unknown[]).map(h => String(h ?? "").trim());
+      return raw.slice(1).map(row =>
+        Object.fromEntries(headers.map((h, i) => {
+          const v = (row as unknown[])[i];
+          const str = v instanceof Date
+            ? v.toISOString().slice(0, 10)
+            : (typeof v === "number" && v > 40000 && v < 70000)
+              ? excelSerialToDate(v)
+              : String(v ?? "").trim();
+          return [h, str];
+        }))
+      ).filter(r => Object.values(r).some(v => v !== ""));
+    };
+
     return new Promise((resolve, reject) => {
+      const isCsv = file.name.toLowerCase().endsWith(".csv");
       const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = new Uint8Array(e.target?.result as ArrayBuffer);
-          const isCsv = file.name.toLowerCase().endsWith(".csv");
-          const wb = XLSX.read(data, { type: "array", cellDates: true, codepage: isCsv ? 1252 : undefined });
-          const ws = wb.Sheets[wb.SheetNames[0]];
-          const raw: unknown[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "", raw: true });
-          if (raw.length < 2) { resolve([]); return; }
-          const headers = (raw[0] as unknown[]).map(h => String(h ?? "").trim());
-          const rows = raw.slice(1).map(row =>
-            Object.fromEntries(headers.map((h, i) => {
-              const v = (row as unknown[])[i];
-              const str = v instanceof Date
-                ? v.toISOString().slice(0, 10)
-                : (typeof v === "number" && v > 40000 && v < 70000)
-                  ? excelSerialToDate(v)
-                  : String(v ?? "").trim();
-              return [h, str];
-            }))
-          ).filter(r => Object.values(r).some(v => v !== ""));
-          resolve(rows);
-        } catch (err) { reject(err); }
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
+
+      if (isCsv) {
+        // Read CSV as UTF-8 text to preserve accented characters
+        reader.onload = (e) => {
+          try {
+            const text = e.target?.result as string;
+            const wb = XLSX.read(text, { type: "string", cellDates: true });
+            resolve(processBuffer(wb));
+          } catch (err) { reject(err); }
+        };
+        reader.onerror = reject;
+        reader.readAsText(file, "UTF-8");
+      } else {
+        reader.onload = (e) => {
+          try {
+            const data = new Uint8Array(e.target?.result as ArrayBuffer);
+            const wb = XLSX.read(data, { type: "array", cellDates: true });
+            resolve(processBuffer(wb));
+          } catch (err) { reject(err); }
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      }
     });
   };
 
