@@ -8,8 +8,18 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 
 function parseNum(v: unknown): number {
   if (typeof v === "number") return v;
   if (typeof v === "string") {
-    const cleaned = v.replace(/[^0-9.,-]/g, "").replace(",", ".");
-    return parseFloat(cleaned) || 0;
+    // Format can be "3,179.00" (EN: comma=thousands, dot=decimal)
+    // or "3.179,00" (PT: dot=thousands, comma=decimal)
+    const s = v.trim();
+    // Detect PT format: ends with ",XX" where XX are 1-2 digits
+    const ptFormat = /,\d{1,2}$/.test(s) && s.includes(".");
+    if (ptFormat) {
+      // PT: remove dots (thousands), replace comma with dot
+      return parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
+    } else {
+      // EN: remove commas (thousands), keep dot
+      return parseFloat(s.replace(/,/g, "")) || 0;
+    }
   }
   return 0;
 }
