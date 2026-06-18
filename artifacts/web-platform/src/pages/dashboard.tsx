@@ -3636,7 +3636,7 @@ function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDro
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
-type GcRow = { id: number; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number };
+type GcRow = { id: number; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number };
 type GcDoc = { id: string; name: string; url: string; type: string };
 
 function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
@@ -7600,13 +7600,8 @@ export default function DashboardPage() {
                       <td style={{ padding: "10px 10px", textAlign: "center" }}>
                         <span style={{ background: "#dbeafe", color: "#1d4ed8", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>{row.freq}</span>
                       </td>
-                      <td style={{ padding: "10px 10px", textAlign: "right", whiteSpace: "nowrap" }}>
-                        <div style={{ color: "#1e293b", fontWeight: 600, fontSize: 12 }}>$ {row.valorEmp.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div>
-                        {row.dataEmprestimo && (
-                          <div style={{ color: "#6b7280", fontSize: 10, marginTop: 2 }}>
-                            {row.dataEmprestimo.slice(0, 10).split("-").reverse().join("/")}
-                          </div>
-                        )}
+                      <td style={{ padding: "10px 10px", textAlign: "right", color: "#1e293b", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap" }}>
+                        $ {row.valorEmp.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                       </td>
                       <td style={{ padding: "10px 10px", textAlign: "center" }}>
                         <div style={{ color: "#374151", fontSize: 11 }}>Juros {row.jurosPorc}%</div>
