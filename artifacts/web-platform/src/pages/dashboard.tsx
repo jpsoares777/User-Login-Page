@@ -7907,13 +7907,39 @@ export default function DashboardPage() {
                 </div>
               ) : (() => {
                 const rd = importedRotaData[selectedRota] ?? rotasFakeData[selectedRota];
-                if (!rd) return (
-                  <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
+                if (!rd) return (<>
+                  <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400" style={{ flex: 1 }}>
                     <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
                     <p className="text-sm font-medium text-gray-500">Sem dados para esta rota</p>
                     <p className="text-xs text-gray-400">Importe o arquivo XLS da rota no painel direito</p>
                   </div>
-                );
+                  <div style={{ width:210, flexShrink:0, background:"#f1f5f9", display:"flex",
+                      flexDirection:"column", gap:7, padding:"12px 10px", overflowY:"auto",
+                      borderLeft:"1px solid #e2e8f0" }}>
+                    {([
+                      { icon:<img src="/icon-config.png" alt="" style={{ width:16, height:16, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)", flexShrink:0 }} />, label:"Configurações", accent:"#2d5474", onClick: () => setConfigOpen(true) },
+                      { icon:<img src="/icon-relatorio6.png" alt="" style={{ width:16, height:16, flexShrink:0, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)" }} />, label:"Relatório Geral", accent:"#1d4ed8", onClick: () => setActiveMain("Consolidados") },
+                      { icon:<img src="/icon-clientes3.png" alt="" style={{ width:16, height:16, flexShrink:0 }} />, label:"Lista Clientes", accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
+                      { icon: caixaAberto ? <img src="/icon-fechar-caixa.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} /> : <img src="/icon-abrir-caixa.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} />,
+                        label: caixaAberto ? "Fechar Caixa" : "Abrir Caixa",
+                        accent: caixaAberto ? "#dc2626" : "#16a34a",
+                        onClick: () => setCaixaModalOpen(true) },
+                      { icon:<ClipboardCheck size={16} color="#7c3aed" strokeWidth={2} style={{ flexShrink:0 }} />, label:"Código Aprovações", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
+                    ] as { icon:React.ReactNode; label:string; accent:string; onClick:()=>void }[]).map(item => (
+                      <button key={item.label} onClick={item.onClick}
+                        style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
+                          background:"#fff", border:`1px solid ${item.accent}30`,
+                          borderLeft:`4px solid ${item.accent}`, borderRadius:8,
+                          cursor:"pointer", textAlign:"left",
+                          boxShadow:"0 1px 4px rgba(0,0,0,.09)", transition:"all .15s" }}
+                        onMouseEnter={e => { e.currentTarget.style.background=`${item.accent}10`; e.currentTarget.style.boxShadow=`0 3px 10px ${item.accent}30`; }}
+                        onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.09)"; }}>
+                        <span style={{ display:"flex", alignItems:"center", justifyContent:"center", width:18, height:18, flexShrink:0, fontSize:16, lineHeight:1 }}>{item.icon}</span>
+                        <span style={{ fontSize:12, fontWeight:700, color:"#1e293b", letterSpacing:".01em" }}>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>);
                 const fmtV = (n: number) => `$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
                 const pct = rd.recebPrevisto > 0 ? Math.round((rd.recebAtual / rd.recebPrevisto) * 100) : 0;
                 const pctBg = pct >= 80 ? "#dbeafe" : pct >= 50 ? "#fef3c7" : "#fee2e2";
