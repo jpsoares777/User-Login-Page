@@ -5304,19 +5304,39 @@ export default function DashboardPage() {
 
   useEffect(() => { if (activeMain === "Gerenciar Aplicativos") gaFetch(); }, [activeMain]);
 
+  const excelSerialToDate = (val: unknown): string => {
+    // Excel stores dates as days since 1900-01-01 (with leap-year bug)
+    const num = typeof val === "number" ? val : parseFloat(String(val));
+    if (!isNaN(num) && num > 40000 && num < 70000) {
+      const d = new Date(Math.round((num - 25569) * 86400 * 1000));
+      return d.toISOString().slice(0, 10);
+    }
+    if (val instanceof Date) return val.toISOString().slice(0, 10);
+    return String(val ?? "").trim();
+  };
+
   const parseFileToRows = (file: File): Promise<Record<string, string>[]> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
           const data = new Uint8Array(e.target?.result as ArrayBuffer);
-          const wb = XLSX.read(data, { type: "array" });
+          const isCsv = file.name.toLowerCase().endsWith(".csv");
+          const wb = XLSX.read(data, { type: "array", cellDates: true, codepage: isCsv ? 1252 : undefined });
           const ws = wb.Sheets[wb.SheetNames[0]];
-          const raw: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+          const raw: unknown[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "", raw: true });
           if (raw.length < 2) { resolve([]); return; }
-          const headers = raw[0].map((h: string) => String(h ?? "").trim());
+          const headers = (raw[0] as unknown[]).map(h => String(h ?? "").trim());
           const rows = raw.slice(1).map(row =>
-            Object.fromEntries(headers.map((h, i) => [h, String(row[i] ?? "").trim()]))
+            Object.fromEntries(headers.map((h, i) => {
+              const v = (row as unknown[])[i];
+              const str = v instanceof Date
+                ? v.toISOString().slice(0, 10)
+                : (typeof v === "number" && v > 40000 && v < 70000)
+                  ? excelSerialToDate(v)
+                  : String(v ?? "").trim();
+              return [h, str];
+            }))
           ).filter(r => Object.values(r).some(v => v !== ""));
           resolve(rows);
         } catch (err) { reject(err); }
