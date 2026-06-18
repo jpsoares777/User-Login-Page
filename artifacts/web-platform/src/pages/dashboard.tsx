@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import * as XLSX from "xlsx";
 import { useLocation } from "wouter";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -4840,6 +4841,10 @@ export default function DashboardPage() {
   const [importarMasivo, setImportarMasivo] = useState(true);
   const [importarArquivo, setImportarArquivo] = useState<File | null>(null);
   const [importarArquivoClientes, setImportarArquivoClientes] = useState<File | null>(null);
+  const [importarLoading, setImportarLoading] = useState(false);
+  const [importarStatus, setImportarStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+  type ImportClienteRow = { nome: string; telefone: string; endereco: string; consecutivo: string; dataInicio: string; valorProduto: number; totalAPagar: number; jurosPct: number; valorParcela: number; numParcelas: number; parcelasPagas: number; parcelasRestantes: number; saldo: number; };
+  const [importarPreviewClientes, setImportarPreviewClientes] = useState<ImportClienteRow[]>([]);
 
   // ── Faturas ──
   type FaturaRow = { id: number; nro: string; data: string; iva: number; valorCop: number; valorUsd: number; meses: number; conceito: string; estado: "Pendente" | "Pago" | "Vencido"; vencimento: string; pais: string; };
@@ -5021,6 +5026,125 @@ export default function DashboardPage() {
   };
 
   useEffect(() => { if (activeMain === "Gerenciar Aplicativos") gaFetch(); }, [activeMain]);
+
+  const parseFileToRows = (file: File): Promise<Record<string, string>[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target?.result as ArrayBuffer);
+          const wb = XLSX.read(data, { type: "array" });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const raw: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+          if (raw.length < 2) { resolve([]); return; }
+          const headers = raw[0].map((h: string) => String(h ?? "").trim());
+          const rows = raw.slice(1).map(row =>
+            Object.fromEntries(headers.map((h, i) => [h, String(row[i] ?? "").trim()]))
+          ).filter(r => Object.values(r).some(v => v !== ""));
+          resolve(rows);
+        } catch (err) { reject(err); }
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const normalizeHeader = (h: string) =>
+    h.toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9%]/g, " ")
+      .trim();
+
+  const findCol = (headers: string[], ...candidates: string[]): string => {
+    const norm = headers.map(normalizeHeader);
+    for (const c of candidates) {
+      const cn = normalizeHeader(c);
+      const idx = norm.findIndex(h => h === cn || h.includes(cn));
+      if (idx >= 0) return headers[idx];
+    }
+    return "";
+  };
+
+  const parseNum = (v: string): number => {
+    if (!v) return 0;
+    const s = String(v).replace(/[^\d.,-]/g, "").replace(/\./g, "").replace(",", ".");
+    return parseFloat(s) || 0;
+  };
+
+  const mapClienteRows = (rows: Record<string, string>[]): ImportClienteRow[] => {
+    if (rows.length === 0) return [];
+    const headers = Object.keys(rows[0]);
+    const c = ((...args: string[]) => findCol(headers, ...args));
+    const nomeCol     = c("NOMBRE DEL CLIENTE","NOME DO CLIENTE","NOME CLIENTE","NOME","NOMBRE","CLIENTE");
+    const telCol      = c("TELEFONO","TELEFONE","TEL");
+    const endCol      = c("DIRECCION","ENDEREÇO","ENDERECO","DIRECCION","DIRECCION");
+    const consCol     = c("NRO CREDITO","CONSECUTIVO","NRO.CREDITO","NRO_CREDITO","CREDITO");
+    const dateCol     = c("FECHA VENTA","DATA VENDA","FECHA","DATA","DATA INICIO");
+    const prestCol    = c("VALOR PRESTADO","VALOR EMPRESTADO","PRESTADO","EMPRESTADO");
+    const pagarCol    = c("VALOR A PAGAR","TOTAL A PAGAR","A PAGAR","TOTAL","PAGAR");
+    const pctCol      = c("%","% V.CUOTA","% JUROS","PORCENTAGEM","PCT JUROS","JUROS %","PORCENTAJE");
+    const parcelaCol  = c("V.CUOTA","VALOR PARCELA","CUOTA","PARCELA","V CUOTA","VCUOTA");
+    const numParc     = c("CUOTAS","PARCELAS","NUM PARCELAS","NUMERO PARCELAS");
+    const pagasCol    = c("C.PAGAS","PAGAS","CUOTAS PAGAS","PARCELAS PAGAS");
+    const restaCol    = c("C.RESTA","RESTANTES","RESTA","CUOTAS RESTANTES","PARCELAS RESTANTES");
+    const saldoCol    = c("SALDO");
+
+    return rows.map(r => ({
+      nome:              r[nomeCol]    ?? "",
+      telefone:          r[telCol]    ?? "",
+      endereco:          r[endCol]    ?? "",
+      consecutivo:       r[consCol]   ?? "",
+      dataInicio:        r[dateCol]   ?? new Date().toISOString().slice(0,10),
+      valorProduto:      parseNum(r[prestCol]),
+      totalAPagar:       parseNum(r[pagarCol]),
+      jurosPct:          parseNum(r[pctCol]),
+      valorParcela:      parseNum(r[parcelaCol]),
+      numParcelas:       Math.round(parseNum(r[numParc])) || 1,
+      parcelasPagas:     parseNum(r[pagasCol]),
+      parcelasRestantes: parseNum(r[restaCol]),
+      saldo:             parseNum(r[saldoCol]),
+    })).filter(r => r.nome.trim() !== "");
+  };
+
+  const handleImportarArquivoClientes = async (file: File) => {
+    setImportarArquivoClientes(file);
+    setImportarStatus(null);
+    try {
+      const rows = await parseFileToRows(file);
+      setImportarPreviewClientes(mapClienteRows(rows));
+    } catch { setImportarPreviewClientes([]); }
+  };
+
+  const handleImportarRota = async () => {
+    if (!importarVendedor || !importarArquivoClientes) return;
+    const ap = gaRows.find(r => r.rota === importarVendedor);
+    if (!ap) { setImportarStatus({ ok: false, msg: "Selecione uma rota válida." }); return; }
+    let clientes = importarPreviewClientes;
+    if (clientes.length === 0) {
+      try {
+        const rows = await parseFileToRows(importarArquivoClientes);
+        clientes = mapClienteRows(rows);
+      } catch { setImportarStatus({ ok: false, msg: "Erro ao ler arquivo de clientes." }); return; }
+    }
+    if (clientes.length === 0) { setImportarStatus({ ok: false, msg: "Nenhum cliente encontrado no arquivo." }); return; }
+    setImportarLoading(true);
+    setImportarStatus(null);
+    try {
+      const res = await fetch("/api/importar-rota", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ aplicativoId: ap.id, clientes }),
+      });
+      const json = await res.json();
+      if (!res.ok) { setImportarStatus({ ok: false, msg: json.error ?? "Erro ao importar." }); return; }
+      setImportarStatus({ ok: true, msg: `${json.importados} cliente(s) importado(s) com sucesso!${json.erros?.length ? ` (${json.erros.length} erro(s))` : ""}` });
+      setImportarArquivo(null);
+      setImportarArquivoClientes(null);
+      setImportarPreviewClientes([]);
+      setImportarVendedor("");
+    } catch { setImportarStatus({ ok: false, msg: "Falha de conexão com o servidor." }); }
+    finally { setImportarLoading(false); }
+  };
 
   const isDesempenho = activeMain === "Desempenho";
   const showContent = activeMain === "Liq. Diária" && activeSub === "Relatório Diário";
@@ -5727,15 +5851,10 @@ export default function DashboardPage() {
                   {/* Vendedor */}
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <label style={{ fontSize: 13, color: "#334155", fontWeight: 500, whiteSpace: "nowrap" }}>Rota (*):</label>
-                    <select value={importarVendedor} onChange={e => setImportarVendedor(e.target.value)}
+                    <select value={importarVendedor} onChange={e => { setImportarVendedor(e.target.value); setImportarStatus(null); }}
                       style={{ height: 28, border: "1px solid #94a3b8", borderRadius: 3, padding: "0 24px 0 8px", fontSize: 12, color: importarVendedor ? "#334155" : "#94a3b8", background: "#fff", outline: "none", minWidth: 200, cursor: "pointer" }}>
                       <option value="">---Selecione---</option>
-                      <option>Carlos Silva</option>
-                      <option>Ana Pereira</option>
-                      <option>João Santos</option>
-                      <option>Maria Oliveira</option>
-                      <option>Pedro Costa</option>
-                      <option>Lucia Ferreira</option>
+                      {gaRows.map(r => <option key={r.id} value={r.rota}>{r.rota} — {r.cobrador}</option>)}
                     </select>
                   </div>
 
@@ -5765,7 +5884,7 @@ export default function DashboardPage() {
                         {importarArquivoClientes ? importarArquivoClientes.name : "Nenhum arquivo escolhido"}
                       </span>
                       <input type="file" accept=".csv,.xlsx,.xls" style={{ display: "none" }}
-                        onChange={e => setImportarArquivoClientes(e.target.files?.[0] ?? null)} />
+                        onChange={e => { const f = e.target.files?.[0] ?? null; if (f) handleImportarArquivoClientes(f); else setImportarArquivoClientes(null); }} />
                     </label>
                   </div>
                 </div>
@@ -5796,12 +5915,58 @@ export default function DashboardPage() {
                   </div>
                 )}
 
+                {/* Preview de clientes */}
+                {importarPreviewClientes.length > 0 && (
+                  <div style={{ margin: "0 32px 20px", overflowX: "auto" }}>
+                    <p style={{ margin: "0 0 6px", fontSize: 12, fontWeight: 600, color: "#334155" }}>
+                      Prévia: {importarPreviewClientes.length} cliente(s) encontrado(s)
+                    </p>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+                      <thead>
+                        <tr style={{ background: "#2d5474", color: "#fff" }}>
+                          {["#","Nome","Telefone","Consecutivo","Data","Val. Prest.","Total Pagar","Parcelas","Saldo"].map(h => (
+                            <th key={h} style={{ padding: "5px 8px", textAlign: "left", fontWeight: 600, whiteSpace: "nowrap" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {importarPreviewClientes.slice(0, 10).map((r, i) => (
+                          <tr key={i} style={{ background: i % 2 === 0 ? "#f8fafc" : "#fff", borderBottom: "1px solid #e2e8f0" }}>
+                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{i + 1}</td>
+                            <td style={{ padding: "4px 8px", color: "#1e293b", fontWeight: 500 }}>{r.nome}</td>
+                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{r.telefone}</td>
+                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{r.consecutivo}</td>
+                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{r.dataInicio}</td>
+                            <td style={{ padding: "4px 8px", color: "#15803d" }}>R$ {r.valorProduto.toFixed(2)}</td>
+                            <td style={{ padding: "4px 8px", color: "#7c3aed" }}>R$ {r.totalAPagar.toFixed(2)}</td>
+                            <td style={{ padding: "4px 8px", color: "#64748b" }}>{r.numParcelas}</td>
+                            <td style={{ padding: "4px 8px", color: "#b45309" }}>R$ {r.saldo.toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {importarPreviewClientes.length > 10 && (
+                      <p style={{ margin: "4px 0 0", fontSize: 10, color: "#94a3b8" }}>... e mais {importarPreviewClientes.length - 10} linha(s)</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Status */}
+                {importarStatus && (
+                  <div style={{ margin: "0 32px 16px", padding: "10px 16px", borderRadius: 6, background: importarStatus.ok ? "#f0fdf4" : "#fef2f2", border: `1px solid ${importarStatus.ok ? "#86efac" : "#fca5a5"}`, color: importarStatus.ok ? "#15803d" : "#dc2626", fontSize: 13, fontWeight: 600 }}>
+                    {importarStatus.msg}
+                  </div>
+                )}
+
                 {/* Import button */}
                 {(importarArquivo || importarArquivoClientes) && importarVendedor && (
                   <div style={{ padding: "0 32px 28px", display: "flex", gap: 10 }}>
-                    <button style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 6, padding: "9px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.35)" }}>
+                    <button
+                      onClick={handleImportarRota}
+                      disabled={importarLoading}
+                      style={{ display: "flex", alignItems: "center", gap: 8, background: importarLoading ? "#93c5fd" : "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 6, padding: "9px 22px", fontSize: 13, fontWeight: 700, cursor: importarLoading ? "not-allowed" : "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.35)" }}>
                       <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                      Importar Rotas
+                      {importarLoading ? "Importando..." : "Importar Rotas"}
                     </button>
                   </div>
                 )}
