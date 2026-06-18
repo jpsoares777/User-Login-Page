@@ -134,24 +134,9 @@ const gastosIngresosData = MONTHS.map((m, i) => ({
   Gastos:   [1200, 1800, 2500, 1800, 2200, 2900, 2100, 1700, 3400, 2000, 1500, 1300][i],
 }));
 
-const gastosPieData = [
-  { name: "Ajuste Caixa (1300)", value: 1300, color: "#3d9cd2" },
-  { name: "Outros (590)", value: 590, color: "#4cae4c" },
-
-  { name: "Retiradas de Caixa (251)", value: 251, color: "#2e2e2e" },
-];
-
-const ingresosPieData = [
-  { name: "Aporte Caixa (5610)", value: 5610, color: "#3d9cd2" },
-  { name: "Outro (3780)", value: 3780, color: "#2e2e2e" },
-];
-
-const despesasCatData = [
-  { name: "Empréstimos (4200)", value: 4200, color: "#3d9cd2" },
-  { name: "Operacional (980)",  value: 980,  color: "#4cae4c" },
-  { name: "Administrativo (620)", value: 620, color: "#e8a838" },
-  { name: "Outros (340)",       value: 340,  color: "#2e2e2e" },
-];
+const gastosPieData: { name: string; value: number; color: string }[] = [];
+const ingresosPieData: { name: string; value: number; color: string }[] = [];
+const despesasCatData: { name: string; value: number; color: string }[] = [];
 
 // ── 3D Pie Chart ─────────────────────────────────────────────────────────────
 
@@ -406,32 +391,7 @@ function DesempenhoContent({ rotas = [] }: { rotas?: string[] }) {
 
 // ── Pagamentos ────────────────────────────────────────────────────────────────
 
-const pagamentosData = [
-  { id: 1, status: "ruim",  consecutivo: "4700627089", cliente: "GEILSON EDUARDO ROSA DE JESUS",  obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "980,00",  sancao: "0,00", saldo: "700,00",  restantes: "10.0", visitas: 13, freq: "Diario" },
-  { id: 2, status: "ruim",  consecutivo: "4700627058", cliente: "ALINE LIMA DE ALENCAR",           obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.120,00", sancao: "0,00", saldo: "1.040,00",restantes: "13.0", visitas: 4,  freq: "Diario" },
-  { id: 3, status: "bom",   consecutivo: "4700627078", cliente: "MARIANA BEATRIZ RABELO BARBOSA",  obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.400,00", sancao: "0,00", saldo: "1.400,00",restantes: "4.0",  visitas: 4,  freq: "Diario" },
-  { id: 4, status: "bom",   consecutivo: "4700627145", cliente: "BORES VIANA DE SOUZA",            obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "560,00",  sancao: "0,00", saldo: "480,00",  restantes: "12.0", visitas: 5,  freq: "Diario" },
-  { id: 5, status: "ruim",  consecutivo: "4700627024", cliente: "ANNY BRIANE PIRES BELFORT",       obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.120,00", sancao: "0,00", saldo: "210,00",  restantes: "2.6",  visitas: 23, freq: "Diario" },
-  { id: 6, status: "bom",   consecutivo: "4700627090", cliente: "DANIELE TEXEIRA LINDOSO",         obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.400,00", sancao: "0,00", saldo: "900,00",  restantes: "9.0",  visitas: 13, freq: "Diario" },
-  { id: 7, status: "medio", consecutivo: "4700627023", cliente: "ELAIRA KISLEY CONCEIÇÃO LOPES",   obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "540,00",  sancao: "0,00", saldo: "540,00",  restantes: "9.0",  visitas: 10, freq: "Diario" },
-  { id: 8, status: "ruim",  consecutivo: "4700627164", cliente: "ERICK PEREIRA SANTOS",            obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "840,00",  sancao: "0,00", saldo: "780,00",  restantes: "13.0", visitas: 9,  freq: "Diario" },
-  { id: 9, status: "bom",   consecutivo: "4700627059", cliente: "PATRICK MICHAEL SÁ MENEZES",      obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "700,00",  sancao: "0,00", saldo: "600,00",  restantes: "12.0", visitas: 16, freq: "Diario" },
-  { id:10, status: "bom",   consecutivo: "4700627022", cliente: "KLEITON VIANA GONÇALVES",         obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.170,00", sancao: "0,00", saldo: "420,00",  restantes: "4.7",  visitas: 23, freq: "Diario" },
-  { id:11, status: "medio", consecutivo: "4700627027", cliente: "ANTÔNIO LEITE NETO",              obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "800,00",  sancao: "0,00", saldo: "750,00",  restantes: "12.5", visitas: 21, freq: "Diario" },
-  { id:12, status: "medio", consecutivo: "4700627025", cliente: "BIANCA DE ARAÚJO ALVES",          obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "420,00",  sancao: "0,00", saldo: "420,00",  restantes: "14.0", visitas: 3,  freq: "Diario" },
-  { id:13, status: "ruim",  consecutivo: "4700627031", cliente: "CARLOS HENRIQUE SOUZA LIMA",       obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "650,00",  sancao: "0,00", saldo: "590,00",  restantes: "11.0", visitas: 7,  freq: "Diario" },
-  { id:14, status: "bom",   consecutivo: "4700627044", cliente: "FERNANDA CRISTINA MOURA",          obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "980,00",  sancao: "0,00", saldo: "840,00",  restantes: "8.0",  visitas: 15, freq: "Diario" },
-  { id:15, status: "medio", consecutivo: "4700627052", cliente: "JOSÉ WELLINGTON PEREIRA NUNES",    obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.260,00",sancao: "0,00", saldo: "1.120,00",restantes: "16.0", visitas: 6,  freq: "Semanal" },
-  { id:16, status: "ruim",  consecutivo: "4700627061", cliente: "LUCIANA APARECIDA FERREIRA",       obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "700,00",  sancao: "0,00", saldo: "630,00",  restantes: "9.0",  visitas: 11, freq: "Diario" },
-  { id:17, status: "bom",   consecutivo: "4700627073", cliente: "MARCOS VINÍCIUS ALMEIDA COSTA",    obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "840,00",  sancao: "0,00", saldo: "350,00",  restantes: "5.0",  visitas: 19, freq: "Diario" },
-  { id:18, status: "ruim",  consecutivo: "4700627081", cliente: "NATALIA RODRIGUES DA SILVA",       obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "560,00",  sancao: "0,00", saldo: "560,00",  restantes: "14.0", visitas: 2,  freq: "Diario" },
-  { id:19, status: "medio", consecutivo: "4700627092", cliente: "PEDRO HENRIQUE BARBOSA SANTOS",    obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.400,00",sancao: "0,00", saldo: "980,00",  restantes: "10.0", visitas: 8,  freq: "Quinzenal" },
-  { id:20, status: "bom",   consecutivo: "4700627103", cliente: "ROSANGELA MATOS DE OLIVEIRA",      obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "490,00",  sancao: "0,00", saldo: "210,00",  restantes: "3.0",  visitas: 22, freq: "Diario" },
-  { id:21, status: "ruim",  consecutivo: "4700627115", cliente: "SANDRA FÁTIMA CAVALCANTE",         obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Transferência",valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "1.120,00",sancao: "0,00", saldo: "1.050,00",restantes: "15.0", visitas: 4,  freq: "Diario" },
-  { id:22, status: "medio", consecutivo: "4700627128", cliente: "TIAGO AUGUSTO REZENDE SILVA",      obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Transferência",valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "770,00",  sancao: "0,00", saldo: "630,00",  restantes: "9.0",  visitas: 14, freq: "Semanal" },
-  { id:23, status: "bom",   consecutivo: "4700627136", cliente: "VALDETE SOUSA NASCIMENTO",         obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "350,00",  sancao: "0,00", saldo: "140,00",  restantes: "2.0",  visitas: 20, freq: "Diario" },
-  { id:24, status: "ruim",  consecutivo: "4700627147", cliente: "WELLINGTON COSTA BRAGA",           obs: "Operacion Masiva", pagadas: "0.0", formaPago: "Efectivo",     valor: "0,00", fecha: "2026-05-25", hora: "20:12:44", valorProd: "910,00",  sancao: "0,00", saldo: "870,00",  restantes: "13.0", visitas: 5,  freq: "Diario" },
-];
+const pagamentosData: { id: number; status: string; consecutivo: string; cliente: string; obs: string; pagadas: string; formaPago: string; valor: string; fecha: string; hora: string; valorProd: string; sancao: string; saldo: string; restantes: string; visitas: number; freq: string }[] = [];
 
 type PagRow = typeof pagamentosData[0];
 
@@ -703,79 +663,11 @@ function PagamentosContent() {
 }
 
 // ── Empréstimos Novos data ─────────────────────────────────────────────────────
-const emprestimosData = [
-  { id: 1,  consec: "4700627026", freq: "Diário",    valorAnt: 600.00,  cliente: "Andrela de Jesus Costa Araújo",  tag: "Renovado", documento: "91633427315",  celular: "98985014328",  valorProd: 800.00,  parcelas: 14, pctJuros: 40, valorJuros: 320.00,  valorParcela: 80.00,  dataVenda: "2026-03-30 14:03:51", parcRest: 0,  saldo: 0.00,    numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 2,  consec: "4700627089", freq: "Diário",    valorAnt: 0.00,    cliente: "Geilson Eduardo Rosa de Jesus",   tag: "Novo",     documento: "00503307300",  celular: "9885397102",   valorProd: 700.00,  parcelas: 14, pctJuros: 40, valorJuros: 280.00,  valorParcela: 70.00,  dataVenda: "2026-03-30 19:39:09", parcRest: 10, saldo: 700.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 3,  consec: "4700627090", freq: "Diário",    valorAnt: 0.00,    cliente: "Daniele Texeira Lindoso",         tag: "Novo",     documento: "01148713379",  celular: "559899687036", valorProd: 1000.00, parcelas: 14, pctJuros: 40, valorJuros: 400.00,  valorParcela: 100.00, dataVenda: "2026-03-30 21:03:29", parcRest: 9,  saldo: 900.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 4,  consec: "4700627058", freq: "Diário",    valorAnt: 1120.00, cliente: "Aline Lima De Alencar",           tag: "Renovado", documento: "44455566677",  celular: "98985678901",  valorProd: 1120.00, parcelas: 14, pctJuros: 40, valorJuros: 448.00,  valorParcela: 112.00, dataVenda: "2026-04-01 09:15:00", parcRest: 13, saldo: 1040.00, numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 5,  consec: "4700627078", freq: "Diário",    valorAnt: 0.00,    cliente: "Mariana Beatriz Rabelo Barbosa",  tag: "Novo",     documento: "22233344455",  celular: "98985721207",  valorProd: 1000.00, parcelas: 14, pctJuros: 40, valorJuros: 400.00,  valorParcela: 100.00, dataVenda: "2026-04-05 10:30:00", parcRest: 14, saldo: 1400.00, numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 6,  consec: "4700627022", freq: "Diário",    valorAnt: 900.00,  cliente: "Kleiton Viana Gonçalves",         tag: "Renovado", documento: "33344455566",  celular: "98983210011",  valorProd: 900.00,  parcelas: 20, pctJuros: 40, valorJuros: 360.00,  valorParcela: 63.00,  dataVenda: "2026-04-06 08:00:00", parcRest: 16, saldo: 420.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 7,  consec: "4700627145", freq: "Diário",    valorAnt: 0.00,    cliente: "Bores Viana De Souza",            tag: "Novo",     documento: "55566677788",  celular: "98984321100",  valorProd: 560.00,  parcelas: 14, pctJuros: 40, valorJuros: 224.00,  valorParcela: 56.00,  dataVenda: "2026-04-08 14:20:00", parcRest: 12, saldo: 480.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 8,  consec: "4700627024", freq: "Diário",    valorAnt: 800.00,  cliente: "Anny Briane Pires Belfort",       tag: "Renovado", documento: "66677788899",  celular: "98987654321",  valorProd: 1120.00, parcelas: 14, pctJuros: 40, valorJuros: 448.00,  valorParcela: 112.00, dataVenda: "2026-04-10 11:00:00", parcRest: 3,  saldo: 210.00,  numSeguro: "SEG-003",vrSeguro: 100.00, chaveAutor: "" },
-  { id: 9,  consec: "4700627023", freq: "Diário",    valorAnt: 0.00,    cliente: "Elaira Kisley Conceição Lopes",   tag: "Novo",     documento: "88899900011",  celular: "98986543210",  valorProd: 540.00,  parcelas: 14, pctJuros: 40, valorJuros: 216.00,  valorParcela: 54.00,  dataVenda: "2026-04-10 13:45:00", parcRest: 9,  saldo: 540.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 10, consec: "4700627027", freq: "Diário",    valorAnt: 0.00,    cliente: "Antônio Leite Neto",              tag: "Novo",     documento: "99900011122",  celular: "98981234567",  valorProd: 800.00,  parcelas: 14, pctJuros: 40, valorJuros: 320.00,  valorParcela: 80.00,  dataVenda: "2026-04-12 09:00:00", parcRest: 12, saldo: 750.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 11, consec: "4700627164", freq: "Diário",    valorAnt: 0.00,    cliente: "Erick Pereira Santos",            tag: "Novo",     documento: "11122233344",  celular: "98982345678",  valorProd: 840.00,  parcelas: 14, pctJuros: 40, valorJuros: 336.00,  valorParcela: 84.00,  dataVenda: "2026-04-14 16:10:00", parcRest: 13, saldo: 780.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 12, consec: "4700627059", freq: "Semanal",   valorAnt: 600.00,  cliente: "Patrick Michael Sá Menezes",      tag: "Renovado", documento: "22233344456",  celular: "98984444555",  valorProd: 700.00,  parcelas: 12, pctJuros: 40, valorJuros: 280.00,  valorParcela: 82.00,  dataVenda: "2026-04-15 10:30:00", parcRest: 12, saldo: 600.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-];
+const emprestimosData: { id: number; consec: string; freq: string; valorAnt: number; cliente: string; tag: string; documento: string; celular: string; valorProd: number; parcelas: number; pctJuros: number; valorJuros: number; valorParcela: number; dataVenda: string; parcRest: number; saldo: number; numSeguro: string; vrSeguro: number; chaveAutor: string }[] = [];
 
 type EmpRow = typeof emprestimosData[0];
 
-const pagamentosPorEmprestimo: Record<number, { nro: number; tipo: string; valor: number; data: string; obs: string }[]> = {
-  2: [
-    { nro: 5, tipo: "S/PAG.",  valor: 0,   data: "2026-05-25", obs: "Operação Masiva" },
-    { nro: 4, tipo: "S/PAG.",  valor: 0,   data: "2026-04-28", obs: "Operação Masiva" },
-    { nro: 3, tipo: "ABONO",   valor: 0,   data: "2026-04-17", obs: "Operação Masiva" },
-    { nro: 2, tipo: "PARC.",   valor: 700, data: "2026-04-16", obs: "" },
-    { nro: 1, tipo: "PARC.",   valor: 400, data: "2026-04-15", obs: "" },
-  ],
-  1: [
-    { nro: 4, tipo: "PARC.",   valor: 180, data: "2026-04-10", obs: "" },
-    { nro: 3, tipo: "PARC.",   valor: 180, data: "2026-03-27", obs: "" },
-    { nro: 2, tipo: "ABONO",   valor: 0,   data: "2026-03-22", obs: "Operação Masiva" },
-    { nro: 1, tipo: "PARC.",   valor: 240, data: "2026-03-14", obs: "" },
-  ],
-  4: [
-    { nro: 3, tipo: "S/PAG.",  valor: 0,   data: "2026-05-25", obs: "Operação Masiva" },
-    { nro: 2, tipo: "PARC.",   valor: 112, data: "2026-05-01", obs: "" },
-    { nro: 1, tipo: "PARC.",   valor: 112, data: "2026-04-15", obs: "" },
-  ],
-  5: [
-    { nro: 1, tipo: "PARC.",   valor: 100, data: "2026-04-20", obs: "" },
-  ],
-  6: [
-    { nro: 4, tipo: "PARC.",   valor: 63,  data: "2026-05-10", obs: "" },
-    { nro: 3, tipo: "PARC.",   valor: 63,  data: "2026-04-28", obs: "" },
-    { nro: 2, tipo: "S/PAG.",  valor: 0,   data: "2026-04-18", obs: "Operação Masiva" },
-    { nro: 1, tipo: "PARC.",   valor: 63,  data: "2026-04-12", obs: "" },
-  ],
-  7: [
-    { nro: 2, tipo: "PARC.",   valor: 56,  data: "2026-05-05", obs: "" },
-    { nro: 1, tipo: "PARC.",   valor: 56,  data: "2026-04-22", obs: "" },
-  ],
-  8: [
-    { nro: 11, tipo: "PARC.",  valor: 112, data: "2026-05-20", obs: "" },
-    { nro: 10, tipo: "PARC.",  valor: 112, data: "2026-05-05", obs: "" },
-    { nro: 9,  tipo: "S/PAG.", valor: 0,   data: "2026-04-29", obs: "Operação Masiva" },
-    { nro: 8,  tipo: "PARC.",  valor: 112, data: "2026-04-28", obs: "" },
-  ],
-  9: [
-    { nro: 5, tipo: "PARC.",   valor: 54,  data: "2026-05-18", obs: "" },
-    { nro: 4, tipo: "S/PAG.",  valor: 0,   data: "2026-05-11", obs: "Operação Masiva" },
-    { nro: 3, tipo: "PARC.",   valor: 54,  data: "2026-05-04", obs: "" },
-    { nro: 2, tipo: "PARC.",   valor: 54,  data: "2026-04-24", obs: "" },
-    { nro: 1, tipo: "PARC.",   valor: 54,  data: "2026-04-17", obs: "" },
-  ],
-  10: [
-    { nro: 2, tipo: "PARC.",   valor: 80,  data: "2026-05-02", obs: "" },
-    { nro: 1, tipo: "PARC.",   valor: 80,  data: "2026-04-19", obs: "" },
-  ],
-  11: [
-    { nro: 1, tipo: "PARC.",   valor: 84,  data: "2026-04-28", obs: "" },
-  ],
-  12: [
-    { nro: 1, tipo: "PARC.",   valor: 82,  data: "2026-04-22", obs: "" },
-  ],
-};
+const pagamentosPorEmprestimo: Record<number, { nro: number; tipo: string; valor: number; data: string; obs: string }[]> = {};
 
 function PagamentosEmprestimoModal({
   nroEmp, cliente, onClose,
@@ -1091,15 +983,7 @@ function EmprestimosNovosContent() {
 }
 
 // ── Despesas data ─────────────────────────────────────────────────────────────
-const despesasData = [
-  { id: 1, categoria: "Combustível",        descricao: "Abastecimento veículo operacional",  valor: 120.00, data: "2026-05-25", hora: "07:45", responsavel: "João Mendes",   obs: "" },
-  { id: 2, categoria: "Alimentação",        descricao: "Almoço equipe",                       valor: 85.00,  data: "2026-05-25", hora: "12:30", responsavel: "João Mendes",   obs: "4 pessoas" },
-  { id: 3, categoria: "Retirada de Caixa", descricao: "Retirada diária do operador",         valor: 500.00, data: "2026-05-25", hora: "14:00", responsavel: "Carlos Souza",  obs: "Autorizado" },
-  { id: 4, categoria: "Material",          descricao: "Material de escritório",               valor: 35.00,  data: "2026-05-25", hora: "15:10", responsavel: "Ana Lima",      obs: "" },
-  { id: 5, categoria: "Manutenção",        descricao: "Manutenção preventiva veículo",       valor: 220.00, data: "2026-05-25", hora: "16:00", responsavel: "Carlos Souza",  obs: "Troca de óleo" },
-  { id: 6, categoria: "Combustível",        descricao: "Abastecimento rota extra",            valor: 60.00,  data: "2026-05-25", hora: "17:20", responsavel: "João Mendes",   obs: "" },
-  { id: 7, categoria: "Outros",            descricao: "Recarga cartão telefone",              valor: 30.00,  data: "2026-05-25", hora: "08:50", responsavel: "Ana Lima",      obs: "" },
-];
+const despesasData: { id: number; categoria: string; descricao: string; valor: number; data: string; hora: string; responsavel: string; obs: string }[] = [];
 
 const categoriaColor: Record<string, { bg: string; text: string; border: string }> = {
   "Combustível":        { bg: "#fef9c3", text: "#854d0e", border: "#fde047" },
@@ -1198,14 +1082,7 @@ function DespesasContent() {
 }
 
 // ── Rendimentos data ───────────────────────────────────────────────────────────
-const rendimentosData = [
-  { id: 1, categoria: "Aporte",         descricao: "Aporte inicial de caixa para rota",       valor: 1500.00, data: "2026-05-25", hora: "07:00", responsavel: "Carlos Souza",  obs: "Abertura do dia" },
-  { id: 2, categoria: "Depósito",       descricao: "Depósito bancário transferido para caixa", valor: 800.00,  data: "2026-05-25", hora: "08:30", responsavel: "João Mendes",   obs: "" },
-  { id: 3, categoria: "Entrada Extra",  descricao: "Entrada extra - venda de serviço avulso",  valor: 150.00,  data: "2026-05-25", hora: "10:45", responsavel: "Ana Lima",      obs: "Serviço pontual" },
-  { id: 4, categoria: "Transferência",  descricao: "Transferência entre rotas - matriz",        valor: 500.00,  data: "2026-05-25", hora: "12:00", responsavel: "Carlos Souza",  obs: "Autorizado" },
-  { id: 5, categoria: "Aporte",         descricao: "Aporte emergencial para cobertura",        valor: 300.00,  data: "2026-05-25", hora: "14:20", responsavel: "João Mendes",   obs: "Saldo baixo" },
-  { id: 6, categoria: "Entrada Extra",  descricao: "Recebimento de taxa administrativa",       valor: 75.00,   data: "2026-05-25", hora: "15:50", responsavel: "Ana Lima",      obs: "" },
-];
+const rendimentosData: { id: number; categoria: string; descricao: string; valor: number; data: string; hora: string; responsavel: string; obs: string }[] = [];
 
 const rendCategoriaColor: Record<string, { bg: string; text: string; border: string }> = {
   "Aporte":        { bg: "#dbeafe", text: "#1d4ed8", border: "#93c5fd" },
@@ -1310,28 +1187,10 @@ type ClienteRow = {
   dataEmprestimo: string;
   historico: { data: string; valor: number; total: number; cuotas: number; status: string }[];
 };
-const clientesRows: ClienteRow[] = [
-  { id:1,  consec:"4700627026", status:"ACTIVO", visitas:5,  nome:"Andreia de Jesus Costa Araújo",   tel1:"91633427315",  tel2:"98985014328",  freq:"Diário", valorVenda:1500.00, pctJuros:40, total:2100.00, cuotas:20, atrasadas:0,  pagas:12, restantes:8,  vlrCuota:105, saldo:800.00,  documento:"012.345.678-90", dataNasc:"1985-03-12", endereco:"Rua Gama Lobo, nº 10, Quarto", bairro:"Centro", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Cliente pontual. Prefere contato pelo WhatsApp.", dataEmprestimo:"2026-04-08", historico:[{data:"2025-10-01",valor:800,total:1120,cuotas:14,status:"QUITADO"},{data:"2026-04-08",valor:1500,total:2100,cuotas:20,status:"ACTIVO"}] },
-  { id:2,  consec:"4700627080", status:"ACTIVO", visitas:14, nome:"Luciana Alves Da Silva",           tel1:"559988345767", tel2:"03270213301",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:14, pagas:0,  restantes:14, vlrCuota:50,  saldo:700.00,  documento:"098.765.432-11", dataNasc:"1992-07-22", endereco:"Av. Principal, 455, Apto 3", bairro:"Jardim América", cidade:"São Paulo - SP", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Muitas visitas sem pagamento. Atenção redobrada.", dataEmprestimo:"2026-05-01", historico:[{data:"2026-05-01",valor:500,total:700,cuotas:14,status:"ACTIVO"}] },
-  { id:3,  consec:"4700627079", status:"ACTIVO", visitas:0,  nome:"Ana Paula Marques De Oliveira",    tel1:"989896248424", tel2:"85259284372",  freq:"Diário", valorVenda:500.00,  pctJuros:20, total:600.00,  cuotas:20, atrasadas:0,  pagas:0,  restantes:20, vlrCuota:30,  saldo:600.00,  documento:"111.222.333-44", dataNasc:"1990-11-05", endereco:"Rua das Flores, 22", bairro:"Nova Esperança", cidade:"Fortaleza - CE", estadoVerif:"Verificado", nroSeguro:"SEG-001", valorSeguro:150.00, nomeCodedor:"José Marques", telCodedor:"85259284371", dirCodedor:"Rua das Flores, 22", observacoes:"", dataEmprestimo:"2026-05-10", historico:[{data:"2026-05-10",valor:500,total:600,cuotas:20,status:"ACTIVO"}] },
-  { id:4,  consec:"4700627078", status:"ACTIVO", visitas:4,  nome:"Mariana Beatriz Rabelo Barbosa",   tel1:"98985721207",  tel2:"985721297",    freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:4,  pagas:0,  restantes:14, vlrCuota:100, saldo:1400.00, documento:"222.333.444-55", dataNasc:"1988-01-30", endereco:"Trav. São João, 78", bairro:"Cohab", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Dificuldade de localização.", dataEmprestimo:"2026-05-05", historico:[{data:"2025-08-15",valor:500,total:700,cuotas:14,status:"QUITADO"},{data:"2026-05-05",valor:1000,total:1400,cuotas:14,status:"ACTIVO"}] },
-  { id:5,  consec:"4700627077", status:"ACTIVO", visitas:14, nome:"Natanael Dos Santos Mendes",       tel1:"5511971269742",tel2:"11971269742",  freq:"Diário", valorVenda:500.00,  pctJuros:40, total:700.00,  cuotas:14, atrasadas:13, pagas:1,  restantes:13, vlrCuota:50,  saldo:650.00,  documento:"333.444.555-66", dataNasc:"1983-06-18", endereco:"Rua 7 de Setembro, 101", bairro:"Vila Nova", cidade:"São Paulo - SP", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Muitas visitas. Considerar negativação.", dataEmprestimo:"2026-04-20", historico:[{data:"2026-04-20",valor:500,total:700,cuotas:14,status:"ACTIVO"}] },
-  { id:6,  consec:"4700627058", status:"ACTIVO", visitas:1,  nome:"Aline Lima De Alencar",            tel1:"98985678901",  tel2:"98985678902",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:1,  restantes:13, vlrCuota:80,  saldo:1040.00, documento:"444.555.666-77", dataNasc:"1995-09-14", endereco:"Conj. Habitacional, Bl. B, 203", bairro:"Tirirical", cidade:"São Luís - MA", estadoVerif:"Verificado", nroSeguro:"SEG-002", valorSeguro:200.00, nomeCodedor:"Carlos Alencar", telCodedor:"98985678903", dirCodedor:"Conj. Habitacional, Bl. A, 101", observacoes:"Boa pagadora.", dataEmprestimo:"2026-05-15", historico:[{data:"2025-11-01",valor:560,total:784,cuotas:14,status:"QUITADO"},{data:"2026-05-15",valor:1120,total:1568,cuotas:14,status:"ACTIVO"}] },
-  { id:7,  consec:"4700627145", status:"ACTIVO", visitas:2,  nome:"Bores Viana De Souza",             tel1:"98984321100",  tel2:"98984321101",  freq:"Diário", valorVenda:560.00,  pctJuros:40, total:784.00,  cuotas:14, atrasadas:2,  pagas:0,  restantes:12, vlrCuota:40,  saldo:480.00,  documento:"555.666.777-88", dataNasc:"1979-04-02", endereco:"Rua Barão de Codó, 55", bairro:"Renascença", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"", dataEmprestimo:"2026-05-18", historico:[{data:"2026-05-18",valor:560,total:784,cuotas:14,status:"ACTIVO"}] },
-  { id:8,  consec:"4700627024", status:"ACTIVO", visitas:11, nome:"Anny Briane Pires Belfort",        tel1:"98987654321",  tel2:"98987654322",  freq:"Diário", valorVenda:1120.00, pctJuros:40, total:1568.00, cuotas:14, atrasadas:0,  pagas:11, restantes:3,  vlrCuota:80,  saldo:210.00,  documento:"666.777.888-99", dataNasc:"1991-12-25", endereco:"Rua dos Lirios, 88", bairro:"São Francisco", cidade:"São Luís - MA", estadoVerif:"Verificado", nroSeguro:"SEG-003", valorSeguro:100.00, nomeCodedor:"Pedro Belfort", telCodedor:"98987654323", dirCodedor:"Rua dos Lirios, 90", observacoes:"Ótima cliente. Quase quitando.", dataEmprestimo:"2026-02-01", historico:[{data:"2025-06-01",valor:500,total:700,cuotas:14,status:"QUITADO"},{data:"2025-10-15",valor:800,total:1120,cuotas:14,status:"QUITADO"},{data:"2026-02-01",valor:1120,total:1568,cuotas:14,status:"ACTIVO"}] },
-  { id:9,  consec:"4700627090", status:"ACTIVO", visitas:5,  nome:"Daniele Texeira Lindoso",          tel1:"559899687036", tel2:"99687036",     freq:"Diário", valorVenda:1000.00, pctJuros:40, total:1400.00, cuotas:14, atrasadas:5,  pagas:5,  restantes:9,  vlrCuota:100, saldo:900.00,  documento:"777.888.999-00", dataNasc:"1987-08-09", endereco:"Av. dos Holandeses, 200, Apto 12", bairro:"Ponta do Farol", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Atrasada. Última visita sem sucesso.", dataEmprestimo:"2026-04-15", historico:[{data:"2026-04-15",valor:1000,total:1400,cuotas:14,status:"ACTIVO"}] },
-  { id:10, consec:"4700627023", status:"ACTIVO", visitas:9,  nome:"Elaira Kisley Conceição Lopes",    tel1:"98986543210",  tel2:"98986543211",  freq:"Diário", valorVenda:540.00,  pctJuros:40, total:756.00,  cuotas:14, atrasadas:9,  pagas:0,  restantes:9,  vlrCuota:54,  saldo:540.00,  documento:"888.999.000-11", dataNasc:"1993-02-17", endereco:"Rua do Sol, 33", bairro:"Cohab Anil", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Muitos atrasos. Análise de renegociação.", dataEmprestimo:"2026-04-10", historico:[{data:"2026-04-10",valor:540,total:756,cuotas:14,status:"ACTIVO"}] },
-];
+const clientesRows: ClienteRow[] = [];
 
 // ── Agendados data ────────────────────────────────────────────────────────────
-const agendadosData = [
-  { id:1,  cliente:"Andreia de Jesus Costa Araújo", tipo:"Visita",        data:"2026-06-11", hora:"09:00", obs:"Cobrar parcela atrasada",  status:"Pendente"   },
-  { id:2,  cliente:"Geílson Eduardo Rosa de Jesus", tipo:"Ligação",       data:"2026-06-11", hora:"10:30", obs:"Confirmar endereço",        status:"Concluído"  },
-  { id:3,  cliente:"Andrela de Jesus Costa Araújo", tipo:"Visita",        data:"2026-06-11", hora:"14:00", obs:"Novo empréstimo",           status:"Pendente"   },
-  { id:4,  cliente:"S. De Oliveira",                tipo:"Renegociação",  data:"2026-06-12", hora:"08:00", obs:"Proposta de parcelamento",  status:"Pendente"   },
-  { id:5,  cliente:"Barbosa",                       tipo:"Ligação",       data:"2026-06-12", hora:"11:00", obs:"",                          status:"Cancelado"  },
-  { id:6,  cliente:"Dos Mendes",                    tipo:"Visita",        data:"2026-06-13", hora:"09:30", obs:"Verificar documentos",      status:"Pendente"   },
-];
+const agendadosData: { id: number; cliente: string; tipo: string; data: string; hora: string; obs: string; status: string }[] = [];
 
 const tipoAgendColor: Record<string, { bg: string; color: string; border: string }> = {
   "Visita":       { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
@@ -2183,41 +2042,6 @@ function ClientesContent() {
 
 type RotaFakeData = { cod:number; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; };
 const rotasFakeData: Record<string, RotaFakeData> = {
-  "Rota Cred Bank A":    { cod:10600, dataInicio:"2026-04-17 00:41:52", dataFechamento:null,                  ultimoAcesso:"2026-06-10 08:30:00", clientesIniciais:20, sincronizados:1,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:2979,  carteiraInicial:12660, recebPrevisto:1245, recebAtual:200,  pagos:1,  noPagos:0, efetivo:200,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:0,   retirada:0,   caixaFinal:3179,  carteiraFinal:12460, sancao:0 },
-  "Rota Cred Bank B":    { cod:10601, dataInicio:"2026-03-10 09:15:00", dataFechamento:null,                  ultimoAcesso:"2026-06-10 09:45:00", clientesIniciais:18, sincronizados:18, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:1850,  carteiraInicial:9800,  recebPrevisto:980,  recebAtual:680,  pagos:8,  noPagos:2, efetivo:580,  transferencia:100, novosEmp:400, juros:160, rendimentos:50,  despesas:0,   retirada:0,   caixaFinal:2980,  carteiraFinal:9540,  sancao:0 },
-  "Rota Norte SL":       { cod:10602, dataInicio:"2025-08-01 07:00:00", dataFechamento:"2025-11-30 18:00:00", ultimoAcesso:"2025-11-30 17:30:00", clientesIniciais:12, sincronizados:12, clientesNovos:0, renovados:0, cancelados:2, caixaInicial:500,   carteiraInicial:4200,  recebPrevisto:420,  recebAtual:420,  pagos:10, noPagos:0, efetivo:420,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:80,  retirada:200, caixaFinal:640,   carteiraFinal:3780,  sancao:0 },
-  "Rota Cred Imp A":     { cod:10610, dataInicio:"2026-02-15 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-01 10:00:00", clientesIniciais:25, sincronizados:25, clientesNovos:3, renovados:2, cancelados:1, caixaInicial:3200,  carteiraInicial:15400, recebPrevisto:1540, recebAtual:1100, pagos:12, noPagos:3, efetivo:900,  transferencia:200, novosEmp:600, juros:240, rendimentos:100, despesas:120, retirada:300, caixaFinal:4280,  carteiraFinal:15100, sancao:0 },
-  "Rota Cred Imp B":     { cod:10611, dataInicio:"2025-03-20 09:00:00", dataFechamento:"2025-08-15 17:45:00", ultimoAcesso:"2025-08-15 17:00:00", clientesIniciais:10, sincronizados:10, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:800,   carteiraInicial:5100,  recebPrevisto:510,  recebAtual:510,  pagos:10, noPagos:0, efetivo:510,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:50,  retirada:150, caixaFinal:1110,  carteiraFinal:4590,  sancao:0 },
-  "Rota Caxias Sul":     { cod:10620, dataInicio:"2026-01-08 07:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-10 08:50:00", clientesIniciais:16, sincronizados:16, clientesNovos:1, renovados:1, cancelados:0, caixaInicial:2100,  carteiraInicial:10200, recebPrevisto:1020, recebAtual:750,  pagos:9,  noPagos:2, efetivo:650,  transferencia:100, novosEmp:300, juros:120, rendimentos:0,   despesas:90,  retirada:0,   caixaFinal:3060,  carteiraFinal:9780,  sancao:0 },
-  "Rota Timon Centro":   { cod:10625, dataInicio:"2025-04-10 08:00:00", dataFechamento:"2025-12-01 17:00:00", ultimoAcesso:"2025-12-01 16:30:00", clientesIniciais:8,  sincronizados:8,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:600,   carteiraInicial:3800,  recebPrevisto:380,  recebAtual:380,  pagos:8,  noPagos:0, efetivo:380,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:40,  retirada:100, caixaFinal:840,   carteiraFinal:3420,  sancao:0 },
-  "Rota Norte A":        { cod:20600, dataInicio:"2026-03-01 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-05 09:10:00", clientesIniciais:22, sincronizados:22, clientesNovos:2, renovados:3, cancelados:0, caixaInicial:3100,  carteiraInicial:13500, recebPrevisto:1350, recebAtual:980,  pagos:11, noPagos:1, efetivo:880,  transferencia:100, novosEmp:500, juros:200, rendimentos:80,  despesas:100, retirada:200, caixaFinal:3860,  carteiraFinal:13200, sancao:0 },
-  "Rota Norte B":        { cod:20601, dataInicio:"2026-02-20 09:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-05 10:20:00", clientesIniciais:19, sincronizados:19, clientesNovos:1, renovados:2, cancelados:0, caixaInicial:2450,  carteiraInicial:11200, recebPrevisto:1120, recebAtual:820,  pagos:9,  noPagos:2, efetivo:720,  transferencia:100, novosEmp:350, juros:140, rendimentos:60,  despesas:80,  retirada:0,   caixaFinal:3250,  carteiraFinal:10920, sancao:0 },
-  "Rota Docas Belém":    { cod:20602, dataInicio:"2025-05-10 07:00:00", dataFechamento:"2025-09-10 17:00:00", ultimoAcesso:"2025-09-10 16:00:00", clientesIniciais:14, sincronizados:14, clientesNovos:0, renovados:0, cancelados:2, caixaInicial:900,   carteiraInicial:6200,  recebPrevisto:620,  recebAtual:620,  pagos:12, noPagos:0, efetivo:620,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:60,  retirada:180, caixaFinal:1280,  carteiraFinal:5580,  sancao:0 },
-  "Rota Ananindeua A":   { cod:20610, dataInicio:"2026-02-01 08:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-05 09:00:00", clientesIniciais:17, sincronizados:17, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:2300,  carteiraInicial:10800, recebPrevisto:1080, recebAtual:760,  pagos:10, noPagos:1, efetivo:660,  transferencia:100, novosEmp:320, juros:128, rendimentos:40,  despesas:70,  retirada:0,   caixaFinal:3030,  carteiraFinal:10560, sancao:0 },
-  "Rota Ananindeua B":   { cod:20611, dataInicio:"2025-02-14 09:00:00", dataFechamento:"2025-07-30 17:00:00", ultimoAcesso:"2025-07-30 16:30:00", clientesIniciais:9,  sincronizados:9,  clientesNovos:0, renovados:0, cancelados:1, caixaInicial:700,   carteiraInicial:4500,  recebPrevisto:450,  recebAtual:450,  pagos:9,  noPagos:0, efetivo:450,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:45,  retirada:120, caixaFinal:985,   carteiraFinal:4050,  sancao:0 },
-  "Rota Marabá Centro":  { cod:20620, dataInicio:"2026-04-05 07:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-12 08:40:00", clientesIniciais:28, sincronizados:28, clientesNovos:4, renovados:2, cancelados:0, caixaInicial:4100,  carteiraInicial:17800, recebPrevisto:1780, recebAtual:1400, pagos:15, noPagos:2, efetivo:1200, transferencia:200, novosEmp:700, juros:280, rendimentos:120, despesas:150, retirada:400, caixaFinal:5170,  carteiraFinal:17500, sancao:0 },
-  "Rota Santarém Rio":   { cod:20625, dataInicio:"2025-06-15 08:00:00", dataFechamento:"2025-10-05 17:00:00", ultimoAcesso:"2025-10-05 15:30:00", clientesIniciais:11, sincronizados:11, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:750,   carteiraInicial:5000,  recebPrevisto:500,  recebAtual:500,  pagos:10, noPagos:0, efetivo:500,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:55,  retirada:150, caixaFinal:1045,  carteiraFinal:4500,  sancao:0 },
-  "Rota Cred CE A":      { cod:30600, dataInicio:"2026-03-15 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-08 09:00:00", clientesIniciais:24, sincronizados:24, clientesNovos:3, renovados:2, cancelados:0, caixaInicial:3500,  carteiraInicial:14600, recebPrevisto:1460, recebAtual:1100, pagos:13, noPagos:2, efetivo:950,  transferencia:150, novosEmp:550, juros:220, rendimentos:90,  despesas:110, retirada:250, caixaFinal:4380,  carteiraFinal:14350, sancao:0 },
-  "Rota Cred CE B":      { cod:30601, dataInicio:"2026-03-01 09:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-08 10:15:00", clientesIniciais:20, sincronizados:20, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:2800,  carteiraInicial:12000, recebPrevisto:1200, recebAtual:900,  pagos:10, noPagos:2, efetivo:800,  transferencia:100, novosEmp:400, juros:160, rendimentos:70,  despesas:95,  retirada:200, caixaFinal:3475,  carteiraFinal:11760, sancao:0 },
-  "Rota Litoral CE":     { cod:30602, dataInicio:"2025-07-01 07:30:00", dataFechamento:"2025-12-20 17:00:00", ultimoAcesso:"2025-12-20 16:00:00", clientesIniciais:13, sincronizados:13, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:850,   carteiraInicial:5800,  recebPrevisto:580,  recebAtual:580,  pagos:12, noPagos:0, efetivo:580,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:65,  retirada:160, caixaFinal:1225,  carteiraFinal:5220,  sancao:0 },
-  "Rota Caucaia A":      { cod:30610, dataInicio:"2026-01-20 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-08 09:30:00", clientesIniciais:21, sincronizados:21, clientesNovos:2, renovados:2, cancelados:0, caixaInicial:2950,  carteiraInicial:13200, recebPrevisto:1320, recebAtual:1000, pagos:11, noPagos:2, efetivo:880,  transferencia:120, novosEmp:480, juros:192, rendimentos:85,  despesas:105, retirada:220, caixaFinal:3790,  carteiraFinal:12960, sancao:0 },
-  "Rota Caucaia B":      { cod:30611, dataInicio:"2025-01-15 09:00:00", dataFechamento:"2025-06-14 17:00:00", ultimoAcesso:"2025-06-14 16:30:00", clientesIniciais:7,  sincronizados:7,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:500,   carteiraInicial:3200,  recebPrevisto:320,  recebAtual:320,  pagos:7,  noPagos:0, efetivo:320,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:30,  retirada:80,  caixaFinal:710,   carteiraFinal:2880,  sancao:0 },
-  "Rota Juazeiro Norte": { cod:30620, dataInicio:"2026-02-10 07:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-08 08:50:00", clientesIniciais:23, sincronizados:23, clientesNovos:3, renovados:1, cancelados:0, caixaInicial:3300,  carteiraInicial:13800, recebPrevisto:1380, recebAtual:1050, pagos:12, noPagos:2, efetivo:900,  transferencia:150, novosEmp:520, juros:208, rendimentos:75,  despesas:115, retirada:230, caixaFinal:4100,  carteiraFinal:13560, sancao:0 },
-  "Rota Sobral Centro":  { cod:30625, dataInicio:"2025-05-20 08:00:00", dataFechamento:"2025-11-11 17:30:00", ultimoAcesso:"2025-11-11 16:45:00", clientesIniciais:10, sincronizados:10, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:680,   carteiraInicial:4600,  recebPrevisto:460,  recebAtual:460,  pagos:10, noPagos:0, efetivo:460,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:48,  retirada:130, caixaFinal:962,   carteiraFinal:4140,  sancao:0 },
-  "Rota Cred BA A":      { cod:40600, dataInicio:"2026-03-20 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-07 09:20:00", clientesIniciais:26, sincronizados:26, clientesNovos:3, renovados:2, cancelados:0, caixaInicial:3800,  carteiraInicial:16200, recebPrevisto:1620, recebAtual:1200, pagos:14, noPagos:2, efetivo:1050, transferencia:150, novosEmp:580, juros:232, rendimentos:95,  despesas:120, retirada:280, caixaFinal:4773,  carteiraFinal:15940, sancao:0 },
-  "Rota Cred BA B":      { cod:40601, dataInicio:"2026-02-05 09:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-07 10:30:00", clientesIniciais:20, sincronizados:20, clientesNovos:2, renovados:2, cancelados:0, caixaInicial:2700,  carteiraInicial:11800, recebPrevisto:1180, recebAtual:870,  pagos:10, noPagos:2, efetivo:750,  transferencia:120, novosEmp:420, juros:168, rendimentos:65,  despesas:90,  retirada:200, caixaFinal:3365,  carteiraFinal:11560, sancao:0 },
-  "Rota Pelourinho":     { cod:40602, dataInicio:"2025-06-01 07:00:00", dataFechamento:"2025-10-30 17:00:00", ultimoAcesso:"2025-10-30 16:30:00", clientesIniciais:15, sincronizados:15, clientesNovos:0, renovados:0, cancelados:2, caixaInicial:1000,  carteiraInicial:6800,  recebPrevisto:680,  recebAtual:680,  pagos:13, noPagos:0, efetivo:680,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:72,  retirada:200, caixaFinal:1408,  carteiraFinal:6120,  sancao:0 },
-  "Rota Feira Santana A":{ cod:40610, dataInicio:"2026-02-28 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-07 09:10:00", clientesIniciais:22, sincronizados:22, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:3050,  carteiraInicial:12800, recebPrevisto:1280, recebAtual:960,  pagos:11, noPagos:2, efetivo:840,  transferencia:120, novosEmp:460, juros:184, rendimentos:80,  despesas:100, retirada:210, caixaFinal:3780,  carteiraFinal:12560, sancao:0 },
-  "Rota Feira Santana B":{ cod:40611, dataInicio:"2025-03-05 09:00:00", dataFechamento:"2025-08-05 17:00:00", ultimoAcesso:"2025-08-05 16:00:00", clientesIniciais:11, sincronizados:11, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:760,   carteiraInicial:5200,  recebPrevisto:520,  recebAtual:520,  pagos:11, noPagos:0, efetivo:520,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:55,  retirada:140, caixaFinal:1085,  carteiraFinal:4680,  sancao:0 },
-  "Rota VC Centro":      { cod:40620, dataInicio:"2026-01-15 07:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-07 08:30:00", clientesIniciais:18, sincronizados:18, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:2500,  carteiraInicial:11000, recebPrevisto:1100, recebAtual:820,  pagos:10, noPagos:1, efetivo:720,  transferencia:100, novosEmp:380, juros:152, rendimentos:60,  despesas:88,  retirada:190, caixaFinal:3102,  carteiraFinal:10760, sancao:0 },
-  "Rota Ilhéus Sul":     { cod:40625, dataInicio:"2025-04-25 08:00:00", dataFechamento:"2025-09-28 17:00:00", ultimoAcesso:"2025-09-28 16:30:00", clientesIniciais:9,  sincronizados:9,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:620,   carteiraInicial:4100,  recebPrevisto:410,  recebAtual:410,  pagos:9,  noPagos:0, efetivo:410,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:42,  retirada:110, caixaFinal:878,   carteiraFinal:3690,  sancao:0 },
-  "Rota Cred PI A":      { cod:50600, dataInicio:"2026-03-25 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-09 09:10:00", clientesIniciais:21, sincronizados:21, clientesNovos:2, renovados:2, cancelados:0, caixaInicial:3000,  carteiraInicial:13000, recebPrevisto:1300, recebAtual:980,  pagos:11, noPagos:2, efetivo:850,  transferencia:130, novosEmp:480, juros:192, rendimentos:75,  despesas:100, retirada:220, caixaFinal:3735,  carteiraFinal:12760, sancao:0 },
-  "Rota Cred PI B":      { cod:50601, dataInicio:"2026-03-05 09:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-09 10:30:00", clientesIniciais:17, sincronizados:17, clientesNovos:1, renovados:1, cancelados:0, caixaInicial:2200,  carteiraInicial:10200, recebPrevisto:1020, recebAtual:760,  pagos:9,  noPagos:2, efetivo:660,  transferencia:100, novosEmp:360, juros:144, rendimentos:55,  despesas:85,  retirada:180, caixaFinal:2750,  carteiraFinal:9960,  sancao:0 },
-  "Rota Rio Parnaíba":   { cod:50602, dataInicio:"2025-08-10 07:30:00", dataFechamento:"2025-11-02 17:00:00", ultimoAcesso:"2025-11-02 16:30:00", clientesIniciais:12, sincronizados:12, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:780,   carteiraInicial:5300,  recebPrevisto:530,  recebAtual:530,  pagos:11, noPagos:0, efetivo:530,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:58,  retirada:150, caixaFinal:1102,  carteiraFinal:4770,  sancao:0 },
-  "Rota Parnaíba Norte": { cod:50610, dataInicio:"2026-01-30 08:00:00", dataFechamento:null,                  ultimoAcesso:"2026-06-09 09:20:00", clientesIniciais:19, sincronizados:19, clientesNovos:2, renovados:1, cancelados:0, caixaInicial:2600,  carteiraInicial:11500, recebPrevisto:1150, recebAtual:860,  pagos:10, noPagos:2, efetivo:760,  transferencia:100, novosEmp:400, juros:160, rendimentos:65,  despesas:92,  retirada:200, caixaFinal:3233,  carteiraFinal:11260, sancao:0 },
-  "Rota Parnaíba Sul":   { cod:50611, dataInicio:"2025-02-20 09:00:00", dataFechamento:"2025-07-19 17:00:00", ultimoAcesso:"2025-07-19 16:30:00", clientesIniciais:8,  sincronizados:8,  clientesNovos:0, renovados:0, cancelados:0, caixaInicial:540,   carteiraInicial:3600,  recebPrevisto:360,  recebAtual:360,  pagos:8,  noPagos:0, efetivo:360,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:36,  retirada:90,  caixaFinal:774,   carteiraFinal:3240,  sancao:0 },
-  "Rota Picos Centro":   { cod:50620, dataInicio:"2026-02-18 07:30:00", dataFechamento:null,                  ultimoAcesso:"2026-06-09 08:40:00", clientesIniciais:20, sincronizados:20, clientesNovos:2, renovados:2, cancelados:0, caixaInicial:2750,  carteiraInicial:12100, recebPrevisto:1210, recebAtual:900,  pagos:11, noPagos:2, efetivo:780,  transferencia:120, novosEmp:440, juros:176, rendimentos:70,  despesas:98,  retirada:210, caixaFinal:3452,  carteiraFinal:11860, sancao:0 },
-  "Rota Floriano A":     { cod:50625, dataInicio:"2025-07-12 08:00:00", dataFechamento:"2025-12-15 17:00:00", ultimoAcesso:"2025-12-15 16:30:00", clientesIniciais:10, sincronizados:10, clientesNovos:0, renovados:0, cancelados:1, caixaInicial:690,   carteiraInicial:4800,  recebPrevisto:480,  recebAtual:480,  pagos:10, noPagos:0, efetivo:480,  transferencia:0,   novosEmp:0,   juros:0,   rendimentos:0,   despesas:50,  retirada:130, caixaFinal:990,   carteiraFinal:4320,  sancao:0 },
 };
 
 function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdown }: {
@@ -2299,7 +2123,13 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
             <p className="text-xs text-gray-400">Clique em qualquer rota na árvore à esquerda</p>
           </div>
         ) : (() => {
-          const rd = rotasFakeData[periodoConfirmado.rota] ?? rotasFakeData["Rota Cred Bank A"];
+          const rd = rotasFakeData[periodoConfirmado.rota];
+          if (!rd) return (
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
+              <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+              <p className="text-sm font-medium text-gray-500">Sem dados para esta rota</p>
+            </div>
+          );
           const d1 = new Date(periodoConfirmado.inicio);
           const d2 = new Date(periodoConfirmado.fim);
           const days = Math.max(1, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
@@ -2438,32 +2268,7 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
   );
 }
 
-const liqPerPagData = [
-  { nro: 1,  consecutivo: "4700627021", linkColor: "#2563eb",  cliente: "Pedro Vinicius Oliveira Paiva",   clienteColor: "#374151", parcela: 2,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "105,00",  data: "2026-03-14", valorProd: "1.500,00", saldo: "0,00",   restantes: "0"    },
-  { nro: 2,  consecutivo: "4700627021", linkColor: "#2563eb",  cliente: "Pedro Vinicius Oliveira Paiva",   clienteColor: "#374151", parcela: 5,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "105,00",  data: "2026-03-23", valorProd: "1.500,00", saldo: "0,00",   restantes: "0"    },
-  { nro: 3,  consecutivo: "4700627021", linkColor: "#2563eb",  cliente: "Pedro Vinicius Oliveira Paiva",   clienteColor: "#374151", parcela: 7,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "840,00",  data: "2026-03-25", valorProd: "1.500,00", saldo: "0,00",   restantes: "0"    },
-  { nro: 4,  consecutivo: "4700627022", linkColor: "#d97706",  cliente: "Kleiton Viana Gonçalves",         clienteColor: "#374151", parcela: 16, tipo: "Parcela", formaPgto: "Dinheiro", valor: "90,00",   data: "2026-04-06", valorProd: "900,00",   saldo: "420,00", restantes: "4,67" },
-  { nro: 5,  consecutivo: "4700627025", linkColor: "#2563eb",  cliente: "Bianca de Araujo Alves",          clienteColor: "#dc2626", parcela: 9,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "50,00",   data: "2026-03-30", valorProd: "500,00",   saldo: "0,00",   restantes: "0"    },
-  { nro: 6,  consecutivo: "4700627025", linkColor: "#2563eb",  cliente: "Bianca de Araujo Alves",          clienteColor: "#dc2626", parcela: 10, tipo: "Parcela", formaPgto: "Dinheiro", valor: "50,00",   data: "2026-03-31", valorProd: "500,00",   saldo: "0,00",   restantes: "0"    },
-  { nro: 7,  consecutivo: "4700627025", linkColor: "#2563eb",  cliente: "Bianca de Araujo Alves",          clienteColor: "#dc2626", parcela: 15, tipo: "Parcela", formaPgto: "Dinheiro", valor: "50,00",   data: "2026-04-06", valorProd: "500,00",   saldo: "0,00",   restantes: "0"    },
-  { nro: 8,  consecutivo: "4700627025", linkColor: "#2563eb",  cliente: "Bianca de Araujo Alves",          clienteColor: "#dc2626", parcela: 17, tipo: "Parcela", formaPgto: "Dinheiro", valor: "100,00",  data: "2026-04-08", valorProd: "500,00",   saldo: "0,00",   restantes: "0"    },
-  { nro: 9,  consecutivo: "4700627026", linkColor: "#dc2626",  cliente: "Andreia de Jesus Costa Araújo",   clienteColor: "#dc2626", parcela: 1,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "60,00",   data: "2026-03-16", valorProd: "600,00",   saldo: "0,00",   restantes: "0"    },
-  { nro: 10, consecutivo: "4700627026", linkColor: "#dc2626",  cliente: "Andreia de Jesus Costa Araújo",   clienteColor: "#dc2626", parcela: 2,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "60,00",   data: "2026-03-18", valorProd: "600,00",   saldo: "0,00",   restantes: "0"    },
-  { nro: 11, consecutivo: "4700627026", linkColor: "#dc2626",  cliente: "Andreia de Jesus Costa Araújo",   clienteColor: "#dc2626", parcela: 3,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "300,00",  data: "2026-03-23", valorProd: "600,00",   saldo: "0,00",   restantes: "0"    },
-  { nro: 12, consecutivo: "4700627026", linkColor: "#dc2626",  cliente: "Andreia de Jesus Costa Araújo",   clienteColor: "#dc2626", parcela: 5,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "60,00",   data: "2026-03-25", valorProd: "600,00",   saldo: "0,00",   restantes: "0"    },
-  { nro: 13, consecutivo: "4700627027", linkColor: "#2563eb",  cliente: "Antônio Leite Neto",               clienteColor: "#374151", parcela: 3,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "80,00",   data: "2026-03-20", valorProd: "800,00",   saldo: "750,00", restantes: "12,5" },
-  { nro: 14, consecutivo: "4700627031", linkColor: "#dc2626",  cliente: "Carlos Henrique Souza Lima",       clienteColor: "#dc2626", parcela: 4,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "65,00",   data: "2026-03-22", valorProd: "650,00",   saldo: "590,00", restantes: "11"   },
-  { nro: 15, consecutivo: "4700627044", linkColor: "#2563eb",  cliente: "Fernanda Cristina Moura",          clienteColor: "#374151", parcela: 2,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "98,00",   data: "2026-03-28", valorProd: "980,00",   saldo: "840,00", restantes: "8"    },
-  { nro: 16, consecutivo: "4700627052", linkColor: "#d97706",  cliente: "José Wellington Pereira Nunes",    clienteColor: "#374151", parcela: 6,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "126,00",  data: "2026-04-02", valorProd: "1.260,00", saldo: "0,00",   restantes: "0"    },
-  { nro: 17, consecutivo: "4700627059", linkColor: "#2563eb",  cliente: "Patrick Michael Sá Menezes",       clienteColor: "#374151", parcela: 5,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "70,00",   data: "2026-04-05", valorProd: "700,00",   saldo: "600,00", restantes: "12"   },
-  { nro: 18, consecutivo: "4700627061", linkColor: "#dc2626",  cliente: "Luciana Aparecida Ferreira",       clienteColor: "#dc2626", parcela: 7,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "70,00",   data: "2026-04-07", valorProd: "700,00",   saldo: "630,00", restantes: "9"    },
-  { nro: 19, consecutivo: "4700627073", linkColor: "#2563eb",  cliente: "Marcos Vinícius Almeida Costa",    clienteColor: "#374151", parcela: 8,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "84,00",   data: "2026-04-09", valorProd: "840,00",   saldo: "350,00", restantes: "5"    },
-  { nro: 20, consecutivo: "4700627078", linkColor: "#2563eb",  cliente: "Mariana Beatriz Rabelo Barbosa",   clienteColor: "#374151", parcela: 1,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "140,00",  data: "2026-04-10", valorProd: "1.400,00", saldo: "0,00",   restantes: "0"    },
-  { nro: 21, consecutivo: "4700627081", linkColor: "#dc2626",  cliente: "Natalia Rodrigues da Silva",       clienteColor: "#dc2626", parcela: 3,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "56,00",   data: "2026-04-11", valorProd: "560,00",   saldo: "0,00",   restantes: "0"    },
-  { nro: 22, consecutivo: "4700627089", linkColor: "#2563eb",  cliente: "Geilson Eduardo Rosa de Jesus",    clienteColor: "#374151", parcela: 9,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "98,00",   data: "2026-04-12", valorProd: "980,00",   saldo: "700,00", restantes: "10"   },
-  { nro: 23, consecutivo: "4700627090", linkColor: "#2563eb",  cliente: "Daniele Texeira Lindoso",          clienteColor: "#374151", parcela: 4,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "140,00",  data: "2026-04-13", valorProd: "1.400,00", saldo: "900,00", restantes: "9"    },
-  { nro: 24, consecutivo: "4700627092", linkColor: "#d97706",  cliente: "Pedro Henrique Barbosa Santos",    clienteColor: "#374151", parcela: 2,  tipo: "Parcela", formaPgto: "Dinheiro", valor: "140,00",  data: "2026-04-14", valorProd: "1.400,00", saldo: "980,00", restantes: "10"   },
-];
+const liqPerPagData: { nro: number; consecutivo: string; linkColor: string; cliente: string; clienteColor: string; parcela: number; tipo: string; formaPgto: string; valor: string; data: string; valorProd: string; saldo: string; restantes: string }[] = [];
 
 function LiqPeriodosPagamentosContent() {
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
@@ -2611,24 +2416,7 @@ function LiqPeriodosPagamentosContent() {
 }
 
 // ── Vendas por Períodos data ───────────────────────────────────────────────────
-const vendasPeriodosData = [
-  { id:1,  vendedor:"Rota Cred Bank -", consec:"4700627058", freq:"DIARIO", valorAnt:0,    idVenta:"47006270158", cliente:"Aline Lima De Alencar",            tag:"Nuevo",               documento:"034.286.733-44", movel:"98982381007",    valorProd:800,  cuotas:14, pctInt:40, cuota:80,  fecha:"2026-03-25", cuotRest:0,    saldo:0    },
-  { id:2,  vendedor:"Rota Cred Bank -", consec:"4700627058", freq:"DIARIO", valorAnt:800,  idVenta:"47006270167", cliente:"Aline Lima De Alencar",            tag:"Renovado Igual Valor",documento:"034.286.733-44", movel:"98982381007",    valorProd:800,  cuotas:14, pctInt:40, cuota:80,  fecha:"2026-04-15", cuotRest:13,   saldo:1040 },
-  { id:3,  vendedor:"Rota Cred Bank -", consec:"4700627049", freq:"DIARIO", valorAnt:500,  idVenta:"47006270166", cliente:"Ana Flávia Pereira Moraes",        tag:"Renovado Igual Valor",documento:"61538186302",    movel:"98991571405",    valorProd:500,  cuotas:14, pctInt:40, cuota:50,  fecha:"2026-04-08", cuotRest:9,    saldo:450  },
-  { id:4,  vendedor:"Rota Cred Bank -", consec:"4700627049", freq:"DIARIO", valorAnt:0,    idVenta:"47006270149", cliente:"Ana Flávia Pereira Moraes",        tag:"Nuevo",               documento:"61538186302",    movel:"98991571405",    valorProd:500,  cuotas:14, pctInt:40, cuota:50,  fecha:"2026-03-24", cuotRest:0,    saldo:0    },
-  { id:5,  vendedor:"Rota Cred Bank -", consec:"4700627079", freq:"DIARIO", valorAnt:0,    idVenta:"47006270179", cliente:"Ana Paula Marques De Oliveira",    tag:"Nuevo",               documento:"85259284372",    movel:"98986248424",    valorProd:500,  cuotas:14, pctInt:40, cuota:60,  fecha:"2026-03-28", cuotRest:0,    saldo:0    },
-  { id:6,  vendedor:"Rota Cred Bank -", consec:"4700627026", freq:"DIARIO", valorAnt:600,  idVenta:"47006270181", cliente:"Andreia de Jesus Costa Araújo",    tag:"Renovado Mayor Valor",documento:"91633427315",    movel:"98985014328",    valorProd:800,  cuotas:14, pctInt:40, cuota:80,  fecha:"2026-03-30", cuotRest:0,    saldo:0    },
-  { id:7,  vendedor:"Rota Cred Bank -", consec:"4700627026", freq:"DIARIO", valorAnt:800,  idVenta:"47006270165", cliente:"Andreia de Jesus Costa Araújo",    tag:"Renovado Mayor Valor",documento:"91633427315",    movel:"98985014328",    valorProd:1500, cuotas:20, pctInt:40, cuota:105, fecha:"2026-04-08", cuotRest:7.62, saldo:800  },
-  { id:8,  vendedor:"Rota Cred Bank -", consec:"4700627026", freq:"DIARIO", valorAnt:0,    idVenta:"47006270126", cliente:"Andreia de Jesus Costa Araújo",    tag:"Nuevo",               documento:"91633427315",    movel:"98985014328",    valorProd:600,  cuotas:14, pctInt:40, cuota:60,  fecha:"2026-03-14", cuotRest:0,    saldo:0    },
-  { id:9,  vendedor:"Rota Cred Bank -", consec:"4700627024", freq:"DIARIO", valorAnt:0,    idVenta:"47006270224", cliente:"Anny Briane Pires Belfort",        tag:"Nuevo",               documento:"55983315617",    movel:"98985014328",    valorProd:800,  cuotas:14, pctInt:40, cuota:60,  fecha:"2026-03-28", cuotRest:2.62, saldo:210  },
-  { id:10, vendedor:"Rota Cred Bank -", consec:"4700627027", freq:"DIARIO", valorAnt:0,    idVenta:"47006270127", cliente:"Antônio Leite Neto",               tag:"Nuevo",               documento:"005234678355",   movel:"5598984643699",  valorProd:600,  cuotas:14, pctInt:40, cuota:60,  fecha:"2026-03-14", cuotRest:12.5, saldo:750  },
-  { id:11, vendedor:"Rota Cred Bank -", consec:"4700627025", freq:"DIARIO", valorAnt:0,    idVenta:"47006270125", cliente:"Bianca de Araújo Alves",           tag:"Nuevo",               documento:"60974118397",    movel:"9988330893",     valorProd:500,  cuotas:14, pctInt:40, cuota:50,  fecha:"2026-03-13", cuotRest:0,    saldo:0    },
-  { id:12, vendedor:"Rota Cred Bank -", consec:"4700627025", freq:"DIARIO", valorAnt:500,  idVenta:"47006270170", cliente:"Bianca de Araújo Alves",           tag:"Renovado Menor Valor",documento:"60974118397",    movel:"9988330893",     valorProd:300,  cuotas:14, pctInt:40, cuota:30,  fecha:"2026-04-16", cuotRest:14,   saldo:420  },
-  { id:13, vendedor:"Rota Cred Bank -", consec:"4700627023", freq:"DIARIO", valorAnt:0,    idVenta:"47006270123", cliente:"Elaira Kisley Conceição Lopes",    tag:"Nuevo",               documento:"88899900011",    movel:"98986543210",    valorProd:540,  cuotas:14, pctInt:40, cuota:54,  fecha:"2026-03-20", cuotRest:9,    saldo:540  },
-  { id:14, vendedor:"Rota Cred Bank -", consec:"4700627031", freq:"DIARIO", valorAnt:0,    idVenta:"47006270131", cliente:"Carlos Henrique Souza Lima",       tag:"Nuevo",               documento:"11122233344",    movel:"98982345678",    valorProd:650,  cuotas:14, pctInt:40, cuota:65,  fecha:"2026-03-22", cuotRest:11,   saldo:590  },
-  { id:15, vendedor:"Rota Cred Bank -", consec:"4700627044", freq:"DIARIO", valorAnt:0,    idVenta:"47006270144", cliente:"Fernanda Cristina Moura",          tag:"Nuevo",               documento:"22233344455",    movel:"98985678901",    valorProd:980,  cuotas:14, pctInt:40, cuota:98,  fecha:"2026-03-28", cuotRest:8,    saldo:840  },
-  { id:16, vendedor:"Rota Cred Bank -", consec:"4700627073", freq:"SEMANAL", valorAnt:500, idVenta:"47006270173", cliente:"Marcos Vinícius Almeida Costa",    tag:"Renovado Mayor Valor",documento:"33344455566",    movel:"98984321100",    valorProd:840,  cuotas:14, pctInt:40, cuota:84,  fecha:"2026-04-09", cuotRest:5,    saldo:350  },
-];
+const vendasPeriodosData: { id: number; vendedor: string; consec: string; freq: string; valorAnt: number; idVenta: string; cliente: string; tag: string; documento: string; movel: string; valorProd: number; cuotas: number; pctInt: number; cuota: number; fecha: string; cuotRest: number; saldo: number }[] = [];
 
 function VendasPorPeriodosContent() {
   const tdV = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
@@ -2749,24 +2537,7 @@ interface LiqPerClienteRow {
   cuotas: number; cuoPag: number; cuoFalt: number; saldo: number; int: number;
   valorProd: number; vrCuota: number; visitas: number; freq: string;
 }
-const liqPerClientesData: LiqPerClienteRow[] = [
-  { id:1,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-25", consec:"4700627058", status:"Cancelado", cancelDate:"2026-04-15", cliente:"Aline Lima De Alencar",           idVenta:"4700627058", movel:"98982381007",   direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:1120, vrCuota:80,  visitas:15, freq:"DIARIO" },
-  { id:2,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-15", consec:"4700627058", status:"Activo",    cancelDate:"",           cliente:"Aline Lima De Alencar",           idVenta:"4700627067", movel:"98982381007",   direc:"",                                        cuotas:14.0, cuoPag:1.0,  cuoFalt:13.0, saldo:1040, int:40, valorProd:1120, vrCuota:80,  visitas:3,  freq:"DIARIO" },
-  { id:3,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-24", consec:"4700627049", status:"Cancelado", cancelDate:"2026-04-08", cliente:"Ana Flávia Pereira Moraes",       idVenta:"4700627049", movel:"98991571405",   direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:700,  vrCuota:50,  visitas:16, freq:"DIARIO" },
-  { id:4,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-08", consec:"4700627049", status:"Activo",    cancelDate:"",           cliente:"Ana Flávia Pereira Moraes",       idVenta:"4700627066", movel:"98991571405",   direc:"",                                        cuotas:14.0, cuoPag:5.0,  cuoFalt:9.0,  saldo:450,  int:40, valorProd:700,  vrCuota:50,  visitas:4,  freq:"DIARIO" },
-  { id:5,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-28", consec:"4700627079", status:"Cancelado", cancelDate:"2026-06-25", cliente:"Ana Paula Marques De Oliveira",   idVenta:"4700627079", movel:"98986248424",   direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:700,  vrCuota:50,  visitas:13, freq:"DIARIO" },
-  { id:6,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-14", consec:"4700627026", status:"Cancelado", cancelDate:"2026-01-30", cliente:"Andreia de Jesus Costa Araújo",   idVenta:"4700627026", movel:"98985014328",   direc:"Rua gama lobon número 10 quarto",         cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:840,  vrCuota:60,  visitas:20, freq:"DIARIO" },
-  { id:7,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-30", consec:"4700627026", status:"Cancelado", cancelDate:"",           cliente:"Andreia de Jesus Costa Araújo",   idVenta:"4700627081", movel:"98985014328",   direc:"Rua gama lobon número 10 quarto",         cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:1120, vrCuota:80,  visitas:12, freq:"DIARIO" },
-  { id:8,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-08", consec:"4700627026", status:"Activo",    cancelDate:"",           cliente:"Andreia de Jesus Costa Araújo",   idVenta:"4700627065", movel:"98985014328",   direc:"Rua gama lobon número 10 quarto",         cuotas:20.0, cuoPag:12.4, cuoFalt:7.6,  saldo:800,  int:40, valorProd:2100, vrCuota:105, visitas:4,  freq:"DIARIO" },
-  { id:9,  vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-13", consec:"4700627024", status:"Activo",    cancelDate:"",           cliente:"Anny Briane Pires Belfort",       idVenta:"4700627024", movel:"559883156178",  direc:"",                                        cuotas:14.0, cuoPag:11.4, cuoFalt:2.6,  saldo:210,  int:40, valorProd:1120, vrCuota:80,  visitas:22, freq:"DIARIO" },
-  { id:10, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-14", consec:"4700627027", status:"Activo",    cancelDate:"",           cliente:"Antônio Leite Neto",              idVenta:"4700627027", movel:"5598984643699", direc:"Rua frei Lauro número 7 conj. COHAB",     cuotas:14.0, cuoPag:1.5,  cuoFalt:12.5, saldo:750,  int:40, valorProd:840,  vrCuota:60,  visitas:20, freq:"DIARIO" },
-  { id:11, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-13", consec:"4700627025", status:"Cancelado", cancelDate:"2026-04-11", cliente:"Bianca de Araújo Alves",          idVenta:"4700627025", movel:"9898330893",    direc:"",                                        cuotas:14.0, cuoPag:14.0, cuoFalt:0.0,  saldo:0,    int:40, valorProd:700,  vrCuota:50,  visitas:21, freq:"DIARIO" },
-  { id:12, vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-16", consec:"4700627025", status:"Activo",    cancelDate:"",           cliente:"Bianca de Araújo Alves",          idVenta:"4700627070", movel:"9898330893",    direc:"",                                        cuotas:14.0, cuoPag:0.0,  cuoFalt:14.0, saldo:420,  int:40, valorProd:420,  vrCuota:30,  visitas:2,  freq:"DIARIO" },
-  { id:13, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-20", consec:"4700627023", status:"Activo",    cancelDate:"",           cliente:"Elaira Kisley Conceição Lopes",   idVenta:"4700627023", movel:"98986543210",   direc:"",                                        cuotas:14.0, cuoPag:5.0,  cuoFalt:9.0,  saldo:540,  int:40, valorProd:840,  vrCuota:60,  visitas:9,  freq:"DIARIO" },
-  { id:14, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-22", consec:"4700627031", status:"Activo",    cancelDate:"",           cliente:"Carlos Henrique Souza Lima",      idVenta:"4700627031", movel:"98982345678",   direc:"",                                        cuotas:14.0, cuoPag:3.0,  cuoFalt:11.0, saldo:590,  int:40, valorProd:910,  vrCuota:65,  visitas:11, freq:"DIARIO" },
-  { id:15, vendedor:"Rota Cred Bank -", fechaVenta:"2026-03-28", consec:"4700627044", status:"Activo",    cancelDate:"",           cliente:"Fernanda Cristina Moura",         idVenta:"4700627044", movel:"98985678901",   direc:"",                                        cuotas:14.0, cuoPag:6.0,  cuoFalt:8.0,  saldo:840,  int:40, valorProd:1372, vrCuota:98,  visitas:8,  freq:"DIARIO" },
-  { id:16, vendedor:"Rota Cred Bank -", fechaVenta:"2026-04-09", consec:"4700627073", status:"Activo",    cancelDate:"",           cliente:"Marcos Vinícius Almeida Costa",   idVenta:"4700627073", movel:"98984321100",   direc:"",                                        cuotas:14.0, cuoPag:9.0,  cuoFalt:5.0,  saldo:350,  int:40, valorProd:1176, vrCuota:84,  visitas:5,  freq:"SEMANAL" },
-];
+const liqPerClientesData: LiqPerClienteRow[] = [];
 
 function gerarHistorico(r: LiqPerClienteRow) {
   const entries: { nro: number; tipo: string; valor: number; fecha: string; obs: string }[] = [];
@@ -3296,19 +3067,7 @@ function ResumoContent() {
 }
 
 // ── Consolidados ──────────────────────────────────────────────────────────────
-const consolidadosData = [
-  {
-    pais: "MARANHÃO", cidade: "SAO LUIS", fechaCaja: "2026-04-17",
-    vendedor: "Rota Cred Bank -", totalClientes: 20,
-    cajaInicial: 2979.00, recaudo: 200.00, ventas: 0.00,
-    egresos: 0.00, ingresos: 0.00,
-    cajaFinal: 3179.00, cartera: 12460.00, acumulado: 0.00, juros: 0.00,
-    carteiraInicial: 12660.00, recebimentoPrevisto: 1245.00,
-    pagos: 1, noPagos: 0, efetivo: 200.00, transferencia: 0.00,
-    retiradaCaixa: 0.00, sancao: 0.00,
-    clientesIniciais: 20, clientesNovos: 0, clientesRenovados: 0, clientesCancelados: 0,
-  },
-];
+const consolidadosData: { pais: string; cidade: string; fechaCaja: string; vendedor: string; totalClientes: number; cajaInicial: number; recaudo: number; ventas: number; egresos: number; ingresos: number; cajaFinal: number; cartera: number; acumulado: number; juros: number; carteiraInicial: number; recebimentoPrevisto: number; pagos: number; noPagos: number; efetivo: number; transferencia: number; retiradaCaixa: number; sancao: number; clientesIniciais: number; clientesNovos: number; clientesRenovados: number; clientesCancelados: number }[] = [];
 
 function CoinIcon() {
   return (
@@ -3327,6 +3086,14 @@ function ConsolidadosContent() {
   const fmtR     = (v: number) => `R$ ${fmt(v)}`;
 
   const r = consolidadosData[0];
+
+  if (!r) return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 12, color: "#9ca3af" }}>
+      <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+      <p style={{ fontSize: 14, fontWeight: 600, color: "#6b7280" }}>Sem dados de consolidação</p>
+      <p style={{ fontSize: 12 }}>Selecione um cobrador e uma data para carregar o consolidado</p>
+    </div>
+  );
 
   const handlePDF = () => {
     const dateFmtLocal = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
@@ -5165,18 +4932,7 @@ export default function DashboardPage() {
   const [gcDocMap, setGcDocMap] = useState<Record<number, GcDoc[]>>({});
   const [gcHistRowId, setGcHistRowId] = useState<number | null>(null);
   const [gcDeleteId, setGcDeleteId] = useState<number | null>(null);
-  const [gcRows] = useState([
-    { id: 1,  rota: "Rota Cred Bank A", consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "012.345.678-90", nasc: "1985-03-12", tel1: "91633427315",   tel2: "98985014328",  endereco: "Rua Gama Lobo, nº 10, Quarto, Centro – São Luís – MA",        obs: "Cliente pontual. Prefere contato pelo WhatsApp.", freq: "Diário", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
-    { id: 2,  rota: "Rota Cred Bank A", consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    nasc: "1990-07-22", tel1: "5599883457671",  tel2: "03270213301",  endereco: "Av. Colares Moreira, nº 500, Renascença II – São Luís – MA",  obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
-    { id: 3,  rota: "Rota Cred Bank A", consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    doc: "852592284372",   nasc: "1988-11-05", tel1: "989896248424",   tel2: "852592284372", endereco: "Rua do Sol, nº 35, Centro – São Luís – MA",                   obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
-    { id: 4,  rota: "Rota Cred Bank A", consec: "4700627078", nome: "Mariana Beatriz Rabelo Barbosa",   doc: "073.604.383-73", nasc: "1992-04-18", tel1: "98985721207",    tel2: "985721297",    endereco: "Rua da Paz, nº 120, Cohama – São Luís – MA",                  obs: "Prefere receber boletos por e-mail.", freq: "Diário", valorEmp: 1000, jurosPorc: 40, total: 1400, parcelas: 14, atrasadas: 4,  pagas: 0,  rest: 14, sancao: 0, visitas: 4,  valorParc: 100, saldo: 1400 },
-    { id: 5,  rota: "Rota Cred Bank B", consec: "4700627077", nome: "Natanael Dos Santos Mendes",       doc: "11971269742",    nasc: "1986-09-30", tel1: "5511971269742",  tel2: "11971269742",  endereco: "Rua Jaime Tavares, nº 67, Tirirical – São Luís – MA",         obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 13, pagas: 1,  rest: 13, sancao: 0, visitas: 14, valorParc: 50,  saldo: 650  },
-    { id: 6,  rota: "Rota Cred Bank B", consec: "4700627058", nome: "Aline Lima De Alencar",            doc: "034.286.733-44", nasc: "1994-02-14", tel1: "034286733440",   tel2: "98856332110",  endereco: "Rua das Flores, nº 22, Cohajap – São Luís – MA",              obs: "", freq: "Diário", valorEmp: 800,  jurosPorc: 40, total: 1120, parcelas: 14, atrasadas: 2,  pagas: 4,  rest: 10, sancao: 0, visitas: 6,  valorParc: 80,  saldo: 570  },
-    { id: 7,  rota: "Rota Cred Bank B", consec: "4700627049", nome: "Ana Flávia Pereira Moraes",        doc: "61538186302",    nasc: "1991-06-08", tel1: "61538186302",    tel2: "98745612300",  endereco: "Trav. São Francisco, nº 8, Vila Embratel – São Luís – MA",    obs: "", freq: "Diário", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 0,  pagas: 0,  rest: 14, sancao: 0, visitas: 0,  valorParc: 50,  saldo: 700  },
-    { id: 8,  rota: "Rota Norte SL",    consec: "4700627027", nome: "Antônio Leite Neto",               doc: "00523478355",    nasc: "1980-12-25", tel1: "00523478355",    tel2: "99612345678",  endereco: "Rua Santa Clara, nº 100, Centro – São Luís – MA",             obs: "Pagamento sempre em dia.", freq: "Diário", valorEmp: 600,  jurosPorc: 25, total: 750,  parcelas: 15, atrasadas: 3,  pagas: 2,  rest: 13, sancao: 0, visitas: 5,  valorParc: 50,  saldo: 500  },
-    { id: 9,  rota: "Rota Norte SL",    consec: "4700627025", nome: "Bianca de Araújo Alves",           doc: "60974118397",    nasc: "1997-03-19", tel1: "60974118397",    tel2: "98765432101",  endereco: "Rua Oswaldo Cruz, nº 45, Bequimão – São Luís – MA",            obs: "", freq: "Diário", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
-    { id: 10, rota: "Rota Norte SL",    consec: "4700627022", nome: "Klailton Viana Gonçalves",         doc: "88899900011",    nasc: "1983-08-11", tel1: "88899900011",    tel2: "98700112233",  endereco: "Av. dos Holandeses, nº 300, Calhau – São Luís – MA",          obs: "", freq: "Diário", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
-  ]);
+  const [gcRows] = useState<{ id: number; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number }[]>([]);
   const gcFiltered = useMemo(() => gcRows.filter(r =>
     (gcRota === "-- Todas --" || r.rota === gcRota) &&
     (!gcNome || r.nome.toLowerCase().includes(gcNome.toLowerCase())) &&
@@ -7650,7 +7406,13 @@ export default function DashboardPage() {
                   <p className="text-xs text-gray-400">Clique em qualquer rota na árvore à esquerda</p>
                 </div>
               ) : (() => {
-                const rd = rotasFakeData[selectedRota] ?? rotasFakeData["Rota Cred Bank A"];
+                const rd = rotasFakeData[selectedRota];
+                if (!rd) return (
+                  <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
+                    <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                    <p className="text-sm font-medium text-gray-500">Sem dados para esta rota</p>
+                  </div>
+                );
                 const fmtV = (n: number) => `$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
                 const pct = rd.recebPrevisto > 0 ? Math.round((rd.recebAtual / rd.recebPrevisto) * 100) : 0;
                 const pctBg = pct >= 80 ? "#dbeafe" : pct >= 50 ? "#fef3c7" : "#fee2e2";
