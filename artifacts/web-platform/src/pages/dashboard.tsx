@@ -1813,7 +1813,16 @@ function ClientesContent() {
                     </span>
                   </td>
 
-                  <td style={tdC("right", { fontWeight: 700, color: "#111827" })}>{fmt(r.valorVenda)}</td>
+                  <td style={tdC("right")}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+                      <span style={{ fontWeight: 700, color: "#111827" }}>{fmt(r.valorVenda)}</span>
+                      {r.dataEmprestimo && (
+                        <span style={{ fontSize: 10, color: "#6b7280" }}>
+                          {r.dataEmprestimo.slice(0, 10).split("-").reverse().join("/")}
+                        </span>
+                      )}
+                    </div>
+                  </td>
 
                   <td style={tdC("center")}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center" }}>
