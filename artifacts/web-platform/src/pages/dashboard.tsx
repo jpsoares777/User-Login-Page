@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, type ChangeEvent } from "react";
 import * as XLSX from "xlsx";
 import { useLocation } from "wouter";
 import jsPDF from "jspdf";
@@ -5021,6 +5021,53 @@ export default function DashboardPage() {
       { cidade: "FLORIANO",    vendedor: "Rota Floriano A",         data: "2025-12-15", ativa: false },
     ],
   };
+  const [importedRotaData, setImportedRotaData] = useState<Record<string, RotaFakeData>>({});
+  const [importedRotas, setImportedRotas] = useState<Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]>>({});
+  const [importResumoStatus, setImportResumoStatus] = useState<{ msg: string; ok: boolean } | null>(null);
+  const importResumoRef = useRef<HTMLInputElement>(null);
+
+  const handleImportResumo = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!importResumoRef.current) return;
+    importResumoRef.current.value = "";
+    if (!file) return;
+    setImportResumoStatus({ msg: "Importando...", ok: true });
+    try {
+      const form = new FormData();
+      form.append("arquivo", file);
+      const res = await fetch(`${import.meta.env.BASE_URL}api/importar-resumo`, { method: "POST", body: form });
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        setImportResumoStatus({ msg: json.error ?? "Erro ao importar", ok: false });
+        return;
+      }
+      const { data } = json as { data: RotaFakeData & { vendedor: string } };
+      const vendedor = (data as unknown as Record<string, string>).vendedor ?? file.name.replace(/\.xlsx$/i, "");
+      setImportedRotaData(prev => ({ ...prev, [vendedor]: data }));
+      setImportedRotas(prev => {
+        const estadoKey = selectedEstado || "IMPORTADO";
+        const existing = prev[estadoKey] ?? [];
+        if (existing.some(r => r.vendedor === vendedor)) return prev;
+        return {
+          ...prev,
+          [estadoKey]: [...existing, {
+            cidade: (estadosData[selectedEstado]?.[0]?.cidade) ?? estadoKey,
+            vendedor,
+            data: data.dataInicio ?? new Date().toISOString().slice(0, 10),
+            ativa: !data.dataFechamento,
+          }],
+        };
+      });
+      setSelectedRota(vendedor);
+      setHasSearched(true);
+      setCollapsedEstadoMain(false);
+      setImportResumoStatus({ msg: `Importado: ${vendedor}`, ok: true });
+      setTimeout(() => setImportResumoStatus(null), 4000);
+    } catch {
+      setImportResumoStatus({ msg: "Erro de conexão com o servidor", ok: false });
+    }
+  };
+
   const [configOpen, setConfigOpen] = useState(false);
   const [listaClientesOpen, setListaClientesOpen] = useState(false);
   const [caixaAberto, setCaixaAberto] = useState(true);
@@ -5259,9 +5306,17 @@ export default function DashboardPage() {
         });
       }
     }
+    for (const [estado, rotas] of Object.entries(importedRotas)) {
+      if (!merged[estado]) merged[estado] = [];
+      for (const rota of rotas) {
+        if (!merged[estado].some(r => r.vendedor === rota.vendedor)) {
+          merged[estado].push(rota);
+        }
+      }
+    }
     return merged;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rotasAPI]);
+  }, [rotasAPI, importedRotas]);
   const todasRotas = useMemo(() => {
     const fromEstados = Object.values(estadosData).flat().map(i => i.vendedor);
     return Array.from(new Set(fromEstados));
@@ -7828,11 +7883,12 @@ export default function DashboardPage() {
                   <p className="text-xs text-gray-400">Clique em qualquer rota na árvore à esquerda</p>
                 </div>
               ) : (() => {
-                const rd = rotasFakeData[selectedRota];
+                const rd = importedRotaData[selectedRota] ?? rotasFakeData[selectedRota];
                 if (!rd) return (
                   <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
                     <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
                     <p className="text-sm font-medium text-gray-500">Sem dados para esta rota</p>
+                    <p className="text-xs text-gray-400">Importe o arquivo XLS da rota no painel direito</p>
                   </div>
                 );
                 const fmtV = (n: number) => `$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
@@ -7938,7 +7994,19 @@ export default function DashboardPage() {
             <div style={{ width:210, flexShrink:0, background:"#f1f5f9", display:"flex",
                 flexDirection:"column", gap:7, padding:"12px 10px", overflowY:"auto",
                 borderLeft:"1px solid #e2e8f0" }}>
+              <input ref={importResumoRef} type="file" accept=".xlsx,.xls" style={{ display:"none" }} onChange={handleImportResumo} />
+              {importResumoStatus && (
+                <div style={{ padding:"8px 10px", borderRadius:6, fontSize:11, fontWeight:600,
+                  background: importResumoStatus.ok ? "#dcfce7" : "#fee2e2",
+                  color: importResumoStatus.ok ? "#15803d" : "#dc2626",
+                  border: `1px solid ${importResumoStatus.ok ? "#bbf7d0" : "#fca5a5"}`,
+                  wordBreak:"break-all", lineHeight:1.4 }}>
+                  {importResumoStatus.msg}
+                </div>
+              )}
               {([
+                { icon:<svg viewBox="0 0 24 24" style={{ width:16, height:16, fill:"#16a34a", flexShrink:0 }}><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>,
+                  label:"Importar XLS Rota", accent:"#16a34a", onClick: () => importResumoRef.current?.click() },
                 { icon:<img src="/icon-config.png" alt="" style={{ width:16, height:16, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)", flexShrink:0 }} />, label:"Configurações", accent:"#2d5474", onClick: () => setConfigOpen(true) },
                 { icon:<img src="/icon-relatorio6.png" alt="" style={{ width:16, height:16, flexShrink:0, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)" }} />, label:"Relatório Geral", accent:"#1d4ed8", onClick: () => setActiveMain("Consolidados") },
                 { icon:<img src="/icon-clientes3.png" alt="" style={{ width:16, height:16, flexShrink:0 }} />, label:"Lista Clientes", accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
