@@ -1891,7 +1891,6 @@ function ClientesContent() {
                       <span style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "2px 7px" }}>{c.consec}</span>
                       <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 3, padding: "2px 7px" }}>{c.freq}</span>
                     </div>
-                    <div style={{ fontSize: 12, color: "#6b7280" }}>Doc: <b style={{ color: "#374151" }}>{c.documento}</b> &nbsp;|&nbsp; Nasc.: <b style={{ color: "#374151" }}>{c.dataNasc}</b></div>
                   </div>
                 </div>
 
