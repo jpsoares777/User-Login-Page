@@ -5399,27 +5399,36 @@ export default function DashboardPage() {
           return;
         }
         const { data } = json as { data: RotaFakeData & { vendedor: string } };
-        const vendedor = (data as unknown as Record<string, string>).vendedor ?? importarArquivo.name.replace(/\.xlsx?$/i, "");
-        setImportedRotaData(prev => ({ ...prev, [vendedor]: data }));
+        // Use the selected rota from the dropdown; fall back to file's vendedor field
+        const rotaKey = importarVendedor || (data as unknown as Record<string, string>).vendedor || importarArquivo.name.replace(/\.xlsx?$/i, "");
+        setImportedRotaData(prev => ({ ...prev, [rotaKey]: data }));
         setImportedRotas(prev => {
           const estadoKey = selectedEstado || "IMPORTADO";
           const existing = prev[estadoKey] ?? [];
-          if (existing.some(r => r.vendedor === vendedor)) return prev;
+          if (existing.some(r => r.vendedor === rotaKey)) {
+            // update existing entry
+            return {
+              ...prev,
+              [estadoKey]: existing.map(r => r.vendedor === rotaKey
+                ? { ...r, data: data.dataInicio ?? r.data, ativa: !data.dataFechamento }
+                : r),
+            };
+          }
           return {
             ...prev,
             [estadoKey]: [...existing, {
               cidade: estadosData[selectedEstado]?.[0]?.cidade ?? estadoKey,
-              vendedor,
+              vendedor: rotaKey,
               data: data.dataInicio ?? new Date().toISOString().slice(0, 10),
               ativa: !data.dataFechamento,
             }],
           };
         });
-        setImportarStatus({ ok: true, msg: `Resumen importado: ${vendedor} — abrindo Relatório Diário...` });
+        setImportarStatus({ ok: true, msg: `Resumen importado para "${rotaKey}" — abrindo Relatório Diário...` });
         setImportarArquivo(null);
-        // Navigate to Relatório Diário with the imported rota
+        // Navigate to Relatório Diário with the selected rota
         setTimeout(() => {
-          setSelectedRota(vendedor);
+          setSelectedRota(rotaKey);
           setHasSearched(true);
           setCollapsedEstadoMain(false);
           setActiveMain("Liq. Diária");
