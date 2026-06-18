@@ -5195,7 +5195,7 @@ export default function DashboardPage() {
   const [gcDocMap, setGcDocMap] = useState<Record<number, GcDoc[]>>({});
   const [gcHistRowId, setGcHistRowId] = useState<number | null>(null);
   const [gcDeleteId, setGcDeleteId] = useState<number | null>(null);
-  const [gcRows] = useState([
+  const [gcRows, setGcRows] = useState([
     { id: 1,  rota: "Rota Cred Bank A", consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "012.345.678-90", nasc: "1985-03-12", tel1: "91633427315",   tel2: "98985014328",  endereco: "Rua Gama Lobo, nº 10, Quarto, Centro – São Luís – MA",        obs: "Cliente pontual. Prefere contato pelo WhatsApp.", freq: "Diário", dataEmprestimo: "2026-03-30", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
     { id: 2,  rota: "Rota Cred Bank A", consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    nasc: "1990-07-22", tel1: "5599883457671",  tel2: "03270213301",  endereco: "Av. Colares Moreira, nº 500, Renascença II – São Luís – MA",  obs: "", freq: "Diário", dataEmprestimo: "2026-05-01", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
     { id: 3,  rota: "Rota Cred Bank A", consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    doc: "852592284372",   nasc: "1988-11-05", tel1: "989896248424",   tel2: "852592284372", endereco: "Rua do Sol, nº 35, Centro – São Luís – MA",                   obs: "", freq: "Diário", dataEmprestimo: "2026-05-10", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
@@ -5469,6 +5469,34 @@ export default function DashboardPage() {
       const json = await res.json();
       if (!res.ok) { setImportarStatus({ ok: false, msg: json.error ?? "Erro ao importar." }); return; }
       setImportarStatus({ ok: true, msg: `${json.importados} cliente(s) importado(s) com sucesso!${json.erros?.length ? ` (${json.erros.length} erro(s))` : ""}` });
+      // Adiciona os clientes importados diretamente em Gerenciar Clientes
+      const maxId = gcRows.reduce((m, r) => Math.max(m, r.id), 0);
+      const newGcRows: GcRow[] = clientes.map((c, idx) => ({
+        id: maxId + idx + 1,
+        rota: importarVendedor,
+        consec: c.consecutivo || String(maxId + idx + 1),
+        nome: c.nome,
+        doc: "",
+        nasc: "",
+        tel1: c.telefone || "",
+        tel2: "",
+        endereco: c.endereco || "",
+        obs: "",
+        freq: "Diário",
+        dataEmprestimo: c.dataInicio || new Date().toISOString().slice(0, 10),
+        valorEmp: c.valorProduto,
+        jurosPorc: c.jurosPct || 40,
+        total: c.totalAPagar,
+        parcelas: c.numParcelas,
+        atrasadas: 0,
+        pagas: Math.round(c.parcelasPagas),
+        rest: Math.round(c.parcelasRestantes),
+        sancao: 0,
+        visitas: 0,
+        valorParc: c.valorParcela,
+        saldo: c.saldo,
+      }));
+      setGcRows(prev => [...prev, ...newGcRows]);
       setImportarArquivoClientes(null);
       setImportarPreviewClientes([]);
       setImportarVendedor("");
