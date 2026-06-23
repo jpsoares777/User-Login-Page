@@ -6197,7 +6197,7 @@ export default function DashboardPage() {
                       <select value={caixaRetiradaRota} onChange={e => setCaixaRetiradaRota(e.target.value)}
                         style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, color: caixaRetiradaRota ? "#334155" : "#94a3b8", background: "#f8fafc", outline: "none" }}>
                         <option value="">---Selecione a rota---</option>
-                        {rotasSample.map(r => <option key={r.id} value={r.nome}>{r.nome} — {r.vendedor}</option>)}
+                        {todasRotas.map(r => <option key={r} value={r}>{r}</option>)}
                       </select>
                     </div>
                     <div style={{ marginBottom: 14 }}>
