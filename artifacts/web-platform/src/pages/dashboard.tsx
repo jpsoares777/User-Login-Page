@@ -6106,7 +6106,7 @@ export default function DashboardPage() {
         {activeMain === "Caixa Geral" ? (
           <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#f0f4f8" }}>
 
-            {/* ── Saldo + Retirada bar ── */}
+            {/* ── Saldo + Rota + Retirada bar ── */}
             <div className="shrink-0 flex items-center gap-4 px-5 py-3" style={{ background: "#fff", borderBottom: "1px solid #e2e8f0" }}>
               {/* Saldo do Caixa */}
               <div style={{ display: "flex", alignItems: "center", gap: 14, background: "#f0fdf4", border: "1.5px solid #bbf7d0", borderRadius: 10, padding: "10px 20px", boxShadow: "0 1px 6px rgba(22,163,74,0.1)" }}>
@@ -6121,10 +6121,20 @@ export default function DashboardPage() {
                 </div>
               </div>
 
+              {/* Seletor de Rota */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <label style={{ fontSize: 10, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Rota</label>
+                <select value={caixaRetiradaRota} onChange={e => setCaixaRetiradaRota(e.target.value)}
+                  style={{ height: 34, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, color: caixaRetiradaRota ? "#334155" : "#94a3b8", background: "#f8fafc", outline: "none", minWidth: 200 }}>
+                  <option value="">-- Selecione a rota --</option>
+                  {todasRotas.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+
               <div style={{ flex: 1 }} />
 
               {/* Retirada de Caixa */}
-              <button onClick={() => { setCaixaRetiradaValor(""); setCaixaRetiradaObs(""); setCaixaRetiradaRota(""); setCaixaRetiradaOpen(true); }}
+              <button onClick={() => { setCaixaRetiradaValor(""); setCaixaRetiradaObs(""); setCaixaRetiradaOpen(true); }}
                 style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(220,38,38,0.35)" }}>
                 <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                 Retirada de Caixa
@@ -6191,14 +6201,6 @@ export default function DashboardPage() {
                     <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 16px", marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>Saldo atual do caixa</span>
                       <span style={{ fontSize: 16, fontWeight: 800, color: "#1e40af" }}>R$ {caixaSaldo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-                    </div>
-                    <div style={{ marginBottom: 14 }}>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Rota</label>
-                      <select value={caixaRetiradaRota} onChange={e => setCaixaRetiradaRota(e.target.value)}
-                        style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, color: caixaRetiradaRota ? "#334155" : "#94a3b8", background: "#f8fafc", outline: "none" }}>
-                        <option value="">---Selecione a rota---</option>
-                        {todasRotas.map(r => <option key={r} value={r}>{r}</option>)}
-                      </select>
                     </div>
                     <div style={{ marginBottom: 14 }}>
                       <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Valor da Retirada *</label>
