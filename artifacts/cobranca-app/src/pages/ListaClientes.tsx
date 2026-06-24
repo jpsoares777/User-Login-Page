@@ -1798,10 +1798,10 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   }
 
   const navTabs = [
-    { src: "/icons/icone-rota3.png", alt: "Rota" },
-    { src: "/icons/icone-emprestimo.png", alt: "Empréstimo" },
-    { src: "/icons/icone-gastos2.png", alt: "Gastos" },
-    { src: "/icons/icone-calendario.png", alt: "Calendário" },
+    { src: import.meta.env.BASE_URL + "icons/icone-rota3.png", alt: "Rota" },
+    { src: import.meta.env.BASE_URL + "icons/icone-emprestimo.png", alt: "Empréstimo" },
+    { src: import.meta.env.BASE_URL + "icons/icone-gastos2.png", alt: "Gastos" },
+    { src: import.meta.env.BASE_URL + "icons/icone-calendario.png", alt: "Calendário" },
   ];
 
   const tituloTela = ["Clientes", "Novo Empréstimo", "Gastos", "Calendário"][activeNav];
@@ -1901,9 +1901,9 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
           ) : (
             <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
               {[
-                { src: "/icons/icone-grafico.png", w: 26, filter: "none", onClick: () => setVerRelatorio(true) },
-                { src: "/icons/icone-contato.png", w: 24, filter: "brightness(0) invert(1)", onClick: () => setVerEmprestimentos(true) },
-                { src: "/icons/icone-menu.png", w: 22, filter: "brightness(0) invert(1)", onClick: () => setModal(modal === "menu" ? null : "menu") },
+                { src: import.meta.env.BASE_URL + "icons/icone-grafico.png", w: 26, filter: "none", onClick: () => setVerRelatorio(true) },
+                { src: import.meta.env.BASE_URL + "icons/icone-contato.png", w: 24, filter: "brightness(0) invert(1)", onClick: () => setVerEmprestimentos(true) },
+                { src: import.meta.env.BASE_URL + "icons/icone-menu.png", w: 22, filter: "brightness(0) invert(1)", onClick: () => setModal(modal === "menu" ? null : "menu") },
               ].map((ico, i) => (
                 <button key={i} onClick={ico.onClick} style={{
                   width: 36, height: 36, background: "rgba(255,255,255,0.08)",
