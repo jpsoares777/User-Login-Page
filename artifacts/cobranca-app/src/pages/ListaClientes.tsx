@@ -207,7 +207,7 @@ function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendam
                 <div onClick={e => { e.stopPropagation(); setClienteDetalhe(expandido ? null : clienteAtualizado); }} style={{ cursor: "pointer" }}>
                   {saldoApos <= 0 ? (
                     <div style={{ position: "relative", width: 38, height: 38, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <img src="/bloqueio.png" alt="Quitado" style={{ width: 34, height: 34, objectFit: "contain" }} />
+                      <img src={import.meta.env.BASE_URL + "bloqueio.png"} alt="Quitado" style={{ width: 34, height: 34, objectFit: "contain" }} />
                     </div>
                   ) : (
                     <PersonBadge status={computeStatus(c.parcelasPagas ?? 0, c.totalParcelas ?? 1, c.creditoStartTimestamp, c.frequencia, pagamentosRegistro[c.id] ?? [])} badge="plus" />
@@ -1276,15 +1276,15 @@ function EmprestimosOutrasDatas({ onAddAgendamento, onSelectCliente, novosClient
 type FlatItem = { id: number; label: string; color: string; icon: ReactNode; action?: "despesas" | "rendimentos"; isSair?: boolean; isRelatorio?: boolean; isEmprestimos?: boolean; isRenovacao?: boolean; isSincronizar?: boolean; isOutrasDatas?: boolean };
 
 const flatItems: FlatItem[] = [
-  { id: 1,  label: "Relatório diário",            color: "#2E7D32", icon: <img src="/icons/icone-relatorio-diario.png" width={24} height={24} style={{ objectFit: "contain" }} />, isRelatorio: true },
-  { id: 2,  label: "Novos empréstimos",           color: "#1565C0", icon: <img src="/icons/icone-novos-emprestimos.png" width={24} height={24} style={{ objectFit: "contain" }} />, isEmprestimos: true },
-  { id: 3,  label: "Gerenciamento de despesas",   color: "#388E3C", icon: <img src="/icons/icone-gerenc-despesas.png" width={24} height={24} style={{ objectFit: "contain" }} />, action: "despesas" },
-  { id: 4,  label: "Gerenciamento de rendimentos",color: "#1B5E20", icon: <img src="/icons/icone-gerenc-rendimentos.png" width={24} height={24} style={{ objectFit: "contain" }} />, action: "rendimentos" },
-  { id: 5,  label: "Renovação de empréstimos",    color: "#F57C00", icon: <img src="/icons/icone-renovacao.png" width={24} height={24} style={{ objectFit: "contain" }} />, isRenovacao: true },
-  { id: 6,  label: "Sincronizar",                 color: "#0288D1", icon: <img src="/icons/icone-sincronizar.png" width={24} height={24} style={{ objectFit: "contain" }} />, isSincronizar: true },
-  { id: 7,  label: "Empréstimo de outras datas",  color: "#5C6BC0", icon: <img src="/icons/icone-outras-datas.png" width={26} height={26} style={{ objectFit: "contain" }} />, isOutrasDatas: true },
-  { id: 9,  label: "Clientes ausentes",           color: "#6D4C41", icon: <img src="/icons/icone-clientes-ausentes.png" width={28} height={28} style={{ objectFit: "contain" }} /> },
-  { id: 12, label: "Sair",                        color: "#C62828", icon: <img src="/icons/icone-sair.png" width={24} height={24} style={{ objectFit: "contain" }} />, isSair: true },
+  { id: 1,  label: "Relatório diário",            color: "#2E7D32", icon: <img src={import.meta.env.BASE_URL + "icons/icone-relatorio-diario.png"} width={24} height={24} style={{ objectFit: "contain" }} />, isRelatorio: true },
+  { id: 2,  label: "Novos empréstimos",           color: "#1565C0", icon: <img src={import.meta.env.BASE_URL + "icons/icone-novos-emprestimos.png"} width={24} height={24} style={{ objectFit: "contain" }} />, isEmprestimos: true },
+  { id: 3,  label: "Gerenciamento de despesas",   color: "#388E3C", icon: <img src={import.meta.env.BASE_URL + "icons/icone-gerenc-despesas.png"} width={24} height={24} style={{ objectFit: "contain" }} />, action: "despesas" },
+  { id: 4,  label: "Gerenciamento de rendimentos",color: "#1B5E20", icon: <img src={import.meta.env.BASE_URL + "icons/icone-gerenc-rendimentos.png"} width={24} height={24} style={{ objectFit: "contain" }} />, action: "rendimentos" },
+  { id: 5,  label: "Renovação de empréstimos",    color: "#F57C00", icon: <img src={import.meta.env.BASE_URL + "icons/icone-renovacao.png"} width={24} height={24} style={{ objectFit: "contain" }} />, isRenovacao: true },
+  { id: 6,  label: "Sincronizar",                 color: "#0288D1", icon: <img src={import.meta.env.BASE_URL + "icons/icone-sincronizar.png"} width={24} height={24} style={{ objectFit: "contain" }} />, isSincronizar: true },
+  { id: 7,  label: "Empréstimo de outras datas",  color: "#5C6BC0", icon: <img src={import.meta.env.BASE_URL + "icons/icone-outras-datas.png"} width={26} height={26} style={{ objectFit: "contain" }} />, isOutrasDatas: true },
+  { id: 9,  label: "Clientes ausentes",           color: "#6D4C41", icon: <img src={import.meta.env.BASE_URL + "icons/icone-clientes-ausentes.png"} width={28} height={28} style={{ objectFit: "contain" }} /> },
+  { id: 12, label: "Sair",                        color: "#C62828", icon: <img src={import.meta.env.BASE_URL + "icons/icone-sair.png"} width={24} height={24} style={{ objectFit: "contain" }} />, isSair: true },
 ];
 
 function ClientesAusentes({ ausentes, onReativar, onAddAgendamento, onSelectCliente, clientesBase = clientesData, pagamentosRegistro = {} }: { ausentes: number[]; onReativar: (id: number) => void; onAddAgendamento: (a: Agendamento) => void; onSelectCliente: (c: ClienteItem) => void; clientesBase?: typeof clientesData; pagamentosRegistro?: Record<number, Pagamento[]> }) {
@@ -1887,7 +1887,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                 }}>
                   {salvoSinc
                     ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="4,12 9,17 20,7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    : <img src="/icons/icone-salvar.png" width={20} height={20} alt="Salvar" style={{ objectFit: "contain" }} />
+                    : <img src={import.meta.env.BASE_URL + "icons/icone-salvar.png"} width={20} height={20} alt="Salvar" style={{ objectFit: "contain" }} />
                   }
                 </button>
               )}

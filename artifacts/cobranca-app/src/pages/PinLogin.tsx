@@ -26,7 +26,7 @@ function Footer() {
 function Logo() {
   return (
     <img
-      src="/logo_pin.png"
+      src={import.meta.env.BASE_URL + "logo_pin.png"}
       alt="Logo"
       style={{ width: "78%", maxWidth: 360, height: "auto", objectFit: "contain" }}
       onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
