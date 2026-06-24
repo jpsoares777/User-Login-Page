@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/cobranca/"
+title = "App do Cobrador"
+version = "1.0.0"
+id = "artifacts/cobranca-app"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/cobranca/" ]
+localPort = 18470
+
+[services.development]
+run = "pnpm --filter @workspace/cobranca-app run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/cobranca-app", "run", "build" ]
+publicDir = "artifacts/cobranca-app/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18470"
+BASE_PATH = "/cobranca/"
