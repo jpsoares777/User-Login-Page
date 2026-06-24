@@ -1,0 +1,1 @@
+- [Cobrador app — integração e ícones](cobrador-integracao.md) — ícones exigem import.meta.env.BASE_URL (JSX e objetos JS); sincronização com API ainda pendente.
