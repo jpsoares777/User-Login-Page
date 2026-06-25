@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment, type ReactNode } from "react";
 import { loadDB, saveDB, getTodayStr } from "../lib/storage";
-import { postPagamentoAPI, postMovimentoCaixaAPI } from "../lib/api";
+import { postPagamentoAPI, postMovimentoCaixaAPI, getSaldoInicial } from "../lib/api";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ParcelaCliente } from "./ParcelaCliente";
 import { CadastroCliente } from "./CadastroCliente";
@@ -1495,7 +1495,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   });
   const [caixaInicial, setCaixaInicial] = useState<number>(() => {
     const db = loadDB();
-    return db?.caixaInicial ?? 3000;
+    return db?.caixaInicial ?? getSaldoInicial();
   });
   const [clienteParaAusentar, setClienteParaAusentar] = useState<ClienteItem | null>(null);
   const [salvoSinc, setSalvoSinc] = useState(false);

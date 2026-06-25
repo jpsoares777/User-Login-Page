@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { loginPorCodigo, setCobradorId, setRotaSessao } from "../lib/api";
+import { loginPorCodigo, setCobradorId, setRotaSessao, setSaldoInicial } from "../lib/api";
 
 const GRAD_TOP = "#2d4f6b";
 const GRAD_MID = "#3A5F82";
@@ -52,6 +52,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
       const sessao = await loginPorCodigo(pin);
       setCobradorId(sessao.id);
       setRotaSessao(sessao.rota, sessao.cobradorNome);
+      setSaldoInicial(sessao.saldoInicial);
       onUnlock(sessao.id);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Código de acesso inválido";
