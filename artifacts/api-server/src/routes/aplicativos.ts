@@ -4,6 +4,27 @@ import { db, aplicativosTable } from "@workspace/db";
 
 const router: IRouter = Router();
 
+router.post("/aplicativos/login", async (req, res): Promise<void> => {
+  const { codigo } = req.body;
+  if (!codigo) { res.status(400).json({ error: "Código de acesso obrigatório" }); return; }
+
+  const [row] = await db
+    .select()
+    .from(aplicativosTable)
+    .where(eq(aplicativosTable.codigoAcesso, String(codigo)));
+
+  if (!row) { res.status(401).json({ error: "Código de acesso inválido" }); return; }
+  if (!row.ativo) { res.status(403).json({ error: "Acesso inativo. Contate o administrador." }); return; }
+
+  const hoje = new Date().toISOString().slice(0, 10);
+  if (row.vencimento < hoje) {
+    res.status(403).json({ error: `Acesso vencido em ${row.vencimento}. Contate o administrador.` });
+    return;
+  }
+
+  res.json({ id: row.id, rota: row.rota, cobradorNome: row.cobradorNome, vencimento: row.vencimento });
+});
+
 router.get("/aplicativos", async (req, res): Promise<void> => {
   const { rota, nome, codigo } = req.query;
   let rows = await db.select().from(aplicativosTable).orderBy(aplicativosTable.id);

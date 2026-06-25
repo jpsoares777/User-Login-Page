@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { fetchCobradores, type CobradorAPI, setCobradorId } from "../lib/api";
+import { loginPorCodigo, setCobradorId, setRotaSessao } from "../lib/api";
 
-const PIN_CORRETO = "10600";
 const GRAD_TOP = "#2d4f6b";
 const GRAD_MID = "#3A5F82";
 const GRAD_BOT = "#4A6F8E";
@@ -39,172 +38,38 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
-  const [etapa, setEtapa] = useState<"pin" | "cobrador">("pin");
-  const [cobradores, setCobradores] = useState<CobradorAPI[]>([]);
-  const [cobradorSelecionado, setCobradorSelecionado] = useState<number | null>(null);
-  const [carregandoCob, setCarregandoCob] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (etapa === "pin") inputRef.current?.focus();
-  }, [etapa]);
+    inputRef.current?.focus();
+  }, []);
 
-  const handleLogin = () => {
-    if (pin.length < 5) { setError("PIN deve ter 5 dígitos."); return; }
+  const handleLogin = async () => {
+    if (pin.length < 4) { setError("Digite seu código de acesso."); return; }
     setLoading(true);
-    setTimeout(async () => {
-      if (pin === PIN_CORRETO) {
-        setLoading(false);
-        setCarregandoCob(true);
-        const lista = await fetchCobradores();
-        setCobradores(lista);
-        setCarregandoCob(false);
-        if (lista.length === 1) {
-          setCobradorId(lista[0].id);
-          onUnlock(lista[0].id);
-        } else {
-          setEtapa("cobrador");
-        }
-      } else {
-        setShake(true);
-        setPin("");
-        setError("PIN incorreto. Tente novamente.");
-        setLoading(false);
-        setTimeout(() => {
-          setShake(false);
-          inputRef.current?.focus();
-        }, 500);
-      }
-    }, 120);
+    setError("");
+    try {
+      const sessao = await loginPorCodigo(pin);
+      setCobradorId(sessao.id);
+      setRotaSessao(sessao.rota, sessao.cobradorNome);
+      onUnlock(sessao.id);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Código de acesso inválido";
+      setShake(true);
+      setPin("");
+      setError(msg);
+      setLoading(false);
+      setTimeout(() => {
+        setShake(false);
+        inputRef.current?.focus();
+      }, 500);
+    }
   };
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleLogin();
   };
 
-  const handleConfirmarCobrador = () => {
-    if (!cobradorSelecionado) return;
-    setCobradorId(cobradorSelecionado);
-    onUnlock(cobradorSelecionado);
-  };
-
-  /* ── ETAPA: SELEÇÃO DE COBRADOR ────────────────────────────── */
-  if (etapa === "cobrador") {
-    return (
-      <div style={{
-        minHeight: "100dvh",
-        width: "100%",
-        background: GRADIENT,
-        fontFamily: "'Inter','Segoe UI',sans-serif",
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        userSelect: "none",
-      }}>
-        <div style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-          paddingBottom: 60,
-          gap: 32,
-        }}>
-          <Logo />
-
-          <div style={{ width: "min(80vw, 300px)", display: "flex", flexDirection: "column", gap: 16 }}>
-            <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: WHITE, textAlign: "center" }}>
-              Quem está cobrando hoje?
-            </p>
-
-            {carregandoCob ? (
-              <p style={{ margin: 0, fontSize: 13, color: WHITE70, textAlign: "center" }}>Carregando...</p>
-            ) : cobradores.length === 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <p style={{ margin: 0, fontSize: 13, color: WHITE70, textAlign: "center" }}>
-                  Sem cobradores cadastrados na plataforma.
-                </p>
-                <button
-                  onClick={() => onUnlock(0)}
-                  style={{
-                    width: "100%",
-                    background: WHITE,
-                    color: GRAD_TOP,
-                    border: "none",
-                    borderRadius: 50,
-                    paddingTop: 12,
-                    paddingBottom: 12,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  Entrar sem cobrador
-                </button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {cobradores.map(c => (
-                  <button
-                    key={c.id}
-                    onClick={() => setCobradorSelecionado(c.id)}
-                    style={{
-                      width: "100%",
-                      background: cobradorSelecionado === c.id ? WHITE : WHITE10,
-                      color: cobradorSelecionado === c.id ? GRAD_TOP : WHITE,
-                      border: `2px solid ${cobradorSelecionado === c.id ? WHITE : WHITE20}`,
-                      borderRadius: 10,
-                      paddingTop: 12,
-                      paddingBottom: 12,
-                      paddingLeft: 16,
-                      paddingRight: 16,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      textAlign: "left",
-                      transition: "all 0.15s",
-                    }}
-                  >
-                    {c.nome}
-                    {c.rota && (
-                      <span style={{ fontSize: 12, fontWeight: 400, marginLeft: 8, opacity: 0.7 }}>
-                        — Rota {c.rota}
-                      </span>
-                    )}
-                  </button>
-                ))}
-                <button
-                  onClick={handleConfirmarCobrador}
-                  disabled={!cobradorSelecionado}
-                  style={{
-                    marginTop: 8,
-                    width: "100%",
-                    background: cobradorSelecionado ? WHITE : WHITE40,
-                    color: GRAD_TOP,
-                    border: "none",
-                    borderRadius: 50,
-                    paddingTop: 12,
-                    paddingBottom: 12,
-                    fontSize: 15,
-                    fontWeight: 600,
-                    cursor: cobradorSelecionado ? "pointer" : "not-allowed",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  Confirmar
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
-  /* ── TELA DE LOGIN ───────────────────────────────────────── */
   return (
     <div style={{
       minHeight: "100dvh",
@@ -242,17 +107,17 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
           gap: 12,
           animation: shake ? "shake 0.5s ease" : "none",
         }}>
-          {/* Campo de PIN */}
+          {/* Campo de código */}
           <div style={{ width: "100%" }}>
             <input
               ref={inputRef}
               type="password"
               inputMode="numeric"
               pattern="[0-9]*"
-              maxLength={5}
+              maxLength={10}
               value={pin}
               onChange={e => {
-                const v = e.target.value.replace(/[^0-9]/g, "").slice(0, 5);
+                const v = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
                 setPin(v);
                 setError("");
               }}
@@ -293,7 +158,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
           {/* Botão Entrar */}
           <button
             onClick={handleLogin}
-            disabled={loading || carregandoCob}
+            disabled={loading}
             style={{
               width: "100%",
               background: WHITE,
@@ -307,13 +172,13 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
               cursor: "pointer",
               boxShadow: "0 3px 6px rgba(0,0,0,0.12)",
               transition: "opacity 0.15s",
-              opacity: loading || carregandoCob ? 0.8 : 1,
+              opacity: loading ? 0.8 : 1,
             }}
           >
-            {loading || carregandoCob ? "..." : "Entrar"}
+            {loading ? "..." : "Entrar"}
           </button>
 
-          {/* Link Redefinir PIN */}
+          {/* Link Redefinir */}
           <button
             onClick={() => { setPin(""); setError(""); inputRef.current?.focus(); }}
             style={{
@@ -326,7 +191,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
               padding: 0,
             }}
           >
-            Redefinir PIN
+            Limpar
           </button>
         </div>
       </div>

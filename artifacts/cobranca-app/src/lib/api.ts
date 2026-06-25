@@ -25,6 +25,38 @@ export function setCobradorId(id: number) {
   localStorage.setItem("cobrador_id", String(id));
 }
 
+export function getRotaSessao(): { rota: string; cobradorNome: string } | null {
+  const rota = localStorage.getItem("sessao_rota");
+  const cobradorNome = localStorage.getItem("sessao_cobrador_nome");
+  if (!rota || !cobradorNome) return null;
+  return { rota, cobradorNome };
+}
+
+export function setRotaSessao(rota: string, cobradorNome: string) {
+  localStorage.setItem("sessao_rota", rota);
+  localStorage.setItem("sessao_cobrador_nome", cobradorNome);
+}
+
+export type AplicativoSessao = {
+  id: number;
+  rota: string;
+  cobradorNome: string;
+  vencimento: string;
+};
+
+export async function loginPorCodigo(codigo: string): Promise<AplicativoSessao> {
+  const res = await fetch(`${API_BASE}/aplicativos/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ codigo }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error ?? "Código de acesso inválido");
+  }
+  return res.json();
+}
+
 export type ClienteAPI = {
   id: number;
   nome: string;
