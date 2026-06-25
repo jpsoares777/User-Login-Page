@@ -287,8 +287,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
           <input
             ref={inputRef}
             type="password"
-            inputMode="numeric"
-            pattern="[0-9]*"
+            autoComplete="new-password"
             maxLength={10}
             value={codigo}
             onChange={e => { setCodigo(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setError(""); }}
