@@ -194,6 +194,46 @@ export async function postNovoClienteAPI(data: {
   }
 }
 
+export async function postFechamentoCaixaAPI(data: {
+  cobradorId: number;
+  dataFechamento: string;
+  saldoFinal: number;
+  dadosSnapshot: {
+    cod: number;
+    dataInicio: string;
+    dataFechamento: string;
+    ultimoAcesso: string;
+    clientesIniciais: number;
+    sincronizados: number;
+    clientesNovos: number;
+    renovados: number;
+    cancelados: number;
+    caixaInicial: number;
+    carteiraInicial: number;
+    recebPrevisto: number;
+    recebAtual: number;
+    pagos: number;
+    noPagos: number;
+    efetivo: number;
+    transferencia: number;
+    novosEmp: number;
+    juros: number;
+    rendimentos: number;
+    despesas: number;
+    retirada: number;
+    caixaFinal: number;
+    carteiraFinal: number;
+    sancao: number;
+  };
+}): Promise<boolean> {
+  try {
+    await apiPost("/caixa/fechar", data);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function postNovoEmprestimoAPI(data: {
   clienteId: number;
   cobradorId: number;

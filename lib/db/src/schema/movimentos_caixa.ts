@@ -22,6 +22,7 @@ export const caixaTable = pgTable("caixa", {
   saldoInicial: numeric("saldo_inicial", { precision: 12, scale: 2 }).notNull().default("0"),
   saldoFinal: numeric("saldo_final", { precision: 12, scale: 2 }),
   status: text("status").notNull().default("aberto"),
+  dadosSnapshot: text("dados_snapshot"),
   criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
   atualizadoEm: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

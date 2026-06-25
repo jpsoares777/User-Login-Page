@@ -5033,6 +5033,21 @@ export default function DashboardPage() {
   const [importedRotaData, setImportedRotaData] = useState<Record<string, RotaFakeData>>({});
   const [importedRotas, setImportedRotas] = useState<Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]>>({});
 
+  useEffect(() => {
+    if (!selectedRota) return;
+    fetch(`${import.meta.env.BASE_URL}api/caixa/fechamento-rota?rota=${encodeURIComponent(selectedRota)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then((data: RotaFakeData | null) => {
+        if (data) {
+          setImportedRotaData(prev => {
+            if (prev[selectedRota]) return prev;
+            return { ...prev, [selectedRota]: data };
+          });
+        }
+      })
+      .catch(() => {});
+  }, [selectedRota]);
+
   const [configOpen, setConfigOpen] = useState(false);
   const [listaClientesOpen, setListaClientesOpen] = useState(false);
   const [caixaAberto, setCaixaAberto] = useState(true);

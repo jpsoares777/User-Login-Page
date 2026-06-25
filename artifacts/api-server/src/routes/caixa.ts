@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
-import { eq, and } from "drizzle-orm";
-import { db, caixaTable, movimentosCaixaTable } from "@workspace/db";
+import { eq, and, desc } from "drizzle-orm";
+import { db, caixaTable, movimentosCaixaTable, aplicativosTable } from "@workspace/db";
 
 const router: IRouter = Router();
 
@@ -37,12 +37,65 @@ router.post("/caixa/abrir", async (req, res): Promise<void> => {
 });
 
 router.post("/caixa/fechar", async (req, res): Promise<void> => {
-  const { cobradorId, dataFechamento, saldoFinal } = req.body;
+  const { cobradorId, dataFechamento, saldoFinal, dadosSnapshot } = req.body;
   if (!cobradorId || !dataFechamento) { res.status(400).json({ error: "cobradorId e dataFechamento são obrigatórios" }); return; }
-  const [caixa] = await db.update(caixaTable).set({ status: "fechado", dataFechamento, saldoFinal: String(saldoFinal ?? 0) })
-    .where(and(eq(caixaTable.cobradorId, Number(cobradorId)), eq(caixaTable.status, "aberto"))).returning();
-  if (!caixa) { res.status(404).json({ error: "Nenhum caixa aberto encontrado" }); return; }
+
+  const snapshotJson = dadosSnapshot ? JSON.stringify(dadosSnapshot) : null;
+
+  const [existing] = await db.select().from(caixaTable).where(
+    and(eq(caixaTable.cobradorId, Number(cobradorId)), eq(caixaTable.status, "aberto"))
+  );
+
+  let caixa;
+  if (existing) {
+    [caixa] = await db.update(caixaTable)
+      .set({ status: "fechado", dataFechamento, saldoFinal: String(saldoFinal ?? 0), dadosSnapshot: snapshotJson })
+      .where(and(eq(caixaTable.cobradorId, Number(cobradorId)), eq(caixaTable.status, "aberto")))
+      .returning();
+  } else {
+    const hoje = new Date();
+    const dataAbertura = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
+    [caixa] = await db.insert(caixaTable).values({
+      cobradorId: Number(cobradorId),
+      dataAbertura,
+      dataFechamento,
+      saldoInicial: String(dadosSnapshot?.caixaInicial ?? 0),
+      saldoFinal: String(saldoFinal ?? 0),
+      status: "fechado",
+      dadosSnapshot: snapshotJson,
+    }).returning();
+  }
+
+  if (!caixa) { res.status(500).json({ error: "Erro ao fechar caixa" }); return; }
   res.json(caixa);
+});
+
+router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
+  const { rota } = req.query;
+  if (!rota) { res.status(400).json({ error: "rota é obrigatória" }); return; }
+
+  const [aplicativo] = await db.select().from(aplicativosTable)
+    .where(eq(aplicativosTable.rota, String(rota)));
+
+  if (!aplicativo) { res.json(null); return; }
+
+  const [caixa] = await db.select().from(caixaTable)
+    .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "fechado")))
+    .orderBy(desc(caixaTable.dataFechamento))
+    .limit(1);
+
+  if (!caixa || !caixa.dadosSnapshot) { res.json(null); return; }
+
+  try {
+    const snapshot = JSON.parse(caixa.dadosSnapshot);
+    res.json({
+      ...snapshot,
+      dataFechamento: caixa.dataFechamento,
+      dataInicio: snapshot.dataInicio ?? caixa.dataAbertura,
+    });
+  } catch {
+    res.json(null);
+  }
 });
 
 router.get("/caixa/movimentos", async (req, res): Promise<void> => {
@@ -54,14 +107,17 @@ router.get("/caixa/movimentos", async (req, res): Promise<void> => {
 });
 
 router.post("/caixa/movimentos", async (req, res): Promise<void> => {
-  const { cobradorId, tipo, conceito, valor, data, obs } = req.body;
-  if (!cobradorId || !tipo || !conceito || !valor || !data) {
-    res.status(400).json({ error: "Campos obrigatórios: cobradorId, tipo, conceito, valor, data" });
+  const { cobradorId, tipo, conceito, categoria, valor, data, obs, observacao } = req.body;
+  const conceitoFinal = conceito ?? categoria;
+  if (!cobradorId || !tipo || !conceitoFinal || !valor || !data) {
+    res.status(400).json({ error: "Campos obrigatórios: cobradorId, tipo, conceito/categoria, valor, data" });
     return;
   }
   const [movimento] = await db.insert(movimentosCaixaTable).values({
     cobradorId: Number(cobradorId),
-    tipo, conceito, obs,
+    tipo,
+    conceito: conceitoFinal,
+    obs: obs ?? observacao,
     valor: String(valor),
     data,
   }).returning();
