@@ -320,12 +320,6 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
 
         <Btn label={loading ? "..." : "Entrar"} onClick={handleTentarLogin} disabled={loading} />
 
-        <button onClick={() => { setTela("primeiro_acesso"); setError(""); }}
-          style={{ background: "none", border: "none", color: WHITE70, fontSize: 13,
-            textDecoration: "underline", cursor: "pointer", padding: 0 }}>
-          Primeiro acesso
-        </button>
-
         <button onClick={() => { if (inputRef.current) inputRef.current.value = ""; setError(""); inputRef.current?.focus(); }}
           style={{ background: "none", border: "none", color: WHITE40, fontSize: 12,
             cursor: "pointer", padding: 0 }}>
