@@ -22,7 +22,7 @@ router.post("/aplicativos/login", async (req, res): Promise<void> => {
     return;
   }
 
-  res.json({ id: row.id, rota: row.rota, cobradorNome: row.cobradorNome, vencimento: row.vencimento });
+  res.json({ id: row.id, rota: row.rota, cobradorNome: row.cobradorNome, vencimento: row.vencimento, saldoInicial: parseFloat(row.saldoInicial ?? "0") });
 });
 
 router.get("/aplicativos", async (req, res): Promise<void> => {

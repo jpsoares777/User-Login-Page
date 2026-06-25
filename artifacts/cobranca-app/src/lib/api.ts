@@ -37,11 +37,21 @@ export function setRotaSessao(rota: string, cobradorNome: string) {
   localStorage.setItem("sessao_cobrador_nome", cobradorNome);
 }
 
+export function getSaldoInicial(): number {
+  const v = localStorage.getItem("sessao_saldo_inicial");
+  return v ? parseFloat(v) : 0;
+}
+
+export function setSaldoInicial(valor: number) {
+  localStorage.setItem("sessao_saldo_inicial", String(valor));
+}
+
 export type AplicativoSessao = {
   id: number;
   rota: string;
   cobradorNome: string;
   vencimento: string;
+  saldoInicial: number;
 };
 
 export async function loginPorCodigo(codigo: string): Promise<AplicativoSessao> {
