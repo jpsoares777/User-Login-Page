@@ -8237,9 +8237,27 @@ export default function DashboardPage() {
       {caixaModalOpen && (
         <CaixaModal
           aberto={caixaAberto}
-          onConfirm={() => {
+          onConfirm={async () => {
             const agora = new Date().toLocaleString("pt-BR");
-            if (caixaAberto) { setDataFechamentoCaixa(agora); } else { setDataFechamentoCaixa(null); }
+            if (caixaAberto) {
+              setDataFechamentoCaixa(agora);
+              if (selectedRota) {
+                await fetch(`${import.meta.env.BASE_URL}api/caixa/fechar-admin`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ rota: selectedRota }),
+                }).catch(() => {});
+              }
+            } else {
+              setDataFechamentoCaixa(null);
+              if (selectedRota) {
+                await fetch(`${import.meta.env.BASE_URL}api/caixa/reabrir`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ rota: selectedRota }),
+                }).catch(() => {});
+              }
+            }
             setCaixaAberto(a => !a);
             setCaixaModalOpen(false);
           }}

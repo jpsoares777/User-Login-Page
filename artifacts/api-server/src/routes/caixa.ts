@@ -100,6 +100,30 @@ router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
   }
 });
 
+router.post("/caixa/fechar-admin", async (req, res): Promise<void> => {
+  const { rota } = req.body;
+  if (!rota) { res.status(400).json({ error: "rota é obrigatória" }); return; }
+
+  const [aplicativo] = await db.select().from(aplicativosTable)
+    .where(eq(aplicativosTable.rota, String(rota)));
+  if (!aplicativo) { res.status(404).json({ error: "Rota não encontrada" }); return; }
+
+  const hoje = new Date();
+  const dataFechamento = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
+
+  const [existing] = await db.select().from(caixaTable).where(
+    and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "aberto"))
+  );
+
+  if (existing) {
+    await db.update(caixaTable)
+      .set({ status: "fechado", dataFechamento })
+      .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "aberto")));
+  }
+
+  res.json({ ok: true });
+});
+
 router.get("/caixa/status-rota", async (req, res): Promise<void> => {
   res.setHeader("Cache-Control", "no-store");
   const { rota } = req.query;

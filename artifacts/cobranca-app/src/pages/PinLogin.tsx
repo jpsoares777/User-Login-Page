@@ -80,19 +80,14 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
       setRotaSessao(sessao.rota, sessao.cobradorNome);
       setSaldoInicial(sessao.saldoInicial);
 
-      const hoje = new Date();
-      const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
-      const dbLocal = loadDB();
-      if (dbLocal?.caixaFechadoData === hojeISO) {
-        const aberto = await getCaixaAberto(sessao.id);
-        if (!aberto) {
-          setCaixaPendId(sessao.id);
-          setTela("caixa_fechado");
-          setLoading(false);
-          return;
-        }
-        saveDB({ caixaFechadoData: undefined });
+      const aberto = await getCaixaAberto(sessao.id);
+      if (!aberto) {
+        setCaixaPendId(sessao.id);
+        setTela("caixa_fechado");
+        setLoading(false);
+        return;
       }
+      saveDB({ caixaFechadoData: undefined });
 
       onUnlock(sessao.id);
     } catch (err: unknown) {
