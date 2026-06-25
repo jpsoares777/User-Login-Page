@@ -100,6 +100,22 @@ router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
   }
 });
 
+router.get("/caixa/status-rota", async (req, res): Promise<void> => {
+  res.setHeader("Cache-Control", "no-store");
+  const { rota } = req.query;
+  if (!rota) { res.status(400).json({ error: "rota é obrigatória" }); return; }
+
+  const [aplicativo] = await db.select().from(aplicativosTable)
+    .where(eq(aplicativosTable.rota, String(rota)));
+  if (!aplicativo) { res.json({ aberto: false, cobradorId: null }); return; }
+
+  const [caixa] = await db.select().from(caixaTable).where(
+    and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "aberto"))
+  );
+
+  res.json({ aberto: !!caixa, cobradorId: aplicativo.id });
+});
+
 router.post("/caixa/reabrir", async (req, res): Promise<void> => {
   const { rota } = req.body;
   if (!rota) { res.status(400).json({ error: "rota é obrigatória" }); return; }
