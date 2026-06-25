@@ -84,6 +84,8 @@ router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
     .orderBy(desc(caixaTable.dataFechamento))
     .limit(1);
 
+  res.setHeader("Cache-Control", "no-store");
+
   if (!caixa || !caixa.dadosSnapshot) { res.json(null); return; }
 
   try {

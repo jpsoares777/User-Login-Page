@@ -5035,7 +5035,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!selectedRota) return;
-    fetch(`${import.meta.env.BASE_URL}api/caixa/fechamento-rota?rota=${encodeURIComponent(selectedRota)}`)
+    fetch(`${import.meta.env.BASE_URL}api/caixa/fechamento-rota?rota=${encodeURIComponent(selectedRota)}&_t=${Date.now()}`)
       .then(r => r.ok ? r.json() : null)
       .then((data: RotaFakeData | null) => {
         if (data) {
