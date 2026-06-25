@@ -48,11 +48,13 @@ function Btn({ label, onClick, disabled, danger }: { label: string; onClick: () 
 export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void }) {
   const [tela, setTela] = useState<Tela>("pin");
   const [codigo, setCodigo] = useState("");
-  const [nome, setNome] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef   = useRef<HTMLInputElement>(null); // PIN principal
+  const nomeRef    = useRef<HTMLInputElement>(null); // nome em primeiro_acesso
+  const codigoRef  = useRef<HTMLInputElement>(null); // codigo em primeiro_acesso
+  const nomeTrocaRef = useRef<HTMLInputElement>(null); // nome em dispositivo_diferente
 
   useEffect(() => {
     if (tela === "pin") inputRef.current?.focus();
@@ -99,32 +101,29 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
   };
 
   const handleRegistrar = async () => {
-    if (!nome.trim()) { setError("Informe seu nome completo."); return; }
-    if (codigo.length < 4) { setError("Informe o código de acesso."); return; }
+    const nome = (nomeRef.current?.value ?? "").trim();
+    const cod  = (codigoRef.current?.value ?? "").trim();
+    if (!nome) { setError("Informe seu nome completo."); return; }
+    if (cod.length < 4) { setError("Informe o código de acesso."); return; }
     setLoading(true); setError("");
     try {
-      await submitSolicitacao(codigo, nome.trim());
+      await submitSolicitacao(cod, nome);
       setTela("pendente");
     } catch (err: unknown) {
-      const e = err as Error;
-      setError(e.message ?? "Erro ao enviar. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
+      setError((err as Error).message ?? "Erro ao enviar. Tente novamente.");
+    } finally { setLoading(false); }
   };
 
   const handleSolicitarTroca = async () => {
-    if (!nome.trim()) { setError("Informe seu nome completo."); return; }
+    const nome = (nomeTrocaRef.current?.value ?? "").trim();
+    if (!nome) { setError("Informe seu nome completo."); return; }
     setLoading(true); setError("");
     try {
-      await submitSolicitacao(codigo, nome.trim());
+      await submitSolicitacao(codigo, nome);
       setTela("pendente");
     } catch (err: unknown) {
-      const e = err as Error;
-      setError(e.message ?? "Erro ao enviar. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
+      setError((err as Error).message ?? "Erro ao enviar. Tente novamente.");
+    } finally { setLoading(false); }
   };
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -175,7 +174,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
               Assim que for aprovado, você poderá entrar no aplicativo.
             </p>
           </div>
-          <button onClick={() => { setTela("pin"); setCodigo(""); setNome(""); setError(""); }}
+          <button onClick={() => { setTela("pin"); setCodigo(""); setError(""); }}
             style={{ background: "none", border: `1px solid ${WHITE40}`, color: WHITE70,
               fontSize: 13, cursor: "pointer", padding: "8px 20px", borderRadius: 50 }}>
             Voltar
@@ -208,10 +207,13 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
 
           <div style={{ width: "100%", marginTop: 8, display: "flex", flexDirection: "column", gap: 10 }}>
             <input
+              ref={nomeTrocaRef}
               type="text"
               placeholder="Seu nome completo"
-              value={nome}
-              onChange={e => { setNome(e.target.value); setError(""); }}
+              autoCapitalize="words"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
               style={{
                 width: "100%", boxSizing: "border-box", fontSize: 14, color: WHITE,
                 padding: "10px 14px", background: WHITE10, border: `1px solid ${WHITE20}`,
@@ -220,7 +222,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
             />
             {error && <p style={{ margin: 0, fontSize: 12, color: "#fca5a5", textAlign: "center" }}>{error}</p>}
             <Btn label={loading ? "Enviando..." : "Solicitar troca de dispositivo"} onClick={handleSolicitarTroca} disabled={loading} />
-            <button onClick={() => { setTela("pin"); setCodigo(""); setNome(""); setError(""); }}
+            <button onClick={() => { setTela("pin"); setCodigo(""); setError(""); }}
               style={{ background: "none", border: "none", color: WHITE70, fontSize: 13,
                 textDecoration: "underline", cursor: "pointer", padding: 0 }}>
               Voltar
@@ -244,10 +246,13 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
           </p>
 
           <input
+            ref={nomeRef}
             type="text"
             placeholder="Seu nome completo"
-            value={nome}
-            onChange={e => { setNome(e.target.value); setError(""); }}
+            autoCapitalize="words"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
             style={{
               width: "100%", boxSizing: "border-box", fontSize: 14, color: WHITE,
               padding: "10px 14px", background: WHITE10, border: `1px solid ${WHITE20}`,
@@ -255,10 +260,13 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
             }}
           />
           <input
-            type="text"
+            ref={codigoRef}
+            type="password"
+            inputMode="numeric"
+            autoComplete="new-password"
             placeholder="Código de acesso"
-            value={codigo}
-            onChange={e => { setCodigo(e.target.value.replace(/[^0-9]/g, "")); setError(""); }}
+            maxLength={10}
+            onKeyDown={e => { if (e.key === "Enter") handleRegistrar(); }}
             style={{
               width: "100%", boxSizing: "border-box", fontSize: 14, color: WHITE,
               padding: "10px 14px", background: WHITE10, border: `1px solid ${WHITE20}`,
@@ -267,7 +275,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
           />
           {error && <p style={{ margin: 0, fontSize: 12, color: "#fca5a5", textAlign: "center" }}>{error}</p>}
           <Btn label={loading ? "Enviando..." : "Solicitar acesso"} onClick={handleRegistrar} disabled={loading} />
-          <button onClick={() => { setTela("pin"); setNome(""); setError(""); }}
+          <button onClick={() => { setTela("pin"); setError(""); }}
             style={{ background: "none", border: "none", color: WHITE70, fontSize: 13,
               textDecoration: "underline", cursor: "pointer", padding: 0, textAlign: "center" }}>
             Voltar
