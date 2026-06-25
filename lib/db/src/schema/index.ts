@@ -5,3 +5,4 @@ export * from "./emprestimos";
 export * from "./pagamentos";
 export * from "./movimentos_caixa";
 export * from "./aplicativos";
+export * from "./solicitacoes";

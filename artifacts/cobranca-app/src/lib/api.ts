@@ -54,17 +54,46 @@ export type AplicativoSessao = {
   saldoInicial: number;
 };
 
+export function getOrCreateDeviceId(): string {
+  let id = localStorage.getItem("device_id");
+  if (!id) {
+    id = "dev-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem("device_id", id);
+  }
+  return id;
+}
+
 export async function loginPorCodigo(codigo: string): Promise<AplicativoSessao> {
+  const deviceId = getOrCreateDeviceId();
   const res = await fetch(`${API_BASE}/aplicativos/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ codigo }),
+    body: JSON.stringify({ codigo, deviceId }),
   });
+
+  if (res.status === 202) {
+    throw Object.assign(new Error("pendente"), { status: "pendente" });
+  }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? "Código de acesso inválido");
+    const err = new Error(body.error ?? "Código de acesso inválido");
+    if (body.status) Object.assign(err, { status: body.status });
+    throw err;
   }
   return res.json();
+}
+
+export async function submitSolicitacao(codigoAcesso: string, cobradorNome: string): Promise<void> {
+  const deviceId = getOrCreateDeviceId();
+  const res = await fetch(`${API_BASE}/solicitacoes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ codigoAcesso, cobradorNome, deviceId }),
+  });
+  if (!res.ok && res.status !== 200 && res.status !== 201) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error ?? "Erro ao enviar solicitação");
+  }
 }
 
 export type ClienteAPI = {

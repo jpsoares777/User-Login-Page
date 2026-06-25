@@ -13,6 +13,7 @@ export const aplicativosTable = pgTable("aplicativos", {
   estado:         text("estado"),
   cidade:         text("cidade"),
   ativo:          boolean("ativo").notNull().default(true),
+  deviceId:       text("device_id"),
   criadoEm:       timestamp("criado_em").defaultNow(),
 });
 

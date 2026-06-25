@@ -4,32 +4,45 @@ description: Estado da integração do app do cobrador com a API e lições sobr
 ---
 
 ## Regra: ícones no app do cobrador
-O app está em `/cobranca/` (base path). Todo `src` de imagem — seja em JSX (`src=`) ou em objetos JS (`src:`) — deve usar `import.meta.env.BASE_URL + "icons/foo.png"` em vez de `"/icons/foo.png"`. O regex de substituição precisa cobrir os dois padrões.
+O app está em `/cobranca/` (base path). Todo `src` de imagem — seja em JSX (`src=`) ou em objetos JS (`src:`) — deve usar `import.meta.env.BASE_URL + "icons/foo.png"` em vez de `"/icons/foo.png"`.
 
 **Why:** O Vite serve assets do `public/` com o prefixo do base path. Caminhos absolutos como `/icons/...` ignoram esse prefixo e quebram no ambiente Replit proxy.
 
-**How to apply:** Sempre que adicionar nova imagem do public no cobrador app, usar `import.meta.env.BASE_URL + "nome-do-arquivo.png"`.
+## Controle de primeiro acesso e dispositivo
 
-## Estado da integração (pendente para próxima sessão)
+### Tabela `solicitacoes_acesso`
+Criada via `lib/db/src/schema/solicitacoes.ts` e migrada com `pnpm run push-force`. Campos: `id, aplicativoId, codigoAcesso, cobradorNome, deviceId, tipo (primeiro_acesso|troca_dispositivo), status (pendente|aprovado|rejeitado), solicitadoEm, respondidoEm`.
 
-### Feito
-- App clonado e rodando em `/cobranca/`
-- `src/lib/api.ts` criado com funções: fetchCobradores, postPagamentoAPI, postMovimentoCaixaAPI
-- PinLogin atualizado: após PIN correto → busca cobradores da API → seleção de cobrador
-- ListaClientes recebe `cobradorId` como prop
-- Ao registrar pagamento → POST fire-and-forget para `/api/pagamentos`
-- Ao fechar caixa → POST despesas/rendimentos para `/api/caixa/movimentos`
-- Todos os ícones corrigidos com BASE_URL (18 referências no total)
+### Campo `deviceId` na tabela `aplicativos`
+Adicionado como `text("device_id")` nullable. Vinculado ao aprovar a solicitação.
 
-### Pendente (sincronização completa)
-- Carregar lista de clientes da API ao abrir o app (atualmente usa só localStorage)
-- Sincronização bidirecional: novos clientes/empréstimos criados no cobrador → POST para API
-- Verificar se o endpoint `/api/cobradores` retorna dados corretos para o seletor de cobrador
-- Testar fluxo completo: cobrador registra pagamento → aparece na Plataforma Web (Liq. Diária, Caixa Geral)
-- Possível: tela de "Sincronizar" já existente no menu pode ser usada para sync manual
+### Fluxo de login com device
+`POST /api/aplicativos/login` com `{ codigo, deviceId }`:
+- `deviceId` não vinculado + sem solicitação aprovada → 403 `registro_necessario`
+- `deviceId` não vinculado + solicitação pendente → 202 `pendente`
+- `deviceId` diferente do vinculado + sem pendente → 403 `dispositivo_diferente`
+- `deviceId` diferente do vinculado + pendente → 202 `pendente`
+- `deviceId` igual ao vinculado → 200 OK
 
-## Arquivos-chave
-- `artifacts/cobranca-app/src/lib/api.ts` — cliente de API
-- `artifacts/cobranca-app/src/pages/PinLogin.tsx` — seleção de cobrador
-- `artifacts/cobranca-app/src/pages/ListaClientes.tsx` — componente principal (2197 linhas)
-- `artifacts/cobranca-app/src/App.tsx` — passa cobradorId como prop
+### API de solicitações
+- `POST /api/solicitacoes` — cobrador envia nome + código + deviceId
+- `GET /api/solicitacoes` — admin lista todas
+- `PATCH /api/solicitacoes/:id/aprovar` — aprova + vincula deviceId no aplicativo
+- `PATCH /api/solicitacoes/:id/rejeitar`
+- `DELETE /api/aplicativos/:id/dispositivo` — desvincula dispositivo
+
+### PinLogin.tsx — telas
+- `pin`: entrada normal de código → tenta login
+- `primeiro_acesso`: nome + código → submitSolicitacao → vai para `pendente`
+- `pendente`: "Aguardando aprovação do administrador"
+- `dispositivo_diferente`: nome + botão "Solicitar troca de dispositivo"
+
+### Dashboard — Gerenciar Aplicativos
+Botão laranja de alerta aparece na coluna Opções somente quando há solicitação pendente para aquela linha (`gaSolicitacoes.find(s => s.aplicativoId === row.id && s.status === "pendente")`). Abre modal com detalhes + botões Aprovar/Rejeitar + Desvincular dispositivo.
+
+## Saldo inicial
+O login retorna `saldoInicial` do aplicativo. PinLogin salva em localStorage via `setSaldoInicial`. ListaClientes usa `getSaldoInicial()` como default de `caixaInicial` em vez do hardcoded 3000.
+
+## Pendente (próxima sessão)
+- Sincronização completa: carregar clientes/empréstimos da API ao abrir o app
+- Testar fluxo ponta a ponta: cobrador registra pagamento → aparece na Plataforma Web

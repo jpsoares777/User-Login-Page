@@ -5237,7 +5237,17 @@ export default function DashboardPage() {
       .finally(() => setGaCidadesLoading(false));
   }, [gaForm.estadoUF]);
   type GaRow = { id: number; rota: string; cobrador: string; codigo: string; vencimento: string; ativo: boolean; valorVendaMax: string | null; saldoInicial: string | null; estadoUF: string | null; cidade: string | null };
+  type GaSolicitacao = { id: number; aplicativoId: number | null; cobradorNome: string; deviceId: string; tipo: string; status: string; solicitadoEm: string | null };
   const [gaRows, setGaRows] = useState<GaRow[]>([]);
+  const [gaSolicitacoes, setGaSolicitacoes] = useState<GaSolicitacao[]>([]);
+  const [gaAprovId, setGaAprovId] = useState<number | null>(null);
+  const fetchSolicitacoes = async () => {
+    try {
+      const res = await fetch("/api/solicitacoes");
+      const data = await res.json();
+      setGaSolicitacoes(data);
+    } catch { /* silent */ }
+  };
   const [rotasAPI, setRotasAPI] = useState<{ rota: string; estadoUF: string | null; cidade: string | null; ativo: boolean }[]>([]);
   const fetchRotasAPI = () => {
     fetch('/api/aplicativos')
@@ -5302,7 +5312,7 @@ export default function DashboardPage() {
     } catch { /* silent */ } finally { setGaLoading(false); }
   };
 
-  useEffect(() => { if (activeMain === "Gerenciar Aplicativos") gaFetch(); }, [activeMain]);
+  useEffect(() => { if (activeMain === "Gerenciar Aplicativos") { gaFetch(); fetchSolicitacoes(); } }, [activeMain]);
 
   const excelSerialToDate = (val: unknown): string => {
     // Excel stores dates as days since 1900-01-01 (with leap-year bug)
@@ -7827,22 +7837,34 @@ export default function DashboardPage() {
                           </span>
                         </td>
                         <td style={{ padding: "7px 14px", textAlign: "center" }}>
-                          <div style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                            <button title="Editar"
-                              onClick={() => {
-                                setGaEditId(row.id);
-                                setGaForm({ empresa: row.rota, nome: row.cobrador, vencimento: row.vencimento, valorMax: row.valorVendaMax ?? "", saldoInicial: row.saldoInicial ?? "", codigoAcesso: row.codigo, confirmarCodigo: row.codigo, estado: row.ativo ? "Ativo" : "Inativo", estadoUF: row.estadoUF ?? "", cidade: row.cidade ?? "" });
-                                setGaModalOpen(true);
-                              }}
-                              style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                            </button>
-                            <button title="Excluir"
-                              onClick={() => setGaDeleteId(row.id)}
-                              style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                            </button>
-                          </div>
+                          {(() => {
+                            const pendente = gaSolicitacoes.find(s => s.aplicativoId === row.id && s.status === "pendente");
+                            return (
+                              <div style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                                {pendente && (
+                                  <button title="Solicitação pendente — clique para aprovar/rejeitar"
+                                    onClick={() => setGaAprovId(row.id)}
+                                    style={{ background: "#d97706", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                                    <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                                  </button>
+                                )}
+                                <button title="Editar"
+                                  onClick={() => {
+                                    setGaEditId(row.id);
+                                    setGaForm({ empresa: row.rota, nome: row.cobrador, vencimento: row.vencimento, valorMax: row.valorVendaMax ?? "", saldoInicial: row.saldoInicial ?? "", codigoAcesso: row.codigo, confirmarCodigo: row.codigo, estado: row.ativo ? "Ativo" : "Inativo", estadoUF: row.estadoUF ?? "", cidade: row.cidade ?? "" });
+                                    setGaModalOpen(true);
+                                  }}
+                                  style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                </button>
+                                <button title="Excluir"
+                                  onClick={() => setGaDeleteId(row.id)}
+                                  style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 5, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                </button>
+                              </div>
+                            );
+                          })()}
                         </td>
                       </tr>
                     );
@@ -8084,6 +8106,78 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* ── MODAL: Aprovação de Acesso ── */}
+      {gaAprovId !== null && (() => {
+        const row = gaRows.find(r => r.id === gaAprovId);
+        const pendentes = gaSolicitacoes.filter(s => s.aplicativoId === gaAprovId && s.status === "pendente");
+        if (!row || pendentes.length === 0) { setGaAprovId(null); return null; }
+        const sol = pendentes[0];
+        const tipoLabel = sol.tipo === "troca_dispositivo" ? "Troca de Dispositivo" : "Primeiro Acesso";
+        const dataStr = sol.solicitadoEm ? new Date(sol.solicitadoEm).toLocaleString("pt-BR") : "—";
+        const aprovar = async () => {
+          await fetch(`/api/solicitacoes/${sol.id}/aprovar`, { method: "PATCH" });
+          await fetchSolicitacoes(); await gaFetch(); setGaAprovId(null);
+        };
+        const rejeitar = async () => {
+          await fetch(`/api/solicitacoes/${sol.id}/rejeitar`, { method: "PATCH" });
+          await fetchSolicitacoes(); setGaAprovId(null);
+        };
+        const desvincular = async () => {
+          if (!confirm("Desvincular o dispositivo permitirá que outro celular seja registrado. Continuar?")) return;
+          await fetch(`/api/aplicativos/${gaAprovId}/dispositivo`, { method: "DELETE" });
+          await gaFetch(); setGaAprovId(null);
+        };
+        return (
+          <div style={{ position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center" }}>
+            <div style={{ background:"#fff",borderRadius:12,padding:"28px 32px",minWidth:380,maxWidth:480,boxShadow:"0 20px 60px rgba(0,0,0,0.3)" }}>
+              <div style={{ display:"flex",alignItems:"center",gap:10,marginBottom:20 }}>
+                <div style={{ width:36,height:36,borderRadius:"50%",background:"#fef3c7",display:"flex",alignItems:"center",justifyContent:"center" }}>
+                  <svg viewBox="0 0 24 24" style={{ width:20,height:20,fill:"#d97706" }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                </div>
+                <div>
+                  <p style={{ margin:0,fontSize:15,fontWeight:700,color:"#1e293b" }}>Solicitação de Acesso</p>
+                  <p style={{ margin:0,fontSize:12,color:"#64748b" }}>{tipoLabel}</p>
+                </div>
+              </div>
+              <div style={{ background:"#f8fafc",borderRadius:8,padding:"14px 16px",marginBottom:20,display:"flex",flexDirection:"column",gap:8 }}>
+                {[
+                  ["Rota", row.rota],
+                  ["Nome do cobrador", sol.cobradorNome],
+                  ["Código informado", sol.codigoAcesso],
+                  ["ID do dispositivo", sol.deviceId.slice(0, 20) + "…"],
+                  ["Data da solicitação", dataStr],
+                ].map(([label, val]) => (
+                  <div key={label} style={{ display:"flex",justifyContent:"space-between",gap:12 }}>
+                    <span style={{ fontSize:12,color:"#64748b",whiteSpace:"nowrap" }}>{label}</span>
+                    <span style={{ fontSize:12,fontWeight:600,color:"#1e293b",textAlign:"right",wordBreak:"break-all" }}>{val}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display:"flex",gap:8,marginBottom:10 }}>
+                <button onClick={aprovar}
+                  style={{ flex:1,background:"#16a34a",color:"#fff",border:"none",borderRadius:8,padding:"10px 0",fontSize:13,fontWeight:700,cursor:"pointer" }}>
+                  ✓ Aprovar
+                </button>
+                <button onClick={rejeitar}
+                  style={{ flex:1,background:"#dc2626",color:"#fff",border:"none",borderRadius:8,padding:"10px 0",fontSize:13,fontWeight:700,cursor:"pointer" }}>
+                  ✕ Rejeitar
+                </button>
+              </div>
+              <div style={{ display:"flex",gap:8 }}>
+                <button onClick={desvincular}
+                  style={{ flex:1,background:"#f1f5f9",color:"#475569",border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 0",fontSize:12,fontWeight:600,cursor:"pointer" }}>
+                  🔓 Desvincular dispositivo
+                </button>
+                <button onClick={() => setGaAprovId(null)}
+                  style={{ flex:1,background:"#f1f5f9",color:"#475569",border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 0",fontSize:12,fontWeight:600,cursor:"pointer" }}>
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── MODAL: Configurações ── */}
       {configOpen && <ConfiguracoesModal onClose={() => setConfigOpen(false)} />}

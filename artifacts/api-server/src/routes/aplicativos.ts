@@ -1,11 +1,11 @@
 import { Router, type IRouter } from "express";
-import { eq } from "drizzle-orm";
-import { db, aplicativosTable } from "@workspace/db";
+import { eq, and } from "drizzle-orm";
+import { db, aplicativosTable, solicitacoesTable } from "@workspace/db";
 
 const router: IRouter = Router();
 
 router.post("/aplicativos/login", async (req, res): Promise<void> => {
-  const { codigo } = req.body;
+  const { codigo, deviceId } = req.body;
   if (!codigo) { res.status(400).json({ error: "Código de acesso obrigatório" }); return; }
 
   const [row] = await db
@@ -20,6 +20,51 @@ router.post("/aplicativos/login", async (req, res): Promise<void> => {
   if (row.vencimento < hoje) {
     res.status(403).json({ error: `Acesso vencido em ${row.vencimento}. Contate o administrador.` });
     return;
+  }
+
+  if (deviceId) {
+    if (!row.deviceId) {
+      const [aprovada] = await db
+        .select()
+        .from(solicitacoesTable)
+        .where(and(
+          eq(solicitacoesTable.codigoAcesso, String(codigo)),
+          eq(solicitacoesTable.deviceId, String(deviceId)),
+          eq(solicitacoesTable.status, "aprovado"),
+        ));
+      if (!aprovada) {
+        const [pendente] = await db
+          .select()
+          .from(solicitacoesTable)
+          .where(and(
+            eq(solicitacoesTable.codigoAcesso, String(codigo)),
+            eq(solicitacoesTable.deviceId, String(deviceId)),
+            eq(solicitacoesTable.status, "pendente"),
+          ));
+        if (pendente) {
+          res.status(202).json({ status: "pendente" });
+        } else {
+          res.status(403).json({ status: "registro_necessario" });
+        }
+        return;
+      }
+      await db.update(aplicativosTable).set({ deviceId: String(deviceId) }).where(eq(aplicativosTable.id, row.id));
+    } else if (row.deviceId !== String(deviceId)) {
+      const [pendente] = await db
+        .select()
+        .from(solicitacoesTable)
+        .where(and(
+          eq(solicitacoesTable.codigoAcesso, String(codigo)),
+          eq(solicitacoesTable.deviceId, String(deviceId)),
+          eq(solicitacoesTable.status, "pendente"),
+        ));
+      if (pendente) {
+        res.status(202).json({ status: "pendente" });
+      } else {
+        res.status(403).json({ status: "dispositivo_diferente" });
+      }
+      return;
+    }
   }
 
   res.json({ id: row.id, rota: row.rota, cobradorNome: row.cobradorNome, vencimento: row.vencimento, saldoInicial: parseFloat(row.saldoInicial ?? "0") });
