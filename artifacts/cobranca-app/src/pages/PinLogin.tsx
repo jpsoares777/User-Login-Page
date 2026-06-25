@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { loginPorCodigo, setCobradorId, setRotaSessao, setSaldoInicial, submitSolicitacao } from "../lib/api";
+import { loginPorCodigo, setCobradorId, setRotaSessao, setSaldoInicial, submitSolicitacao, getCaixaAberto } from "../lib/api";
+import { loadDB, saveDB } from "../lib/storage";
 
 const GRAD_TOP = "#2d4f6b";
 const GRAD_MID = "#3A5F82";
@@ -11,7 +12,7 @@ const WHITE20 = "rgba(255,255,255,0.2)";
 const WHITE10 = "rgba(255,255,255,0.10)";
 const GRADIENT = `linear-gradient(180deg, ${GRAD_TOP} 0%, ${GRAD_MID} 55%, ${GRAD_BOT} 100%)`;
 
-type Tela = "pin" | "primeiro_acesso" | "pendente" | "dispositivo_diferente";
+type Tela = "pin" | "primeiro_acesso" | "pendente" | "dispositivo_diferente" | "caixa_fechado";
 
 function Logo() {
   return (
@@ -51,6 +52,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
+  const [caixaPendId, setCaixaPendId] = useState<number | null>(null);
   const inputRef   = useRef<HTMLInputElement>(null); // PIN principal
   const nomeRef    = useRef<HTMLInputElement>(null); // nome em primeiro_acesso
   const codigoRef  = useRef<HTMLInputElement>(null); // codigo em primeiro_acesso
@@ -77,6 +79,21 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
       setCobradorId(sessao.id);
       setRotaSessao(sessao.rota, sessao.cobradorNome);
       setSaldoInicial(sessao.saldoInicial);
+
+      const hoje = new Date();
+      const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
+      const dbLocal = loadDB();
+      if (dbLocal?.caixaFechadoData === hojeISO) {
+        const aberto = await getCaixaAberto(sessao.id);
+        if (!aberto) {
+          setCaixaPendId(sessao.id);
+          setTela("caixa_fechado");
+          setLoading(false);
+          return;
+        }
+        saveDB({ caixaFechadoData: undefined });
+      }
+
       onUnlock(sessao.id);
     } catch (err: unknown) {
       const e = err as Error & { status?: string };
@@ -151,6 +168,53 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
       `}</style>
     </div>
   );
+
+  /* ── TELA: CAIXA FECHADO ─────────────────────────────────── */
+  if (tela === "caixa_fechado") {
+    const handleRecarregar = async () => {
+      if (caixaPendId === null) return;
+      setLoading(true);
+      const aberto = await getCaixaAberto(caixaPendId);
+      setLoading(false);
+      if (aberto) {
+        saveDB({ caixaFechadoData: undefined });
+        onUnlock(caixaPendId);
+      } else {
+        setError("Caixa ainda fechado. Aguarde o administrador.");
+        setTimeout(() => setError(""), 3000);
+      }
+    };
+
+    return (
+      <Wrapper>
+        <div style={{ width: "min(80vw, 300px)", display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+          <div style={{
+            width: 72, height: 72, borderRadius: "50%", background: "rgba(239,68,68,0.18)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg viewBox="0 0 24 24" style={{ width: 40, height: 40, fill: "#fca5a5" }}>
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+            </svg>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <p style={{ margin: 0, fontSize: 17, fontWeight: 700, color: WHITE }}>
+              Caixa Fechado
+            </p>
+            <p style={{ margin: "12px 0 0", fontSize: 13, color: WHITE70, lineHeight: 1.6 }}>
+              O caixa foi encerrado hoje. Somente o administrador pode reabri-lo pelo painel web.
+            </p>
+          </div>
+          {error && <p style={{ margin: 0, fontSize: 12, color: "#fca5a5", textAlign: "center" }}>{error}</p>}
+          <Btn label={loading ? "Verificando..." : "Recarregar"} onClick={handleRecarregar} disabled={loading} />
+          <button onClick={() => { setTela("pin"); setError(""); }}
+            style={{ background: "none", border: `1px solid ${WHITE40}`, color: WHITE70,
+              fontSize: 13, cursor: "pointer", padding: "8px 20px", borderRadius: 50 }}>
+            Voltar
+          </button>
+        </div>
+      </Wrapper>
+    );
+  }
 
   /* ── TELA: PENDENTE ──────────────────────────────────────── */
   if (tela === "pendente") {

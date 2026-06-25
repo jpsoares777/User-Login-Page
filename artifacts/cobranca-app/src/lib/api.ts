@@ -194,6 +194,15 @@ export async function postNovoClienteAPI(data: {
   }
 }
 
+export async function getCaixaAberto(cobradorId: number): Promise<boolean> {
+  try {
+    const data = await apiGet<unknown>(`/caixa/aberto?cobradorId=${cobradorId}`);
+    return data !== null && data !== undefined;
+  } catch {
+    return false;
+  }
+}
+
 export async function postFechamentoCaixaAPI(data: {
   cobradorId: number;
   dataFechamento: string;

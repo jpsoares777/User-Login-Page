@@ -68,6 +68,7 @@ export interface AppDB {
   clientes: unknown[];
   caixaInicial: number;
   historicoCreditos: Record<number, unknown[]>;
+  caixaFechadoData?: string;
 }
 
 export function loadDB(): AppDB | null {

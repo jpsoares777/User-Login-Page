@@ -8093,7 +8093,19 @@ export default function DashboardPage() {
                   { icon: caixaAberto ? <img src="/icon-fechar-caixa.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} /> : <img src="/icon-abrir-caixa.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} />,
                     label: caixaAberto ? "Fechar Caixa" : "Abrir Caixa",
                     accent: caixaAberto ? "#dc2626" : "#16a34a",
-                    onClick: () => setCaixaModalOpen(true) },
+                    onClick: caixaAberto
+                      ? () => setCaixaModalOpen(true)
+                      : async () => {
+                          if (!selectedRota) return;
+                          try {
+                            const r = await fetch(`${import.meta.env.BASE_URL}api/caixa/reabrir`, {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ rota: selectedRota }),
+                            });
+                            if (r.ok) { setCaixaAberto(true); }
+                          } catch {}
+                        } },
                   { icon:<ClipboardCheck size={16} color="#7c3aed" strokeWidth={2} style={{ flexShrink:0 }} />, label:"Código Aprovações", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
                 ] as { icon:React.ReactNode; label:string; accent:string; onClick:()=>void }[]).map(item => (
                   <button key={item.label} onClick={item.onClick}

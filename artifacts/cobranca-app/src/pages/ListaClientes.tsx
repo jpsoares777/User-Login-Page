@@ -1671,6 +1671,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       }).then(ok => {
         if (!ok) console.error("[FechamentoCaixa] Falha ao enviar snapshot para a API");
       });
+      saveDB({ caixaFechadoData: dataStr2 });
     }
     setCaixaFechadoHoje(true);
     setClientes(clientesMerged);

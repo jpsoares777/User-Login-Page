@@ -100,6 +100,27 @@ router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
   }
 });
 
+router.post("/caixa/reabrir", async (req, res): Promise<void> => {
+  const { rota } = req.body;
+  if (!rota) { res.status(400).json({ error: "rota é obrigatória" }); return; }
+
+  const [aplicativo] = await db.select().from(aplicativosTable)
+    .where(eq(aplicativosTable.rota, String(rota)));
+  if (!aplicativo) { res.status(404).json({ error: "Rota não encontrada" }); return; }
+
+  const hoje = new Date();
+  const dataAbertura = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
+
+  const [caixa] = await db.insert(caixaTable).values({
+    cobradorId: aplicativo.id,
+    dataAbertura,
+    saldoInicial: "0",
+    status: "aberto",
+  }).returning();
+
+  res.status(201).json(caixa);
+});
+
 router.get("/caixa/movimentos", async (req, res): Promise<void> => {
   const { cobradorId, data } = req.query;
   if (!cobradorId) { res.status(400).json({ error: "cobradorId é obrigatório" }); return; }
