@@ -66,10 +66,12 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
   };
 
   const handleTentarLogin = async () => {
-    if (codigo.length < 4) { setError("Digite seu código de acesso."); return; }
+    const cod = (inputRef.current?.value ?? "").trim();
+    if (cod.length < 4) { setError("Digite seu código de acesso."); return; }
+    setCodigo(cod);
     setLoading(true); setError("");
     try {
-      const sessao = await loginPorCodigo(codigo);
+      const sessao = await loginPorCodigo(cod);
       setCobradorId(sessao.id);
       setRotaSessao(sessao.rota, sessao.cobradorNome);
       setSaldoInicial(sessao.saldoInicial);
@@ -287,10 +289,9 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
           <input
             ref={inputRef}
             type="password"
+            inputMode="numeric"
             autoComplete="new-password"
             maxLength={10}
-            value={codigo}
-            onChange={e => { setCodigo(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setError(""); }}
             onKeyDown={e => { if (e.key === "Enter") handleTentarLogin(); }}
             placeholder="•••••"
             style={{
@@ -317,7 +318,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
           Primeiro acesso
         </button>
 
-        <button onClick={() => { setCodigo(""); setError(""); inputRef.current?.focus(); }}
+        <button onClick={() => { if (inputRef.current) inputRef.current.value = ""; setError(""); inputRef.current?.focus(); }}
           style={{ background: "none", border: "none", color: WHITE40, fontSize: 12,
             cursor: "pointer", padding: 0 }}>
           Limpar
