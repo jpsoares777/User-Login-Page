@@ -5046,12 +5046,21 @@ export default function DashboardPage() {
         }
       })
       .catch(() => {});
-    fetch(`${import.meta.env.BASE_URL}api/caixa/status-rota?rota=${encodeURIComponent(selectedRota)}&_t=${Date.now()}`)
-      .then(r => r.ok ? r.json() : null)
-      .then((data: { aberto: boolean } | null) => {
-        if (data !== null) setCaixaAberto(data.aberto);
-      })
-      .catch(() => {});
+  }, [selectedRota]);
+
+  useEffect(() => {
+    if (!selectedRota) return;
+    const fetchStatus = () => {
+      fetch(`${import.meta.env.BASE_URL}api/caixa/status-rota?rota=${encodeURIComponent(selectedRota)}&_t=${Date.now()}`)
+        .then(r => r.ok ? r.json() : null)
+        .then((data: { aberto: boolean } | null) => {
+          if (data !== null) setCaixaAberto(data.aberto);
+        })
+        .catch(() => {});
+    };
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 20000);
+    return () => clearInterval(interval);
   }, [selectedRota]);
 
   const [configOpen, setConfigOpen] = useState(false);
