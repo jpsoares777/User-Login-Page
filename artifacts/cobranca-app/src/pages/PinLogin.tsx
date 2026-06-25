@@ -34,16 +34,23 @@ function Footer() {
   );
 }
 
-function Btn({ label, onClick, disabled, danger }: { label: string; onClick: () => void; disabled?: boolean; danger?: boolean }) {
+function Btn({ label, onClick, disabled }: { label: string; onClick: () => void; disabled?: boolean }) {
   return (
     <button onClick={onClick} disabled={disabled} style={{
-      width: "100%", background: danger ? "#ef4444" : WHITE,
-      color: danger ? WHITE : GRAD_TOP, border: "none", borderRadius: 50,
-      paddingTop: 12, paddingBottom: 12, fontSize: 15, fontWeight: 600, cursor: disabled ? "not-allowed" : "pointer",
-      boxShadow: "0 3px 6px rgba(0,0,0,0.12)", transition: "opacity 0.15s", opacity: disabled ? 0.7 : 1,
+      width: "100%", background: WHITE,
+      color: GRAD_TOP, border: "none", borderRadius: 50,
+      paddingTop: 12, paddingBottom: 12, fontSize: 15, fontWeight: 600,
+      cursor: disabled ? "not-allowed" : "pointer",
+      boxShadow: "0 3px 6px rgba(0,0,0,0.12)", opacity: disabled ? 0.7 : 1,
     }}>{label}</button>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  width: "100%", boxSizing: "border-box", fontSize: 15, color: WHITE,
+  padding: "11px 14px", background: WHITE10, border: `1px solid ${WHITE20}`,
+  borderRadius: 10, outline: "none", WebkitTextFillColor: WHITE,
+};
 
 export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void }) {
   const [tela, setTela] = useState<Tela>("pin");
@@ -66,63 +73,46 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
   };
 
   const handleTentarLogin = async () => {
-    if (codigo.length < 4) { setError("Digite seu código de acesso."); return; }
+    const cod = codigo.trim();
+    if (cod.length < 4) { setError("Digite seu código de acesso."); return; }
     setLoading(true); setError("");
     try {
-      const sessao = await loginPorCodigo(codigo);
+      const sessao = await loginPorCodigo(cod);
       setCobradorId(sessao.id);
       setRotaSessao(sessao.rota, sessao.cobradorNome);
       setSaldoInicial(sessao.saldoInicial);
       onUnlock(sessao.id);
     } catch (err: unknown) {
       const e = err as Error & { status?: string };
-      if (e.status === "pendente") {
-        setCodigo(codigo);
-        setTela("pendente");
-        setLoading(false);
-        return;
-      }
-      if (e.status === "registro_necessario") {
-        setTela("primeiro_acesso");
-        setLoading(false);
-        return;
-      }
-      if (e.status === "dispositivo_diferente") {
-        setTela("dispositivo_diferente");
-        setLoading(false);
-        return;
-      }
+      if (e.status === "pendente") { setTela("pendente"); setLoading(false); return; }
+      if (e.status === "registro_necessario") { setTela("primeiro_acesso"); setLoading(false); return; }
+      if (e.status === "dispositivo_diferente") { setTela("dispositivo_diferente"); setLoading(false); return; }
       triggerShake(e.message ?? "Código de acesso inválido");
     }
   };
 
   const handleRegistrar = async () => {
     if (!nome.trim()) { setError("Informe seu nome completo."); return; }
-    if (codigo.length < 4) { setError("Informe o código de acesso."); return; }
+    const cod = codigo.trim();
+    if (cod.length < 4) { setError("Informe o código de acesso."); return; }
     setLoading(true); setError("");
     try {
-      await submitSolicitacao(codigo, nome.trim());
+      await submitSolicitacao(cod, nome.trim());
       setTela("pendente");
     } catch (err: unknown) {
-      const e = err as Error;
-      setError(e.message ?? "Erro ao enviar. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
+      setError((err as Error).message ?? "Erro ao enviar. Tente novamente.");
+    } finally { setLoading(false); }
   };
 
   const handleSolicitarTroca = async () => {
     if (!nome.trim()) { setError("Informe seu nome completo."); return; }
     setLoading(true); setError("");
     try {
-      await submitSolicitacao(codigo, nome.trim());
+      await submitSolicitacao(codigo.trim(), nome.trim());
       setTela("pendente");
     } catch (err: unknown) {
-      const e = err as Error;
-      setError(e.message ?? "Erro ao enviar. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
+      setError((err as Error).message ?? "Erro ao enviar. Tente novamente.");
+    } finally { setLoading(false); }
   };
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -142,6 +132,7 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
       </div>
       <Footer />
       <style>{`
+        input { -webkit-tap-highlight-color: transparent; }
         input::placeholder { color: ${WHITE40}; opacity: 1; }
         @keyframes shake {
           0%,100%{transform:translateX(0)} 20%{transform:translateX(-12px)}
@@ -209,12 +200,11 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
               type="text"
               placeholder="Seu nome completo"
               value={nome}
+              autoCapitalize="words"
+              autoComplete="name"
+              autoCorrect="off"
               onChange={e => { setNome(e.target.value); setError(""); }}
-              style={{
-                width: "100%", boxSizing: "border-box", fontSize: 14, color: WHITE,
-                padding: "10px 14px", background: WHITE10, border: `1px solid ${WHITE20}`,
-                borderRadius: 10, outline: "none", WebkitTextFillColor: WHITE,
-              }}
+              style={inputStyle}
             />
             {error && <p style={{ margin: 0, fontSize: 12, color: "#fca5a5", textAlign: "center" }}>{error}</p>}
             <Btn label={loading ? "Enviando..." : "Solicitar troca de dispositivo"} onClick={handleSolicitarTroca} disabled={loading} />
@@ -243,25 +233,22 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
 
           <input
             type="text"
-            placeholder="Seu nome completo"
+            placeholder="Nome do cobrador"
             value={nome}
+            autoCapitalize="words"
+            autoComplete="name"
+            autoCorrect="off"
             onChange={e => { setNome(e.target.value); setError(""); }}
-            style={{
-              width: "100%", boxSizing: "border-box", fontSize: 14, color: WHITE,
-              padding: "10px 14px", background: WHITE10, border: `1px solid ${WHITE20}`,
-              borderRadius: 10, outline: "none", WebkitTextFillColor: WHITE,
-            }}
+            style={inputStyle}
           />
           <input
-            type="text"
+            type="tel"
             placeholder="Código de acesso"
             value={codigo}
-            onChange={e => { setCodigo(e.target.value.replace(/[^0-9]/g, "")); setError(""); }}
-            style={{
-              width: "100%", boxSizing: "border-box", fontSize: 14, color: WHITE,
-              padding: "10px 14px", background: WHITE10, border: `1px solid ${WHITE20}`,
-              borderRadius: 10, outline: "none", WebkitTextFillColor: WHITE,
-            }}
+            autoComplete="off"
+            onChange={e => { setCodigo(e.target.value); setError(""); }}
+            onKeyDown={e => { if (e.key === "Enter") handleRegistrar(); }}
+            style={inputStyle}
           />
           {error && <p style={{ margin: 0, fontSize: 12, color: "#fca5a5", textAlign: "center" }}>{error}</p>}
           <Btn label={loading ? "Enviando..." : "Solicitar acesso"} onClick={handleRegistrar} disabled={loading} />
@@ -286,12 +273,12 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
         <div style={{ width: "100%" }}>
           <input
             ref={inputRef}
-            type="password"
+            type="tel"
             inputMode="numeric"
-            pattern="[0-9]*"
+            autoComplete="off"
             maxLength={10}
             value={codigo}
-            onChange={e => { setCodigo(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setError(""); }}
+            onChange={e => { setCodigo(e.target.value); setError(""); }}
             onKeyDown={e => { if (e.key === "Enter") handleTentarLogin(); }}
             placeholder="•••••"
             style={{
