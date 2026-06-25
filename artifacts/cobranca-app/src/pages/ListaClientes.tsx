@@ -1689,21 +1689,21 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     setDespesas([]);
     setRendimentos([]);
     saveDB({
-      lastDate: "",
+      lastDate: getTodayStr(),
       clientes: clientesMerged,
       ordemClientesIds: novaOrdem,
-      cobrados: [],
-      ausentes: [],
-      cobradosValores: [],
-      registroPagamentos: {},
-      cobradosExtras: [],
-      novosClientesIds: [],
-      renovacoesIds: [],
-      clientesAdicionaisHoje: [],
-      emprestimentos: [],
-      quitadosClientes: [],
-      despesas: [],
-      rendimentos: [],
+      cobrados,
+      ausentes,
+      cobradosValores,
+      registroPagamentos,
+      cobradosExtras,
+      novosClientesIds: [...novosClientesIds],
+      renovacoesIds: [...renovacoesIds],
+      clientesAdicionaisHoje,
+      emprestimentos,
+      quitadosClientes,
+      despesas,
+      rendimentos,
     });
   };
 
