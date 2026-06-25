@@ -8044,33 +8044,35 @@ export default function DashboardPage() {
               })()}
             </div>
 
-            {/* RIGHT: Action buttons */}
-            <div style={{ width:210, flexShrink:0, background:"#f1f5f9", display:"flex",
-                flexDirection:"column", gap:7, padding:"12px 10px", overflowY:"auto",
-                borderLeft:"1px solid #e2e8f0" }}>
-              {([
-                { icon:<img src="/icon-config.png" alt="" style={{ width:16, height:16, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)", flexShrink:0 }} />, label:"Configurações", accent:"#2d5474", onClick: () => setConfigOpen(true) },
-                { icon:<img src="/icon-relatorio6.png" alt="" style={{ width:16, height:16, flexShrink:0, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)" }} />, label:"Relatório Geral", accent:"#1d4ed8", onClick: () => setActiveMain("Consolidados") },
-                { icon:<img src="/icon-clientes3.png" alt="" style={{ width:16, height:16, flexShrink:0 }} />, label:"Lista Clientes", accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
-                { icon: caixaAberto ? <img src="/icon-fechar-caixa.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} /> : <img src="/icon-abrir-caixa.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} />,
-                  label: caixaAberto ? "Fechar Caixa" : "Abrir Caixa",
-                  accent: caixaAberto ? "#dc2626" : "#16a34a",
-                  onClick: () => setCaixaModalOpen(true) },
-                { icon:<ClipboardCheck size={16} color="#7c3aed" strokeWidth={2} style={{ flexShrink:0 }} />, label:"Código Aprovações", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
-              ] as { icon:React.ReactNode; label:string; accent:string; onClick:()=>void }[]).map(item => (
-                <button key={item.label} onClick={item.onClick}
-                  style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
-                    background:"#fff", border:`1px solid ${item.accent}30`,
-                    borderLeft:`4px solid ${item.accent}`, borderRadius:8,
-                    cursor:"pointer", textAlign:"left",
-                    boxShadow:"0 1px 4px rgba(0,0,0,.09)", transition:"all .15s" }}
-                  onMouseEnter={e => { e.currentTarget.style.background=`${item.accent}10`; e.currentTarget.style.boxShadow=`0 3px 10px ${item.accent}30`; }}
-                  onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.09)"; }}>
-                  <span style={{ display:"flex", alignItems:"center", justifyContent:"center", width:18, height:18, flexShrink:0, fontSize:16, lineHeight:1 }}>{item.icon}</span>
-                  <span style={{ fontSize:12, fontWeight:700, color:"#1e293b", letterSpacing:".01em" }}>{item.label}</span>
-                </button>
-              ))}
-            </div>
+            {/* RIGHT: Action buttons — só aparece quando uma rota está selecionada */}
+            {selectedRota && (
+              <div style={{ width:210, flexShrink:0, background:"#f1f5f9", display:"flex",
+                  flexDirection:"column", gap:7, padding:"12px 10px", overflowY:"auto",
+                  borderLeft:"1px solid #e2e8f0" }}>
+                {([
+                  { icon:<img src="/icon-config.png" alt="" style={{ width:16, height:16, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)", flexShrink:0 }} />, label:"Configurações", accent:"#2d5474", onClick: () => setConfigOpen(true) },
+                  { icon:<img src="/icon-relatorio6.png" alt="" style={{ width:16, height:16, flexShrink:0, filter:"invert(30%) sepia(60%) saturate(500%) hue-rotate(180deg) brightness(60%)" }} />, label:"Relatório Geral", accent:"#1d4ed8", onClick: () => setActiveMain("Consolidados") },
+                  { icon:<img src="/icon-clientes3.png" alt="" style={{ width:16, height:16, flexShrink:0 }} />, label:"Lista Clientes", accent:"#0369a1", onClick: () => setListaClientesOpen(true) },
+                  { icon: caixaAberto ? <img src="/icon-fechar-caixa.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} /> : <img src="/icon-abrir-caixa.png" alt="" style={{ width:18, height:18, flexShrink:0, objectFit:"contain" }} />,
+                    label: caixaAberto ? "Fechar Caixa" : "Abrir Caixa",
+                    accent: caixaAberto ? "#dc2626" : "#16a34a",
+                    onClick: () => setCaixaModalOpen(true) },
+                  { icon:<ClipboardCheck size={16} color="#7c3aed" strokeWidth={2} style={{ flexShrink:0 }} />, label:"Código Aprovações", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
+                ] as { icon:React.ReactNode; label:string; accent:string; onClick:()=>void }[]).map(item => (
+                  <button key={item.label} onClick={item.onClick}
+                    style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
+                      background:"#fff", border:`1px solid ${item.accent}30`,
+                      borderLeft:`4px solid ${item.accent}`, borderRadius:8,
+                      cursor:"pointer", textAlign:"left",
+                      boxShadow:"0 1px 4px rgba(0,0,0,.09)", transition:"all .15s" }}
+                    onMouseEnter={e => { e.currentTarget.style.background=`${item.accent}10`; e.currentTarget.style.boxShadow=`0 3px 10px ${item.accent}30`; }}
+                    onMouseLeave={e => { e.currentTarget.style.background="#fff"; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.09)"; }}>
+                    <span style={{ display:"flex", alignItems:"center", justifyContent:"center", width:18, height:18, flexShrink:0, fontSize:16, lineHeight:1 }}>{item.icon}</span>
+                    <span style={{ fontSize:12, fontWeight:700, color:"#1e293b", letterSpacing:".01em" }}>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center bg-white">
