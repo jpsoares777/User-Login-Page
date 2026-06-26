@@ -43,6 +43,18 @@ Botão laranja de alerta aparece na coluna Opções somente quando há solicita�
 ## Saldo inicial
 O login retorna `saldoInicial` do aplicativo. PinLogin salva em localStorage via `setSaldoInicial`. ListaClientes usa `getSaldoInicial()` como default de `caixaInicial` em vez do hardcoded 3000.
 
+## Persistência diária e fechamento de caixa (ListaClientes.tsx)
+Há um `useEffect` que faz `saveDB(...)` toda vez que o estado muda. Ele clobbera o localStorage com os valores ATUAIS do React.
+
+**Armadilha:** ao fechar caixa, `handleCaixaFechado` faz `setCobrados([])`/`setDespesas([])` etc. Isso dispara o `useEffect`, que sobrescreve o DB com arrays vazios — apagando o snapshot do dia. Resultado: ao admin reabrir o caixa no mesmo dia, os dados somem.
+
+**Correção (3 partes, todas necessárias juntas):**
+1. Guard no `useEffect`: `if (caixaFechadoHoje) return;` — impede o clobber após o fechamento.
+2. `handleCaixaFechado.saveDB` salva `lastDate: getTodayStr()` + valores reais (closures pré-reset ainda têm os dados; setState é async).
+3. Inicializadores dos campos diários devem ser date-checked (`db.lastDate === hoje`) para o dia seguinte começar limpo. `cobrados/ausentes/cobradosValores` já eram; `despesas/rendimentos` passaram a ser.
+
+**Why:** o "reset diário" deve vir do date-check nos inicializadores (no mount/login), NÃO de zerar estado no fechamento. Misturar "caixa fechado" com "novo dia" causou o bug.
+
 ## Pendente (próxima sessão)
 - Sincronização completa: carregar clientes/empréstimos da API ao abrir o app
 - Testar fluxo ponta a ponta: cobrador registra pagamento → aparece na Plataforma Web

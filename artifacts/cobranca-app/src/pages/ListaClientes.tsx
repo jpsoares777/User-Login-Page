@@ -1536,12 +1536,12 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   const clientesEnriquecidos = clientes.map(enrichCliente);
   const clientesOrdenadosEnriquecidos = clientesOrdenados.map(enrichCliente);
   const [despesas, setDespesas] = useState<LancamentoItem[]>(() => {
-    const db = loadDB();
-    return (db?.despesas as LancamentoItem[])?.length ? (db!.despesas as LancamentoItem[]) : despesasIniciais;
+    const db = loadDB(); const hoje = getTodayStr();
+    return (db && db.lastDate === hoje && (db.despesas as LancamentoItem[])?.length) ? (db.despesas as LancamentoItem[]) : despesasIniciais;
   });
   const [rendimentos, setRendimentos] = useState<LancamentoItem[]>(() => {
-    const db = loadDB();
-    return (db?.rendimentos as LancamentoItem[])?.length ? (db!.rendimentos as LancamentoItem[]) : rendimentosIniciais;
+    const db = loadDB(); const hoje = getTodayStr();
+    return (db && db.lastDate === hoje && (db.rendimentos as LancamentoItem[])?.length) ? (db.rendimentos as LancamentoItem[]) : rendimentosIniciais;
   });
   const hoje = new Date().toLocaleDateString("pt-BR");
   const addDespesa = (categoria: string, valor: number, observacao: string) =>
@@ -1550,6 +1550,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     setRendimentos(prev => [...prev, { id: Date.now(), data: hoje, categoria, valor, observacao: observacao || undefined }]);
 
   useEffect(() => {
+    if (caixaFechadoHoje) return;
     saveDB({
       lastDate: getTodayStr(),
       cobrados,
