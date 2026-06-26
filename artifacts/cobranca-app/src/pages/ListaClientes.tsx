@@ -138,6 +138,13 @@ function TrashIcon() {
   );
 }
 
+function criadoHoje(ts?: number): boolean {
+  if (!ts) return false;
+  const d = new Date(ts);
+  const now = new Date();
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+}
+
 function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendamento, ausentes, onAusentar, cobrados, onRemoverCobrado, clientesAdicionais = [], cobradosExtras = [], cobradosValores = [], pagamentosRegistro = {}, clientesBase = clientesData }: {
   busca: string; setBusca: (v: string) => void;
   vrf: boolean; setVrf: (v: boolean) => void;
@@ -162,6 +169,7 @@ function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendam
   const todosClientes: ClienteItem[] = [...clientesBase, ...clientesAdicionais];
   const filtrados = todosClientes.filter((c) =>
     c.saldo > 0 &&
+    !criadoHoje(c.creditoStartTimestamp) &&
     !ausentesIds.includes(c.id) &&
     !(cobradosIds.includes(c.id) && !vrfRemovidos.includes(c.id)) &&
     c.nome.toLowerCase().includes(busca.toLowerCase())
@@ -1597,7 +1605,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         cidade: e.cidade,
         uf: e.uf,
         taxaJuros: e.taxaJuros,
-        creditoStartTimestamp: Date.now(),
+        creditoStartTimestamp: e.id,
       }));
     const clientesAdicionaisComoClientes = clientesAdicionaisHoje
       .filter(c => !clientes.some(e => e.id === c.id) && !emprestimentosComoClientes.some(e => e.id === c.id));
