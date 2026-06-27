@@ -1557,6 +1557,19 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   const addRendimento = (categoria: string, valor: number, observacao: string) =>
     setRendimentos(prev => [...prev, { id: Date.now(), data: hoje, categoria, valor, observacao: observacao || undefined }]);
 
+  // Reabertura no mesmo dia: o caixaInicial foi "carimbado" com o saldo no fechamento
+  // (ja com os emprestimos descontados). Como PinLogin so deixa entrar com o caixa aberto,
+  // estar aqui com fechamentoDia === hoje significa reabertura same-day: revertemos o
+  // caixaInicial ao valor pre-fechamento p/ evitar contar os emprestimos em dobro.
+  useEffect(() => {
+    const db = loadDB();
+    if (db?.fechamentoDia === getTodayStr() && typeof db?.caixaInicialPreFechamento === "number") {
+      const preFechamento = db.caixaInicialPreFechamento;
+      setCaixaInicial(preFechamento);
+      saveDB({ caixaInicial: preFechamento, caixaInicialPreFechamento: undefined, fechamentoDia: undefined });
+    }
+  }, []);
+
   useEffect(() => {
     if (caixaFechadoHoje) return;
     saveDB({
@@ -1713,6 +1726,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       quitadosClientes,
       despesas,
       rendimentos,
+      caixaInicialPreFechamento: caixaInicial,
+      fechamentoDia: getTodayStr(),
     });
   };
 

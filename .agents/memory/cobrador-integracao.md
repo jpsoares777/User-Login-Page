@@ -55,6 +55,13 @@ Há um `useEffect` que faz `saveDB(...)` toda vez que o estado muda. Ele clobber
 
 **Why:** o "reset diário" deve vir do date-check nos inicializadores (no mount/login), NÃO de zerar estado no fechamento. Misturar "caixa fechado" com "novo dia" causou o bug.
 
+## Carimbo do caixaInicial vs. persistência diária (double-count na reabertura)
+Ao fechar o caixa, `handleFecharCaixa` (RelatorioFinanceiro) "carimba" `caixaInicial = saldo` (já com os empréstimos descontados). Mas o fix da seção anterior mantém `emprestimentos` persistidos para a reabertura. Esses dois mecanismos juntos contam o empréstimo EM DOBRO ao reabrir same-day: o desconto fica no `caixaInicial` carimbado E reaparece em `novosEmprestimos`. Excluir o empréstimo remove só a parte reativa → o desconto fica "preso" no Saldo de Caixa.
+
+**Correção:** un-bake same-day. No `saveDB` do fechamento, gravar `caixaInicialPreFechamento: caixaInicial` (closure = valor PRÉ-carimbo, pois `setCaixaInicial` do `onCaixaInicialChange` ainda não re-renderizou no mesmo batch) + `fechamentoDia: getTodayStr()`. Um `useEffect` de mount em ListaClientes restaura `caixaInicial` ao valor pré-fechamento quando `db.fechamentoDia === getTodayStr()` e limpa os marcadores (idempotente / StrictMode-safe).
+
+**Why:** PinLogin só deixa entrar em ListaClientes com o caixa aberto, então `fechamentoDia === hoje` no mount ⇒ reabertura same-day confiável. `caixaFechadoData` NÃO serve para isso — PinLogin o limpa (`saveDB({caixaFechadoData: undefined})`) ao desbloquear. Em dia novo genuíno (`fechamentoDia != hoje`) o carry-over carimbado é mantido.
+
 ## Pendente (próxima sessão)
 - Sincronização completa: carregar clientes/empréstimos da API ao abrir o app
 - Testar fluxo ponta a ponta: cobrador registra pagamento → aparece na Plataforma Web

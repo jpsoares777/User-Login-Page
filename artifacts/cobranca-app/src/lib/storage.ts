@@ -69,6 +69,8 @@ export interface AppDB {
   caixaInicial: number;
   historicoCreditos: Record<number, unknown[]>;
   caixaFechadoData?: string;
+  caixaInicialPreFechamento?: number;
+  fechamentoDia?: string;
 }
 
 export function loadDB(): AppDB | null {
