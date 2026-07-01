@@ -2105,15 +2105,15 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             onCaixaInicialChange={(v) => { setCaixaInicial(v); saveDB({ caixaInicial: v }); }}
             totalDespesas={despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0)}
             totalRendimentos={rendimentos.reduce((s, r) => s + r.valor, 0)}
-            totalClientes={clientes.filter(c => c.saldo > 0).length + novosClientesIds.size + renovacoesIds.size}
-            clientesParaCobranca={clientes.filter(c => c.saldo > 0).length}
+            totalClientes={clientes.filter(c => c.saldo > 0).length + [...novosClientesIds].filter(id => !clientes.some(c => c.id === id && c.saldo > 0)).length + renovacoesIds.size}
+            clientesParaCobranca={clientes.filter(c => c.saldo > 0 && !criadoHoje(c.creditoStartTimestamp)).length}
             cobradosCount={cobrados.length}
             ausentesCount={ausentes.length}
             novosCount={novosClientesIds.size}
             renovacoesCount={renovacoesIds.size}
             renovacoesValor={emprestimentos.filter(e => (e as any).renovacao).reduce((s, e) => s + (e.valorEmprestado ?? 0), 0)}
             cobrancaDiaria={cobradosValores.reduce((s, x) => s + x.valor, 0)}
-            cobrancaEsperada={clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0) + clientesAdicionaisHoje.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0)}
+            cobrancaEsperada={clientes.filter(c => c.saldo > 0 && !criadoHoje(c.creditoStartTimestamp)).reduce((s, c) => s + c.parcela, 0) + clientesAdicionaisHoje.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0)}
             novosEmprestimos={emprestimentos.reduce((s, e) => s + (e.valorEmprestado ?? 0), 0)}
             retiradaCaixa={despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0)}
             onSemPagamentos={() => {
