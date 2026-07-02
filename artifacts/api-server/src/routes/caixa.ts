@@ -118,6 +118,7 @@ router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
     const snapshot = JSON.parse(caixa.dadosSnapshot);
     res.json({
       ...snapshot,
+      cobradorNome: aplicativo.cobradorNome,
       dataFechamento: caixa.dataFechamento,
       dataInicio: snapshot.dataInicio ?? caixa.dataAbertura,
     });
