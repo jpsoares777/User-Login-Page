@@ -1659,7 +1659,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         despesas: totalDespesasSnap,
         retirada: retiradaSnap,
         caixaFinal: caixaFinalSnap,
-        carteiraFinal: Math.max(0, carteiraInicialSnap - recebAtualSnap + novosEmpSnap),
+        carteiraFinal: carteiraInicialSnap,
         sancao: 0,
       },
     };

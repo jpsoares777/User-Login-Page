@@ -8096,7 +8096,6 @@ export default function DashboardPage() {
                   <div className="flex items-center mx-2 mt-0.5 mb-1.5 rounded px-3 py-2"
                     style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderLeftWidth: 4, borderLeftColor: "#16a34a" }}>
                     <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Carteira Final</span>
-                    <span className="text-[11px] text-gray-400 ml-2">( Sanção: {rd.sancao.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} )</span>
                     <div className="flex-1" />
                     <span className="text-base font-bold text-green-700">{fmtV(rd.carteiraFinal)}</span>
                   </div>
