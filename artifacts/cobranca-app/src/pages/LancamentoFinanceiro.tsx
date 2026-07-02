@@ -119,11 +119,11 @@ export function LancamentoFinanceiro({ onAddDespesa, onAddRendimento, onSalvo }:
             <div className="flex gap-2">
               {/* Categoria */}
               <div className="flex-1">
-                <p className="text-[9px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+                <p className="text-[9px] font-bold uppercase tracking-wide text-gray-600 mb-0.5">
                   Categoria <span className="text-red-400">*</span>
                 </p>
                 <div className="relative border rounded-md transition-all duration-200"
-                  style={{ borderColor: conceito ? "#f0a500" : "#e5e7eb", background: conceito ? "#fffbf0" : "#f5f5f5" }}>
+                  style={{ borderColor: "rgba(245,158,11,0.55)", background: conceito ? "#fffbf0" : "#f5f5f5" }}>
                   <select
                     value={conceito}
                     onChange={(e) => setConceito(e.target.value)}
@@ -141,11 +141,11 @@ export function LancamentoFinanceiro({ onAddDespesa, onAddRendimento, onSalvo }:
 
               {/* Valor */}
               <div className="w-36">
-                <p className="text-[9px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+                <p className="text-[9px] font-bold uppercase tracking-wide text-gray-600 mb-0.5">
                   Valor <span className="text-red-400">*</span>
                 </p>
                 <div className="border rounded-md transition-all duration-200"
-                  style={{ borderColor: "#f0a500", background: "#fffbf0" }}>
+                  style={{ borderColor: "rgba(245,158,11,0.55)", background: "#fffbf0" }}>
                   <input
                     type="text"
                     inputMode="numeric"
@@ -161,8 +161,8 @@ export function LancamentoFinanceiro({ onAddDespesa, onAddRendimento, onSalvo }:
 
             {/* Observações */}
             <div>
-              <p className="text-[9px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">Observações</p>
-              <div className="border border-gray-200 rounded-md focus-within:border-gray-300 transition-all bg-[#f5f5f5]">
+              <p className="text-[9px] font-bold uppercase tracking-wide text-gray-600 mb-0.5">Observações</p>
+              <div className="border rounded-md transition-all bg-[#f5f5f5]" style={{ borderColor: "rgba(245,158,11,0.55)" }}>
                 <textarea
                   value={observacoes}
                   onChange={(e) => setObservacoes(e.target.value)}
