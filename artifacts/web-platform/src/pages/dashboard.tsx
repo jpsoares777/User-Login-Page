@@ -8092,7 +8092,6 @@ export default function DashboardPage() {
                   </Row>
                   <Row label="Caixa Final" bold index={9}>
                     <span className="text-green-700">{fmtV(rd.caixaFinal)}</span>
-                    <span className="text-red-400 text-sm cursor-pointer ml-1" title="Detalhes do cálculo">❓</span>
                   </Row>
                   <div className="flex items-center mx-2 mt-0.5 mb-1.5 rounded px-3 py-2"
                     style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderLeftWidth: 4, borderLeftColor: "#16a34a" }}>
