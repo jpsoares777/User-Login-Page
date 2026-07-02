@@ -166,7 +166,7 @@ function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendam
   const [clienteParaRemover, setClienteParaRemover] = useState<ClienteItem | null>(null);
   const ausentesIds = ausentes ?? [];
   const cobradosIds = cobrados ?? [];
-  const todosClientes: ClienteItem[] = [...clientesBase, ...clientesAdicionais];
+  const todosClientes: ClienteItem[] = [...clientesBase, ...clientesAdicionais.filter(a => !clientesBase.some(b => b.id === a.id))];
   const filtrados = todosClientes.filter((c) =>
     c.saldo > 0 &&
     (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) &&
