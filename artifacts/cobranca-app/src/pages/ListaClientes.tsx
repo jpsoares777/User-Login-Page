@@ -2142,7 +2142,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             <input type="text" placeholder="Procurar cliente..." value={busca} onChange={(e) => setBusca(e.target.value)}
               style={{
                 width: "100%", boxSizing: "border-box",
-                border: `1.5px solid ${busca ? P.gold : "#E4E8EF"}`,
+                border: `1px solid ${P.gold}`,
                 borderRadius: 10, padding: "8px 11px 8px 32px",
                 fontSize: 13, outline: "none", color: P.textPrimary,
                 backgroundColor: "#FFFFFF", transition: "all 0.18s", fontFamily: "inherit",
