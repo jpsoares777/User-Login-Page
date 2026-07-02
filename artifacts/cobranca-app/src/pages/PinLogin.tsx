@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { loginPorCodigo, setCobradorId, setRotaSessao, setSaldoInicial, submitSolicitacao, getCaixaAberto } from "../lib/api";
-import { loadDB, saveDB } from "../lib/storage";
+import { loginPorCodigo, setCobradorId, getCobradorId, setRotaSessao, setSaldoInicial, submitSolicitacao, getCaixaAberto } from "../lib/api";
+import { loadDB, saveDB, clearDB } from "../lib/storage";
 
 const GRAD_TOP = "#2d4f6b";
 const GRAD_MID = "#3A5F82";
@@ -76,6 +76,14 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
     setLoading(true); setError("");
     try {
       const sessao = await loginPorCodigo(cod);
+      // Troca de rota no mesmo dispositivo: se o cobrador logado e diferente do
+      // que esta salvo no DB local, zeramos os dados para a nova rota comecar do
+      // zero — assim o saldoInicial da nova rota aparece como Caixa Inicial em vez
+      // de herdar o caixaInicial/caixaFinal (carry-over) da rota anterior.
+      const cobradorAnterior = getCobradorId();
+      if (cobradorAnterior !== null && cobradorAnterior !== sessao.id) {
+        clearDB();
+      }
       setCobradorId(sessao.id);
       setRotaSessao(sessao.rota, sessao.cobradorNome);
       setSaldoInicial(sessao.saldoInicial);
