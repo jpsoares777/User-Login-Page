@@ -2167,7 +2167,7 @@ function ClientesContent() {
 
 // ── Liq. Períodos ─────────────────────────────────────────────────────────────
 
-type RotaFakeData = { cod:number; cobradorNome?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; };
+type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; };
 const rotasFakeData: Record<string, RotaFakeData> = {
   "Rota Cred Bank A": {
     cod: 1001,
@@ -8005,7 +8005,7 @@ export default function DashboardPage() {
                 return (<>
                   <SectionHeader title="Dados da Rota" color="#2563eb" />
                   <Row label="Cobrador" index={0}>
-                    <strong className="text-gray-800">{rd.cobradorNome || selectedRota}</strong>&nbsp;— Cod: {rd.cod}
+                    <strong className="text-gray-800">{rd.cobradorNome || selectedRota}</strong>&nbsp;— Cod: {rd.codigoAcesso || rd.cod}
                     <span className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold cursor-pointer ml-1">XLS</span>
                   </Row>
                   <Row label="Data de Início de Cobrança" index={1}>
