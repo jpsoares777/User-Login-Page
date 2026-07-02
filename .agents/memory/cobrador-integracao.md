@@ -83,6 +83,17 @@ O Saldo de Caixa deve continuar de um dia para o outro: `caixaInicial` de hoje =
 
 **CRÍTICO — fórmula do saldo em 3 lugares idênticos:** `caixaInicial + cobrancaDiaria + totalRendimentos - novosEmprestimos(criadoHoje) - retiradaCaixa - totalDespesas`. Deve ser IGUAL em (1) `RelatorioFinanceiro` (exibição, linha do `saldo`), (2) persistência de `caixaFinal` no useEffect, (3) `handleCaixaFechado` (`caixaFinalSnap`/`novosEmpSnap` enviados à API). O `novosEmpSnap` do fechamento manual DEVE filtrar `criadoHoje` igual aos outros dois, senão o snapshot/API diverge do saldo local e do carry-over.
 
+## Relatório Diário da web (DADOS DA ROTA) — fonte e "tempo real"
+O painel `Liq. Diária > Relatório Diário` (dashboard.tsx, render ~8006-8097) exibe `importedRotaData[rota] ?? rotasFakeData[rota]`. `importedRotaData` é preenchido por (a) `GET /api/caixa/fechamento-rota` e (b) import XLS (`POST /api/importar-resumo`).
+
+**CRÍTICO:** `fechamento-rota` (caixa.ts) lê APENAS o snapshot do ÚLTIMO caixa **fechado** (`status='fechado'`, `dadosSnapshot`). Enquanto o caixa está ABERTO, retorna `null` ⇒ NÃO existe fonte de dados ao vivo no servidor durante o dia. Logo, "tempo real de verdade" (lançamentos do cobrador aparecendo durante o dia) depende da sincronização app→servidor, que ainda está quebrada.
+
+O fetch do frontend agora faz polling de 10s (setInterval+cleanup) e sobrescreve `importedRotaData[rota]` só quando `data` é truthy (import XLS preservado, pois rota sem caixa fechado real retorna null). Antes tinha guard `if (prev[rota]) return prev` que congelava após a 1a carga. Para tempo real durante caixa aberto, faltaria um endpoint de agregação ao vivo (open caixa + pagamentos + movimentos + clientes/emprestimos).
+
+## Sincronização app→servidor quebrada (POST /api/pagamentos 500)
+O app envia `emprestimoId` = timestamp gerado no cliente (ex.: 1783013955454), que NÃO existe em `emprestimosTable` ⇒ violação de FK ⇒ 500 no `POST /api/pagamentos`. `POST /api/caixa/movimentos` e `/caixa/fechar` funcionam. Raiz: clientes/empréstimos do app não são criados no DB (localStorage é a fonte de verdade e usa ids-timestamp locais). Enquanto isso não for resolvido, pagamentos não persistem no servidor e o Relatório Diário só reflete o snapshot de fechamento.
+
 ## Pendente (próxima sessão)
-- Sincronização completa: carregar clientes/empréstimos da API ao abrir o app
+- Sincronização completa: carregar/criar clientes/empréstimos no DB com ids reais (resolver o 500 dos pagamentos por FK) — pré-requisito do tempo real durante o dia
+- Endpoint de agregação ao vivo para o Relatório Diário quando o caixa está aberto
 - Testar fluxo ponta a ponta: cobrador registra pagamento → aparece na Plataforma Web

@@ -5035,17 +5035,19 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!selectedRota) return;
-    fetch(`${import.meta.env.BASE_URL}api/caixa/fechamento-rota?rota=${encodeURIComponent(selectedRota)}&_t=${Date.now()}`)
-      .then(r => r.ok ? r.json() : null)
-      .then((data: RotaFakeData | null) => {
-        if (data) {
-          setImportedRotaData(prev => {
-            if (prev[selectedRota]) return prev;
-            return { ...prev, [selectedRota]: data };
-          });
-        }
-      })
-      .catch(() => {});
+    const fetchDados = () => {
+      fetch(`${import.meta.env.BASE_URL}api/caixa/fechamento-rota?rota=${encodeURIComponent(selectedRota)}&_t=${Date.now()}`)
+        .then(r => r.ok ? r.json() : null)
+        .then((data: RotaFakeData | null) => {
+          if (data) {
+            setImportedRotaData(prev => ({ ...prev, [selectedRota]: data }));
+          }
+        })
+        .catch(() => {});
+    };
+    fetchDados();
+    const interval = setInterval(fetchDados, 10000);
+    return () => clearInterval(interval);
   }, [selectedRota]);
 
   useEffect(() => {
