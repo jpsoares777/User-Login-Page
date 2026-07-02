@@ -8067,7 +8067,7 @@ export default function DashboardPage() {
                     <span className="text-[11px] text-gray-500">pagos: <strong className="text-gray-800">{rd.pagos}</strong></span>
                     <span className="text-[11px] text-gray-500">não pagos: <strong className="text-red-500">{rd.noPagos}</strong></span>
                   </Row>
-                  <Row label="Recebimento por Tipo Pagto" index={4}>
+                  <Row label="Recebimentos por Forma de Pagamento" index={4}>
                     <span className="text-[11px] text-gray-500">Dinheiro:</span>
                     <span className="text-red-500 font-semibold">{fmtV(rd.efetivo)}</span>
                     <span className="text-gray-300 mx-0.5">|</span>
