@@ -1627,7 +1627,9 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const totalDespesasSnap = despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const retiradaSnap = despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const totalRendimentosSnap = rendimentos.reduce((s, r) => s + r.valor, 0);
-    const novosEmpSnap = emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime())).reduce((s, e) => s + (e.valorEmprestado ?? 0), 0);
+    const novosEmpHojeSnap = emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime()));
+    const novosEmpSnap = novosEmpHojeSnap.reduce((s, e) => s + (e.valorEmprestado ?? 0), 0);
+    const jurosSnap = novosEmpHojeSnap.reduce((s, e) => s + (Number(e.valorEmprestado) || 0) * ((Number(e.taxaJuros) || 0) / 100), 0);
     const caixaFinalSnap = caixaInicial + recebAtualSnap + totalRendimentosSnap - novosEmpSnap - totalDespesasSnap - retiradaSnap;
     const carteiraInicialSnap = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.saldo, 0);
     const recebPrevisto = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0);
@@ -1652,7 +1654,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         efetivo: 0,
         transferencia: 0,
         novosEmp: novosEmpSnap,
-        juros: 0,
+        juros: jurosSnap,
         rendimentos: totalRendimentosSnap,
         despesas: totalDespesasSnap,
         retirada: retiradaSnap,

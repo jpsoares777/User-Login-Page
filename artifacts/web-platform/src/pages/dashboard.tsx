@@ -8076,7 +8076,7 @@ export default function DashboardPage() {
                   </Row>
                   <Row label="Novos Empréstimos" index={5}>
                     <span className="font-semibold text-gray-800">{fmtV(rd.novosEmp)}</span>
-                    <span className="text-gray-400 text-[11px]">( Juros: {fmtV(rd.juros)} )</span>
+                    <span className="text-[11px]">( Juros: <strong className="text-green-600">{fmtV(rd.juros)}</strong> )</span>
                   </Row>
                   <Row label="Rendimentos" index={6}>
                     <span className="text-blue-600 font-bold text-sm">+</span>
