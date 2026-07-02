@@ -1666,6 +1666,10 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       ...[...clientes, ...clientesAdicionaisHoje].filter(c => c.saldo <= 0).map(c => c.id),
     ]);
     const novosNaoRenovSnap = novosEmpHojeSnap.filter(e => !e.renovacao && !quitadoIdsSnap.has(e.id));
+    // IDs dos novos (não-renovação) de hoje: usados para tirar esses clientes de
+    // "Clientes Iniciais" (senão seriam contados 2x: iniciais + novos). Renovados
+    // NÃO entram aqui, então permanecem contados em "Clientes Iniciais".
+    const novosIdsSnap = new Set<number>(novosNaoRenovSnap.map(e => e.id));
     const clientesNovosAdiantadosSnap = novosNaoRenovSnap.filter(e => e.pagamentoAdiantado).length;
     const clientesNovosRegularesSnap = novosNaoRenovSnap.length - clientesNovosAdiantadosSnap;
     // Clientes elegíveis para cobrança HOJE (mesma regra da UI): normais (não criados
@@ -1696,8 +1700,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         dataInicio: dataStr,
         dataFechamento: dataStr,
         ultimoAcesso: new Date().toISOString(),
-        clientesIniciais: clientes.filter(c => c.saldo > 0).length,
-        sincronizados: clientes.filter(c => c.saldo > 0).length,
+        clientesIniciais: clientes.filter(c => c.saldo > 0 && !novosIdsSnap.has(c.id)).length,
+        sincronizados: clientes.filter(c => c.saldo > 0 && !novosIdsSnap.has(c.id)).length,
         clientesNovos: novosNaoRenovSnap.length,
         clientesNovosRegulares: clientesNovosRegularesSnap,
         clientesNovosAdiantados: clientesNovosAdiantadosSnap,
