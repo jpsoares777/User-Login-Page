@@ -549,11 +549,12 @@ function PagamentosContent({ rota, rd }: { rota: string | null; rd: RotaFakeData
   const parseVal = (s: string) => parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
   const fmtN = (v: number) => v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-  // Dados REAIS da rota (quando o snapshot já traz a lista por cliente); senão, demo.
+  // Com uma rota selecionada, mostramos SEMPRE os dados reais dela (mesmo que vazios).
+  // Os dados demo só servem de pré-visualização quando NENHUMA rota está selecionada.
   const realRows = rd?.pagamentos ?? null;
-  const usandoReal = !!realRows;
+  const usandoReal = !!rota || !!realRows;
   const rows: (PagRow & { pago: boolean; tipo: string })[] = usandoReal
-    ? realRows!.map((p, i) => ({
+    ? (realRows ?? []).map((p, i) => ({
         id: i + 1,
         status: p.status,
         consecutivo: p.consecutivo,
