@@ -9,7 +9,7 @@ import { RelatorioFinanceiro } from "./RelatorioFinanceiro";
 import { EmprestimosDoDia, Emprestimo, emprestimentosIniciais } from "./EmprestimosDoDia";
 import { ClienteDetalhe, ClienteDetalheRenovacao, ClienteItem, Agendamento, Pagamento, MetodoPagamento, CreditoRecord } from "./ClienteDetalhe";
 
-const clientesData: { id: number; nome: string; parcela: number; saldo: number; status: string; endereco: string; parcelasPagas: number; totalParcelas: number; telefone: string }[] = [];
+const clientesData: ClienteItem[] = [];
 
 const P = {
   bg: "#F2F4F7",
@@ -169,7 +169,7 @@ function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendam
   const todosClientes: ClienteItem[] = [...clientesBase, ...clientesAdicionais];
   const filtrados = todosClientes.filter((c) =>
     c.saldo > 0 &&
-    !criadoHoje(c.creditoStartTimestamp) &&
+    (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) &&
     !ausentesIds.includes(c.id) &&
     !(cobradosIds.includes(c.id) && !vrfRemovidos.includes(c.id)) &&
     c.nome.toLowerCase().includes(busca.toLowerCase())
@@ -1619,6 +1619,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         uf: e.uf,
         taxaJuros: e.taxaJuros,
         creditoStartTimestamp: e.id,
+        pagamentoAdiantado: e.pagamentoAdiantado,
       }));
     const clientesAdicionaisComoClientes = clientesAdicionaisHoje
       .filter(c => !clientes.some(e => e.id === c.id) && !emprestimentosComoClientes.some(e => e.id === c.id));
@@ -1816,7 +1817,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
           setHistoricoPagamentos(prev => ({ ...prev, [idOriginal]: [] }));
 
           setClientes(prev => prev.map(c => c.id === idOriginal
-            ? { ...c, parcela: novaParcela, totalParcelas: novoTotal, parcelasPagas: 0, saldo: novoSaldo, creditoStartTimestamp: renovacaoTs, frequencia: emp.frequencia ?? c.frequencia, taxaJuros: emp.taxaJuros }
+            ? { ...c, parcela: novaParcela, totalParcelas: novoTotal, parcelasPagas: 0, saldo: novoSaldo, creditoStartTimestamp: renovacaoTs, frequencia: emp.frequencia ?? c.frequencia, taxaJuros: emp.taxaJuros, pagamentoAdiantado: emp.pagamentoAdiantado }
             : c
           ));
           setQuitadosClientes(prev => prev.filter(q => q.id !== idOriginal));
@@ -2106,18 +2107,22 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             totalDespesas={despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0)}
             totalRendimentos={rendimentos.reduce((s, r) => s + r.valor, 0)}
             totalClientes={clientes.filter(c => c.saldo > 0).length + [...novosClientesIds].filter(id => !clientes.some(c => c.id === id && c.saldo > 0)).length + renovacoesIds.size}
-            clientesParaCobranca={clientes.filter(c => c.saldo > 0 && !criadoHoje(c.creditoStartTimestamp)).length}
+            clientesParaCobranca={clientes.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado)).length + clientesAdicionaisHoje.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id)).length}
             cobradosCount={cobrados.length}
             ausentesCount={ausentes.length}
             novosCount={novosClientesIds.size}
             renovacoesCount={renovacoesIds.size}
             renovacoesValor={emprestimentos.filter(e => (e as any).renovacao).reduce((s, e) => s + (e.valorEmprestado ?? 0), 0)}
             cobrancaDiaria={cobradosValores.reduce((s, x) => s + x.valor, 0)}
-            cobrancaEsperada={clientes.filter(c => c.saldo > 0 && !criadoHoje(c.creditoStartTimestamp)).reduce((s, c) => s + c.parcela, 0) + clientesAdicionaisHoje.filter(c => c.saldo > 0 && !criadoHoje(c.creditoStartTimestamp)).reduce((s, c) => s + c.parcela, 0)}
+            cobrancaEsperada={clientes.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado)).reduce((s, c) => s + c.parcela, 0) + clientesAdicionaisHoje.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id)).reduce((s, c) => s + c.parcela, 0)}
             novosEmprestimos={emprestimentos.reduce((s, e) => s + (e.valorEmprestado ?? 0), 0)}
             retiradaCaixa={despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0)}
             onSemPagamentos={() => {
-              const pendentes = clientesOrdenados.filter(c => !cobrados.includes(c.id) && !ausentes.includes(c.id) && c.saldo > 0);
+              const elegiveis = [
+                ...clientesOrdenados.filter(c => !criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado),
+                ...clientesAdicionaisHoje.filter(c => (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientesOrdenados.some(k => k.id === c.id)),
+              ];
+              const pendentes = elegiveis.filter(c => !cobrados.includes(c.id) && !ausentes.includes(c.id) && c.saldo > 0);
               if (pendentes.length === 0) return;
               const hoje = new Date().toLocaleDateString("pt-BR");
               setCobrados(prev => {
@@ -2164,6 +2169,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
               cidade: emp.cidade,
               uf: emp.uf,
               creditoStartTimestamp: emp.id,
+              pagamentoAdiantado: emp.pagamentoAdiantado,
             };
             if (emp.pagamentoAdiantado) {
               setClientesAdicionaisHoje(prev => prev.some(c => c.id === novoCliente.id) ? prev : [novoCliente, ...prev]);

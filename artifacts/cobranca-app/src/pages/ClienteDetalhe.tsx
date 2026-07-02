@@ -46,6 +46,7 @@ export interface ClienteItem {
   uf?: string;
   creditoStartTimestamp?: number;
   taxaJuros?: number;
+  pagamentoAdiantado?: boolean;
   historicoCreditos?: CreditoRecord[];
 }
 
