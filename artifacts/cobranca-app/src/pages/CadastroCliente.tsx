@@ -44,7 +44,7 @@ function Field({ label, required, type = "text", value, onChange, error }: {
         className="block w-full px-2 py-1.5 text-xs text-gray-900 rounded-md focus:outline-none focus:ring-1 transition-all"
         style={{
           background: error ? "#fff5f5" : "#f5f5f5",
-          border: error ? "1.5px solid #ef4444" : "1px solid #e5e7eb",
+          border: error ? "1.5px solid #ef4444" : "1px solid #F59E0B",
           boxShadow: error ? "0 0 0 2px rgba(239,68,68,0.1)" : "none",
         }}
       />
@@ -68,7 +68,8 @@ function SelectField({ label, options, value, onChange }: {
       <div className="text-[9px] text-gray-400 uppercase tracking-wide font-semibold mb-0.5 ml-0.5">{label}</div>
       <div className="relative">
         <select value={val} onChange={e => handleChange(e.target.value)}
-          className="w-full appearance-none px-2 py-1.5 text-xs text-gray-900 bg-[#f5f5f5] rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400 transition-all">
+          className="w-full appearance-none px-2 py-1.5 text-xs text-gray-900 bg-[#f5f5f5] rounded-md border focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400 transition-all"
+          style={{ borderWidth: 1, borderColor: "#F59E0B" }}>
           <option value="">selecione</option>
           {options.map(o => <option key={o}>{o}</option>)}
         </select>
