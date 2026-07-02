@@ -110,6 +110,9 @@ Regra de negócio: Carteira Final = total exato a receber de TODOS os clientes (
 
 **Como calcular sem double-count:** soma dos `clientes.saldo>0` (já líquida dos pagamentos do dia) + soma dos empréstimos novos de hoje que sejam NÃO-renovação E cujo id ainda NÃO esteja em `clientes`. Renovação é excluída porque já atualiza o saldo do cliente. Vale o padrão geral do arquivo: dedupe por id preferindo a cópia em `clientes` (ver seção "Contagens do relatório vs. merge").
 
+## Saldo do cliente = dívida real (capital + juros)
+O "Saldo" exibido deve ser a dívida TOTAL restante (capital + juros), NÃO o `valorEmprestado` (só capital). No modelo, `valorParcela` já embute juros (`CadastroCliente`: `totalComJuros = valorEmprestado*(1+juros/100)`, `valorParcela = totalComJuros/quantidadeParcelas`), então **saldo inicial = `valorParcela * quantidadeParcelas`** e **saldo corrente = `parcela * (totalParcelas - parcelasPagas)`**. Armadilha: os mapeamentos Emprestimo→ClienteItem gravavam `saldo: valorEmprestado` (só capital) → lista mostrava saldo menor que o devido. Corrigir em TODOS os mapeamentos (criação de novoCliente, merge do fechamento) e recalcular no load de `clientesAdicionaisHoje` (igual ao load de `clientes`, que já recomputava) para consertar registros antigos.
+
 ## Pendente (próxima sessão)
 - Sincronização completa: carregar/criar clientes/empréstimos no DB com ids reais (resolver o 500 dos pagamentos por FK) — pré-requisito do tempo real durante o dia
 - Endpoint de agregação ao vivo para o Relatório Diário quando o caixa está aberto

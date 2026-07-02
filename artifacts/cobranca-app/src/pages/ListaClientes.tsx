@@ -1524,7 +1524,10 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   });
   const [clientesAdicionaisHoje, setClientesAdicionaisHoje] = useState<ClienteItem[]>(() => {
     const db = loadDB();
-    return (db?.clientesAdicionaisHoje as ClienteItem[]) ?? [];
+    const raw = (db?.clientesAdicionaisHoje as ClienteItem[]) ?? [];
+    // Recalcula o saldo pela dívida real (parcela × parcelas restantes), corrigindo
+    // registros antigos que gravaram apenas o capital emprestado sem os juros.
+    return raw.map(c => ({ ...c, saldo: c.parcela * (c.totalParcelas - (c.parcelasPagas ?? 0)) }));
   });
   const [novosClientesOutras, setNovosClientesOutras] = useState<ClienteItem[]>(() => {
     const db = loadDB();
@@ -1724,7 +1727,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         id: e.id,
         nome: e.nomeCliente,
         parcela: e.valorParcela,
-        saldo: e.valorEmprestado,
+        // Saldo = dívida real (capital + juros) = valor da parcela × total de parcelas.
+        saldo: e.valorParcela * e.quantidadeParcelas,
         status: "novo" as const,
         endereco: e.endereco ?? "",
         parcelasPagas: 0,
@@ -2243,7 +2247,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
               id: emp.id,
               nome: emp.nomeCliente,
               parcela: emp.valorParcela,
-              saldo: emp.valorEmprestado,
+              // Saldo = dívida real (capital + juros) = valor da parcela × total de parcelas.
+              saldo: emp.valorParcela * emp.quantidadeParcelas,
               status: "novo",
               endereco: emp.endereco ?? "",
               parcelasPagas: 0,
