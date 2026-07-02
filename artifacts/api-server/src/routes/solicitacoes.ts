@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
-import { db, solicitacoesTable, aplicativosTable } from "@workspace/db";
+import { db, solicitacoesTable, aplicativosTable, caixaTable } from "@workspace/db";
 
 const router: IRouter = Router();
 
@@ -85,6 +85,28 @@ router.patch("/solicitacoes/:id/aprovar", async (req, res): Promise<void> => {
       .update(aplicativosTable)
       .set({ deviceId: sol.deviceId })
       .where(eq(aplicativosTable.id, sol.aplicativoId));
+
+    // Ao autorizar, deixa o caixa aberto para o cobrador não cair na tela
+    // "Caixa Fechado". Só abre se ainda não houver um caixa aberto.
+    const [caixaAberto] = await db
+      .select()
+      .from(caixaTable)
+      .where(and(eq(caixaTable.cobradorId, sol.aplicativoId), eq(caixaTable.status, "aberto")));
+
+    if (!caixaAberto) {
+      const [aplicativo] = await db
+        .select()
+        .from(aplicativosTable)
+        .where(eq(aplicativosTable.id, sol.aplicativoId));
+      const hoje = new Date();
+      const dataAbertura = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
+      await db.insert(caixaTable).values({
+        cobradorId: sol.aplicativoId,
+        dataAbertura,
+        saldoInicial: String(aplicativo?.saldoInicial ?? 0),
+        status: "aberto",
+      });
+    }
   }
 
   await db
