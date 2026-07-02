@@ -70,6 +70,23 @@ router.post("/caixa/fechar", async (req, res): Promise<void> => {
   res.json(caixa);
 });
 
+// Recebe o snapshot AO VIVO do app (caixa aberto) e grava no caixa aberto do
+// cobrador. Assim a web mostra os dados em tempo real, sem fechar o caixa.
+router.post("/caixa/snapshot-vivo", async (req, res): Promise<void> => {
+  const { cobradorId, dadosSnapshot } = req.body;
+  if (!cobradorId) { res.status(400).json({ error: "cobradorId é obrigatório" }); return; }
+
+  const snapshotJson = dadosSnapshot ? JSON.stringify(dadosSnapshot) : null;
+  const [caixa] = await db.update(caixaTable)
+    .set({ dadosSnapshot: snapshotJson })
+    .where(and(eq(caixaTable.cobradorId, Number(cobradorId)), eq(caixaTable.status, "aberto")))
+    .returning();
+
+  // Sem caixa aberto no servidor: ignora silenciosamente (não é erro do app).
+  if (!caixa) { res.json({ ok: false, reason: "sem caixa aberto" }); return; }
+  res.json({ ok: true });
+});
+
 router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
   const { rota } = req.query;
   if (!rota) { res.status(400).json({ error: "rota é obrigatória" }); return; }
@@ -79,10 +96,19 @@ router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
 
   if (!aplicativo) { res.json(null); return; }
 
-  const [caixa] = await db.select().from(caixaTable)
-    .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "fechado")))
-    .orderBy(desc(caixaTable.dataFechamento))
+  // Prioridade: caixa ABERTO (dados ao vivo do dia). Se não houver caixa aberto
+  // com snapshot, cai para o último caixa FECHADO (snapshot de fechamento).
+  let [caixa] = await db.select().from(caixaTable)
+    .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "aberto")))
+    .orderBy(desc(caixaTable.id))
     .limit(1);
+
+  if (!caixa || !caixa.dadosSnapshot) {
+    [caixa] = await db.select().from(caixaTable)
+      .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "fechado")))
+      .orderBy(desc(caixaTable.dataFechamento))
+      .limit(1);
+  }
 
   res.setHeader("Cache-Control", "no-store");
 

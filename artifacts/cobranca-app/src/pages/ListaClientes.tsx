@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment, type ReactNode } from "react";
 import { loadDB, saveDB, getTodayStr } from "../lib/storage";
-import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, getSaldoInicial } from "../lib/api";
+import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, type DadosSnapshot } from "../lib/api";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ParcelaCliente } from "./ParcelaCliente";
 import { CadastroCliente } from "./CadastroCliente";
@@ -1619,6 +1619,68 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       ordemClientesIds, cobradosExtras, emprestimentos, novosClientesIds, renovacoesIds,
       clientesAdicionaisHoje, novosClientesOutras, agendamentos, despesas, rendimentos, clientes, historicoCreditos, caixaInicial]);
 
+  // Monta o snapshot dos dados da rota a partir do estado atual. Usado tanto no
+  // fechamento do caixa quanto no envio AO VIVO (tempo real). Mantido em um unico
+  // lugar para que a web sempre receba os mesmos numeros que o app calcula.
+  const buildDadosSnapshot = (dataStr: string): { snapshot: DadosSnapshot; caixaFinal: number } => {
+    const recebAtualSnap = cobradosValores.reduce((s, x) => s + x.valor, 0);
+    const totalDespesasSnap = despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
+    const retiradaSnap = despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
+    const totalRendimentosSnap = rendimentos.reduce((s, r) => s + r.valor, 0);
+    const novosEmpSnap = emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime())).reduce((s, e) => s + (e.valorEmprestado ?? 0), 0);
+    const caixaFinalSnap = caixaInicial + recebAtualSnap + totalRendimentosSnap - novosEmpSnap - totalDespesasSnap - retiradaSnap;
+    const carteiraInicialSnap = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.saldo, 0);
+    const recebPrevisto = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0);
+    return {
+      caixaFinal: caixaFinalSnap,
+      snapshot: {
+        cod: cobradorId,
+        dataInicio: dataStr,
+        dataFechamento: dataStr,
+        ultimoAcesso: new Date().toISOString(),
+        clientesIniciais: clientes.filter(c => c.saldo > 0).length,
+        sincronizados: clientes.filter(c => c.saldo > 0).length,
+        clientesNovos: novosClientesIds.size,
+        renovados: renovacoesIds.size,
+        cancelados: quitadosClientes.length,
+        caixaInicial,
+        carteiraInicial: carteiraInicialSnap,
+        recebPrevisto,
+        recebAtual: recebAtualSnap,
+        pagos: cobrados.length,
+        noPagos: ausentes.length,
+        efetivo: 0,
+        transferencia: 0,
+        novosEmp: novosEmpSnap,
+        juros: 0,
+        rendimentos: totalRendimentosSnap,
+        despesas: totalDespesasSnap,
+        retirada: retiradaSnap,
+        caixaFinal: caixaFinalSnap,
+        carteiraFinal: Math.max(0, carteiraInicialSnap - recebAtualSnap + novosEmpSnap),
+        sancao: 0,
+      },
+    };
+  };
+
+  // TEMPO REAL: enquanto o caixa estiver aberto, envia o snapshot ao vivo para a
+  // web a cada mudanca relevante e a cada 15s. Assim cada movimentacao do cobrador
+  // aparece na plataforma sem precisar fechar o caixa.
+  useEffect(() => {
+    if (caixaFechadoHoje || !(cobradorId > 0)) return;
+    const enviar = () => {
+      const h = new Date();
+      const dataStr = `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,"0")}-${String(h.getDate()).padStart(2,"0")}`;
+      const { snapshot } = buildDadosSnapshot(dataStr);
+      postSnapshotVivoAPI({ cobradorId, dadosSnapshot: snapshot });
+    };
+    enviar();
+    const interval = setInterval(enviar, 15000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caixaFechadoHoje, cobradorId, cobrados, ausentes, cobradosValores, despesas, rendimentos,
+      emprestimentos, clientes, caixaInicial, novosClientesIds, renovacoesIds, quitadosClientes]);
+
   const handleCaixaFechado = () => {
     const emprestimentosComoClientes = emprestimentos
       .filter(e => !e.renovacao && !clientes.some(c => c.id === e.id))
@@ -1674,45 +1736,12 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         });
       });
 
-      const recebAtualSnap = cobradosValores.reduce((s, x) => s + x.valor, 0);
-      const totalDespesasSnap = despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
-      const retiradaSnap = despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
-      const totalRendimentosSnap = rendimentos.reduce((s, r) => s + r.valor, 0);
-      const novosEmpSnap = emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime())).reduce((s, e) => s + (e.valorEmprestado ?? 0), 0);
-      const caixaFinalSnap = caixaInicial + recebAtualSnap + totalRendimentosSnap - novosEmpSnap - totalDespesasSnap - retiradaSnap;
-      const carteiraInicialSnap = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.saldo, 0);
-      const recebPrevisto = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0);
+      const { snapshot, caixaFinal: caixaFinalSnap } = buildDadosSnapshot(dataStr2);
       postFechamentoCaixaAPI({
         cobradorId,
         dataFechamento: dataStr2,
         saldoFinal: caixaFinalSnap,
-        dadosSnapshot: {
-          cod: cobradorId,
-          dataInicio: dataStr2,
-          dataFechamento: dataStr2,
-          ultimoAcesso: new Date().toISOString(),
-          clientesIniciais: clientes.filter(c => c.saldo > 0).length,
-          sincronizados: clientes.filter(c => c.saldo > 0).length,
-          clientesNovos: novosClientesIds.size,
-          renovados: renovacoesIds.size,
-          cancelados: quitadosClientes.length,
-          caixaInicial,
-          carteiraInicial: carteiraInicialSnap,
-          recebPrevisto,
-          recebAtual: recebAtualSnap,
-          pagos: cobrados.length,
-          noPagos: ausentes.length,
-          efetivo: 0,
-          transferencia: 0,
-          novosEmp: novosEmpSnap,
-          juros: 0,
-          rendimentos: totalRendimentosSnap,
-          despesas: totalDespesasSnap,
-          retirada: retiradaSnap,
-          caixaFinal: caixaFinalSnap,
-          carteiraFinal: Math.max(0, carteiraInicialSnap - recebAtualSnap + novosEmpSnap),
-          sancao: 0,
-        },
+        dadosSnapshot: snapshot,
       }).then(ok => {
         if (!ok) console.error("[FechamentoCaixa] Falha ao enviar snapshot para a API");
       });

@@ -90,6 +90,14 @@ O painel `Liq. Diária > Relatório Diário` (dashboard.tsx, render ~8006-8097) 
 
 O fetch do frontend agora faz polling de 10s (setInterval+cleanup) e sobrescreve `importedRotaData[rota]` só quando `data` é truthy (import XLS preservado, pois rota sem caixa fechado real retorna null). Antes tinha guard `if (prev[rota]) return prev` que congelava após a 1a carga. Para tempo real durante caixa aberto, faltaria um endpoint de agregação ao vivo (open caixa + pagamentos + movimentos + clientes/emprestimos).
 
+## Tempo real (snapshot ao vivo) — RESOLVIDO
+Padrão que faz "cada movimentação do cobrador aparecer na web sem fechar o caixa", contornando o 500 de `/pagamentos` (não depende de linhas individuais de pagamento). O app envia o MESMO `dadosSnapshot` (agregado) periodicamente enquanto o caixa está aberto; a web só lê snapshot.
+- App: `buildDadosSnapshot(dataStr)` em ListaClientes é fonte ÚNICA das fórmulas (fechamento E ao vivo usam-na — evita divergência do saldo). useEffect envia `POST /caixa/snapshot-vivo` em mudanças de estado relevantes + heartbeat 15s, só quando `!caixaFechadoHoje && cobradorId>0` (cleanup do interval). `postSnapshotVivoAPI`/tipo `DadosSnapshot` em api.ts.
+- API: `POST /caixa/snapshot-vivo` grava `dadosSnapshot` no caixa `status='aberto'` do cobrador (ok:false se não houver aberto — silencioso). `GET /caixa/fechamento-rota` agora PREFERE caixa aberto (orderBy id desc, ao vivo) e cai para último fechado; `dataFechamento` vem de `caixa.dataFechamento` (null p/ aberto → web mostra "Sistema sem Fechar").
+- Web: dashboard já faz polling 10s de fechamento-rota ⇒ reflete o ao vivo em ~10s.
+- Pré-requisito: caixa aberto no servidor (criado ao AUTORIZAR em solicitacoes/aprovar). Sem caixa aberto, snapshot-vivo é ignorado.
+- Pendência defensiva (não bloqueante): índice único parcial p/ 1 caixa aberto por cobrador (evita ambiguidade se houver >1 aberto).
+
 ## Sincronização app→servidor quebrada (POST /api/pagamentos 500)
 O app envia `emprestimoId` = timestamp gerado no cliente (ex.: 1783013955454), que NÃO existe em `emprestimosTable` ⇒ violação de FK ⇒ 500 no `POST /api/pagamentos`. `POST /api/caixa/movimentos` e `/caixa/fechar` funcionam. Raiz: clientes/empréstimos do app não são criados no DB (localStorage é a fonte de verdade e usa ids-timestamp locais). Enquanto isso não for resolvido, pagamentos não persistem no servidor e o Relatório Diário só reflete o snapshot de fechamento.
 
