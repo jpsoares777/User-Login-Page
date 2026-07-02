@@ -401,7 +401,7 @@ function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendam
                   {rowContent}
                   <div style={{
                     position: "absolute", bottom: 0, left: 0, right: 0,
-                    height: 3, background: P.gold, opacity: 0.4, pointerEvents: "none",
+                    height: 3, background: P.gold, opacity: 0.6, pointerEvents: "none",
                   }} />
                 </div>
                 <div
