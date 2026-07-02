@@ -268,12 +268,17 @@ function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendam
                   </div>
                 ) : (
                   <div style={{
+                    position: "relative",
                     backgroundColor: P.card, marginBottom: 8, borderRadius: 12,
                     border: `1px solid ${P.border}`, padding: "7px 12px",
                     display: "flex", alignItems: "center", gap: 10,
                     boxShadow: "0 2px 6px rgba(15,23,42,0.07)",
                   }}>
                     {rowContent}
+                    <div style={{
+                      position: "absolute", bottom: 0, left: 0, right: 0,
+                      height: 3, background: P.gold, opacity: 0.7, pointerEvents: "none",
+                    }} />
                   </div>
                 )}
               </Fragment>
