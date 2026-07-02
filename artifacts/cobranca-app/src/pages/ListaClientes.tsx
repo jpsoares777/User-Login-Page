@@ -1644,7 +1644,16 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const novosNaoRenovSnap = novosEmpHojeSnap.filter(e => !e.renovacao);
     const clientesNovosAdiantadosSnap = novosNaoRenovSnap.filter(e => e.pagamentoAdiantado).length;
     const clientesNovosRegularesSnap = novosNaoRenovSnap.length - clientesNovosAdiantadosSnap;
-    const recebPrevisto = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0);
+    // Recebimento previsto de HOJE: mesma regra da cobrança esperada exibida no app.
+    // Inclui clientes normais (não criados hoje) e os adiantados criados hoje, somando
+    // também os adiantados que ficam em `clientesAdicionaisHoje` (sem duplicar por id).
+    const recebPrevisto =
+      clientes
+        .filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado))
+        .reduce((s, c) => s + c.parcela, 0) +
+      clientesAdicionaisHoje
+        .filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id))
+        .reduce((s, c) => s + c.parcela, 0);
     return {
       caixaFinal: caixaFinalSnap,
       snapshot: {
