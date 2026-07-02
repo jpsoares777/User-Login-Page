@@ -525,7 +525,7 @@ function HistorialModal({ row, onClose }: { row: PagRow; onClose: () => void }) 
   );
 }
 
-function PagamentosContent() {
+function PagamentosContent({ rota, rd }: { rota: string | null; rd: RotaFakeData | null }) {
   const [selectedRow, setSelectedRow] = useState<PagRow | null>(null);
 
   const cols = [
@@ -547,8 +547,36 @@ function PagamentosContent() {
   ];
 
   const parseVal = (s: string) => parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
-  const totalRecebimento = pagamentosData.reduce((a, r) => a + parseVal(r.valor), 0);
-  const totalEsperado = pagamentosData.reduce((a, r) => a + parseVal(r.valorProd), 0);
+  const fmtN = (v: number) => v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  // Dados REAIS da rota (quando o snapshot já traz a lista por cliente); senão, demo.
+  const realRows = rd?.pagamentos ?? null;
+  const usandoReal = !!realRows;
+  const rows: (PagRow & { pago: boolean; tipo: string })[] = usandoReal
+    ? realRows!.map((p, i) => ({
+        id: i + 1,
+        status: p.status,
+        consecutivo: p.consecutivo,
+        cliente: p.cliente,
+        obs: p.obs,
+        pagadas: p.pagadas,
+        formaPago: p.formaPago,
+        valor: fmtN(p.valor),
+        fecha: p.data,
+        hora: p.hora,
+        valorProd: fmtN(p.valorEmprestado),
+        sancao: "0,00",
+        saldo: fmtN(p.saldo),
+        restantes: p.restantes,
+        visitas: p.visitas,
+        freq: p.freq,
+        pago: p.pago,
+        tipo: p.tipo,
+      }))
+    : pagamentosData.map(r => ({ ...r, pago: false, tipo: r.valor !== "0,00" ? "Cuota" : "S/Pago" }));
+
+  const totalRecebimento = rows.reduce((a, r) => a + parseVal(r.valor), 0);
+  const totalEsperado = rows.reduce((a, r) => a + parseVal(r.valorProd), 0);
   const taxaPct = totalEsperado > 0 ? (totalRecebimento / totalEsperado) * 100 : 0;
   const fmtR = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 
@@ -611,7 +639,8 @@ function PagamentosContent() {
       {/* ── Count bar ── */}
       <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs text-gray-500">
-          <span className="font-bold text-gray-800">{pagamentosData.length}</span> registros encontrados
+          <span className="font-bold text-gray-800">{rows.length}</span> registros encontrados
+          {usandoReal && rota && <span className="ml-2 text-gray-400">— {rota}</span>}
         </span>
       </div>
 
@@ -632,7 +661,7 @@ function PagamentosContent() {
             </tr>
           </thead>
           <tbody>
-            {pagamentosData.map((r, i) => {
+            {rows.map((r, i) => {
               const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
               return (
                 <tr key={r.id} style={{ cursor: "pointer" }}
@@ -654,14 +683,22 @@ function PagamentosContent() {
                   <td style={tdP("left", { color: "#6b7280", fontStyle: "italic" })}>{r.obs}</td>
                   <td style={tdP("center")}>{r.pagadas}</td>
                   <td style={tdP("center")}>
-                    <span style={{
-                      display: "inline-flex", alignItems: "center", gap: 3,
-                      background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca",
-                      fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 20,
-                    }}>
-                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ef4444", display: "inline-block" }} />
-                      Não Pago
-                    </span>
+                    {(() => {
+                      const t = r.tipo;
+                      const c = t === "Cuota" ? { bg: "#f0fdf4", fg: "#15803d", bd: "#bbf7d0", dot: "#22c55e" }
+                              : t === "Abono" ? { bg: "#fffbeb", fg: "#b45309", bd: "#fde68a", dot: "#f59e0b" }
+                              : { bg: "#fef2f2", fg: "#b91c1c", bd: "#fecaca", dot: "#ef4444" };
+                      return (
+                        <span style={{
+                          display: "inline-flex", alignItems: "center", gap: 3,
+                          background: c.bg, color: c.fg, border: `1px solid ${c.bd}`,
+                          fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 20,
+                        }}>
+                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: c.dot, display: "inline-block" }} />
+                          {t}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td style={tdP("left")}>{r.formaPago}</td>
                   <td style={tdP("right", { fontWeight: 600, color: "#111827" })}>R$ {r.valor}</td>
@@ -2167,7 +2204,7 @@ function ClientesContent() {
 
 // ── Liq. Períodos ─────────────────────────────────────────────────────────────
 
-type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; clientesNovosRegulares?:number; clientesNovosAdiantados?:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; };
+type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; clientesNovosRegulares?:number; clientesNovosAdiantados?:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; pagamentos?:{ consecutivo:string; cliente:string; obs:string; pagadas:string; tipo:string; pago:boolean; formaPago:string; valor:number; data:string; hora:string; valorEmprestado:number; saldo:number; restantes:string; visitas:number; freq:string; status:"bom"|"medio"|"ruim" }[]; };
 
 // Formata o "Último Acesso Móvel" (ISO/UTC) para data-hora legível no fuso do Brasil.
 function fmtUltimoAcesso(v?: string): string {
@@ -7922,7 +7959,7 @@ export default function DashboardPage() {
         ) : activeMain === "Consolidados" ? (
           <ConsolidadosContent />
         ) : showPagamentos ? (
-          <PagamentosContent />
+          <PagamentosContent rota={selectedRota} rd={selectedRota ? (importedRotaData[selectedRota] ?? null) : null} />
         ) : showEmprestimos ? (
           <EmprestimosNovosContent />
         ) : showDespesas ? (

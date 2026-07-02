@@ -1693,6 +1693,49 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const pagosSnap = cobrados.filter(pagouHojeSnap).length;
     const semPagamentoSnap = cobrados.length - pagosSnap;
     const noPagosSnap = ausentes.length + semPagamentoSnap;
+    // Linhas por cliente para a aba "Pagamentos" da web (dados reais da rota).
+    // Universo = clientes + adicionais de hoje (dedupe por id), com dívida em aberto
+    // OU com algum pagamento registrado hoje.
+    const universoPagSnap = [
+      ...clientes,
+      ...clientesAdicionaisHoje.filter(c => !clientes.some(k => k.id === c.id)),
+    ];
+    const mapTipoSnap = (m: MetodoPagamento | undefined, pago: boolean) =>
+      m === "Parcela" ? "Cuota" : m === "Abono" ? "Abono" : m === "Sem pagamento" ? "S/Pago" : (pago ? "Cuota" : "S/Pago");
+    const pagamentosRows = universoPagSnap
+      .filter(c => c.saldo > 0 || (registroPagamentos[c.id] ?? []).some(p => p.data === dataStr))
+      .map(c => {
+        const pagsHoje = (registroPagamentos[c.id] ?? []).filter(p => p.data === dataStr);
+        const valorHoje = cobradosValores.find(x => x.id === c.id)?.valor ?? 0;
+        const abonoHoje = pagsHoje.some(p => p.metodo === "Abono");
+        const pago = valorHoje > 0 || abonoHoje;
+        const formaPix = pagsHoje.some(p => p.forma === "PIX");
+        const ultimaPag = pagsHoje[pagsHoje.length - 1];
+        const hora = ultimaPag && ultimaPag.id > 1e12
+          ? new Date(ultimaPag.id).toLocaleTimeString("pt-BR", { hour12: false })
+          : "";
+        const totalContrato = c.parcela * c.totalParcelas;
+        const restantes = Math.max(0, c.totalParcelas - c.parcelasPagas);
+        const ratio = c.totalParcelas > 0 ? c.parcelasPagas / c.totalParcelas : 0;
+        return {
+          consecutivo: String(c.id),
+          cliente: c.nome,
+          obs: "",
+          pagadas: c.parcelasPagas.toFixed(1),
+          tipo: mapTipoSnap(ultimaPag?.metodo, pago),
+          pago,
+          formaPago: formaPix ? "Transferência" : "Efectivo",
+          valor: valorHoje,
+          data: dataStr,
+          hora,
+          valorEmprestado: totalContrato,
+          saldo: c.saldo,
+          restantes: restantes.toFixed(1),
+          visitas: (registroPagamentos[c.id]?.length ?? 0),
+          freq: c.frequencia ?? "Diario",
+          status: (ratio >= 0.66 ? "bom" : ratio <= 0.33 ? "ruim" : "medio") as "bom" | "medio" | "ruim",
+        };
+      });
     return {
       caixaFinal: caixaFinalSnap,
       snapshot: {
@@ -1723,6 +1766,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         caixaFinal: caixaFinalSnap,
         carteiraFinal: carteiraFinalSnap,
         sancao: 0,
+        pagamentos: pagamentosRows,
       },
     };
   };
