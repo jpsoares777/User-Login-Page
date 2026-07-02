@@ -63,7 +63,7 @@ Ao fechar o caixa, `handleFecharCaixa` (RelatorioFinanceiro) "carimba" `caixaIni
 **Why:** PinLogin só deixa entrar em ListaClientes com o caixa aberto, então `fechamentoDia === hoje` no mount ⇒ reabertura same-day confiável. `caixaFechadoData` NÃO serve para isso — PinLogin o limpa (`saveDB({caixaFechadoData: undefined})`) ao desbloquear. Em dia novo genuíno (`fechamentoDia != hoje`) o carry-over carimbado é mantido.
 
 ## Contagens do relatório vs. merge do fechamento
-Regra de negócio: cliente criado hoje NÃO é cobrado hoje (`criadoHoje(creditoStartTimestamp)` — TelaLista já o esconde). Qualquer métrica derivada de `clientes` (Cobrança Esperada, denominador de "Cobranças Feitas") deve aplicar o MESMO filtro `!criadoHoje(...)`, senão diverge da lista após o merge do fechamento (que coloca o cliente novo em `clientes` com `creditoStartTimestamp = e.id`).
+Regra de negócio: cliente criado hoje NÃO é cobrado hoje (`criadoHoje(creditoStartTimestamp)` — TelaLista já o esconde). Qualquer métrica derivada de `clientes` OU de `clientesAdicionaisHoje` (Cobrança Esperada tem DOIS termos; denominador de "Cobranças Feitas") deve aplicar o MESMO filtro `!criadoHoje(...)` em TODOS os termos, senão diverge da lista após o merge do fechamento (cliente novo fica em `clientes` E em `clientesAdicionaisHoje` restaurado, ambos com `creditoStartTimestamp` = id do empréstimo).
 
 **Armadilha:** contagens que somam `clientes` + marcadores do dia (`novosClientesIds` etc.) contam em dobro após reabertura same-day, pois o merge coloca o cliente em `clientes` E os marcadores são restaurados. Dedupe por id contra `clientes` resolve sem mudar o dia normal (pré-fechamento o cliente novo não está em `clientes`).
 
