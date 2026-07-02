@@ -1653,11 +1653,16 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     ];
     const recebPrevisto = elegiveisCobrancaSnap.reduce((s, c) => s + c.parcela, 0);
     // "pagos"/"não pagos" contam APENAS clientes efetivamente cobrados hoje — ou seja,
-    // aqueles em que o cobrador já passou: registrou pagamento (valor > 0), marcou
+    // aqueles em que o cobrador já passou: registrou pagamento, deu Abono, marcou
     // "Sem pagamento" (fica em `cobrados` com valor 0) ou marcou ausente (`ausentes`).
     // Clientes ainda NÃO visitados não entram: só aparecem depois que o cobrador passa
     // neles. Por isso NÃO usamos os elegíveis aqui (senão contaria antes de cobrar).
-    const pagosSnap = cobrados.filter(id => (cobradosValores.find(x => x.id === id)?.valor ?? 0) > 0).length;
+    // PAGO = teve pagamento real (valor > 0) OU deu Abono hoje (o abono é registrado
+    // com valor 0, mas CONTA como pago). Só "Sem pagamento" (valor 0 e sem abono) e
+    // ausentes contam como NÃO pago.
+    const deuAbonoHoje = (id: number) => (registroPagamentos[id] ?? []).some(p => p.metodo === "Abono");
+    const pagouHojeSnap = (id: number) => (cobradosValores.find(x => x.id === id)?.valor ?? 0) > 0 || deuAbonoHoje(id);
+    const pagosSnap = cobrados.filter(pagouHojeSnap).length;
     const semPagamentoSnap = cobrados.length - pagosSnap;
     const noPagosSnap = ausentes.length + semPagamentoSnap;
     return {
