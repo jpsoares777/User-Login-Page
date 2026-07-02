@@ -8061,7 +8061,7 @@ export default function DashboardPage() {
                     <span className="font-semibold text-gray-800">{fmtV(rd.recebPrevisto)}</span>
                     <span className="text-[11px] px-1.5 rounded font-medium" style={{ background: pctBg, color: pctTxt }}>{pct} %</span>
                   </Row>
-                  <Row label="Recebimento Atual do Dia" index={3}>
+                  <Row label="Recebido Hoje" index={3}>
                     <span className="font-semibold text-gray-800">{fmtV(rd.recebAtual)}</span>
                     <span className="text-[11px] px-1.5 rounded font-medium" style={{ background: pctBg, color: pctTxt }}>{pct.toFixed(1)} %</span>
                     <span className="text-[11px] text-gray-500">pagos: <strong className="text-gray-800">{rd.pagos}</strong></span>
