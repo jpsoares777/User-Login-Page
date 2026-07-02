@@ -1627,6 +1627,12 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   // lugar para que a web sempre receba os mesmos numeros que o app calcula.
   const buildDadosSnapshot = (dataStr: string): { snapshot: DadosSnapshot; caixaFinal: number } => {
     const recebAtualSnap = cobradosValores.reduce((s, x) => s + x.valor, 0);
+    // Divisão do recebido por forma: PIX (transferência) vem dos pagamentos com forma
+    // "PIX"; o restante (Dinheiro + pagamentos antigos sem forma) conta como efetivo,
+    // garantindo que efetivo + transferência = recebAtual.
+    const pagamentosHojeSnap = Object.values(registroPagamentos).flat().filter(p => p.valor > 0 && p.data === dataStr);
+    const transferenciaSnap = Math.min(recebAtualSnap, pagamentosHojeSnap.filter(p => p.forma === "PIX").reduce((s, p) => s + p.valor, 0));
+    const efetivoSnap = Math.max(0, recebAtualSnap - transferenciaSnap);
     const totalDespesasSnap = despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const retiradaSnap = despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const totalRendimentosSnap = rendimentos.reduce((s, r) => s + r.valor, 0);
@@ -1694,8 +1700,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         recebAtual: recebAtualSnap,
         pagos: pagosSnap,
         noPagos: noPagosSnap,
-        efetivo: 0,
-        transferencia: 0,
+        efetivo: efetivoSnap,
+        transferencia: transferenciaSnap,
         novosEmp: novosEmpSnap,
         juros: jurosSnap,
         rendimentos: totalRendimentosSnap,
@@ -1830,7 +1836,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   };
 
   if (clienteSelecionado) {
-    return <ParcelaCliente cliente={{ ...clienteSelecionado, pagamentos: historicoPagamentos[clienteSelecionado.id] ?? [] }} onBack={() => setClienteSelecionado(null)} onSaved={(valor, metodo) => {
+    return <ParcelaCliente cliente={{ ...clienteSelecionado, pagamentos: historicoPagamentos[clienteSelecionado.id] ?? [] }} onBack={() => setClienteSelecionado(null)} onSaved={(valor, metodo, forma) => {
       const id = clienteSelecionado!.id;
       setCobrados(prev => prev.includes(id) ? prev : [id, ...prev]);
       setCobradosValores(prev => { const existing = prev.find(x => x.id === id); return existing ? prev.map(x => x.id === id ? { id, valor: x.valor + valor } : x) : [{ id, valor }, ...prev]; });
@@ -1862,7 +1868,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       }
       const hoje = new Date();
       const dataStr = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
-      const novoPag: Pagamento = { id: Date.now(), data: dataStr, parcela: (clienteSelecionado!.parcelasPagas ?? 0) + 1, valor, metodo };
+      const novoPag: Pagamento = { id: Date.now(), data: dataStr, parcela: (clienteSelecionado!.parcelasPagas ?? 0) + 1, valor, metodo, forma };
       setRegistroPagamentos(prev => ({ ...prev, [id]: [novoPag, ...(prev[id] ?? [])] }));
       setHistoricoPagamentos(prev => ({ ...prev, [id]: [novoPag, ...(prev[id] ?? [])] }));
       if (cobradorId > 0) {

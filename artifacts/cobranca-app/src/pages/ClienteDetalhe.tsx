@@ -5,6 +5,7 @@ import { loadFotos, saveFotoCliente, compressToBase64 } from "../lib/storage";
 type StatusType = "pago" | "pendente" | "atrasado";
 type AbaAtiva = "detalhes" | "pagamentos" | "fotos" | "agendar";
 export type MetodoPagamento = "Parcela" | "Abono" | "Sem pagamento";
+export type FormaPagamento = "Dinheiro" | "PIX";
 
 export interface Pagamento {
   id: number;
@@ -12,6 +13,7 @@ export interface Pagamento {
   parcela: number;
   valor: number;
   metodo: MetodoPagamento;
+  forma?: FormaPagamento;
 }
 
 export interface CreditoRecord {
