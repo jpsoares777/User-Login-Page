@@ -2110,12 +2110,12 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             clientesParaCobranca={clientes.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado)).length + clientesAdicionaisHoje.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id)).length}
             cobradosCount={cobrados.length}
             ausentesCount={ausentes.length}
-            novosCount={novosClientesIds.size}
+            novosCount={[...novosClientesIds].filter(id => criadoHoje(id)).length}
             renovacoesCount={renovacoesIds.size}
             renovacoesValor={emprestimentos.filter(e => (e as any).renovacao).reduce((s, e) => s + (e.valorEmprestado ?? 0), 0)}
             cobrancaDiaria={cobradosValores.reduce((s, x) => s + x.valor, 0)}
             cobrancaEsperada={clientes.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado)).reduce((s, c) => s + c.parcela, 0) + clientesAdicionaisHoje.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id)).reduce((s, c) => s + c.parcela, 0)}
-            novosEmprestimos={emprestimentos.reduce((s, e) => s + (e.valorEmprestado ?? 0), 0)}
+            novosEmprestimos={emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime())).reduce((s, e) => s + (e.valorEmprestado ?? 0), 0)}
             retiradaCaixa={despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0)}
             onSemPagamentos={() => {
               const elegiveis = [
