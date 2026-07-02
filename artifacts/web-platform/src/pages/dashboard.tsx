@@ -2168,6 +2168,16 @@ function ClientesContent() {
 // ── Liq. Períodos ─────────────────────────────────────────────────────────────
 
 type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; };
+
+// Formata o "Último Acesso Móvel" (ISO/UTC) para data-hora legível no fuso do Brasil.
+function fmtUltimoAcesso(v?: string): string {
+  if (!v) return "—";
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v;
+  const data = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "America/Sao_Paulo" });
+  const hora = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: "America/Sao_Paulo" });
+  return `${data} às ${hora}`;
+}
 const rotasFakeData: Record<string, RotaFakeData> = {
   "Rota Cred Bank A": {
     cod: 1001,
@@ -8019,7 +8029,7 @@ export default function DashboardPage() {
                       : <span className="text-amber-600 font-medium">Sistema sem Fechar</span>}
                   </Row>
                   <Row label="Último Acesso Móvel" index={3}>
-                    <CalIcon /> {rd.ultimoAcesso}
+                    <CalIcon /> <span className="text-gray-700 font-medium">{fmtUltimoAcesso(rd.ultimoAcesso)}</span>
                   </Row>
 
                   <SectionHeader title="Clientes" color="#16a34a" />
