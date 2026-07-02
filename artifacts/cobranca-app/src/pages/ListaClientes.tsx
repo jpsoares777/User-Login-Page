@@ -397,8 +397,12 @@ function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendam
                 onMouseEnter={!expandido ? e => { e.currentTarget.style.background = P.accentLight; } : undefined}
                 onMouseLeave={!expandido ? e => { e.currentTarget.style.background = P.card; } : undefined}
               >
-                <div style={{ padding: "7px 12px", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ position: "relative", padding: "7px 12px", display: "flex", alignItems: "center", gap: 10 }}>
                   {rowContent}
+                  <div style={{
+                    position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+                    width: "45%", height: 3, borderRadius: 3, background: P.gold, pointerEvents: "none",
+                  }} />
                 </div>
                 <div
                   onClick={e => e.stopPropagation()}
