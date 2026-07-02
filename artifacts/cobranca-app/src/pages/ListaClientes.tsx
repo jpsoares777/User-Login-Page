@@ -400,8 +400,8 @@ function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendam
                 <div style={{ position: "relative", padding: "7px 12px", display: "flex", alignItems: "center", gap: 10 }}>
                   {rowContent}
                   <div style={{
-                    position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-                    width: "45%", height: 3, borderRadius: 3, background: P.gold, pointerEvents: "none",
+                    position: "absolute", bottom: 0, left: 0, right: 0,
+                    height: 3, background: P.gold, pointerEvents: "none",
                   }} />
                 </div>
                 <div
