@@ -1632,6 +1632,14 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const jurosSnap = novosEmpHojeSnap.reduce((s, e) => s + (Number(e.valorEmprestado) || 0) * ((Number(e.taxaJuros) || 0) / 100), 0);
     const caixaFinalSnap = caixaInicial + recebAtualSnap + totalRendimentosSnap - novosEmpSnap - totalDespesasSnap - retiradaSnap;
     const carteiraInicialSnap = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.saldo, 0);
+    // Total a receber dos empréstimos novos de hoje (principal + juros). Excluímos:
+    // (a) renovações — já atualizam o saldo do cliente em `clientes`;
+    // (b) empréstimos cujo cliente já está em `clientes` (merge de reabertura same-day)
+    //     — senão o valor seria contado duas vezes (em carteiraInicialSnap e aqui).
+    const carteiraNovosSnap = novosEmpHojeSnap
+      .filter(e => !e.renovacao && !clientes.some(c => c.id === e.id))
+      .reduce((s, e) => s + (Number(e.valorEmprestado) || 0) * (1 + (Number(e.taxaJuros) || 0) / 100), 0);
+    const carteiraFinalSnap = carteiraInicialSnap + carteiraNovosSnap;
     const recebPrevisto = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0);
     return {
       caixaFinal: caixaFinalSnap,
@@ -1659,7 +1667,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         despesas: totalDespesasSnap,
         retirada: retiradaSnap,
         caixaFinal: caixaFinalSnap,
-        carteiraFinal: carteiraInicialSnap,
+        carteiraFinal: carteiraFinalSnap,
         sancao: 0,
       },
     };

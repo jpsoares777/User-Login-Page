@@ -101,6 +101,13 @@ Padrão que faz "cada movimentação do cobrador aparecer na web sem fechar o ca
 ## Sincronização app→servidor quebrada (POST /api/pagamentos 500)
 O app envia `emprestimoId` = timestamp gerado no cliente (ex.: 1783013955454), que NÃO existe em `emprestimosTable` ⇒ violação de FK ⇒ 500 no `POST /api/pagamentos`. `POST /api/caixa/movimentos` e `/caixa/fechar` funcionam. Raiz: clientes/empréstimos do app não são criados no DB (localStorage é a fonte de verdade e usa ids-timestamp locais). Enquanto isso não for resolvido, pagamentos não persistem no servidor e o Relatório Diário só reflete o snapshot de fechamento.
 
+## Carteira Final = total a receber (empréstimo novo do dia não está em `clientes`)
+Regra de negócio: Carteira Final = total exato a receber de TODOS os clientes (principal+juros das dívidas em aberto). Ex.: empréstimo 1.000 a 20% ⇒ 1.200.
+
+**Armadilha:** o cliente de um empréstimo NOVO do dia NÃO entra no array `clientes` no mesmo dia (fica só em `emprestimentos` + `clientesAdicionaisHoje`/`novosClientesOutras`), então somar só `clientes.saldo` dá 0. Mas na REABERTURA same-day o merge do fechamento coloca esse cliente em `clientes` E restaura `emprestimentos` ⇒ risco de contar duas vezes.
+
+**Como calcular sem double-count:** soma dos `clientes.saldo>0` (já líquida dos pagamentos do dia) + soma dos empréstimos novos de hoje que sejam NÃO-renovação E cujo id ainda NÃO esteja em `clientes`. Renovação é excluída porque já atualiza o saldo do cliente. Vale o padrão geral do arquivo: dedupe por id preferindo a cópia em `clientes` (ver seção "Contagens do relatório vs. merge").
+
 ## Pendente (próxima sessão)
 - Sincronização completa: carregar/criar clientes/empréstimos no DB com ids reais (resolver o 500 dos pagamentos por FK) — pré-requisito do tempo real durante o dia
 - Endpoint de agregação ao vivo para o Relatório Diário quando o caixa está aberto
