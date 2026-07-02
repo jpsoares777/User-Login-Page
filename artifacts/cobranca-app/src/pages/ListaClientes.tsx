@@ -2056,7 +2056,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         ? <SincronizarClientes onBack={() => setVerSincronizar(false)} salvo={salvoSinc} ordemInicial={ordemClientesIds} onOrdemChange={setOrdemClientesIds} />
         : verEmprestimentos
         ? <EmprestimosDoDia
-            lista={emprestimentos}
+            lista={emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime()))}
             onDelete={(id) => {
               if (confirm("Confirmar exclusão deste registro?")) {
                 const emp = emprestimentos.find(e => e.id === id);
