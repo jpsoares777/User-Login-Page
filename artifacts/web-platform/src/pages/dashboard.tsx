@@ -8064,8 +8064,8 @@ export default function DashboardPage() {
                   <Row label="Recebimento Atual do Dia" index={3}>
                     <span className="font-semibold text-gray-800">{fmtV(rd.recebAtual)}</span>
                     <span className="text-[11px] px-1.5 rounded font-medium" style={{ background: pctBg, color: pctTxt }}>{pct.toFixed(1)} %</span>
-                    <span className="text-[11px] text-gray-500">Pagos: <strong className="text-gray-800">{rd.pagos}</strong></span>
-                    <span className="text-[11px] text-gray-500">No Pagos: <strong className="text-red-500">{rd.noPagos}</strong></span>
+                    <span className="text-[11px] text-gray-500">pagos: <strong className="text-gray-800">{rd.pagos}</strong></span>
+                    <span className="text-[11px] text-gray-500">não pagos: <strong className="text-red-500">{rd.noPagos}</strong></span>
                   </Row>
                   <Row label="Recebimento por Tipo Pagto" index={4}>
                     <span className="text-[11px] text-gray-500">Efetivo:</span>
