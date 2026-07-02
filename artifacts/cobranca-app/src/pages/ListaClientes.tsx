@@ -2130,6 +2130,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             totalRendimentos={rendimentos.reduce((s, r) => s + r.valor, 0)}
             totalClientes={clientes.filter(c => c.saldo > 0).length + [...novosClientesIds].filter(id => !clientes.some(c => c.id === id && c.saldo > 0)).length + renovacoesIds.size}
             clientesParaCobranca={clientes.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado)).length + clientesAdicionaisHoje.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id)).length}
+            adicionaisCount={clientes.filter(c => c.saldo > 0 && criadoHoje(c.creditoStartTimestamp) && c.pagamentoAdiantado).length + clientesAdicionaisHoje.filter(c => c.saldo > 0 && criadoHoje(c.creditoStartTimestamp) && c.pagamentoAdiantado && !clientes.some(k => k.id === c.id)).length}
             cobradosCount={cobrados.length}
             ausentesCount={ausentes.length}
             novosCount={[...novosClientesIds].filter(id => criadoHoje(id)).length}

@@ -39,6 +39,7 @@ export function RelatorioFinanceiro({
   totalRendimentos = 0,
   totalClientes = 0,
   clientesParaCobranca = 0,
+  adicionaisCount = 0,
   cobradosCount = 0,
   ausentesCount = 0,
   novosCount = 0,
@@ -59,6 +60,7 @@ export function RelatorioFinanceiro({
   totalRendimentos?: number;
   totalClientes?: number;
   clientesParaCobranca?: number;
+  adicionaisCount?: number;
   cobradosCount?: number;
   ausentesCount?: number;
   novosCount?: number;
@@ -135,7 +137,7 @@ export function RelatorioFinanceiro({
         { type: "row", label: "Clientes Novos",       value: String(novosCount),  valueColor: "text-emerald-600" },
         { type: "row", label: "Clientes Ausentes",    value: String(ausentesCount) },
         { type: "row", label: "Renovação de Cliente", value: String(renovacoesCount) },
-        { type: "row", label: "Cobranças Feitas",     value: `${cobradosCount} / ${clientesParaCobranca}  —  Adicionais: 0` },
+        { type: "row", label: "Cobranças Feitas",     value: `${cobradosCount} / ${Math.max(0, clientesParaCobranca - adicionaisCount)}  —  Adicionais: ${adicionaisCount}` },
       ],
     },
     {
