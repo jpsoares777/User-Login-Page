@@ -691,9 +691,9 @@ function PagamentosContent() {
           TOTAL RECAUDO
         </span>
         <span style={{
-          fontSize: 18, fontWeight: 900, color: "#fff", background: "#15803d",
-          padding: "4px 14px", borderRadius: 8, letterSpacing: "0.02em",
-          boxShadow: "0 1px 3px rgba(21,128,61,0.35)", textAlign: "right",
+          fontSize: 14, fontWeight: 900, color: "#fff", background: "#15803d",
+          padding: "1px 10px", borderRadius: 6, letterSpacing: "0.02em",
+          textAlign: "right",
         }}>
           {fmtR(totalRecebimento)}
         </span>
