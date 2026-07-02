@@ -1652,11 +1652,14 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       ...clientesAdicionaisHoje.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id)),
     ];
     const recebPrevisto = elegiveisCobrancaSnap.reduce((s, c) => s + c.parcela, 0);
-    // "pagos" = quem realmente pagou algum valor hoje (valor > 0), mesmo que tenha quitado.
-    // "não pagos" = elegíveis que NÃO pagaram (pendentes + marcados "Sem pagamento" com valor 0).
-    // Independe de `cobrados`/`ausentes` (que são zerados ao reabrir o caixa no mesmo dia).
-    const pagosSnap = cobradosValores.filter(x => x.valor > 0).length;
-    const noPagosSnap = elegiveisCobrancaSnap.filter(c => (cobradosValores.find(x => x.id === c.id)?.valor ?? 0) === 0).length;
+    // "pagos"/"não pagos" contam APENAS clientes efetivamente cobrados hoje — ou seja,
+    // aqueles em que o cobrador já passou: registrou pagamento (valor > 0), marcou
+    // "Sem pagamento" (fica em `cobrados` com valor 0) ou marcou ausente (`ausentes`).
+    // Clientes ainda NÃO visitados não entram: só aparecem depois que o cobrador passa
+    // neles. Por isso NÃO usamos os elegíveis aqui (senão contaria antes de cobrar).
+    const pagosSnap = cobrados.filter(id => (cobradosValores.find(x => x.id === id)?.valor ?? 0) > 0).length;
+    const semPagamentoSnap = cobrados.length - pagosSnap;
+    const noPagosSnap = ausentes.length + semPagamentoSnap;
     return {
       caixaFinal: caixaFinalSnap,
       snapshot: {
