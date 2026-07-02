@@ -8079,16 +8079,16 @@ export default function DashboardPage() {
                     <span className="text-[11px]">( Juros: <strong className="text-green-600">{fmtV(rd.juros)}</strong> )</span>
                   </Row>
                   <Row label="Rendimentos" index={6}>
-                    <span className="text-blue-600 font-bold text-sm">+</span>
-                    <span className="font-semibold text-blue-700">{rd.rendimentos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                    <span className="text-green-600 font-bold text-sm">+</span>
+                    <span className="font-semibold text-green-600">{rd.rendimentos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                   </Row>
                   <Row label="Despesas" index={7}>
-                    <span className="text-gray-500 font-bold text-sm">−</span>
-                    <span className="font-semibold text-gray-600">{rd.despesas.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                    <span className="text-red-600 font-bold text-sm">−</span>
+                    <span className="font-semibold text-red-600">{rd.despesas.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                   </Row>
                   <Row label="Retirada de Caixa" index={8}>
-                    <span className="text-gray-500 font-bold text-sm">−</span>
-                    <span className="font-semibold text-gray-600">{rd.retirada.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                    <span className="text-orange-500 font-bold text-sm">−</span>
+                    <span className="font-semibold text-orange-500">{rd.retirada.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                   </Row>
                   <Row label="Caixa Final" bold index={9}>
                     <span className="text-green-700">{fmtV(rd.caixaFinal)}</span>
