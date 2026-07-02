@@ -686,7 +686,7 @@ function PagamentosContent() {
       </div>
 
       {/* ── Total flutuante ── */}
-      <div className="shrink-0 flex items-center justify-start gap-3 px-5 py-2.5" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+      <div className="shrink-0 flex items-center justify-start gap-3 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 14, fontWeight: 800, color: "#1f2937", letterSpacing: "0.06em" }}>
           TOTAL RECAUDO
         </span>
