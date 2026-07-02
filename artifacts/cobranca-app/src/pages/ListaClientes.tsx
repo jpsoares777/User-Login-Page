@@ -1644,7 +1644,13 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       .reduce((s, e) => s + (Number(e.valorEmprestado) || 0) * (1 + (Number(e.taxaJuros) || 0) / 100), 0);
     const carteiraFinalSnap = carteiraInicialSnap + carteiraNovosSnap;
     // Divisão dos clientes novos de hoje: regulares (frente) x pagamento adiantado (atrás).
-    const novosNaoRenovSnap = novosEmpHojeSnap.filter(e => !e.renovacao);
+    // EXCLUÍMOS os empréstimos novos já quitados (saldo 0): esses contam apenas em
+    // "Clientes Cancelados", não em "Clientes Novos" nem no "Total de Clientes".
+    const quitadoIdsSnap = new Set<number>([
+      ...quitadosClientes.map(q => q.id),
+      ...[...clientes, ...clientesAdicionaisHoje].filter(c => c.saldo <= 0).map(c => c.id),
+    ]);
+    const novosNaoRenovSnap = novosEmpHojeSnap.filter(e => !e.renovacao && !quitadoIdsSnap.has(e.id));
     const clientesNovosAdiantadosSnap = novosNaoRenovSnap.filter(e => e.pagamentoAdiantado).length;
     const clientesNovosRegularesSnap = novosNaoRenovSnap.length - clientesNovosAdiantadosSnap;
     // Clientes elegíveis para cobrança HOJE (mesma regra da UI): normais (não criados
