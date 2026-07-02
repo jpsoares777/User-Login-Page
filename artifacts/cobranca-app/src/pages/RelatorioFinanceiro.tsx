@@ -185,7 +185,7 @@ export function RelatorioFinanceiro({
               if (row.type === "toggle") {
                 return (
                   <div key={ri} className="flex items-center justify-between px-3 py-2">
-                    <span className="text-[11px] text-slate-600">{row.label}</span>
+                    <span className="text-[11px] font-bold text-slate-800">{row.label}</span>
                     <ToggleSwitch on={row.on} />
                   </div>
                 );
@@ -193,7 +193,7 @@ export function RelatorioFinanceiro({
               const bg = row.highlight ? "bg-blue-50" : ri % 2 === 0 ? "bg-white" : "bg-slate-50/60";
               return (
                 <div key={ri} className={`flex items-center justify-between px-3 py-[5px] border-t border-slate-100 ${bg}`}>
-                  <span className="text-[10px] text-slate-500 w-[55%]">{row.label}</span>
+                  <span className="text-[10px] font-bold text-slate-800 w-[55%]">{row.label}</span>
                   <span className={`text-[10px] text-right tabular-nums ${row.bold ? "font-bold text-blue-700" : "font-medium"} ${row.valueColor ?? "text-slate-700"}`}>
                     {row.value}
                   </span>
