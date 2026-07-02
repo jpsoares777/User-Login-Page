@@ -687,14 +687,8 @@ function PagamentosContent() {
 
       {/* ── Total flutuante ── */}
       <div className="shrink-0 flex items-center justify-start gap-3 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
-        <span style={{ fontSize: 14, fontWeight: 800, color: "#1f2937", letterSpacing: "0.06em" }}>
-          TOTAL RECAUDO
-        </span>
-        <span style={{
-          fontSize: 14, fontWeight: 900, color: "#fff", background: "#15803d",
-          padding: "1px 10px", borderRadius: 6, letterSpacing: "0.02em",
-          textAlign: "right",
-        }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL RECAUDO</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#15803d", padding: "1px 10px", borderRadius: 6 }}>
           {fmtR(totalRecebimento)}
         </span>
       </div>
@@ -1082,10 +1076,10 @@ function EmprestimosNovosContent() {
       </div>
 
       {/* ── Total flutuante ── */}
-      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+      <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL EMPRÉSTIMOS</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color: "#1d4ed8" }}>$ {fmt(totalValorProd)}</span>
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#15803d" }}>Juros: {fmt(totalJuros)}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1d4ed8", padding: "1px 10px", borderRadius: 6 }}>$ {fmt(totalValorProd)}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#15803d", padding: "1px 10px", borderRadius: 6 }}>Juros: {fmt(totalJuros)}</span>
       </div>
 
       {/* Footer */}
@@ -1189,12 +1183,12 @@ function DespesasContent() {
       </div>
 
       {/* ── Total flutuante ── */}
-      <div className="shrink-0 flex items-center justify-end gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+      <div className="shrink-0 flex items-center justify-start gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>RETIRADA DE CAIXA</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color: "#7c3aed" }}>{fmt(totalRetirada)}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#7c3aed", padding: "1px 10px", borderRadius: 6 }}>{fmt(totalRetirada)}</span>
         <span style={{ color: "#d1d5db", fontSize: 16, fontWeight: 300 }}>|</span>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL DESPESAS</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color: "#b91c1c" }}>{fmt(total)}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#b91c1c", padding: "1px 10px", borderRadius: 6 }}>{fmt(total)}</span>
       </div>
 
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
@@ -1293,9 +1287,9 @@ function RendimentosContent() {
       </div>
 
       {/* ── Total flutuante ── */}
-      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+      <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL RENDIMENTOS</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>{fmt(total)}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#15803d", padding: "1px 10px", borderRadius: 6 }}>{fmt(total)}</span>
       </div>
 
       <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
@@ -1462,9 +1456,9 @@ function AgendadosContent({ rotas = [] }: { rotas?: string[] }) {
       </div>
 
       {/* ── Total flutuante ── */}
-      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+      <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL AGENDAMENTOS</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color: "#2d5474" }}>{filtered.length}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#2d5474", padding: "1px 10px", borderRadius: 6 }}>{filtered.length}</span>
       </div>
 
       {/* ── Blue footer ── */}
@@ -1862,9 +1856,9 @@ function ClientesContent() {
       </div>
 
       {/* ── Total flutuante ── */}
-      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+      <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL SALDO CLIENTES</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>{fmt(totalSaldo)}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#15803d", padding: "1px 10px", borderRadius: 6 }}>{fmt(totalSaldo)}</span>
       </div>
 
       {/* Footer */}
@@ -2615,9 +2609,9 @@ function LiqPeriodosPagamentosContent() {
       </div>
 
       {/* ── Total row ── */}
-      <div className="shrink-0 flex items-center justify-end gap-4 px-4 py-2 border-t" style={{ background: "#f0f2f5" }}>
+      <div className="shrink-0 flex items-center justify-start gap-4 px-4 py-2 border-t" style={{ background: "#f0f2f5" }}>
         <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Total Recebido</span>
-        <span className="text-sm font-extrabold text-green-700">
+        <span className="text-sm font-extrabold text-white bg-green-700 px-2.5 py-0.5 rounded-md">
           {totalRecebido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
         </span>
       </div>
@@ -2749,9 +2743,9 @@ function VendasPorPeriodosContent() {
       </div>
 
       {/* ── Total flutuante ── */}
-      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+      <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL VENTAS</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color: "#1d4ed8" }}>{totalVendas.toLocaleString("pt-BR")}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1d4ed8", padding: "1px 10px", borderRadius: 6 }}>{totalVendas.toLocaleString("pt-BR")}</span>
       </div>
 
       {/* ── Blue footer bar (padrão) ── */}
@@ -2950,9 +2944,9 @@ function LiqPeriodosClientesContent() {
       </div>
 
       {/* ── Total ── */}
-      <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+      <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL CLIENTES</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color: "#1d4ed8" }}>{liqPerClientesData.length}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1d4ed8", padding: "1px 10px", borderRadius: 6 }}>{liqPerClientesData.length}</span>
       </div>
 
       {/* ── Barra azul rodapé ── */}
@@ -6556,15 +6550,15 @@ export default function DashboardPage() {
             </div>
 
             {/* ── Footer summary ── */}
-            <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#fff", borderTop: "1px solid #e2e8f0" }}>
+            <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#fff", borderTop: "1px solid #e2e8f0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em" }}>FATURAS PENDENTES</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "#f59e0b" }}>{faturaRows.filter(r => r.estado === "Pendente").length}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#f59e0b", padding: "1px 10px", borderRadius: 6 }}>{faturaRows.filter(r => r.estado === "Pendente").length}</span>
               </div>
               <span style={{ color: "#e2e8f0" }}>|</span>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em" }}>TOTAL USD</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "#1e40af" }}>$ {faturaRows.filter(r => r.estado !== "Pago").reduce((a, r) => a + r.valorUsd, 0)} USD</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1e40af", padding: "1px 10px", borderRadius: 6 }}>$ {faturaRows.filter(r => r.estado !== "Pago").reduce((a, r) => a + r.valorUsd, 0)} USD</span>
               </div>
             </div>
             <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
@@ -6887,9 +6881,9 @@ export default function DashboardPage() {
               </table>
             </div>
             {/* total footer */}
-            <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+            <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
               <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL RENDIMENTOS</span>
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>R$ {rendGFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#15803d", padding: "1px 10px", borderRadius: 6 }}>R$ {rendGFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
             </div>
             <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
 
@@ -7084,12 +7078,12 @@ export default function DashboardPage() {
               </table>
             </div>
             {/* total footer */}
-            <div className="shrink-0 flex items-center justify-end gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+            <div className="shrink-0 flex items-center justify-start gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
               <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>RETIRADA DE CAIXA</span>
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#7c3aed" }}>R$ {despFiltered.filter(r => r.categoria === "Retirada de Caixa").reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#7c3aed", padding: "1px 10px", borderRadius: 6 }}>R$ {despFiltered.filter(r => r.categoria === "Retirada de Caixa").reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
               <span style={{ color: "#d1d5db", fontSize: 16, fontWeight: 300 }}>|</span>
               <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL DESPESAS</span>
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#b91c1c" }}>R$ {despFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#b91c1c", padding: "1px 10px", borderRadius: 6 }}>R$ {despFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
             </div>
             {/* ── Blue footer bar (padrão) ── */}
             <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
@@ -7295,9 +7289,9 @@ export default function DashboardPage() {
                 </table>
               </div>
               {/* total footer */}
-              <div className="shrink-0 flex items-center justify-end gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+              <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL RENDIMENTOS</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>R$ {rpFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#15803d", padding: "1px 10px", borderRadius: 6 }}>R$ {rpFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
               </div>
               <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
 
@@ -7504,12 +7498,12 @@ export default function DashboardPage() {
                 </table>
               </div>
               {/* total footer */}
-              <div className="shrink-0 flex items-center justify-end gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
+              <div className="shrink-0 flex items-center justify-start gap-6 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>RETIRADA DE CAIXA</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "#7c3aed" }}>R$ {gpFiltered.filter(r => r.categoria === "Retirada de Caixa").reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#7c3aed", padding: "1px 10px", borderRadius: 6 }}>R$ {gpFiltered.filter(r => r.categoria === "Retirada de Caixa").reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
                 <span style={{ color: "#d1d5db", fontSize: 16, fontWeight: 300 }}>|</span>
                 <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL DESPESAS</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "#b91c1c" }}>R$ {gpFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#b91c1c", padding: "1px 10px", borderRadius: 6 }}>R$ {gpFiltered.reduce((a, r) => a + r.valor, 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
               </div>
               {/* blue footer bar */}
               <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
