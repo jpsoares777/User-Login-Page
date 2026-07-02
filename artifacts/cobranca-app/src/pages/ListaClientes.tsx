@@ -1624,11 +1624,6 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   // lugar para que a web sempre receba os mesmos numeros que o app calcula.
   const buildDadosSnapshot = (dataStr: string): { snapshot: DadosSnapshot; caixaFinal: number } => {
     const recebAtualSnap = cobradosValores.reduce((s, x) => s + x.valor, 0);
-    // "pagos" = quem realmente pagou hoje (valor > 0). Quem foi marcado como
-    // "Sem pagamento" fica em `cobrados` com valor 0 → conta como NÃO pago.
-    const pagosSnap = cobrados.filter(id => (cobradosValores.find(x => x.id === id)?.valor ?? 0) > 0).length;
-    const semPagamentoSnap = cobrados.length - pagosSnap;
-    const noPagosSnap = ausentes.length + semPagamentoSnap;
     const totalDespesasSnap = despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const retiradaSnap = despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const totalRendimentosSnap = rendimentos.reduce((s, r) => s + r.valor, 0);
@@ -1649,16 +1644,19 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const novosNaoRenovSnap = novosEmpHojeSnap.filter(e => !e.renovacao);
     const clientesNovosAdiantadosSnap = novosNaoRenovSnap.filter(e => e.pagamentoAdiantado).length;
     const clientesNovosRegularesSnap = novosNaoRenovSnap.length - clientesNovosAdiantadosSnap;
-    // Recebimento previsto de HOJE: mesma regra da cobrança esperada exibida no app.
-    // Inclui clientes normais (não criados hoje) e os adiantados criados hoje, somando
-    // também os adiantados que ficam em `clientesAdicionaisHoje` (sem duplicar por id).
-    const recebPrevisto =
-      clientes
-        .filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado))
-        .reduce((s, c) => s + c.parcela, 0) +
-      clientesAdicionaisHoje
-        .filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id))
-        .reduce((s, c) => s + c.parcela, 0);
+    // Clientes elegíveis para cobrança HOJE (mesma regra da UI): normais (não criados
+    // hoje) + adiantados criados hoje, vindos de `clientes` e `clientesAdicionaisHoje`,
+    // sem duplicar por id. Fonte ÚNICA para "previsto", "pagos" e "não pagos".
+    const elegiveisCobrancaSnap = [
+      ...clientes.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado)),
+      ...clientesAdicionaisHoje.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id)),
+    ];
+    const recebPrevisto = elegiveisCobrancaSnap.reduce((s, c) => s + c.parcela, 0);
+    // "pagos" = quem realmente pagou algum valor hoje (valor > 0), mesmo que tenha quitado.
+    // "não pagos" = elegíveis que NÃO pagaram (pendentes + marcados "Sem pagamento" com valor 0).
+    // Independe de `cobrados`/`ausentes` (que são zerados ao reabrir o caixa no mesmo dia).
+    const pagosSnap = cobradosValores.filter(x => x.valor > 0).length;
+    const noPagosSnap = elegiveisCobrancaSnap.filter(c => (cobradosValores.find(x => x.id === c.id)?.valor ?? 0) === 0).length;
     return {
       caixaFinal: caixaFinalSnap,
       snapshot: {
