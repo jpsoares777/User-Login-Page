@@ -2393,7 +2393,7 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
               <span className="font-semibold text-gray-800">{fmtV(mediaPorCliente)}</span>
               <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
             </Row>
-            <Row label="Recebimento Previsto" index={4}>
+            <Row label="Recebimento Previsto do Dia" index={4}>
               <span className="font-semibold text-gray-800">{fmtV(recebPrevisto)}</span>
               <span className="text-gray-400 text-[11px] ml-1">( 100% )</span>
             </Row>
