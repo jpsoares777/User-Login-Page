@@ -71,6 +71,7 @@ export interface AppDB {
   caixaFechadoData?: string;
   caixaInicialPreFechamento?: number;
   fechamentoDia?: string;
+  caixaFinal?: number;
 }
 
 export function loadDB(): AppDB | null {

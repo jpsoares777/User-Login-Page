@@ -1570,8 +1570,29 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     }
   }, []);
 
+  // Virada de dia: o saldo de caixa do dia anterior (caixaFinal) vira o caixaInicial de hoje.
+  // Assim o saldo de caixa continua de um dia para o outro, mesmo sem fechar o caixa manualmente.
+  // Guarda por lastDate !== hoje garante que so dispara em dia novo genuino (nao na reabertura
+  // same-day, tratada pelo efeito acima). Idempotente/StrictMode-safe: carimba lastDate = hoje.
+  useEffect(() => {
+    const db = loadDB();
+    const hoje = getTodayStr();
+    if (db && db.lastDate && db.lastDate !== hoje && typeof db.caixaFinal === "number") {
+      setCaixaInicial(db.caixaFinal);
+      saveDB({ caixaInicial: db.caixaFinal, lastDate: hoje, caixaInicialPreFechamento: undefined, fechamentoDia: undefined });
+    }
+  }, []);
+
   useEffect(() => {
     if (caixaFechadoHoje) return;
+    // Saldo de caixa corrente (mesma formula do RelatorioFinanceiro): persistimos como
+    // caixaFinal para que, na virada de dia, ele vire o caixaInicial do proximo dia.
+    const cobrancaDiariaVal = cobradosValores.reduce((s, x) => s + x.valor, 0);
+    const totalRendimentosVal = rendimentos.reduce((s, r) => s + r.valor, 0);
+    const novosEmprestimosVal = emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime())).reduce((s, e) => s + (e.valorEmprestado ?? 0), 0);
+    const retiradaCaixaVal = despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
+    const totalDespesasVal = despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
+    const caixaFinalVal = caixaInicial + cobrancaDiariaVal + totalRendimentosVal - novosEmprestimosVal - retiradaCaixaVal - totalDespesasVal;
     saveDB({
       lastDate: getTodayStr(),
       cobrados,
@@ -1592,10 +1613,11 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       rendimentos,
       clientes,
       historicoCreditos,
+      caixaFinal: caixaFinalVal,
     });
   }, [cobrados, ausentes, cobradosValores, registroPagamentos, historicoPagamentos, quitadosClientes,
       ordemClientesIds, cobradosExtras, emprestimentos, novosClientesIds, renovacoesIds,
-      clientesAdicionaisHoje, novosClientesOutras, agendamentos, despesas, rendimentos, clientes, historicoCreditos]);
+      clientesAdicionaisHoje, novosClientesOutras, agendamentos, despesas, rendimentos, clientes, historicoCreditos, caixaInicial]);
 
   const handleCaixaFechado = () => {
     const emprestimentosComoClientes = emprestimentos
@@ -1656,7 +1678,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       const totalDespesasSnap = despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
       const retiradaSnap = despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
       const totalRendimentosSnap = rendimentos.reduce((s, r) => s + r.valor, 0);
-      const novosEmpSnap = emprestimentos.reduce((s, e) => s + (e.valorEmprestado ?? 0), 0);
+      const novosEmpSnap = emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime())).reduce((s, e) => s + (e.valorEmprestado ?? 0), 0);
       const caixaFinalSnap = caixaInicial + recebAtualSnap + totalRendimentosSnap - novosEmpSnap - totalDespesasSnap - retiradaSnap;
       const carteiraInicialSnap = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.saldo, 0);
       const recebPrevisto = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0);

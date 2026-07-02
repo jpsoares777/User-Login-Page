@@ -67,6 +67,15 @@ Regra de negócio: cliente criado hoje NÃO é cobrado hoje (`criadoHoje(credito
 
 **Armadilha:** contagens que somam `clientes` + marcadores do dia (`novosClientesIds` etc.) contam em dobro após reabertura same-day, pois o merge coloca o cliente em `clientes` E os marcadores são restaurados. Dedupe por id contra `clientes` resolve sem mudar o dia normal (pré-fechamento o cliente novo não está em `clientes`). Isso vale também para a RENDERIZAÇÃO: toda união `clientesBase + clientesAdicionais` (TelaLista `todosClientes`) precisa deduplicar por id preferindo `clientes` (é a cópia que recebe pagamento/reversão de saldo; a de `clientesAdicionaisHoje` fica stale) — senão o cliente adiantado aparece duplicado ao apagar uma cobrança.
 
+## Carry-over automático do Saldo de Caixa entre dias
+O Saldo de Caixa deve continuar de um dia para o outro: `caixaInicial` de hoje = saldo final de ontem, TODOS os dias — não só ao "Fechar Caixa" manual. Mecanismo: persistir o saldo corrente como `caixaFinal` (campo em `AppDB`) no useEffect de save (guardado por `caixaFechadoHoje`), e um useEffect de mount que, se `db.lastDate !== hoje && typeof db.caixaFinal === "number"`, faz `setCaixaInicial(db.caixaFinal)` + `saveDB({caixaInicial, lastDate:hoje, limpa caixaInicialPreFechamento/fechamentoDia})`.
+
+**Why:** sem isso, se o dia vira sem fechamento manual, os deltas diários (cobrados/despesas/rendimentos — date-checked) resetam e `caixaInicial` fica o do início do dia anterior → o saldo do dia anterior "some". O carry-over por fechamento manual só cobria o caso do "Fechar Caixa".
+
+**Guarda de dias:** `lastDate !== hoje` só dispara em dia novo genuíno; reabertura same-day é tratada pelo efeito un-bake (`fechamentoDia === hoje`). Carimbar `lastDate = hoje` torna o carry-over idempotente/StrictMode-safe. Empréstimos NÃO são date-checked, então `caixaFinal` deve filtrar empréstimos por `criadoHoje` (senão empréstimos antigos descontariam de novo).
+
+**CRÍTICO — fórmula do saldo em 3 lugares idênticos:** `caixaInicial + cobrancaDiaria + totalRendimentos - novosEmprestimos(criadoHoje) - retiradaCaixa - totalDespesas`. Deve ser IGUAL em (1) `RelatorioFinanceiro` (exibição, linha do `saldo`), (2) persistência de `caixaFinal` no useEffect, (3) `handleCaixaFechado` (`caixaFinalSnap`/`novosEmpSnap` enviados à API). O `novosEmpSnap` do fechamento manual DEVE filtrar `criadoHoje` igual aos outros dois, senão o snapshot/API diverge do saldo local e do carry-over.
+
 ## Pendente (próxima sessão)
 - Sincronização completa: carregar clientes/empréstimos da API ao abrir o app
 - Testar fluxo ponta a ponta: cobrador registra pagamento → aparece na Plataforma Web
