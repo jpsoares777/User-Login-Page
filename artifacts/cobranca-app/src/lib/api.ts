@@ -211,6 +211,8 @@ export type DadosSnapshot = {
   clientesIniciais: number;
   sincronizados: number;
   clientesNovos: number;
+  clientesNovosRegulares?: number;
+  clientesNovosAdiantados?: number;
   renovados: number;
   cancelados: number;
   caixaInicial: number;

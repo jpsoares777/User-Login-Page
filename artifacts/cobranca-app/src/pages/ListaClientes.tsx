@@ -1640,6 +1640,10 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       .filter(e => !e.renovacao && !clientes.some(c => c.id === e.id))
       .reduce((s, e) => s + (Number(e.valorEmprestado) || 0) * (1 + (Number(e.taxaJuros) || 0) / 100), 0);
     const carteiraFinalSnap = carteiraInicialSnap + carteiraNovosSnap;
+    // Divisão dos clientes novos de hoje: regulares (frente) x pagamento adiantado (atrás).
+    const novosNaoRenovSnap = novosEmpHojeSnap.filter(e => !e.renovacao);
+    const clientesNovosAdiantadosSnap = novosNaoRenovSnap.filter(e => e.pagamentoAdiantado).length;
+    const clientesNovosRegularesSnap = novosNaoRenovSnap.length - clientesNovosAdiantadosSnap;
     const recebPrevisto = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.parcela, 0);
     return {
       caixaFinal: caixaFinalSnap,
@@ -1650,7 +1654,9 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         ultimoAcesso: new Date().toISOString(),
         clientesIniciais: clientes.filter(c => c.saldo > 0).length,
         sincronizados: clientes.filter(c => c.saldo > 0).length,
-        clientesNovos: novosClientesIds.size,
+        clientesNovos: novosNaoRenovSnap.length,
+        clientesNovosRegulares: clientesNovosRegularesSnap,
+        clientesNovosAdiantados: clientesNovosAdiantadosSnap,
         renovados: renovacoesIds.size,
         cancelados: quitadosClientes.length,
         caixaInicial,
