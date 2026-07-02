@@ -1624,6 +1624,11 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   // lugar para que a web sempre receba os mesmos numeros que o app calcula.
   const buildDadosSnapshot = (dataStr: string): { snapshot: DadosSnapshot; caixaFinal: number } => {
     const recebAtualSnap = cobradosValores.reduce((s, x) => s + x.valor, 0);
+    // "pagos" = quem realmente pagou hoje (valor > 0). Quem foi marcado como
+    // "Sem pagamento" fica em `cobrados` com valor 0 → conta como NÃO pago.
+    const pagosSnap = cobrados.filter(id => (cobradosValores.find(x => x.id === id)?.valor ?? 0) > 0).length;
+    const semPagamentoSnap = cobrados.length - pagosSnap;
+    const noPagosSnap = ausentes.length + semPagamentoSnap;
     const totalDespesasSnap = despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const retiradaSnap = despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const totalRendimentosSnap = rendimentos.reduce((s, r) => s + r.valor, 0);
@@ -1672,8 +1677,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         carteiraInicial: carteiraInicialSnap,
         recebPrevisto,
         recebAtual: recebAtualSnap,
-        pagos: cobrados.length,
-        noPagos: ausentes.length,
+        pagos: pagosSnap,
+        noPagos: noPagosSnap,
         efetivo: 0,
         transferencia: 0,
         novosEmp: novosEmpSnap,
