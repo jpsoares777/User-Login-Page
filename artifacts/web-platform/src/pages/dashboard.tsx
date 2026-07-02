@@ -2744,7 +2744,7 @@ function VendasPorPeriodosContent() {
 
       {/* ── Total flutuante ── */}
       <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL VENTAS</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL EMPRESTADO</span>
         <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1d4ed8", padding: "1px 10px", borderRadius: 6 }}>{totalVendas.toLocaleString("pt-BR")}</span>
       </div>
 
