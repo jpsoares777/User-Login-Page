@@ -138,6 +138,13 @@ Sintoma: um campo novo do `snapshot` (ex.: `pagamentos`) some no banco (chave AU
 
 **Limpeza:** ao injetar linha de teste no snapshot para provar o pipeline, remover depois com `UPDATE caixa SET dados_snapshot=(dados_snapshot::jsonb - 'pagamentos')::text WHERE id=...`.
 
+## Crash pré-existente: fmtV no "Relatório Diário" da web (NÃO é da feature Pagamentos)
+`dashboard.tsx`, bloco de render `Liq. Diária > Relatório Diário` (IIFE após `const rd = importedRotaData[...] ?? rotasFakeData[...]`): `const fmtV = (n:number)=>...n.toLocaleString(...)` e chamadas diretas `rd.rendimentos/despesas/retirada.toLocaleString(...)` quebram com `Cannot read properties of undefined (reading 'toLocaleString')` quando a rota selecionada (ex.: São Bento) tem CAIXA ABERTO e o snapshot ao vivo chega PARCIAL (sem alguns campos financeiros: caixaInicial, carteiraInicial, rendimentos, despesas, retirada, recebPrevisto, recebAtual). Derruba toda a `DashboardPage`.
+
+**Correção (puramente defensiva, independente da feature Pagamentos):** `fmtV = (n: number|undefined|null) => \`$ ${(n ?? 0).toLocaleString(...)}\``; guardar as 3 chamadas diretas com `(rd.campo ?? 0)`; `pct` com `(rd.recebPrevisto ?? 0)`/`(rd.recebAtual ?? 0)`; `totalClientes = (rd.clientesIniciais ?? 0) + (rd.clientesNovos ?? 0)` (evita `NaN` na UI).
+
+**Why/armadilha:** o bug é do CÓDIGO BASE, não da aba Pagamentos. Um revert para "antes da feature Pagamentos" REINTRODUZ o crash — comprovado: após restaurar os arquivos ao commit base, o mesmo erro voltou em fmtV. Se reverter de novo, reaplicar SÓ esses guards.
+
 ## Pendente (próxima sessão)
 - Sincronização completa: carregar/criar clientes/empréstimos no DB com ids reais (resolver o 500 dos pagamentos por FK) — pré-requisito do tempo real durante o dia
 - Endpoint de agregação ao vivo para o Relatório Diário quando o caixa está aberto
