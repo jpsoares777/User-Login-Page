@@ -149,7 +149,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
         {/* Client Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2.5 mb-2">
           <div className="flex items-center justify-between gap-2 mb-1.5">
-            <h2 className="font-bold text-[#1B2236] text-xs leading-tight truncate">{cliente.nome}</h2>
+            <h2 className="font-extrabold text-[#1B2236] text-xs leading-tight truncate">{cliente.nome}</h2>
             <span className="bg-blue-50 text-[#1B2236] text-[9px] font-bold px-1.5 py-0.5 rounded border border-blue-100 whitespace-nowrap flex-shrink-0">
               Nº {cliente.consecutivo ?? "--"}
             </span>
