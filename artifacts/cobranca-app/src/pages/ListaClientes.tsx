@@ -1750,6 +1750,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       .filter(e => !e.renovacao && !clientes.some(c => c.id === e.id))
       .map(e => ({
         id: e.id,
+        consecutivo: e.consecutivo,
         nome: e.nomeCliente,
         parcela: e.valorParcela,
         // Saldo = dívida real (capital + juros) = valor da parcela × total de parcelas.
@@ -1943,7 +1944,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
           setHistoricoPagamentos(prev => ({ ...prev, [idOriginal]: [] }));
 
           setClientes(prev => prev.map(c => c.id === idOriginal
-            ? { ...c, parcela: novaParcela, totalParcelas: novoTotal, parcelasPagas: 0, saldo: novoSaldo, creditoStartTimestamp: renovacaoTs, frequencia: emp.frequencia ?? c.frequencia, taxaJuros: emp.taxaJuros, pagamentoAdiantado: emp.pagamentoAdiantado }
+            ? { ...c, consecutivo: emp.consecutivo ?? c.consecutivo, parcela: novaParcela, totalParcelas: novoTotal, parcelasPagas: 0, saldo: novoSaldo, creditoStartTimestamp: renovacaoTs, frequencia: emp.frequencia ?? c.frequencia, taxaJuros: emp.taxaJuros, pagamentoAdiantado: emp.pagamentoAdiantado }
             : c
           ));
           setQuitadosClientes(prev => prev.filter(q => q.id !== idOriginal));
@@ -1953,6 +1954,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
           setRenovacoesIds(prev => new Set([...prev, idOriginal]));
           setEmprestimentos(prev => [...prev, {
             id: Date.now(),
+            consecutivo: emp.consecutivo,
             nomeCliente: clienteParaRenovar!.nome,
             diario: emp.diario,
             frequencia: emp.frequencia,
@@ -2280,6 +2282,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             setNovosClientesIds(prev => new Set([...prev, emp.id]));
             const novoCliente: ClienteItem = {
               id: emp.id,
+              consecutivo: emp.consecutivo,
               nome: emp.nomeCliente,
               parcela: emp.valorParcela,
               // Saldo = dívida real (capital + juros) = valor da parcela × total de parcelas.

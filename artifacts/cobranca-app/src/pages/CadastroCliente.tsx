@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 
 import { Emprestimo } from "./EmprestimosDoDia";
-import { compressToBase64, saveFotoCliente } from "../lib/storage";
+import { compressToBase64, saveFotoCliente, gerarConsecutivoUnico } from "../lib/storage";
 
 const P_CC = { headerTop: "#3A5F82", headerBot: "#4A6F8E" };
 
@@ -169,6 +169,7 @@ export function CadastroCliente({ onBack, onSalvar, initialData }: {
     setShowConfirmacao(true);
 
     const clienteId = Date.now();
+    const consecutivo = gerarConsecutivoUnico();
 
     const fotosParaSalvar: { id: number; nome: string; base64: string }[] = [];
     const docLabels = [
@@ -190,6 +191,7 @@ export function CadastroCliente({ onBack, onSalvar, initialData }: {
     if (onSalvar) {
       onSalvar({
         id: clienteId,
+        consecutivo,
         nomeCliente: [loanForm.nome, loanForm.sobrenome].filter(Boolean).join(" ").toUpperCase() || "CLIENTE",
         diario: loanForm.frequencia === "Diário",
         frequencia: loanForm.frequencia,

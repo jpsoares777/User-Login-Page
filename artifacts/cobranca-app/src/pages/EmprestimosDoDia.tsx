@@ -21,6 +21,7 @@ export interface Emprestimo {
   uf?: string;
   renovacao?: boolean;
   clienteId?: number;
+  consecutivo?: string;
 }
 
 export const emprestimentosIniciais: Emprestimo[] = [];
@@ -95,6 +96,11 @@ export function EmprestimosDoDia({ lista = [], onDelete, onBack }: Props) {
                   <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: "#111827", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {emp.nomeCliente}
                   </p>
+                  {emp.consecutivo && (
+                    <p style={{ margin: "1px 0 0", fontSize: 9, fontWeight: 600, color: "#6b7280", fontFamily: "monospace", letterSpacing: 0.3 }}>
+                      Nº {emp.consecutivo}
+                    </p>
+                  )}
                 </div>
                 <span style={{ flexShrink: 0, fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: emp.diario ? "#dbeafe" : emp.frequencia === "Semanal" ? "#fef3c7" : "#ede9fe", color: emp.diario ? "#2563eb" : emp.frequencia === "Semanal" ? "#d97706" : "#7c3aed" }}>
                   {emp.frequencia ?? (emp.diario ? "Diário" : "Mensal")}

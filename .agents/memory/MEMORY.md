@@ -1,1 +1,2 @@
 - [Cobrador app — integração e ícones](cobrador-integracao.md) — ícones exigem import.meta.env.BASE_URL (JSX e objetos JS); sincronização com API ainda pendente.
+- [Consecutivo (id do empréstimo)](consecutivo-identificacao.md) — número único de 10 dígitos por empréstimo; unicidade via registro localStorage + varredura do DB; propaga em cadastro/renovação/fechamento.

@@ -31,6 +31,7 @@ export interface CreditoRecord {
 export interface ClienteItem {
   id: number;
   nome: string;
+  consecutivo?: string;
   parcela: number;
   saldo: number;
   status: string;
