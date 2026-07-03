@@ -407,11 +407,25 @@ function DesempenhoContent({ rotas = [] }: { rotas?: string[] }) {
 
 // ── Pagamentos ────────────────────────────────────────────────────────────────
 
-const pagamentosData = [
-  { id: 1, status: "bom", consecutivo: "8148743898", cliente: "5673 46234623", obs: "", pagadas: "0.0", formaPago: "", valor: "0,00", fecha: "2026-07-03", hora: "12:17:17", valorProd: "600,00", sancao: "0,00", saldo: "600,00", restantes: "20.0", visitas: 0, freq: "Diario" },
-];
-
-type PagRow = typeof pagamentosData[0];
+type PagRow = {
+  id: number;
+  status: string;
+  consecutivo: string;
+  cliente: string;
+  obs: string;
+  pagadas: string;
+  tipo: string;
+  formaPago: string;
+  valor: string;
+  fecha: string;
+  hora: string;
+  valorProd: string;
+  sancao: string;
+  saldo: string;
+  restantes: string;
+  visitas: number;
+  freq: string;
+};
 
 function TipoBadge({ tipo }: { tipo: string }) {
   const cfg =
@@ -502,7 +516,7 @@ function HistorialModal({ row, onClose }: { row: PagRow; onClose: () => void }) 
   );
 }
 
-function PagamentosContent() {
+function PagamentosContent({ rows }: { rows: PagRow[] }) {
   const [selectedRow, setSelectedRow] = useState<PagRow | null>(null);
 
   const cols = [
@@ -524,8 +538,8 @@ function PagamentosContent() {
   ];
 
   const parseVal = (s: string) => parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
-  const totalRecebimento = pagamentosData.reduce((a, r) => a + parseVal(r.valor), 0);
-  const totalEsperado = pagamentosData.reduce((a, r) => a + parseVal(r.valorProd), 0);
+  const totalRecebimento = rows.reduce((a, r) => a + parseVal(r.valor), 0);
+  const totalEsperado = rows.reduce((a, r) => a + parseVal(r.valorProd), 0);
   const taxaPct = totalEsperado > 0 ? (totalRecebimento / totalEsperado) * 100 : 0;
   const fmtR = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 
@@ -588,7 +602,7 @@ function PagamentosContent() {
       {/* ── Count bar ── */}
       <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs text-gray-500">
-          <span className="font-bold text-gray-800">{pagamentosData.length}</span> registros encontrados
+          <span className="font-bold text-gray-800">{rows.length}</span> registros encontrados
         </span>
       </div>
 
@@ -609,7 +623,7 @@ function PagamentosContent() {
             </tr>
           </thead>
           <tbody>
-            {pagamentosData.map((r, i) => {
+            {rows.map((r, i) => {
               const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
               return (
                 <tr key={r.id} style={{ cursor: "pointer" }}
@@ -631,7 +645,7 @@ function PagamentosContent() {
                   <td style={tdP("left", { color: "#6b7280", fontStyle: "italic" })}>{r.obs}</td>
                   <td style={tdP("center")}>{r.pagadas}</td>
                   <td style={tdP("center")}>
-                    <span style={{ display: "inline-flex", justifyContent: "center" }}><TipoBadge tipo="S/PAG." /></span>
+                    <span style={{ display: "inline-flex", justifyContent: "center" }}><TipoBadge tipo={r.tipo} /></span>
                   </td>
                   <td style={tdP("left")}>{r.formaPago}</td>
                   <td style={tdP("right", { fontWeight: 600, color: "#111827" })}>R$ {r.valor}</td>
@@ -2137,7 +2151,7 @@ function ClientesContent() {
 
 // ── Liq. Períodos ─────────────────────────────────────────────────────────────
 
-type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; clientesNovosRegulares?:number; clientesNovosAdiantados?:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; };
+type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; clientesNovosRegulares?:number; clientesNovosAdiantados?:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; pagamentosClientes?:PagRow[]; };
 
 // Formata o "Último Acesso Móvel" (ISO/UTC) para data-hora legível no fuso do Brasil.
 function fmtUltimoAcesso(v?: string): string {
@@ -7892,7 +7906,7 @@ export default function DashboardPage() {
         ) : activeMain === "Consolidados" ? (
           <ConsolidadosContent />
         ) : showPagamentos ? (
-          <PagamentosContent />
+          <PagamentosContent rows={selectedRota ? ((importedRotaData[selectedRota]?.pagamentosClientes ?? []) as PagRow[]) : []} />
         ) : showEmprestimos ? (
           <EmprestimosNovosContent />
         ) : showDespesas ? (

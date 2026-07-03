@@ -203,6 +203,29 @@ export async function getCaixaAberto(cobradorId: number): Promise<boolean> {
   }
 }
 
+// Um cliente COBRADO hoje (só entra aqui quem o cobrador efetivamente visitou:
+// pagou, deu abono ou marcou "sem pagamento"). É o que a web mostra na aba
+// Pagamentos em tempo real.
+export type PagamentoClienteSnapshot = {
+  id: number;
+  status: string;      // "bom" | "ruim" | "alerta"
+  consecutivo: string;
+  cliente: string;
+  obs: string;
+  pagadas: string;
+  tipo: string;        // "S/PAG." | "ABONO" | "PARC."
+  formaPago: string;   // "" | "Dinheiro" | "PIX"
+  valor: string;       // "80,00"
+  fecha: string;
+  hora: string;
+  valorProd: string;   // valor total do empréstimo
+  sancao: string;
+  saldo: string;
+  restantes: string;
+  visitas: number;
+  freq: string;
+};
+
 export type DadosSnapshot = {
   cod: number;
   dataInicio: string;
@@ -231,6 +254,7 @@ export type DadosSnapshot = {
   caixaFinal: number;
   carteiraFinal: number;
   sancao: number;
+  pagamentosClientes?: PagamentoClienteSnapshot[];
 };
 
 export async function postFechamentoCaixaAPI(data: {

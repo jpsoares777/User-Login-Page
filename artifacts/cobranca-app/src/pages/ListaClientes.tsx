@@ -1712,6 +1712,47 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const pagosSnap = cobrados.filter(pagouHojeSnap).length;
     const semPagamentoSnap = cobrados.length - pagosSnap;
     const noPagosSnap = ausentes.length + semPagamentoSnap;
+
+    // Lista por cliente COBRADO hoje (o que a web mostra na aba Pagamentos em
+    // tempo real). Só entra quem o cobrador efetivamente visitou (está em
+    // `cobrados`). Cliente ainda não cobrado NÃO aparece.
+    const fmtBRSnap = (v: number) => (Number(v) || 0).toFixed(2).replace(".", ",");
+    const fontesClientesSnap = [...clientes, ...clientesAdicionaisHoje];
+    const pagamentosClientesSnap = cobrados.map((cid) => {
+      const cli = fontesClientesSnap.find(c => c.id === cid);
+      if (!cli) return null;
+      const valorPagoSnap = cobradosValores.find(x => x.id === cid)?.valor ?? 0;
+      const pagsHojeCli = (registroPagamentos[cid] ?? []).filter(p => p.data === dataStr);
+      const deuAbonoCli = pagsHojeCli.some(p => p.metodo === "Abono");
+      const temPixCli = pagsHojeCli.some(p => p.forma === "PIX" && p.valor > 0);
+      const formaCli = valorPagoSnap > 0 ? (temPixCli ? "PIX" : "Dinheiro") : "";
+      const tipoCli = deuAbonoCli ? "ABONO" : (valorPagoSnap > 0 ? "PARC." : "S/PAG.");
+      const ultimoPag = pagsHojeCli[pagsHojeCli.length - 1];
+      const horaCli = ultimoPag && Number.isFinite(ultimoPag.id)
+        ? new Date(ultimoPag.id).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+        : "";
+      const restantesCli = Math.max(0, (cli.totalParcelas ?? 0) - (cli.parcelasPagas ?? 0));
+      return {
+        id: cid,
+        status: "bom",
+        consecutivo: cli.consecutivo ?? "",
+        cliente: cli.nome,
+        obs: "",
+        pagadas: String(cli.parcelasPagas ?? 0),
+        tipo: tipoCli,
+        formaPago: formaCli,
+        valor: fmtBRSnap(valorPagoSnap),
+        fecha: dataStr,
+        hora: horaCli,
+        valorProd: fmtBRSnap((cli.parcela ?? 0) * (cli.totalParcelas ?? 0)),
+        sancao: "0,00",
+        saldo: fmtBRSnap(cli.saldo ?? 0),
+        restantes: String(restantesCli),
+        visitas: 1,
+        freq: cli.frequencia ?? "Diario",
+      };
+    }).filter((x): x is NonNullable<typeof x> => x !== null);
+
     return {
       caixaFinal: caixaFinalSnap,
       snapshot: {
@@ -1742,6 +1783,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         caixaFinal: caixaFinalSnap,
         carteiraFinal: carteiraFinalSnap,
         sancao: 0,
+        pagamentosClientes: pagamentosClientesSnap,
       },
     };
   };
