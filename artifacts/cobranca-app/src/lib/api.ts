@@ -203,25 +203,6 @@ export async function getCaixaAberto(cobradorId: number): Promise<boolean> {
   }
 }
 
-export type PagamentoRow = {
-  consecutivo: string;
-  cliente: string;
-  obs: string;
-  pagadas: string;
-  tipo: string;
-  pago: boolean;
-  formaPago: string;
-  valor: number;
-  data: string;
-  hora: string;
-  valorEmprestado: number;
-  saldo: number;
-  restantes: string;
-  visitas: number;
-  freq: string;
-  status: "bom" | "medio" | "ruim";
-};
-
 export type DadosSnapshot = {
   cod: number;
   dataInicio: string;
@@ -250,7 +231,6 @@ export type DadosSnapshot = {
   caixaFinal: number;
   carteiraFinal: number;
   sancao: number;
-  pagamentos?: PagamentoRow[];
 };
 
 export async function postFechamentoCaixaAPI(data: {
