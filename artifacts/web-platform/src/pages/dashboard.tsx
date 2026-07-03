@@ -8045,11 +8045,11 @@ export default function DashboardPage() {
                     <p className="text-xs text-gray-400">Importe o arquivo XLS da rota no painel direito</p>
                   </div>
                 );
-                const fmtV = (n: number) => `$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-                const pct = rd.recebPrevisto > 0 ? Math.round((rd.recebAtual / rd.recebPrevisto) * 100) : 0;
+                const fmtV = (n: number | undefined | null) => `$ ${(n ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+                const pct = (rd.recebPrevisto ?? 0) > 0 ? Math.round(((rd.recebAtual ?? 0) / (rd.recebPrevisto ?? 0)) * 100) : 0;
                 const pctBg = pct >= 80 ? "#dbeafe" : pct >= 50 ? "#fef3c7" : "#fee2e2";
                 const pctTxt = pct >= 80 ? "#1d4ed8" : pct >= 50 ? "#d97706" : "#dc2626";
-                const totalClientes = rd.clientesIniciais + rd.clientesNovos;
+                const totalClientes = (rd.clientesIniciais ?? 0) + (rd.clientesNovos ?? 0);
                 return (<>
                   <SectionHeader title="Dados da Rota" color="#2563eb" />
                   <Row label="Cobrador" index={0}>
@@ -8118,15 +8118,15 @@ export default function DashboardPage() {
                   </Row>
                   <Row label="Rendimentos" index={6}>
                     <span className="text-green-600 font-bold text-sm">+</span>
-                    <span className="font-semibold text-green-600">{rd.rendimentos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                    <span className="font-semibold text-green-600">{(rd.rendimentos ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                   </Row>
                   <Row label="Despesas" index={7}>
                     <span className="text-red-600 font-bold text-sm">−</span>
-                    <span className="font-semibold text-red-600">{rd.despesas.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                    <span className="font-semibold text-red-600">{(rd.despesas ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                   </Row>
                   <Row label="Retirada de Caixa" index={8}>
                     <span className="text-orange-500 font-bold text-sm">−</span>
-                    <span className="font-semibold text-orange-500">{rd.retirada.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                    <span className="font-semibold text-orange-500">{(rd.retirada ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                   </Row>
                   <Row label="Caixa Final" bold index={9}>
                     <span className="text-green-700">{fmtV(rd.caixaFinal)}</span>
