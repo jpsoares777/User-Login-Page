@@ -131,6 +131,10 @@ A aba `Liq. Diária > Pagamentos` (dashboard.tsx `PagamentosContent`) mostra dad
 - `valorProd` (col. "Valor Empr.") = `parcela * totalParcelas` (total do contrato com juros), NÃO o principal.
 - `valor` = valor pago hoje (`cobradosValores`); `saldo` = `cli.saldo`; `restantes` = `totalParcelas - parcelasPagas`.
 
+**Coluna "Nro." (armadilha):** é a ORDEM de cobrança (1º cobrado=1, 2º=2...), renderizada como `i + 1` do índice da linha — NÃO `r.id` (que é o id do empréstimo, um timestamp gigante que estoura a coluna). A ordem vem de `pagamentosClientes` ser montado percorrendo `cobrados` (ordem de cobrança).
+
+**Modal "Histórico de Pagamentos" (HistorialModal) = REAL:** cada linha de `pagamentosClientes` carrega `historico?: {nro,tipo,valor,fecha}[]`, mapeado no app de `registroPagamentos[cid]` (TODOS os pagamentos do cliente, todas as datas): `nro=idx+1`, `tipo` (Abono→ABONO / valor>0→PARC. / senão S/PAG.), `valor=p.valor`, `fecha=p.data`. O modal ordena desc por `nro` (mais recente no topo) e "TOTAL PAGOS" = soma de TODOS os `valor` (inclui abono monetário; S/PAG. soma 0). Coluna Observações fica vazia (registros reais não têm obs). O array `hist` HARDCODED ("Operacion Masiva") foi REMOVIDO.
+
 **Padrão reutilizável:** para levar QUALQUER dado novo do app para a web durante o dia, basta adicioná-lo ao objeto `snapshot` de `buildDadosSnapshot` e ao tipo `DadosSnapshot` (app) + `RotaFakeData` (web) — o passthrough + heartbeat 15s + polling 10s cuidam do resto. Evite deixar os dois shapes divergirem manualmente.
 
 ## Diagnóstico: snapshot chega SEM um campo novo mesmo com o dev servindo o código certo

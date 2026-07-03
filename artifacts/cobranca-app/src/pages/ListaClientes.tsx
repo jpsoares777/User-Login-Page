@@ -1732,6 +1732,12 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         ? new Date(ultimoPag.id).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
         : "";
       const restantesCli = Math.max(0, (cli.totalParcelas ?? 0) - (cli.parcelasPagas ?? 0));
+      const historicoCli = (registroPagamentos[cid] ?? []).map((p, idx) => ({
+        nro: idx + 1,
+        tipo: p.metodo === "Abono" ? "ABONO" : (p.valor > 0 ? "PARC." : "S/PAG."),
+        valor: p.valor,
+        fecha: p.data,
+      }));
       return {
         id: cid,
         status: "bom",
@@ -1750,6 +1756,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         restantes: String(restantesCli),
         visitas: 1,
         freq: cli.frequencia ?? "Diario",
+        historico: historicoCli,
       };
     }).filter((x): x is NonNullable<typeof x> => x !== null);
 

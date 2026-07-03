@@ -224,6 +224,9 @@ export type PagamentoClienteSnapshot = {
   restantes: string;
   visitas: number;
   freq: string;
+  // Histórico completo de pagamentos do cliente (todas as datas), para o
+  // modal "Histórico de Pagamentos" da web.
+  historico?: { nro: number; tipo: string; valor: number; fecha: string }[];
 };
 
 export type DadosSnapshot = {

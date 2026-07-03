@@ -425,6 +425,7 @@ type PagRow = {
   restantes: string;
   visitas: number;
   freq: string;
+  historico?: { nro: number; tipo: string; valor: number; fecha: string }[];
 };
 
 function TipoBadge({ tipo }: { tipo: string }) {
@@ -444,13 +445,8 @@ function TipoBadge({ tipo }: { tipo: string }) {
 }
 
 function HistorialModal({ row, onClose }: { row: PagRow; onClose: () => void }) {
-  const hist = [
-    { nro: 4, tipo: "S/PAG.", valor: 0.00,  fecha: "2026-05-25", obs: "Operacion Masiva" },
-    { nro: 3, tipo: "S/PAG.", valor: 0.00,  fecha: "2026-04-28", obs: "Operacion Masiva" },
-    { nro: 2, tipo: "ABONO",  valor: 0.00,  fecha: "2026-04-17", obs: "Operacion Masiva" },
-    { nro: 1, tipo: "PARC.",  valor: 80.00, fecha: "2026-04-16", obs: "Cuota"            },
-  ];
-  const total = hist.filter(h => h.tipo === "PARC.").reduce((s, h) => s + h.valor, 0);
+  const hist = [...(row.historico ?? [])].sort((a, b) => b.nro - a.nro);
+  const total = hist.reduce((s, h) => s + h.valor, 0);
   const trunc = (n: string) => n.length > 22 ? n.slice(0, 19) + "..." : n;
 
   return (
@@ -497,7 +493,7 @@ function HistorialModal({ row, onClose }: { row: PagRow; onClose: () => void }) 
                   <td style={{ padding: "8px 14px", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}><TipoBadge tipo={h.tipo} /></td>
                   <td style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, color: "#374151", textAlign: "right", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>R$ {h.valor.toFixed(2).replace(".", ",")}</td>
                   <td style={{ padding: "8px 14px", fontSize: 13, color: "#6b7280", borderBottom: "1px solid #f0f0f0", whiteSpace: "nowrap" }}>{h.fecha}</td>
-                  <td style={{ padding: "8px 14px", fontSize: 12, color: "#9ca3af", borderBottom: "1px solid #f0f0f0" }}>{h.obs === "Cuota" ? "" : h.obs}</td>
+                  <td style={{ padding: "8px 14px", fontSize: 12, color: "#9ca3af", borderBottom: "1px solid #f0f0f0" }} />
                 </tr>
               ))}
             </tbody>
