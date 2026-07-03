@@ -29,7 +29,7 @@ function calcAtrasadas(pagamentos?: { id: number; metodo: string; data: string }
 }
 
 function MiniLabel({ children }: { children: React.ReactNode }) {
-  return <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wide">{children}</span>;
+  return <span className="text-[9px] font-bold text-gray-600 uppercase tracking-wide">{children}</span>;
 }
 
 function ValueBox({ label, value, highlight, bold }: {
@@ -178,7 +178,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
               <div key={label} className="bg-gray-50 rounded-lg p-1.5 flex flex-col items-center gap-0.5">
                 <span style={{ fontSize: 9, color: iconColor, fontWeight: 700 }}>{icon}</span>
                 <p className={`text-xs font-bold leading-none ${color}`}>{value}</p>
-                <p className="text-[8px] font-bold text-gray-400 text-center leading-tight">{label}</p>
+                <p className="text-[8px] font-bold text-gray-600 text-center leading-tight">{label}</p>
               </div>
             ))}
           </div>
@@ -193,7 +193,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
                 </svg>
               </div>
               <div className="text-left min-w-0">
-                <p className="text-[8px] font-bold text-gray-400 leading-tight">Telefone</p>
+                <p className="text-[8px] font-bold text-gray-600 leading-tight">Telefone</p>
                 <p className="text-[9px] font-bold text-[#1B2236] truncate">{cliente.telefone}</p>
               </div>
             </button>
@@ -217,7 +217,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
 
         {/* Payment Type */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2.5 mb-2">
-          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tipo de Pagamento</p>
+          <p className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Tipo de Pagamento</p>
           <div className="flex gap-1.5">
             {([
               { val: "parcela", label: "Parcela" },
@@ -238,7 +238,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
 
         {/* Financial Fields */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2.5 mb-2">
-          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Valores</p>
+          <p className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Valores</p>
           <div className="grid grid-cols-2 gap-2">
             <ValueBox label="Total Crédito" value={`R$ ${totalCredito.toFixed(2)}`} />
             <ValueBox label="Saldo Atual" value={`R$ ${saldoAtual.toFixed(2)}`} highlight="yellow" />
@@ -305,7 +305,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
 
         {/* Payment Method */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2.5 mb-2 relative z-20" ref={dropdownRef}>
-          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Forma de Pagamento</p>
+          <p className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Forma de Pagamento</p>
           <button onClick={() => setDropdownOpen(v => !v)}
             className={`w-full flex items-center gap-2 border rounded-lg px-2.5 py-1.5 transition-all text-xs ${
               dropdownOpen ? "border-[#1B2236] bg-blue-50" : "border-gray-200 bg-gray-50 hover:border-gray-300"
@@ -344,7 +344,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
 
         {/* Observations + Save */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2.5">
-          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Observações</p>
+          <p className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mb-1">Observações</p>
           <textarea value={observacao} onChange={(e) => setObservacao(e.target.value)}
             className="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 resize-none focus:outline-none focus:border-[#1B2236] transition-colors mb-2"
             rows={2} placeholder="Adicione uma observação..." />
