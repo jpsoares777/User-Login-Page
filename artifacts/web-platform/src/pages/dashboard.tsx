@@ -631,14 +631,7 @@ function PagamentosContent() {
                   <td style={tdP("left", { color: "#6b7280", fontStyle: "italic" })}>{r.obs}</td>
                   <td style={tdP("center")}>{r.pagadas}</td>
                   <td style={tdP("center")}>
-                    <span style={{
-                      display: "inline-flex", alignItems: "center", gap: 3,
-                      background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca",
-                      fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 20,
-                    }}>
-                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ef4444", display: "inline-block" }} />
-                      Não Pago
-                    </span>
+                    <span style={{ display: "inline-flex", justifyContent: "center" }}><TipoBadge tipo="S/PAG." /></span>
                   </td>
                   <td style={tdP("left")}>{r.formaPago}</td>
                   <td style={tdP("right", { fontWeight: 600, color: "#111827" })}>R$ {r.valor}</td>
