@@ -597,7 +597,7 @@ export function ClienteDetalhe({ cliente, onClose, onAddAgendamento }: { cliente
       </div>
       {aba === "detalhes" && (
         <div className="cd-body">
-          <InfoRow label="Nº De Registro" value={`#${cliente.id}`} />
+          <InfoRow label="Nº De Registro" value={`Nº ${cliente.consecutivo ?? "--"}`} />
           <InfoRow label="Data Do Crédito" value="30/03/2026" highlight />
           <InfoRow label="CPF" value={cliente.cpf || "—"} />
           <InfoRow label="Valor" value={`R$ ${(cliente.parcela * cliente.totalParcelas).toFixed(2)}`} highlight />
