@@ -251,7 +251,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
                   type="text"
                   inputMode="decimal"
                   value={valorParcelaStr}
-                  disabled={paymentType === "sem"}
+                  disabled={paymentType !== "abono"}
                   onFocus={() => setValorParcelaStr("")}
                   onBlur={() => {
                     const parsed = parseFloat(valorParcelaStr.replace(",", "."));
