@@ -408,7 +408,7 @@ function DesempenhoContent({ rotas = [] }: { rotas?: string[] }) {
 // ── Pagamentos ────────────────────────────────────────────────────────────────
 
 const pagamentosData = [
-  { id: 1, status: "bom", consecutivo: "6751929022", cliente: "5673 46234623", obs: "", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-07-03", hora: "12:17:17", valorProd: "600,00", sancao: "0,00", saldo: "600,00", restantes: "20.0", visitas: 0, freq: "Diario" },
+  { id: 1, status: "bom", consecutivo: "8148743898", cliente: "5673 46234623", obs: "", pagadas: "0.0", formaPago: "Efectivo", valor: "0,00", fecha: "2026-07-03", hora: "12:17:17", valorProd: "600,00", sancao: "0,00", saldo: "600,00", restantes: "20.0", visitas: 0, freq: "Diario" },
 ];
 
 type PagRow = typeof pagamentosData[0];
