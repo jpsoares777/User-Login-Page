@@ -1,5 +1,5 @@
 import { useState, useEffect, Fragment, type ReactNode } from "react";
-import { loadDB, saveDB, getTodayStr } from "../lib/storage";
+import { loadDB, saveDB, getTodayStr, gerarConsecutivoUnico } from "../lib/storage";
 import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, type DadosSnapshot } from "../lib/api";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ParcelaCliente } from "./ParcelaCliente";
@@ -1593,6 +1593,25 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       setCaixaInicial(db.caixaFinal);
       saveDB({ caixaInicial: db.caixaFinal, lastDate: hoje, caixaInicialPreFechamento: undefined, fechamentoDia: undefined });
     }
+  }, []);
+
+  // Backfill: garante que todo cliente/empréstimo já existente (criado antes do
+  // consecutivo) receba um número de identificação de 10 dígitos. O guard
+  // persistente (consecutivoBackfillDone) é gravado de forma síncrona antes de
+  // gerar, tornando o efeito idempotente mesmo sob React StrictMode (mount duplo).
+  useEffect(() => {
+    if (loadDB()?.consecutivoBackfillDone) return;
+    saveDB({ consecutivoBackfillDone: true });
+    setClientes(prev =>
+      prev.some(c => !c.consecutivo)
+        ? prev.map(c => (c.consecutivo ? c : { ...c, consecutivo: gerarConsecutivoUnico() }))
+        : prev
+    );
+    setEmprestimentos(prev =>
+      prev.some(e => !e.consecutivo)
+        ? prev.map(e => (e.consecutivo ? e : { ...e, consecutivo: gerarConsecutivoUnico() }))
+        : prev
+    );
   }, []);
 
   useEffect(() => {

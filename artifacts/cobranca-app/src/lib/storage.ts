@@ -73,6 +73,7 @@ export interface AppDB {
   caixaInicialPreFechamento?: number;
   fechamentoDia?: string;
   caixaFinal?: number;
+  consecutivoBackfillDone?: boolean;
 }
 
 export function loadDB(): AppDB | null {

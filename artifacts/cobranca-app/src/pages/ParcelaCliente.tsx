@@ -8,6 +8,7 @@ const PAYMENT_METHODS = [
 type Cliente = {
   id: number;
   nome: string;
+  consecutivo?: string;
   parcela: number;
   saldo: number;
   status: string;
@@ -76,7 +77,6 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
   const progresso = Math.round((cliente.parcelasPagas / cliente.totalParcelas) * 100);
   const parcelasPendentes = cliente.totalParcelas - cliente.parcelasPagas;
   const nomeExibicao = cliente.nome.split(" ").slice(0, 3).join(" ");
-  const codigo = String(1000 + cliente.id * 37).padStart(4, "0");
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -151,7 +151,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
           <div className="flex items-center justify-between gap-2 mb-1.5">
             <h2 className="font-bold text-[#1B2236] text-xs leading-tight truncate">{cliente.nome}</h2>
             <span className="bg-blue-50 text-[#1B2236] text-[9px] font-bold px-1.5 py-0.5 rounded border border-blue-100 whitespace-nowrap flex-shrink-0">
-              #{codigo}
+              Nº {cliente.consecutivo ?? "--"}
             </span>
           </div>
 
