@@ -29,7 +29,7 @@ function calcAtrasadas(pagamentos?: { id: number; metodo: string; data: string }
 }
 
 function MiniLabel({ children }: { children: React.ReactNode }) {
-  return <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{children}</span>;
+  return <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wide">{children}</span>;
 }
 
 function ValueBox({ label, value, highlight, bold }: {
@@ -178,7 +178,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
               <div key={label} className="bg-gray-50 rounded-lg p-1.5 flex flex-col items-center gap-0.5">
                 <span style={{ fontSize: 9, color: iconColor, fontWeight: 700 }}>{icon}</span>
                 <p className={`text-xs font-bold leading-none ${color}`}>{value}</p>
-                <p className="text-[8px] text-gray-400 text-center leading-tight">{label}</p>
+                <p className="text-[8px] font-bold text-gray-400 text-center leading-tight">{label}</p>
               </div>
             ))}
           </div>
@@ -193,7 +193,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
                 </svg>
               </div>
               <div className="text-left min-w-0">
-                <p className="text-[8px] text-gray-400 leading-tight">Telefone</p>
+                <p className="text-[8px] font-bold text-gray-400 leading-tight">Telefone</p>
                 <p className="text-[9px] font-bold text-[#1B2236] truncate">{cliente.telefone}</p>
               </div>
             </button>
@@ -208,7 +208,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
                 </svg>
               </div>
               <div className="text-left min-w-0">
-                <p className="text-[8px] text-green-600 leading-tight font-medium">Cobrar via</p>
+                <p className="text-[8px] text-green-600 leading-tight font-bold">Cobrar via</p>
                 <p className="text-[9px] font-bold text-green-700">WhatsApp</p>
               </div>
             </button>
