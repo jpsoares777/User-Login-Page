@@ -629,7 +629,7 @@ function PagamentosContent({ rows }: { rows: PagRow[] }) {
                 <tr key={r.id} style={{ cursor: "pointer" }}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
-                  <td style={tdP("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdP("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{i + 1}</td>
                   <td style={tdP("left", { color: "#2563eb", fontWeight: 700 })}>
                     <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.consecutivo}</span>
                   </td>
