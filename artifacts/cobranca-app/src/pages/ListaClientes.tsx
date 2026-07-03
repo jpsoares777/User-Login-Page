@@ -1669,14 +1669,28 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const jurosSnap = novosEmpHojeSnap.reduce((s, e) => s + (Number(e.valorEmprestado) || 0) * ((Number(e.taxaJuros) || 0) / 100), 0);
     const caixaFinalSnap = caixaInicial + recebAtualSnap + totalRendimentosSnap - novosEmpSnap - totalDespesasSnap - retiradaSnap;
     const carteiraInicialSnap = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.saldo, 0);
-    // Total a receber dos empréstimos novos de hoje (principal + juros). Excluímos:
-    // (a) renovações — já atualizam o saldo do cliente em `clientes`;
-    // (b) empréstimos cujo cliente já está em `clientes` (merge de reabertura same-day)
-    //     — senão o valor seria contado duas vezes (em carteiraInicialSnap e aqui).
-    const carteiraNovosSnap = novosEmpHojeSnap
-      .filter(e => !e.renovacao && !clientes.some(c => c.id === e.id))
+    // Carteira Final = total a receber ao fim do dia. É a soma de DUAS fontes, sem
+    // duplicar por id:
+    //  (1) SALDO ATUAL de todos os clientes ativos já representados nos arrays
+    //      (`clientes` + `clientesAdicionaisHoje`). Como o saldo desconta cada pagamento,
+    //      essa parte cai a cada cobrança — inclusive para clientes novos ADIANTADOS,
+    //      que entram em `clientesAdicionaisHoje` e são cobrados no mesmo dia.
+    //  (2) Total a receber (principal + juros) dos empréstimos novos de hoje que ainda
+    //      NÃO viraram cliente ativo (não-adiantados ficam só em `emprestimentos` até o
+    //      fechamento). Eles só começam a ser cobrados amanhã, então não têm pagamento
+    //      hoje e entram pelo valor cheio. Excluímos renovações (já atualizam o saldo em
+    //      `clientes`) e ids já representados em (1), para não contar duas vezes.
+    const idsRepresentadosSnap = new Set<number>([
+      ...clientes.map(c => c.id),
+      ...clientesAdicionaisHoje.map(c => c.id),
+    ]);
+    const carteiraSaldosSnap = [...clientes, ...clientesAdicionaisHoje.filter(c => !clientes.some(k => k.id === c.id))]
+      .filter(c => c.saldo > 0)
+      .reduce((s, c) => s + c.saldo, 0);
+    const carteiraNovosNaoRepSnap = novosEmpHojeSnap
+      .filter(e => !e.renovacao && !idsRepresentadosSnap.has(e.id))
       .reduce((s, e) => s + (Number(e.valorEmprestado) || 0) * (1 + (Number(e.taxaJuros) || 0) / 100), 0);
-    const carteiraFinalSnap = carteiraInicialSnap + carteiraNovosSnap;
+    const carteiraFinalSnap = carteiraSaldosSnap + carteiraNovosNaoRepSnap;
     // Divisão dos clientes novos de hoje: regulares (frente) x pagamento adiantado (atrás).
     // EXCLUÍMOS os empréstimos novos já quitados (saldo 0): esses contam apenas em
     // "Clientes Cancelados", não em "Clientes Novos" nem no "Total de Clientes".
