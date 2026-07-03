@@ -129,6 +129,15 @@ A aba `Liq. Diária > Pagamentos` (dashboard.tsx `PagamentosContent`) mostra dad
 
 **Padrão reutilizável:** para levar QUALQUER dado novo do app para a web durante o dia, basta adicioná-lo ao objeto `snapshot` de `buildDadosSnapshot` e ao tipo `DadosSnapshot` (app) + `RotaFakeData` (web) — o passthrough + heartbeat 15s + polling 10s cuidam do resto. Evite deixar os dois shapes divergirem manualmente.
 
+## Diagnóstico: snapshot chega SEM um campo novo mesmo com o dev servindo o código certo
+Sintoma: um campo novo do `snapshot` (ex.: `pagamentos`) some no banco (chave AUSENTE, não `[]`) enquanto os agregados chegam certos. Chave ausente (não vazia) ⇒ o código que RODOU não tinha a linha `campo: valor` (JSON.stringify só dropa `undefined`; um array vazio viraria `[]`). Como `buildDadosSnapshot` sempre produz array, ausência = **o app rodou bundle antigo**.
+
+**Como isolar rápido (ordem):** (1) `curl $REPLIT_DEV_DOMAIN/cobranca/src/pages/ListaClientes.tsx` e grep pela linha no bundle transpilado — confirma que o DEV serve o código novo. (2) Teste o servidor isolado: `curl -X POST .../api/caixa/snapshot-vivo` com um `pagamentos:[{...}]` de teste e cheque `json_array_length` no banco + `curl .../api/caixa/fechamento-rota?rota=...` — se voltar o array, servidor+banco+web estão OK e o único elo quebrado é o app enviar. (3) Cheque `atualizado_em` do caixa: se atualiza só em reload (minutos, não 15s) e continua sem o campo após restart do workflow + hard refresh do usuário → o app NÃO está pegando o código novo do dev.
+
+**Causa raiz típica:** o usuário/cobrador usa a **versão PUBLICADA** do app (deploy), cujo bundle é anterior à correção; `API_BASE="/api"` (mesma origem) faz o app publicado postar no MESMO banco de dev, então os snapshots aparecem aqui e confundem — parece dev, mas é o publicado. **Correção:** REPUBLICAR o app (o commit da correção precisa ir para o deploy). Reiniciar workflow e pedir reload NÃO resolvem e não devem ser repetidos. Dados da rota vivem só no localStorage daquele app; não dá para reconstruir no servidor (não há clientes/empréstimos da rota no DB — os empréstimos existentes são de cobradores de teste 1‑3).
+
+**Limpeza:** ao injetar linha de teste no snapshot para provar o pipeline, remover depois com `UPDATE caixa SET dados_snapshot=(dados_snapshot::jsonb - 'pagamentos')::text WHERE id=...`.
+
 ## Pendente (próxima sessão)
 - Sincronização completa: carregar/criar clientes/empréstimos no DB com ids reais (resolver o 500 dos pagamentos por FK) — pré-requisito do tempo real durante o dia
 - Endpoint de agregação ao vivo para o Relatório Diário quando o caixa está aberto
