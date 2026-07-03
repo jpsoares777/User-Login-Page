@@ -228,7 +228,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
                 className={`flex-1 py-1.5 px-1 rounded-lg text-[10px] font-semibold transition-all border active:scale-95 ${
                   paymentType === val
                     ? "bg-[#1B2236] text-white border-[#1B2236] shadow"
-                    : "bg-gray-50 text-gray-500 border-transparent hover:border-gray-200"
+                    : "bg-gray-200 text-gray-700 border-gray-300 hover:bg-gray-300"
                 }`}>
                 {label}
               </button>
