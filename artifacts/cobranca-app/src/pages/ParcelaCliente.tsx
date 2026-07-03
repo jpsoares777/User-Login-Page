@@ -265,7 +265,7 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
                     const parsed = parseFloat(raw.replace(",", "."));
                     if (!isNaN(parsed) && parsed > 0) setValorParcela(Math.min(parsed, saldoAtual));
                   }}
-                  className="flex-1 bg-transparent px-1 py-1.5 text-xs font-medium text-[#1B2236] focus:outline-none disabled:text-gray-400 w-0"
+                  className="flex-1 bg-transparent px-1 py-1.5 text-xs font-bold text-[#1B2236] focus:outline-none disabled:text-[#1B2236] w-0"
                 />
               </div>
             </div>
