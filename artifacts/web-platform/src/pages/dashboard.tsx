@@ -685,6 +685,7 @@ function PagamentosContent({ rows }: { rows: PagRow[] }) {
 const emprestimosData = [
   { id: 1,  consec: "4700627026", freq: "Diário",    valorAnt: 600.00,  cliente: "Andrela de Jesus Costa Araújo",  tag: "Renovado", documento: "91633427315",  celular: "98985014328",  valorProd: 800.00,  parcelas: 14, pctJuros: 40, valorJuros: 320.00,  valorParcela: 80.00,  dataVenda: "2026-03-30 14:03:51", parcRest: 0,  saldo: 0.00,    numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
   { id: 2,  consec: "4700627089", freq: "Diário",    valorAnt: 0.00,    cliente: "Geilson Eduardo Rosa de Jesus",   tag: "Novo",     documento: "00503307300",  celular: "9885397102",   valorProd: 700.00,  parcelas: 14, pctJuros: 40, valorJuros: 280.00,  valorParcela: 70.00,  dataVenda: "2026-03-30 19:39:09", parcRest: 10, saldo: 700.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
+  { id: 3,  consec: "4700627090", freq: "Diário",    valorAnt: 0.00,    cliente: "Daniele Texeira Lindoso",         tag: "Novo",     documento: "01148713379",  celular: "559899687036", valorProd: 1000.00, parcelas: 14, pctJuros: 40, valorJuros: 400.00,  valorParcela: 100.00, dataVenda: "2026-03-30 21:03:29", parcRest: 9,  saldo: 900.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
 ];
 
 type EmpRow = typeof emprestimosData[0];
