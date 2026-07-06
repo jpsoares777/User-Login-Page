@@ -4965,6 +4965,7 @@ export default function DashboardPage() {
   const [buscarRotaOpen, setBuscarRotaOpen] = useState(false);
   const emptyBuscarRota = { nome: "", codigo: "", estadoFechamento: "", uf: "" };
   const [buscarRotaForm, setBuscarRotaForm] = useState(emptyBuscarRota);
+  const [buscarRotaMsg, setBuscarRotaMsg] = useState<string | null>(null);
   const [collapsedCidades, setCollapsedCidades] = useState<Set<string>>(new Set());
   const [collapsedEstadoMain, setCollapsedEstadoMain] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -5273,12 +5274,12 @@ export default function DashboardPage() {
       setGaSolicitacoes(data);
     } catch { /* silent */ }
   };
-  const [rotasAPI, setRotasAPI] = useState<{ rota: string; estadoUF: string | null; cidade: string | null; ativo: boolean }[]>([]);
+  const [rotasAPI, setRotasAPI] = useState<{ rota: string; estadoUF: string | null; cidade: string | null; ativo: boolean; codigoAcesso: string | null }[]>([]);
   const fetchRotasAPI = () => {
     fetch('/api/aplicativos')
       .then(r => r.json())
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((data: any[]) => setRotasAPI(data.map((d: any) => ({ rota: d.rota, estadoUF: d.estado, cidade: d.cidade, ativo: d.ativo }))))
+      .then((data: any[]) => setRotasAPI(data.map((d: any) => ({ rota: d.rota, estadoUF: d.estado, cidade: d.cidade, ativo: d.ativo, codigoAcesso: d.codigoAcesso ?? null }))))
       .catch(() => {});
   };
   useEffect(() => { fetchRotasAPI(); }, []);
@@ -5321,6 +5322,36 @@ export default function DashboardPage() {
     const fromEstados = Object.values(estadosData).flat().map(i => i.vendedor);
     return Array.from(new Set(fromEstados));
   }, [estadosData]);
+
+  const handleBuscarRota = () => {
+    const nome = buscarRotaForm.nome.trim().toLowerCase();
+    const codigo = buscarRotaForm.codigo.trim().toLowerCase();
+    const fech = buscarRotaForm.estadoFechamento;
+    const uf = buscarRotaForm.uf;
+    if (!uf) { setBuscarRotaMsg("Selecione o Estado (UF)."); return; }
+    const estadoNome = ufToEstadoNome[uf] ?? uf.toUpperCase();
+    const items = estadosData[estadoNome] ?? [];
+    if (items.length === 0) { setBuscarRotaMsg(`Nenhuma rota encontrada em ${estadoNome}.`); return; }
+    const filtradas = items.filter(i => {
+      const nomeOk = !nome || i.vendedor.toLowerCase().includes(nome);
+      const cod = (importedRotaData[i.vendedor]?.codigoAcesso
+        ?? rotasAPI.find(r => r.rota === i.vendedor)?.codigoAcesso
+        ?? "").toLowerCase();
+      const codigoOk = !codigo || cod.includes(codigo);
+      const fechOk = !fech || (fech === "aberto" ? i.ativa : !i.ativa);
+      return nomeOk && codigoOk && fechOk;
+    });
+    if (filtradas.length === 0) { setBuscarRotaMsg("Nenhuma rota encontrada com esses critérios."); return; }
+    setSelectedEstado(estadoNome);
+    setHasSearched(true);
+    setCollapsedEstadoMain(false);
+    const cidadesComMatch = new Set(filtradas.map(f => f.cidade));
+    const todasCidades = Array.from(new Set(items.map(i => i.cidade)));
+    setCollapsedCidades(new Set(todasCidades.filter(c => !cidadesComMatch.has(c))));
+    setSelectedRota(filtradas.length === 1 ? filtradas[0].vendedor : null);
+    setBuscarRotaMsg(null);
+    setBuscarRotaOpen(false);
+  };
 
   const gaFetch = async (rota?: string, nome?: string, codigo?: string) => {
     setGaLoading(true);
@@ -8431,7 +8462,7 @@ export default function DashboardPage() {
           <div style={{ background: "#fff", borderRadius: 6, width: "100%", maxWidth: 480, boxShadow: "0 8px 32px rgba(0,0,0,0.25)", overflow: "hidden" }}>
             <div style={{ background: "#3d6e8e", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Buscar Rota</span>
-              <button onClick={() => setBuscarRotaOpen(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: 20, lineHeight: 1 }}>×</button>
+              <button onClick={() => { setBuscarRotaOpen(false); setBuscarRotaMsg(null); }} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: 20, lineHeight: 1 }}>×</button>
             </div>
             <div style={{ padding: "22px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -8463,13 +8494,18 @@ export default function DashboardPage() {
                   ))}
                 </select>
               </div>
+              {buscarRotaMsg && (
+                <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#b91c1c", borderRadius: 4, padding: "8px 10px", fontSize: 12, fontWeight: 600 }}>
+                  {buscarRotaMsg}
+                </div>
+              )}
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "12px 24px 18px", borderTop: "1px solid #f1f5f9" }}>
-              <button onClick={() => setBuscarRotaOpen(false)}
+              <button onClick={() => { setBuscarRotaOpen(false); setBuscarRotaMsg(null); }}
                 style={{ height: 34, padding: "0 20px", borderRadius: 4, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                 Cancelar
               </button>
-              <button onClick={() => setBuscarRotaOpen(false)}
+              <button onClick={handleBuscarRota}
                 style={{ height: 34, padding: "0 24px", borderRadius: 4, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                 Buscar
               </button>
