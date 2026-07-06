@@ -1868,7 +1868,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
       </div>
 
       {/* Footer */}
-      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+      <div className="shrink-0 flex items-center px-4 py-1 border-t" style={{ background: "#3d6e8e" }} />
 
       {/* ── Cliente detail modal ─────────────────────────────────────── */}
       {selectedCliente && (() => {
