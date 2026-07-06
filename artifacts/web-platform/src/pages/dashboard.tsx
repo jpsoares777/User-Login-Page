@@ -847,8 +847,20 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
   const [selectedHistRow, setSelectedHistRow] = useState<number | null>(null);
 
   const hist: HistVendaRow[] = historicoVendasPorEmp[row.consec] ?? [
-    { nro: 2, data: "2026-04-08", estado: "Quitado",          parcelas: 20, parcPagas: 12.4, parcFalt: 7.6, sancao: 0, valorEmpr: 2100, vrParc: 105, freq: "Diário", visitas: 5,  pctJuros: 40 },
-    { nro: 1, data: "2026-03-14", estado: "Quitado",          parcelas: 14, parcPagas: 14,   parcFalt: 0,   sancao: 0, valorEmpr: 840,  vrParc: 60,  freq: "Diário", visitas: 8,  pctJuros: 40 },
+    {
+      nro: 1,
+      data: (row.dataVenda || "").slice(0, 10),
+      estado: row.parcRest <= 0 ? "Quitado" : "Ativo",
+      parcelas: row.parcelas,
+      parcPagas: Math.max(0, row.parcelas - row.parcRest),
+      parcFalt: Math.max(0, row.parcRest),
+      sancao: 0,
+      valorEmpr: row.valorProd + row.valorJuros,
+      vrParc: row.valorParcela,
+      freq: row.freq,
+      visitas: 0,
+      pctJuros: row.pctJuros,
+    },
   ];
 
   const totalEmpr = hist.reduce((a, h) => a + h.valorEmpr, 0);

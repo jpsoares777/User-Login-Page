@@ -29,3 +29,15 @@ cobrando; sem ele no snapshot, toda a ficha do cliente no admin fica zerada.
 **How to apply:** qualquer nova view do admin que dependa do "empréstimo ativo"
 deve confiar na entrada ACTIVO do `historico` do snapshot. O status é sempre
 gravado como `"ACTIVO"` (não "ATIVO") — manter consistente nos dois lados.
+
+## Modal "Histórico de Empréstimos" (aba Novos Empréstimos)
+
+`HistorialVendasModal` no admin usava um fallback HARDCODED de 2 quitados falsos
+($2100 + $840) quando `historicoVendasPorEmp[row.consec]` não existia. Clientes
+reais (não presentes no mapa demo) mostravam esse histórico inventado.
+
+**Fix:** o fallback agora deriva UMA linha do próprio `EmpRow` real (empréstimo
+atual): `parcPagas = parcelas - parcRest`, `parcFalt = parcRest` (na tabela,
+Pagas + Falt = total de parcelas — "Falt." é restantes, NÃO atrasadas),
+`valorEmpr = valorProd + valorJuros`, estado `parcRest <= 0 ? "Quitado" : "Ativo"`.
+O mapa `historicoVendasPorEmp` continua tendo precedência para os clientes demo.
