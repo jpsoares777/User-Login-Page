@@ -1220,7 +1220,6 @@ function RendimentosContent({ rows }: { rows: RendRow[] }) {
   const cols = [
     { label: "Nro.",          w: 54,  align: "center" as const },
     { label: "Categoria",     w: 150, align: "center" as const },
-    { label: "Descrição",     w: 300, align: "left"   as const },
     { label: "Valor",         w: 120, align: "right"  as const },
     { label: "Data",          w: 110, align: "center" as const },
     { label: "Hora",          w: 80,  align: "center" as const },
@@ -1275,7 +1274,6 @@ function RendimentosContent({ rows }: { rows: RendRow[] }) {
                       background: cat.bg, color: cat.text, border: `1px solid ${cat.border}`,
                     }}>{r.categoria}</span>
                   </td>
-                  <td style={tdR("left", { color: "#374151" })}>{r.descricao}</td>
                   <td style={tdR("right", { fontWeight: 700, color: "#15803d" })}>{fmt(r.valor)}</td>
                   <td style={tdR("center", { color: "#6b7280" })}>{r.data}</td>
                   <td style={tdR("center", { color: "#6b7280" })}>{r.hora}</td>
