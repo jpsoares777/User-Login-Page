@@ -8562,7 +8562,7 @@ export default function DashboardPage() {
                   <Row label="Carteira Inicial" bold index={1}>
                     <span className="text-green-700">{fmtV(rd.carteiraInicial)}</span>
                   </Row>
-                  <Row label="Recebimento Previsto" index={2}>
+                  <Row label="Recebimento Previsto Hoje" index={2}>
                     <span className="font-semibold text-gray-800">{fmtV(rd.recebPrevisto)}</span>
                     <span className="text-[11px] px-1.5 rounded font-medium" style={{ background: pctBg, color: pctTxt }}>{pct} %</span>
                   </Row>
