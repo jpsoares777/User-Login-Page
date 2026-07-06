@@ -166,7 +166,7 @@ router.get("/caixa/liquidacao-periodo", async (req, res): Promise<void> => {
 
   const num = (v: unknown) => (Number(v) || 0);
   let recebPrevisto = 0, recebAtual = 0, novosEmp = 0, juros = 0, rendimentos = 0,
-      despesas = 0, retirada = 0, clientesNovos = 0, renovados = 0;
+      despesas = 0, retirada = 0, clientesNovos = 0, renovados = 0, cancelados = 0;
   let primeiro: any = null, ultimo: any = null;
   let registros = 0;
 
@@ -187,6 +187,7 @@ router.get("/caixa/liquidacao-periodo", async (req, res): Promise<void> => {
     retirada      += num(snap.retirada);
     clientesNovos += num(snap.clientesNovos);
     renovados     += num(snap.renovados);
+    cancelados    += num(snap.cancelados);
   }
 
   if (registros === 0 || !primeiro || !ultimo) { res.json({ encontrado: false, registros: 0 }); return; }
@@ -206,6 +207,7 @@ router.get("/caixa/liquidacao-periodo", async (req, res): Promise<void> => {
     retirada,
     clientesNovos,
     renovados,
+    cancelados,
     caixaInicial: num(primeiro.caixaInicial),
     caixaFinal: num(ultimo.caixaFinal),
     carteiraInicial: num(primeiro.carteiraInicial),

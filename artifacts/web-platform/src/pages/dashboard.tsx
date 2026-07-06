@@ -3433,20 +3433,56 @@ const resumoRow = {
   cajaFinal: 3369.00, sancao: 0.00,
 };
 
-function ResumoContent() {
-  const [cobrador,    setCobrador]    = useState(resumoRow.vendedor);
-  const [dataInicial, setDataInicial] = useState(resumoRow.fechaInicial);
-  const [dataFinal,   setDataFinal]   = useState(resumoRow.fechaFinal);
+function ResumoContent({ periodoConfirmado }: { periodoConfirmado: { rota: string; inicio: string; fim: string } | null }) {
+  const [resDados, setResDados] = useState<any | null>(null);
+  const [resLoading, setResLoading] = useState(false);
+  const [resErro, setResErro] = useState(false);
+  useEffect(() => {
+    if (!periodoConfirmado) { setResDados(null); setResErro(false); return; }
+    let vivo = true;
+    setResLoading(true);
+    setResDados(null);
+    setResErro(false);
+    fetch(`${import.meta.env.BASE_URL}api/caixa/liquidacao-periodo?rota=${encodeURIComponent(periodoConfirmado.rota)}&inicio=${periodoConfirmado.inicio}&fim=${periodoConfirmado.fim}&_t=${Date.now()}`)
+      .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(d => { if (vivo) setResDados(d); })
+      .catch(() => { if (vivo) { setResDados(null); setResErro(true); } })
+      .finally(() => { if (vivo) setResLoading(false); });
+    return () => { vivo = false; };
+  }, [periodoConfirmado]);
 
-  const r   = resumoRow;
+  const cobrador    = resDados?.cobradorNome || periodoConfirmado?.rota || "";
+  const dataInicial = periodoConfirmado?.inicio ?? "";
+  const dataFinal   = periodoConfirmado?.fim ?? "";
+
+  // Mesmos números da aba Liquidação, mapeados para os campos do Resumo.
+  const r = resDados?.encontrado ? {
+    nClientes:           resDados.totalClientes as number,
+    nCierres:            resDados.cancelados as number,
+    numVentas:           (resDados.clientesNovos as number) + (resDados.renovados as number),
+    clientesAtivos:      resDados.totalClientes as number,
+    clientesInativos:    0,
+    clientesCancelados:  resDados.cancelados as number,
+    cajaInicial:         resDados.caixaInicial as number,
+    carteira:            resDados.carteiraInicial as number,
+    recaudoPretendido:   resDados.recebPrevisto as number,
+    recaudo:             resDados.recebAtual as number,
+    totalVentas:         resDados.novosEmp as number,
+    totalInt:            resDados.juros as number,
+    ingresos:            resDados.rendimentos as number,
+    egresos:             resDados.despesas as number,
+    retiros:             resDados.retirada as number,
+    cajaFinal:           resDados.caixaFinal as number,
+  } : resumoRow;
   const fmt  = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
   const fmtR = (v: number) => `R$ ${fmt(v)}`;
   const lucro = r.totalInt + r.ingresos - r.egresos - r.retiros;
-  const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700";
 
-  const dIni = new Date(dataInicial + "T12:00:00").toLocaleDateString("pt-BR");
-  const dFin = new Date(dataFinal   + "T12:00:00").toLocaleDateString("pt-BR");
-  const diasPeriodo = Math.round((new Date(dataFinal + "T12:00:00").getTime() - new Date(dataInicial + "T12:00:00").getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const dIni = dataInicial ? new Date(dataInicial + "T12:00:00").toLocaleDateString("pt-BR") : "";
+  const dFin = dataFinal   ? new Date(dataFinal   + "T12:00:00").toLocaleDateString("pt-BR") : "";
+  const diasPeriodo = dataInicial && dataFinal
+    ? Math.round((new Date(dataFinal + "T12:00:00").getTime() - new Date(dataInicial + "T12:00:00").getTime()) / (1000 * 60 * 60 * 24)) + 1
+    : 0;
 
   const handlePDF = () => {
     const pctR = r.recaudoPretendido > 0 ? ((r.recaudo / r.recaudoPretendido) * 100).toFixed(1) : "0,0";
@@ -3590,6 +3626,22 @@ function ResumoContent() {
       <div style={{ padding: "4px 16px 8px" }}>{children}</div>
     </div>
   );
+
+  const EstadoVazio = ({ titulo, sub }: { titulo: string; sub?: string }) => (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center gap-3" style={{ background: "#f1f5f9" }}>
+        <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+        <p style={{ fontSize: 14, fontWeight: 500, color: "#6b7280" }}>{titulo}</p>
+        {sub && <p style={{ fontSize: 12, color: "#9ca3af" }}>{sub}</p>}
+      </div>
+      <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
+    </div>
+  );
+
+  if (!periodoConfirmado)    return <EstadoVazio titulo="Selecione a rota e o período na aba Liquidação" sub="O Resumo usa os mesmos dados do período selecionado" />;
+  if (resLoading)            return <EstadoVazio titulo="Buscando registros do período..." />;
+  if (resErro)               return <EstadoVazio titulo="Erro ao consultar o período. Tente novamente." />;
+  if (!resDados?.encontrado) return <EstadoVazio titulo="Não foram encontrados registros de liquidação no período" sub={`${dIni} a ${dFin} · ${periodoConfirmado.rota}`} />;
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -4047,7 +4099,7 @@ function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDro
   if (activeSub === "Rendimentos")         return <RendimentosContent rows={rendimentosData} />;
   if (activeSub === "Despesas")            return <DespesasContent rows={despesasData} />;
   if (activeSub === "Clientes")            return <LiqPeriodosClientesContent />;
-  if (activeSub === "Resumo")              return <ResumoContent />;
+  if (activeSub === "Resumo")              return <ResumoContent periodoConfirmado={periodoConfirmado} />;
   return (
     <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
       <p className="text-gray-400 text-sm">{activeSub} — em desenvolvimento</p>
