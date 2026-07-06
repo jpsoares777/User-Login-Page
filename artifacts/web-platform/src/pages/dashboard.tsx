@@ -1702,7 +1702,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
   const totalSaldo = rows.reduce((a, r) => a + r.saldo, 0);
 
   const tdC = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
-    padding: "11px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
+    padding: "5px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
     textAlign: align, fontSize: 13, whiteSpace: "nowrap", ...extra,
   });
 
@@ -1772,7 +1772,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
             <tr>
               {cols.map(c => (
                 <th key={c.label} style={{
-                  padding: "3px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
                   whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
                   borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
                   position: "sticky", top: 0, zIndex: 1,
