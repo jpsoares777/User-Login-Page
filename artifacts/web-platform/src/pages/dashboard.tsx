@@ -131,8 +131,8 @@ const ventasData = MONTHS.map((m, i) => ({
 
 const gastosIngresosData = MONTHS.map((m, i) => ({
   mes: m,
-  Ingresos: [3800, 4200, 8500, 3200, 6400, 7100, 5900, 4600, 9800, 5700, 4100, 3500][i],
-  Gastos:   [1200, 1800, 2500, 1800, 2200, 2900, 2100, 1700, 3400, 2000, 1500, 1300][i],
+  Rendimentos: [3800, 4200, 8500, 3200, 6400, 7100, 5900, 4600, 9800, 5700, 4100, 3500][i],
+  Despesas:    [1200, 1800, 2500, 1800, 2200, 2900, 2100, 1700, 3400, 2000, 1500, 1300][i],
 }));
 
 const gastosPieData = [
@@ -379,8 +379,8 @@ function DesempenhoContent({ rotas = [] }: { rotas?: string[] }) {
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 10 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
               <Legend iconSize={7} iconType="circle" wrapperStyle={{ fontSize: 8, paddingTop: 2 }} />
-              <Bar dataKey="Ingresos" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
-              <Bar dataKey="Gastos" fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey="Rendimentos" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey="Despesas" fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
