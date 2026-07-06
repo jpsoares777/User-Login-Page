@@ -3038,7 +3038,7 @@ function VendasPorPeriodosContent({ rows = vendasPeriodosData }: { rows?: typeof
     { label: "Valor Empr.",    w: "6%",  align: "right"  as const },
     { label: "Parcelas",       w: "4%",  align: "center" as const },
     { label: "Juros",          w: "4%",  align: "center" as const },
-    { label: "Cuota",          w: "4%",  align: "right"  as const },
+    { label: "Valor Parc.",    w: "4%",  align: "right"  as const },
     { label: "Fecha",          w: "7%",  align: "center" as const },
     { label: "Cuot. Rest.",    w: "5%",  align: "center" as const },
     { label: "Saldo",          w: "5%",  align: "right"  as const },
