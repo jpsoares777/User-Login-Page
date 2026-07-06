@@ -3174,8 +3174,8 @@ function LiqPeriodosClientesContent({ rows = liqPerClientesData }: { rows?: LiqP
 
   const cols = [
     { label: "Rota",          w: "8%",  align: "left"   as const },
-    { label: "Data Venda",    w: "7%",  align: "center" as const },
-    { label: "Consec.",       w: "13%", align: "left"   as const },
+    { label: "Data Empr.",    w: "7%",  align: "center" as const },
+    { label: "Nº do Empréstimo", w: "13%", align: "left" as const },
     { label: "Cliente",       w: "17%", align: "left"   as const },
     { label: "Telefone",      w: "8%",  align: "left"   as const },
     { label: "Endereço",      w: "10%", align: "left"   as const },
