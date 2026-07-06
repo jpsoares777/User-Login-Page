@@ -8391,7 +8391,7 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ padding: "10px 10px" }}>
                         <div style={{ color: "#2563eb", fontWeight: 700, fontSize: 12, fontFamily: "monospace" }}>{row.consec}</div>
-                        <span style={{ display: "inline-block", marginTop: 3, background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 3, padding: "1px 6px", fontSize: 10, fontWeight: 700 }}>ACTIVO</span>
+                        <span style={{ display: "inline-block", marginTop: 3, background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 3, padding: "1px 6px", fontSize: 10, fontWeight: 700 }}>ATIVO</span>
                       </td>
                       <td style={{ padding: "10px 10px", color: "#dc2626", fontWeight: 600, fontSize: 12 }}>{row.nome}</td>
                       <td style={{ padding: "10px 10px", color: "#374151", fontFamily: "monospace", fontSize: 11 }}>{row.doc}</td>
