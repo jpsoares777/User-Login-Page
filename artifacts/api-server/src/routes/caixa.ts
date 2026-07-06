@@ -169,6 +169,10 @@ router.get("/caixa/liquidacao-periodo", async (req, res): Promise<void> => {
       despesas = 0, retirada = 0, clientesNovos = 0, renovados = 0, cancelados = 0;
   let primeiro: any = null, ultimo: any = null;
   let registros = 0;
+  const pagamentosLista: any[] = [];
+  const emprestimosLista: any[] = [];
+  const despesasListaAcum: any[] = [];
+  const rendimentosListaAcum: any[] = [];
 
   for (const dia of dias) {
     const row = porDia.get(dia)!;
@@ -188,6 +192,10 @@ router.get("/caixa/liquidacao-periodo", async (req, res): Promise<void> => {
     clientesNovos += num(snap.clientesNovos);
     renovados     += num(snap.renovados);
     cancelados    += num(snap.cancelados);
+    if (Array.isArray(snap.pagamentosClientes)) pagamentosLista.push(...snap.pagamentosClientes.map((p: any) => ({ ...p, dia })));
+    if (Array.isArray(snap.novosEmprestimos))   emprestimosLista.push(...snap.novosEmprestimos.map((e: any) => ({ ...e, dia })));
+    if (Array.isArray(snap.despesasLista))      despesasListaAcum.push(...snap.despesasLista.map((d: any) => ({ ...d, dia })));
+    if (Array.isArray(snap.rendimentosLista))   rendimentosListaAcum.push(...snap.rendimentosLista.map((r2: any) => ({ ...r2, dia })));
   }
 
   if (registros === 0 || !primeiro || !ultimo) { res.json({ encontrado: false, registros: 0 }); return; }
@@ -213,6 +221,11 @@ router.get("/caixa/liquidacao-periodo", async (req, res): Promise<void> => {
     carteiraInicial: num(primeiro.carteiraInicial),
     carteiraFinal: num(ultimo.carteiraFinal),
     totalClientes: num(ultimo.clientesIniciais) + num(ultimo.clientesNovos),
+    pagamentos: pagamentosLista,
+    emprestimos: emprestimosLista,
+    despesasLista: despesasListaAcum,
+    rendimentosLista: rendimentosListaAcum,
+    clientesLista: Array.isArray(ultimo.clientesLista) ? ultimo.clientesLista : [],
   });
 });
 

@@ -2847,7 +2847,7 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
 
 const liqPerPagData: { nro: number; consecutivo: string; linkColor: string; cliente: string; clienteColor: string; parcela: number; tipo: string; formaPgto: string; valor: string; data: string; valorProd: string; saldo: string; restantes: string }[] = [];
 
-function LiqPeriodosPagamentosContent() {
+function LiqPeriodosPagamentosContent({ rows = liqPerPagData, rota = "", periodoLabel = "" }: { rows?: typeof liqPerPagData; rota?: string; periodoLabel?: string }) {
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
 
   const cols = [
@@ -2866,8 +2866,8 @@ function LiqPeriodosPagamentosContent() {
   ];
 
   const parseVal = (s: string) => parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
-  const totalRecebido = liqPerPagData.reduce((a, r) => a + parseVal(r.valor), 0);
-  const totalProd = liqPerPagData.reduce((a, r) => a + parseVal(r.valorProd), 0);
+  const totalRecebido = rows.reduce((a, r) => a + parseVal(r.valor), 0);
+  const totalProd = rows.reduce((a, r) => a + parseVal(r.valorProd), 0);
   const taxaPct = totalProd > 0 ? (totalRecebido / totalProd) * 100 : 0;
   const fmtR = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 
@@ -2921,13 +2921,13 @@ function LiqPeriodosPagamentosContent() {
           </button>
         </div>
         <div className="flex-1" />
-        <span className="text-xs text-gray-400 font-medium pb-0.5">DATA DE REFERÊNCIA: 2026-06-06</span>
+        <span className="text-xs text-gray-400 font-medium pb-0.5">{periodoLabel ? `PERÍODO: ${periodoLabel}` : ""}</span>
       </div>
 
       {/* ── Count bar ── */}
       <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs text-gray-500">
-          <span className="font-bold text-gray-800">{liqPerPagData.length}</span> registros encontrados
+          <span className="font-bold text-gray-800">{rows.length}</span> registros encontrados
         </span>
       </div>
 
@@ -2948,13 +2948,13 @@ function LiqPeriodosPagamentosContent() {
             </tr>
           </thead>
           <tbody>
-            {liqPerPagData.map((r, i) => {
+            {rows.map((r, i) => {
               const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
               return (
                 <tr key={r.nro} style={{ cursor: "pointer" }}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = "#eff6ff"))}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => (c.style.background = rowBg))}>
-                  <td style={tdP("left",   { color: "#374151", fontSize: 12 })}>Rota Cred Bank -</td>
+                  <td style={tdP("left",   { color: "#374151", fontSize: 12 })}>{rota}</td>
                   <td style={tdP("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.nro}</td>
                   <td style={tdP("left")}>
                     <span style={{ color: r.linkColor, fontWeight: 700, borderBottom: `1px dashed ${r.linkColor}`, cursor: "pointer" }}>{r.consecutivo}</span>
@@ -3012,17 +3012,18 @@ const vendasPeriodosData = [
   { id:16, vendedor:"Rota Cred Bank -", consec:"4700627073", freq:"SEMANAL", valorAnt:500, idVenta:"47006270173", cliente:"Marcos Vinícius Almeida Costa",    tag:"Renovado Mayor Valor",documento:"33344455566",    movel:"98984321100",    valorProd:840,  cuotas:14, pctInt:40, cuota:84,  fecha:"2026-04-09", cuotRest:5,    saldo:350  },
 ];
 
-function VendasPorPeriodosContent() {
+function VendasPorPeriodosContent({ rows = vendasPeriodosData }: { rows?: typeof vendasPeriodosData }) {
   const tdV = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
     padding: "6px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
     fontSize: 13, textAlign: align, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", ...extra,
   });
 
   const tagStyle = (tag: string): React.CSSProperties => {
-    if (tag === "Nuevo")               return { color: "#15803d", fontWeight: 700 };
+    if (tag === "Nuevo" || tag === "Novo") return { color: "#15803d", fontWeight: 700 };
     if (tag === "Renovado Igual Valor")return { color: "#d97706", fontWeight: 700 };
     if (tag === "Renovado Mayor Valor")return { color: "#2563eb", fontWeight: 700 };
     if (tag === "Renovado Menor Valor")return { color: "#dc2626", fontWeight: 700 };
+    if (tag.startsWith("Renovado"))    return { color: "#d97706", fontWeight: 700 };
     return { color: "#6b7280", fontWeight: 600 };
   };
 
@@ -3044,7 +3045,7 @@ function VendasPorPeriodosContent() {
     { label: "Saldo",          w: "5%",  align: "right"  as const },
   ];
 
-  const totalVendas = vendasPeriodosData.reduce((a, r) => a + r.valorProd, 0);
+  const totalVendas = rows.reduce((a, r) => a + r.valorProd, 0);
   const fmtV = (v: number) => `$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 0 })}`;
 
   return (
@@ -3053,7 +3054,7 @@ function VendasPorPeriodosContent() {
       {/* ── Count bar ── */}
       <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs text-gray-500">
-          <span className="font-bold text-gray-800">{vendasPeriodosData.length}</span> registros encontrados
+          <span className="font-bold text-gray-800">{rows.length}</span> registros encontrados
         </span>
       </div>
 
@@ -3074,7 +3075,7 @@ function VendasPorPeriodosContent() {
             </tr>
           </thead>
           <tbody>
-            {vendasPeriodosData.map((r, i) => {
+            {rows.map((r, i) => {
               const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
               return (
                 <tr key={r.id} style={{ background: rowBg, cursor: "pointer" }}
@@ -3169,7 +3170,7 @@ function gerarHistorico(r: LiqPerClienteRow) {
   return entries.reverse();
 }
 
-function LiqPeriodosClientesContent() {
+function LiqPeriodosClientesContent({ rows = liqPerClientesData }: { rows?: LiqPerClienteRow[] }) {
   const [clienteSel, setClienteSel] = useState<LiqPerClienteRow | null>(null);
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 placeholder-gray-400 text-gray-700";
 
@@ -3253,7 +3254,7 @@ function LiqPeriodosClientesContent() {
       {/* ── Barra de contagem ── */}
       <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs text-gray-500">
-          <span className="font-bold text-gray-800">{liqPerClientesData.length}</span> registros encontrados
+          <span className="font-bold text-gray-800">{rows.length}</span> registros encontrados
         </span>
       </div>
 
@@ -3273,7 +3274,7 @@ function LiqPeriodosClientesContent() {
             </tr>
           </thead>
           <tbody>
-            {liqPerClientesData.map((r, i) => {
+            {rows.map((r, i) => {
               const rowBg = i % 2 === 0 ? "#fff" : "#f9fafb";
               const isAtivo = r.status === "Activo";
               const consecColor = isAtivo ? "#d97706" : "#dc2626";
@@ -3315,7 +3316,7 @@ function LiqPeriodosClientesContent() {
       {/* ── Total ── */}
       <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#e8edf2", borderTop: "1px solid #d1d5db" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.06em" }}>TOTAL CLIENTES</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1d4ed8", padding: "1px 10px", borderRadius: 6 }}>{liqPerClientesData.length}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1d4ed8", padding: "1px 10px", borderRadius: 6 }}>{rows.length}</span>
       </div>
 
       {/* ── Barra azul rodapé ── */}
