@@ -1159,7 +1159,7 @@ function DespesasContent({ rows }: { rows: DespRow[] }) {
               const cat = categoriaColor[r.categoria] ?? categoriaColor["Outros"];
               return (
                 <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
-                  <td style={tdD("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdD("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{i + 1}</td>
                   <td style={tdD("center")}>
                     <span style={{
                       display: "inline-block", padding: "2px 10px", borderRadius: 4,
@@ -1267,7 +1267,7 @@ function RendimentosContent({ rows }: { rows: RendRow[] }) {
               const cat = rendCategoriaColor[r.categoria] ?? rendCategoriaColor["Outros"];
               return (
                 <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
-                  <td style={tdR("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdR("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{i + 1}</td>
                   <td style={tdR("center")}>
                     <span style={{
                       display: "inline-block", padding: "2px 10px", borderRadius: 4,
@@ -1790,7 +1790,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
 
-                  <td style={tdC("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdC("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{i + 1}</td>
 
                   <td style={tdC("left")}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
