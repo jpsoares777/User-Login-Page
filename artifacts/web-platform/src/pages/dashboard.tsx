@@ -1686,7 +1686,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
 
   const cols = [
     { label: "Nro.",               w: "4%",  align: "center" as const },
-    { label: "Consecutivo",        w: "9%",  align: "left"   as const },
+    { label: "Nº do Empréstimo",   w: "9%",  align: "left"   as const },
     { label: "Nome e Sobrenome",   w: "18%", align: "left"   as const },
     { label: "Telefones",          w: "11%", align: "left"   as const },
     { label: "Frequência",         w: "7%",  align: "center" as const },
