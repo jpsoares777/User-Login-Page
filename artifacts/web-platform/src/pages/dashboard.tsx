@@ -2592,17 +2592,18 @@ const rotasFakeData: Record<string, RotaFakeData> = {
   },
 };
 
-function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdown }: {
+function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdown, periodoConfirmado, setPeriodoConfirmado }: {
   selectedEstado: string;
   estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]>;
   onCloseDropdown: () => void;
+  periodoConfirmado: { rota: string; inicio: string; fim: string } | null;
+  setPeriodoConfirmado: (p: { rota: string; inicio: string; fim: string } | null) => void;
 }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set((estadosData[selectedEstado] ?? []).map(i => i.cidade)));
   const [collapsedEstado, setCollapsedEstado] = useState(false);
   const [selectedRotaPer, setSelectedRotaPer] = useState<string | null>(null);
   const [periodoModalOpen, setPeriodoModalOpen] = useState(false);
   const [periodoForm, setPeriodoForm] = useState({ inicio: "", fim: "" });
-  const [periodoConfirmado, setPeriodoConfirmado] = useState<{ rota: string; inicio: string; fim: string } | null>(null);
   const [perDados, setPerDados] = useState<any | null>(null);
   const [perLoading, setPerLoading] = useState(false);
   const [perErro, setPerErro] = useState(false);
@@ -4037,7 +4038,10 @@ function ConsolidadosContent({ rotas = [], estadosData = {} }: { rotas?: string[
 }
 
 function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDropdown }: { activeSub: string; selectedEstado: string; estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]>; onCloseDropdown: () => void }) {
-  if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView selectedEstado={selectedEstado} estadosData={estadosData} onCloseDropdown={onCloseDropdown} />;
+  // Estado elevado: mantém a rota/período selecionados ao navegar entre as
+  // sub-abas (ex.: ir a Pagamentos e voltar para Liquidação).
+  const [periodoConfirmado, setPeriodoConfirmado] = useState<{ rota: string; inicio: string; fim: string } | null>(null);
+  if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView selectedEstado={selectedEstado} estadosData={estadosData} onCloseDropdown={onCloseDropdown} periodoConfirmado={periodoConfirmado} setPeriodoConfirmado={setPeriodoConfirmado} />;
   if (activeSub === "Pagamentos")          return <LiqPeriodosPagamentosContent />;
   if (activeSub === "Empr. por Períodos")  return <VendasPorPeriodosContent />;
   if (activeSub === "Rendimentos")         return <RendimentosContent rows={rendimentosData} />;
