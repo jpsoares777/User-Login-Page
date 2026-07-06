@@ -340,9 +340,10 @@ export interface Agendamento {
   hora: string;
   observacao: string;
   nomeCliente?: string;
+  clienteId?: number;
 }
 
-function AgendarView({ onAddAgendamento, nomeCliente }: { onAddAgendamento: (a: Agendamento) => void; nomeCliente: string }) {
+function AgendarView({ onAddAgendamento, nomeCliente, clienteId }: { onAddAgendamento: (a: Agendamento) => void; nomeCliente: string; clienteId?: number }) {
   const [data, setData] = useState("");
   const [hora, setHora] = useState("");
   const [obs, setObs] = useState("");
@@ -351,7 +352,7 @@ function AgendarView({ onAddAgendamento, nomeCliente }: { onAddAgendamento: (a: 
 
   function salvar() {
     if (!data || !hora) { setErro(true); return; }
-    onAddAgendamento({ id: Date.now(), data, hora, observacao: obs.trim() || "—", nomeCliente });
+    onAddAgendamento({ id: Date.now(), data, hora, observacao: obs.trim() || "—", nomeCliente, clienteId });
     setData(""); setHora(""); setObs(""); setErro(false);
     setSalvo(true);
     setTimeout(() => setSalvo(false), 2500);
@@ -555,7 +556,7 @@ export function ClienteDetalheRenovacao({ cliente, onClose, onAddAgendamento }: 
       })()}
       {aba === "registro" && <RegistroCreditos cliente={cliente} />}
       {aba === "fotos" && <GaleriaFotos clienteId={cliente.id} />}
-      {aba === "agendar" && <AgendarView onAddAgendamento={onAddAgendamento} nomeCliente={cliente.nome} />}
+      {aba === "agendar" && <AgendarView onAddAgendamento={onAddAgendamento} nomeCliente={cliente.nome} clienteId={cliente.id} />}
     </div>
   );
 }
@@ -611,7 +612,7 @@ export function ClienteDetalhe({ cliente, onClose, onAddAgendamento }: { cliente
       )}
       {aba === "pagamentos" && <ListaPagamentos pagamentos={pagamentos} />}
       {aba === "fotos" && <GaleriaFotos clienteId={cliente.id} />}
-      {aba === "agendar" && <AgendarView onAddAgendamento={onAddAgendamento} nomeCliente={cliente.nome} />}
+      {aba === "agendar" && <AgendarView onAddAgendamento={onAddAgendamento} nomeCliente={cliente.nome} clienteId={cliente.id} />}
     </div>
   );
 }

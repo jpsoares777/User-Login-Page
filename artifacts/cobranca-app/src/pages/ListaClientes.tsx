@@ -718,7 +718,7 @@ function TelaGastos() {
 }
 
 /* ══════════════════ TELA: CALENDÁRIO ══════════════════ */
-function TelaCalendario({ agendamentos }: { agendamentos: Agendamento[] }) {
+function TelaCalendario({ agendamentos, onRemover }: { agendamentos: Agendamento[]; onRemover: (id: number) => void }) {
   const hoje = new Date();
   const [mes, setMes] = useState(hoje.getMonth());
   const [ano, setAno] = useState(hoje.getFullYear());
@@ -812,6 +812,18 @@ function TelaCalendario({ agendamentos }: { agendamentos: Agendamento[] }) {
                 <div style={{ fontSize: 11.5, fontWeight: 700, color: "#1E3A8A" }}>{a.hora} — {a.nomeCliente || "Cliente"}</div>
                 <div style={{ fontSize: 11, color: "#3B82F6", marginTop: 1 }}>{a.observacao}</div>
               </div>
+              <button
+                onClick={() => { if (confirm("Excluir este agendamento?")) onRemover(a.id); }}
+                aria-label="Excluir agendamento"
+                style={{ width: 28, height: 28, borderRadius: 8, border: "1px solid #fecaca", backgroundColor: "#fef2f2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer" }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <polyline points="3 6 5 6 21 6" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M19 6l-1 14H6L5 6" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M10 11v6M14 11v6" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round"/>
+                  <path d="M9 6V4h6v2" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
             </div>
           ))}
         </div>
@@ -2778,6 +2790,11 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                   setCobradosValores(prev => prev.filter(x => x.id !== clienteAlvoId));
                   setCobradosExtras(prev => prev.filter(c => c.id !== clienteAlvoId));
                   setHistoricoPagamentos(prev => { const next = { ...prev }; delete next[clienteAlvoId]; return next; });
+                  // Remove agendamentos do cliente excluído apenas por clienteId (vínculo
+                  // preciso). Agendamentos legados sem clienteId são preservados e podem
+                  // ser removidos manualmente pelo botão de excluir no calendário —
+                  // evitando apagar agendamentos de homônimos por engano.
+                  setAgendamentos(prev => prev.filter(a => a.clienteId == null || a.clienteId !== clienteAlvoId));
                 }
               }
             }}
@@ -2847,7 +2864,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             setTimeout(() => setActiveNav(0), 1600);
           }} />
         : activeNav === 2 ? <LancamentoFinanceiro onAddDespesa={addDespesa} onAddRendimento={addRendimento} onSalvo={() => setTimeout(() => setActiveNav(0), 1500)} />
-        : <TelaCalendario agendamentos={agendamentos} />
+        : <TelaCalendario agendamentos={agendamentos} onRemover={(id) => setAgendamentos(prev => prev.filter(a => a.id !== id))} />
       }
 
       {/* BARRA INFERIOR */}
