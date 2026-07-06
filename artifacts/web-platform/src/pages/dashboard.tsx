@@ -754,7 +754,7 @@ const historicoPagamentosPorEmp: Record<string, Record<number, PagHistRow[]>> = 
   // Aira Cecilia — primeiro empréstimo (R$700) quitado antes da renovação
   "4359614134": {
     1: [
-      { nro: 1, tipo: "PARC.", valor: 840, data: "2026-07-06", obs: "Quitação total" },
+      { nro: 1, tipo: "ABONO", valor: 840, data: "2026-07-06", obs: "Quitação total" },
     ],
   },
 };
