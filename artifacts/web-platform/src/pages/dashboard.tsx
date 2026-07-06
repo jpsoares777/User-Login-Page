@@ -1795,7 +1795,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
                   <td style={tdC("left")}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                       <span style={{ color: "#2563eb", fontWeight: 700, fontSize: 12 }}>{r.consec}</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "1px 5px", alignSelf: "flex-start" }}>{r.status}</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "1px 5px", alignSelf: "flex-start" }}>{r.status?.toUpperCase() === "ACTIVO" ? "Ativo" : r.status}</span>
                     </div>
                   </td>
 
@@ -1806,7 +1806,6 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
                   <td style={tdC("left")}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                       <span style={{ color: "#374151", fontSize: 12 }}>📞 {r.tel1}</span>
-                      <span style={{ color: "#6b7280", fontSize: 12 }}>📱 {r.tel2}</span>
                     </div>
                   </td>
 
