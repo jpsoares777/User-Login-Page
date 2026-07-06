@@ -1834,6 +1834,13 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       responsavel: "",
       obs: r.observacao ?? "",
     }));
+    const agendadosListaSnap = agendamentos.map((a) => ({
+      id: a.id,
+      data: a.data,
+      hora: a.hora,
+      observacao: a.observacao ?? "",
+      nomeCliente: a.nomeCliente ?? "",
+    }));
 
     // Lista de clientes ativos da carteira (saldo > 0), sem duplicar por id,
     // para a aba "Clientes" da web.
@@ -1991,6 +1998,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         despesasLista: despesasListaSnap,
         rendimentosLista: rendimentosListaSnap,
         clientesLista: clientesListaSnapFinal,
+        agendadosLista: agendadosListaSnap,
       },
     };
   };
@@ -2011,7 +2019,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [caixaFechadoHoje, cobradorId, cobrados, ausentes, cobradosValores, despesas, rendimentos,
-      emprestimentos, clientes, caixaInicial, novosClientesIds, renovacoesIds, quitadosClientes]);
+      emprestimentos, clientes, caixaInicial, novosClientesIds, renovacoesIds, quitadosClientes,
+      agendamentos]);
 
   const handleCaixaFechado = () => {
     const emprestimentosComoClientes = emprestimentos

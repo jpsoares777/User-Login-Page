@@ -1324,42 +1324,29 @@ const clientesRows: ClienteRow[] = [
 ];
 
 // ── Agendados data ────────────────────────────────────────────────────────────
-const agendadosData = [
-  { id:1,  cliente:"Andreia de Jesus Costa Araújo", tipo:"Visita",        data:"2026-06-11", hora:"09:00", obs:"Cobrar parcela atrasada",  status:"Pendente"   },
-  { id:2,  cliente:"Geílson Eduardo Rosa de Jesus", tipo:"Ligação",       data:"2026-06-11", hora:"10:30", obs:"Confirmar endereço",        status:"Concluído"  },
-  { id:3,  cliente:"Andrela de Jesus Costa Araújo", tipo:"Visita",        data:"2026-06-11", hora:"14:00", obs:"Novo empréstimo",           status:"Pendente"   },
-  { id:4,  cliente:"S. De Oliveira",                tipo:"Renegociação",  data:"2026-06-12", hora:"08:00", obs:"Proposta de parcelamento",  status:"Pendente"   },
-  { id:5,  cliente:"Barbosa",                       tipo:"Ligação",       data:"2026-06-12", hora:"11:00", obs:"",                          status:"Cancelado"  },
-  { id:6,  cliente:"Dos Mendes",                    tipo:"Visita",        data:"2026-06-13", hora:"09:30", obs:"Verificar documentos",      status:"Pendente"   },
-];
-
-const tipoAgendColor: Record<string, { bg: string; color: string; border: string }> = {
-  "Visita":       { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
-  "Ligação":      { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0" },
-  "Renegociação": { bg: "#fffbeb", color: "#b45309", border: "#fde68a" },
-};
-const statusAgendColor: Record<string, { bg: string; color: string; border: string }> = {
-  "Pendente":  { bg: "#fffbeb", color: "#b45309", border: "#fde68a" },
-  "Concluído": { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0" },
-  "Cancelado": { bg: "#fef2f2", color: "#b91c1c", border: "#fecaca" },
-};
-
-function AgendadosContent({ rotas = [] }: { rotas?: string[] }) {
+type AgendadoRow = { id: number; data: string; hora: string; observacao: string; nomeCliente?: string };
+function AgendadosContent({ rotas = [], rows }: { rotas?: string[]; rows?: AgendadoRow[] }) {
   const [filterDate, setFilterDate] = useState("");
   const [tempDate,   setTempDate]   = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newForm, setNewForm] = useState({ vendedor: "Rota Cred Bank -", cliente: "", tipo: "Visita", data: "2026-06-11", hora: "", obs: "" });
 
-  const filtered = agendadosData.filter(r => !filterDate || r.data === filterDate);
+  const source = (rows ?? []).map((a) => ({
+    id: a.id,
+    cliente: a.nomeCliente || "—",
+    data: a.data,
+    hora: a.hora,
+    obs: a.observacao,
+  }));
+  const filtered = source.filter(r => !filterDate || r.data === filterDate);
 
   const cols = [
     { label: "Nro.",        w: "4%",  align: "center" as const },
     { label: "Cliente",     w: "35%", align: "left"   as const },
     { label: "Data",        w: "11%", align: "center" as const },
     { label: "Hora",        w: "8%",  align: "center" as const },
-    { label: "Observações", w: "30%", align: "left"   as const },
-    { label: "Status",      w: "12%", align: "center" as const },
+    { label: "Observações", w: "42%", align: "left"   as const },
   ];
 
   const tdA = (align: "left"|"center"|"right", extra?: React.CSSProperties): React.CSSProperties => ({
@@ -1435,20 +1422,16 @@ function AgendadosContent({ rotas = [] }: { rotas?: string[] }) {
                 </td>
               </tr>
             ) : filtered.map((r, i) => {
-              const stat = statusAgendColor[r.status] ?? statusAgendColor["Pendente"];
               const rowBg = i % 2 === 0 ? "#fff" : "#f5f7f9";
               return (
                 <tr key={r.id} style={{ cursor: "default" }}
                   onMouseEnter={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = "#eff6ff")}
                   onMouseLeave={e => Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(c => c.style.background = rowBg)}>
-                  <td style={tdA("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{r.id}</td>
+                  <td style={tdA("center", { color: "#6b7280", fontWeight: 700, fontSize: 12 })}>{i + 1}</td>
                   <td style={tdA("left",   { color: "#111827", fontWeight: 600 })}>{r.cliente}</td>
                   <td style={tdA("center", { color: "#374151" })}>{r.data}</td>
                   <td style={tdA("center", { fontWeight: 700, color: "#2d5474" })}>{r.hora}</td>
                   <td style={tdA("left",   { color: "#6b7280", fontSize: 12, overflow: "hidden", textOverflow: "ellipsis" })}>{r.obs || "—"}</td>
-                  <td style={tdA("center")}>
-                    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20, background: stat.bg, color: stat.color, border: `1px solid ${stat.border}` }}>{r.status}</span>
-                  </td>
                 </tr>
               );
             })}
@@ -2169,7 +2152,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
 
 // ── Liq. Períodos ─────────────────────────────────────────────────────────────
 
-type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; clientesNovosRegulares?:number; clientesNovosAdiantados?:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; pagamentosClientes?:PagRow[]; novosEmprestimos?:EmpRow[]; despesasLista?:DespRow[]; rendimentosLista?:RendRow[]; clientesLista?:ClienteRow[]; };
+type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; clientesNovosRegulares?:number; clientesNovosAdiantados?:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; pagamentosClientes?:PagRow[]; novosEmprestimos?:EmpRow[]; despesasLista?:DespRow[]; rendimentosLista?:RendRow[]; clientesLista?:ClienteRow[]; agendadosLista?:AgendadoRow[]; };
 
 // Formata o "Último Acesso Móvel" (ISO/UTC) para data-hora legível no fuso do Brasil.
 function fmtUltimoAcesso(v?: string): string {
@@ -7933,7 +7916,7 @@ export default function DashboardPage() {
         ) : showClientes ? (
           <ClientesContent rows={selectedRota ? ((importedRotaData[selectedRota]?.clientesLista ?? []) as ClienteRow[]) : []} />
         ) : showAgendados ? (
-          <AgendadosContent rotas={todasRotas} />
+          <AgendadosContent rotas={todasRotas} rows={selectedRota ? ((importedRotaData[selectedRota]?.agendadosLista ?? []) as AgendadoRow[]) : []} />
         ) : showRelatorios ? (
           <RelatóriosContent rotas={todasRotas} />
         ) : showContent ? (

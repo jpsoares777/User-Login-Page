@@ -266,6 +266,14 @@ export type LancamentoSnapshot = {
   obs: string;
 };
 
+export type AgendadoSnapshot = {
+  id: number;
+  data: string;
+  hora: string;
+  observacao: string;
+  nomeCliente: string;
+};
+
 // Um cliente da carteira da rota. Alimenta a aba "Clientes" da web.
 export type ClienteSnapshot = {
   id: number;
@@ -334,6 +342,7 @@ export type DadosSnapshot = {
   despesasLista?: LancamentoSnapshot[];
   rendimentosLista?: LancamentoSnapshot[];
   clientesLista?: ClienteSnapshot[];
+  agendadosLista?: AgendadoSnapshot[];
 };
 
 export async function postFechamentoCaixaAPI(data: {
