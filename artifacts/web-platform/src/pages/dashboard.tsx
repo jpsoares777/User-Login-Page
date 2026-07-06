@@ -429,7 +429,7 @@ function DesempenhoContent({ rotas = [] }: { rotas?: string[] }) {
       name: `${name} (${value.toLocaleString("pt-BR")})`, value, color: PIE_PALETTE[i % PIE_PALETTE.length],
     }));
     const total = arr.reduce((s, d) => s + d.value, 0);
-    return total > 0 ? arr : [{ name: "Sem dados", value: 1, color: "#e2e8f0" }];
+    return total > 0 ? arr : [{ name: "Sem dados", value: 1, color: "#9ca3af" }];
   };
   const despPie = groupCat(despesas);
   const rendPie = groupCat(rendimentos);
