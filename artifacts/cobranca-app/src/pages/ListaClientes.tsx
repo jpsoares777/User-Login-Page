@@ -1899,6 +1899,63 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       };
     });
 
+    // Clientes cadastrados HOJE que ainda não entraram em `clientes` nem em
+    // `clientesAdicionaisHoje` (ex.: novo cliente diário sem pagamento
+    // adiantado) vivem apenas em `emprestimentos`. Sem isso eles apareceriam
+    // em "Novos Empréstimos" mas não na aba "Clientes" da web. Reaproveita
+    // novosEmpHojeSnap e deduplica por id.
+    const idsListaSnap = new Set(clientesListaSnap.map(c => c.id));
+    const fmtDataIsoSnap = (iso: string): string => {
+      const d = new Date(iso);
+      if (!Number.isFinite(d.getTime())) return dataStr;
+      const p = (n: number) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    };
+    const novosClientesListaSnap = novosEmpHojeSnap
+      .filter(e => !e.renovacao && !idsListaSnap.has(e.id))
+      .map((e) => {
+        const principal = Number(e.valorEmprestado) || 0;
+        const pct = Number(e.taxaJuros) || 0;
+        const cuotas = Number(e.quantidadeParcelas) || 0;
+        const parcela = Number(e.valorParcela) || 0;
+        const total = parcela * cuotas;
+        return {
+          id: e.id,
+          consec: e.consecutivo ?? "",
+          status: "ACTIVO",
+          visitas: (registroPagamentos[e.id] ?? []).length,
+          nome: e.nomeCliente,
+          tel1: e.telefone ?? "",
+          tel2: "",
+          freq: e.frequencia ?? (e.diario ? "Diário" : ""),
+          valorVenda: principal,
+          pctJuros: pct,
+          total,
+          cuotas,
+          atrasadas: 0,
+          pagas: 0,
+          restantes: cuotas,
+          vlrCuota: parcela,
+          saldo: total,
+          documento: e.cpf ?? "",
+          dataNasc: "",
+          endereco: e.endereco ?? "",
+          bairro: e.bairro ?? "",
+          cidade: [e.cidade, e.uf].filter(Boolean).join(" - "),
+          estadoVerif: "Sem Verificação",
+          nroSeguro: "",
+          valorSeguro: 0,
+          nomeCodedor: "",
+          telCodedor: "",
+          dirCodedor: "",
+          observacoes: "",
+          dataEmprestimo: fmtDataIsoSnap(e.criadoEm),
+          historico: [],
+        };
+      })
+      .filter(c => c.saldo > 0);
+    const clientesListaSnapFinal = [...clientesListaSnap, ...novosClientesListaSnap];
+
     return {
       caixaFinal: caixaFinalSnap,
       snapshot: {
@@ -1933,7 +1990,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         novosEmprestimos: novosEmprestimosSnap,
         despesasLista: despesasListaSnap,
         rendimentosLista: rendimentosListaSnap,
-        clientesLista: clientesListaSnap,
+        clientesLista: clientesListaSnapFinal,
       },
     };
   };

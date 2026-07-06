@@ -144,6 +144,8 @@ As 4 abas antes usavam arrays MOCK fixos no `dashboard.tsx` (`emprestimosData`, 
 
 **Armadilha (segundo call-site):** `RendimentosContent`/`DespesasContent` também são usados em `Liq. Períodos` (`LiqPeriodosContent`), fora do escopo da integração por rota — esses continuam recebendo os arrays mock (`rows={despesasData}`/`rows={rendimentosData}`). Não esquecer de alimentar TODOS os call-sites ao tornar um componente `rows`-driven.
 
+**Armadilha `clientesLista` (cliente novo diário some da aba Clientes):** `clientesListaSnap` montado só de `clientes` + `clientesAdicionaisHoje` (saldo>0) NÃO cobre o cliente diário novo SEM `pagamentoAdiantado` — esse não entra em nenhum dos dois arrays no mesmo dia; vive só em `emprestimentos`. Sintoma: o empréstimo aparece em "Novos Empréstimos" (`novosEmprestimos:1`) mas o cliente não em "Clientes" (`clientesLista:0`). Correção: complementar `clientesLista` com `novosEmpHojeSnap` deduplicado por id (mesmo padrão da "Carteira Final", seção acima), mapeando o Emprestimo→ClienteRow. **CRÍTICO:** filtrar `!e.renovacao` no complemento — renovação cria empréstimo com id NOVO enquanto o cliente renovado permanece em `clientes` com o id antigo, então dedupe por id não pega e duplicaria a linha do cliente.
+
 **Erros de typecheck pré-existentes (não da feature):** `cobranca-app` tem muitos erros de `tsc --noEmit` (ex.: `gastosData`, `Metodo`, `MetodoPagamento`) e `web-platform` tem 2 (`GcRow`/`rota`, `codigoAcesso` em `GaSolicitacao`) que já existiam. O build é `vite build` (esbuild, ignora tipos), então roda mesmo assim. Não confundir com regressão.
 
 ## Diagnóstico: snapshot chega SEM um campo novo mesmo com o dev servindo o código certo
