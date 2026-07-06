@@ -1464,14 +1464,16 @@ function mapMovimento(r: any): MovimentoItem {
 // Aprovação de despesas/rendimentos acima do limite — espelha CodigosAprovacaoModal.
 // O App do Cobrador cria a solicitação; enquanto pendente, o lançamento NÃO entra
 // na rota. Ao ACEITAR, o app materializa a despesa/rendimento; ao RECUSAR, some.
-function DespRendModal({ onClose }: { onClose: () => void }) {
+function DespRendModal({ onClose, rota }: { onClose: () => void; rota?: string | null }) {
   const hoje = new Date().toLocaleDateString("pt-BR");
   const [items, setItems] = useState<MovimentoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState<"pendente"|"aceito"|"recusado">("pendente");
 
+  // Quando uma rota está selecionada, mostra SOMENTE as solicitações dela.
   const carregar = () => {
-    fetch(`${import.meta.env.BASE_URL}api/solicitacoes-movimento?_t=${Date.now()}`)
+    const filtroRota = rota ? `&rota=${encodeURIComponent(rota)}` : "";
+    fetch(`${import.meta.env.BASE_URL}api/solicitacoes-movimento?_t=${Date.now()}${filtroRota}`)
       .then(r => (r.ok ? r.json() : []))
       .then((rows: any[]) => setItems(Array.isArray(rows) ? rows.map(mapMovimento) : []))
       .catch(() => {})
@@ -8909,7 +8911,7 @@ export default function DashboardPage() {
       {codigosOpen && <CodigosAprovacaoModal onClose={() => setCodigosOpen(false)} rota={selectedRota} />}
 
       {/* ── MODAL: Aprovação de Despesas e Rendimentos ── */}
-      {despRendOpen && <DespRendModal onClose={() => setDespRendOpen(false)} />}
+      {despRendOpen && <DespRendModal onClose={() => setDespRendOpen(false)} rota={selectedRota} />}
 
       {/* ── MODAL: Lucro ── */}
       {lucroOpen && <LucroModal onClose={() => setLucroOpen(false)} />}
