@@ -969,7 +969,7 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
   );
 }
 
-function EmprestimosNovosContent() {
+function EmprestimosNovosContent({ rows }: { rows: EmpRow[] }) {
   const [selectedEmp, setSelectedEmp] = useState<EmpRow | null>(null);
   const fmt = (v: number) => v === 0 ? "0,00" : v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
@@ -993,8 +993,8 @@ function EmprestimosNovosContent() {
     { label: "Saldo",         w: "7%",  align: "right"  as const },
   ];
 
-  const totalValorProd = emprestimosData.reduce((a, r) => a + r.valorProd, 0);
-  const totalJuros = emprestimosData.reduce((a, r) => a + r.valorJuros, 0);
+  const totalValorProd = rows.reduce((a, r) => a + r.valorProd, 0);
+  const totalJuros = rows.reduce((a, r) => a + r.valorJuros, 0);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -1004,7 +1004,7 @@ function EmprestimosNovosContent() {
           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04a1 1 0 0 0-.79 1.61z"/></svg>
           Novos Empréstimos
         </span>
-        <span className="text-xs text-gray-400 ml-1">{emprestimosData.length} registros encontrados</span>
+        <span className="text-xs text-gray-400 ml-1">{rows.length} registros encontrados</span>
         <div className="flex-1" />
         <span className="text-xs text-gray-400 font-medium">DATA DE REFERÊNCIA: 2026-03-30</span>
       </div>
@@ -1026,7 +1026,7 @@ function EmprestimosNovosContent() {
             </tr>
           </thead>
           <tbody>
-            {emprestimosData.map((r, i) => (
+            {rows.map((r, i) => (
               <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
                 {/* Histórico button — só para Renovado */}
                 <td style={tdE("center")}>
@@ -1065,6 +1065,9 @@ function EmprestimosNovosContent() {
                 <td style={tdE("right", { color: r.saldo > 0 ? "#374151" : "#9ca3af" })}>{fmt(r.saldo)}</td>
               </tr>
             ))}
+            {rows.length === 0 && (
+              <tr><td colSpan={cols.length} style={{ padding: "28px 8px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum empréstimo novo para esta rota.</td></tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -1093,6 +1096,7 @@ const despesasData = [
   { id: 6, categoria: "Combustível",        descricao: "Abastecimento rota extra",            valor: 60.00,  data: "2026-05-25", hora: "17:20", responsavel: "João Mendes",   obs: "" },
   { id: 7, categoria: "Outros",            descricao: "Recarga cartão telefone",              valor: 30.00,  data: "2026-05-25", hora: "08:50", responsavel: "Ana Lima",      obs: "" },
 ];
+type DespRow = typeof despesasData[0];
 
 const categoriaColor: Record<string, { bg: string; text: string; border: string }> = {
   "Combustível":        { bg: "#fef9c3", text: "#854d0e", border: "#fde047" },
@@ -1103,7 +1107,7 @@ const categoriaColor: Record<string, { bg: string; text: string; border: string 
   "Outros":            { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" },
 };
 
-function DespesasContent() {
+function DespesasContent({ rows }: { rows: DespRow[] }) {
   const cols = [
     { label: "Nro.",          w: 54,  align: "center" as const },
     { label: "Categoria",     w: 150, align: "center" as const },
@@ -1115,8 +1119,8 @@ function DespesasContent() {
     { label: "Observações",   w: 200, align: "left"   as const },
   ];
 
-  const total = despesasData.reduce((a, r) => a + r.valor, 0);
-  const totalRetirada = despesasData.filter(r => r.categoria === "Retirada de Caixa").reduce((a, r) => a + r.valor, 0);
+  const total = rows.reduce((a, r) => a + r.valor, 0);
+  const totalRetirada = rows.filter(r => r.categoria === "Retirada de Caixa").reduce((a, r) => a + r.valor, 0);
   const fmt = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 
   const tdD = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
@@ -1151,7 +1155,7 @@ function DespesasContent() {
             </tr>
           </thead>
           <tbody>
-            {despesasData.map((r, i) => {
+            {rows.map((r, i) => {
               const cat = categoriaColor[r.categoria] ?? categoriaColor["Outros"];
               return (
                 <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
@@ -1172,6 +1176,9 @@ function DespesasContent() {
                 </tr>
               );
             })}
+            {rows.length === 0 && (
+              <tr><td colSpan={cols.length} style={{ padding: "28px 8px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa lançada para esta rota.</td></tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -1199,6 +1206,7 @@ const rendimentosData = [
   { id: 5, categoria: "Aporte",         descricao: "Aporte emergencial para cobertura",        valor: 300.00,  data: "2026-05-25", hora: "14:20", responsavel: "João Mendes",   obs: "Saldo baixo" },
   { id: 6, categoria: "Entrada Extra",  descricao: "Recebimento de taxa administrativa",       valor: 75.00,   data: "2026-05-25", hora: "15:50", responsavel: "Ana Lima",      obs: "" },
 ];
+type RendRow = typeof rendimentosData[0];
 
 const rendCategoriaColor: Record<string, { bg: string; text: string; border: string }> = {
   "Aporte":        { bg: "#dbeafe", text: "#1d4ed8", border: "#93c5fd" },
@@ -1208,7 +1216,7 @@ const rendCategoriaColor: Record<string, { bg: string; text: string; border: str
   "Outros":        { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" },
 };
 
-function RendimentosContent() {
+function RendimentosContent({ rows }: { rows: RendRow[] }) {
   const cols = [
     { label: "Nro.",          w: 54,  align: "center" as const },
     { label: "Categoria",     w: 150, align: "center" as const },
@@ -1220,7 +1228,7 @@ function RendimentosContent() {
     { label: "Observações",   w: 200, align: "left"   as const },
   ];
 
-  const total = rendimentosData.reduce((a, r) => a + r.valor, 0);
+  const total = rows.reduce((a, r) => a + r.valor, 0);
   const fmt = (v: number) => `R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 
   const tdR = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
@@ -1255,7 +1263,7 @@ function RendimentosContent() {
             </tr>
           </thead>
           <tbody>
-            {rendimentosData.map((r, i) => {
+            {rows.map((r, i) => {
               const cat = rendCategoriaColor[r.categoria] ?? rendCategoriaColor["Outros"];
               return (
                 <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
@@ -1276,6 +1284,9 @@ function RendimentosContent() {
                 </tr>
               );
             })}
+            {rows.length === 0 && (
+              <tr><td colSpan={cols.length} style={{ padding: "28px 8px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum rendimento lançado para esta rota.</td></tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -1667,7 +1678,7 @@ function RelatóriosContent({ rotas = [] }: { rotas?: string[] }) {
   );
 }
 
-function ClientesContent() {
+function ClientesContent({ rows }: { rows: ClienteRow[] }) {
   const [selectedCliente, setSelectedCliente] = useState<ClienteRow | null>(null);
   const [showParcelas, setShowParcelas] = useState(false);
   const [showDocumentos, setShowDocumentos] = useState(false);
@@ -1688,7 +1699,7 @@ function ClientesContent() {
   ];
 
   const fmt = (v: number) => `$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
-  const totalSaldo = clientesRows.reduce((a, r) => a + r.saldo, 0);
+  const totalSaldo = rows.reduce((a, r) => a + r.saldo, 0);
 
   const tdC = (align: "left" | "center" | "right", extra?: React.CSSProperties): React.CSSProperties => ({
     padding: "11px 8px", borderRight: "1px solid #e5e7eb", borderBottom: "1px solid #f0f0f0",
@@ -1749,7 +1760,7 @@ function ClientesContent() {
       {/* Count bar */}
       <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#f0f2f5", borderBottom: "1px solid #e0e0e0" }}>
         <span className="text-xs text-gray-500">
-          <span className="font-bold text-gray-800">{clientesRows.length}</span> registros encontrados
+          <span className="font-bold text-gray-800">{rows.length}</span> registros encontrados
         </span>
       </div>
 
@@ -1770,7 +1781,7 @@ function ClientesContent() {
             </tr>
           </thead>
           <tbody>
-            {clientesRows.map((r, i) => {
+            {rows.map((r, i) => {
               const rowBg = i % 2 === 0 ? "#fff" : "#f5f7f9";
               const saldoColor = r.atrasadas === 0 ? "#15803d" : r.atrasadas >= 5 ? "#b91c1c" : "#d97706";
               return (
@@ -1845,6 +1856,9 @@ function ClientesContent() {
                 </tr>
               );
             })}
+            {rows.length === 0 && (
+              <tr><td colSpan={12} style={{ padding: "28px 8px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum cliente ativo para esta rota.</td></tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -2161,7 +2175,7 @@ function ClientesContent() {
 
 // ── Liq. Períodos ─────────────────────────────────────────────────────────────
 
-type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; clientesNovosRegulares?:number; clientesNovosAdiantados?:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; pagamentosClientes?:PagRow[]; };
+type RotaFakeData = { cod:number; cobradorNome?:string; codigoAcesso?:string; dataInicio:string; dataFechamento:string|null; ultimoAcesso:string; clientesIniciais:number; sincronizados:number; clientesNovos:number; clientesNovosRegulares?:number; clientesNovosAdiantados?:number; renovados:number; cancelados:number; caixaInicial:number; carteiraInicial:number; recebPrevisto:number; recebAtual:number; pagos:number; noPagos:number; efetivo:number; transferencia:number; novosEmp:number; juros:number; rendimentos:number; despesas:number; retirada:number; caixaFinal:number; carteiraFinal:number; sancao:number; pagamentosClientes?:PagRow[]; novosEmprestimos?:EmpRow[]; despesasLista?:DespRow[]; rendimentosLista?:RendRow[]; clientesLista?:ClienteRow[]; };
 
 // Formata o "Último Acesso Móvel" (ISO/UTC) para data-hora legível no fuso do Brasil.
 function fmtUltimoAcesso(v?: string): string {
@@ -3625,8 +3639,8 @@ function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDro
   if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView selectedEstado={selectedEstado} estadosData={estadosData} onCloseDropdown={onCloseDropdown} />;
   if (activeSub === "Pagamentos")          return <LiqPeriodosPagamentosContent />;
   if (activeSub === "Empr. por Períodos")  return <VendasPorPeriodosContent />;
-  if (activeSub === "Rendimentos")         return <RendimentosContent />;
-  if (activeSub === "Despesas")            return <DespesasContent />;
+  if (activeSub === "Rendimentos")         return <RendimentosContent rows={rendimentosData} />;
+  if (activeSub === "Despesas")            return <DespesasContent rows={despesasData} />;
   if (activeSub === "Clientes")            return <LiqPeriodosClientesContent />;
   if (activeSub === "Resumo")              return <ResumoContent />;
   return (
@@ -7918,13 +7932,13 @@ export default function DashboardPage() {
         ) : showPagamentos ? (
           <PagamentosContent rows={selectedRota ? ((importedRotaData[selectedRota]?.pagamentosClientes ?? []) as PagRow[]) : []} />
         ) : showEmprestimos ? (
-          <EmprestimosNovosContent />
+          <EmprestimosNovosContent rows={selectedRota ? ((importedRotaData[selectedRota]?.novosEmprestimos ?? []) as EmpRow[]) : []} />
         ) : showDespesas ? (
-          <DespesasContent />
+          <DespesasContent rows={selectedRota ? ((importedRotaData[selectedRota]?.despesasLista ?? []) as DespRow[]) : []} />
         ) : showRendimentos ? (
-          <RendimentosContent />
+          <RendimentosContent rows={selectedRota ? ((importedRotaData[selectedRota]?.rendimentosLista ?? []) as RendRow[]) : []} />
         ) : showClientes ? (
-          <ClientesContent />
+          <ClientesContent rows={selectedRota ? ((importedRotaData[selectedRota]?.clientesLista ?? []) as ClienteRow[]) : []} />
         ) : showAgendados ? (
           <AgendadosContent rotas={todasRotas} />
         ) : showRelatorios ? (

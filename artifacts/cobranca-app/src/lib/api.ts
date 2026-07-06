@@ -229,6 +229,78 @@ export type PagamentoClienteSnapshot = {
   historico?: { nro: number; tipo: string; valor: number; fecha: string }[];
 };
 
+// Um empréstimo NOVO (ou renovação) criado hoje. Alimenta a aba "Novos
+// Empréstimos" da web em tempo real.
+export type EmprestimoNovoSnapshot = {
+  id: number;
+  consec: string;
+  freq: string;
+  valorAnt: number;
+  cliente: string;
+  tag: "Novo" | "Renovado";
+  documento: string;
+  celular: string;
+  valorProd: number;      // valor emprestado (principal)
+  parcelas: number;
+  pctJuros: number;
+  valorJuros: number;
+  valorParcela: number;
+  dataVenda: string;      // "AAAA-MM-DD HH:mm:ss"
+  parcRest: number;
+  saldo: number;          // dívida total (principal + juros)
+  numSeguro: string;
+  vrSeguro: number;
+  chaveAutor: string;
+};
+
+// Um lançamento financeiro (despesa ou rendimento) do dia. Alimenta as abas
+// "Despesas" e "Rendimentos" da web.
+export type LancamentoSnapshot = {
+  id: number;
+  categoria: string;
+  descricao: string;
+  valor: number;
+  data: string;
+  hora: string;
+  responsavel: string;
+  obs: string;
+};
+
+// Um cliente da carteira da rota. Alimenta a aba "Clientes" da web.
+export type ClienteSnapshot = {
+  id: number;
+  consec: string;
+  status: string;
+  visitas: number;
+  nome: string;
+  tel1: string;
+  tel2: string;
+  freq: string;
+  valorVenda: number;
+  pctJuros: number;
+  total: number;
+  cuotas: number;
+  atrasadas: number;
+  pagas: number;
+  restantes: number;
+  vlrCuota: number;
+  saldo: number;
+  documento: string;
+  dataNasc: string;
+  endereco: string;
+  bairro: string;
+  cidade: string;
+  estadoVerif: string;
+  nroSeguro: string;
+  valorSeguro: number;
+  nomeCodedor: string;
+  telCodedor: string;
+  dirCodedor: string;
+  observacoes: string;
+  dataEmprestimo: string;
+  historico: { data: string; valor: number; total: number; cuotas: number; status: string }[];
+};
+
 export type DadosSnapshot = {
   cod: number;
   dataInicio: string;
@@ -258,6 +330,10 @@ export type DadosSnapshot = {
   carteiraFinal: number;
   sancao: number;
   pagamentosClientes?: PagamentoClienteSnapshot[];
+  novosEmprestimos?: EmprestimoNovoSnapshot[];
+  despesasLista?: LancamentoSnapshot[];
+  rendimentosLista?: LancamentoSnapshot[];
+  clientesLista?: ClienteSnapshot[];
 };
 
 export async function postFechamentoCaixaAPI(data: {

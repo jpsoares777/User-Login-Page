@@ -137,6 +137,15 @@ A aba `Liq. Diária > Pagamentos` (dashboard.tsx `PagamentosContent`) mostra dad
 
 **Padrão reutilizável:** para levar QUALQUER dado novo do app para a web durante o dia, basta adicioná-lo ao objeto `snapshot` de `buildDadosSnapshot` e ao tipo `DadosSnapshot` (app) + `RotaFakeData` (web) — o passthrough + heartbeat 15s + polling 10s cuidam do resto. Evite deixar os dois shapes divergirem manualmente.
 
+## Abas Novos Empréstimos / Despesas / Rendimentos / Clientes da web = mesmas do padrão Pagamentos
+As 4 abas antes usavam arrays MOCK fixos no `dashboard.tsx` (`emprestimosData`, `despesasData`, `rendimentosData`, `clientesRows`). Agora leem dados REAIS por rota via snapshot ao vivo, exatamente como `pagamentosClientes`: o app inclui `novosEmprestimos`, `despesasLista`, `rendimentosLista`, `clientesLista` em `buildDadosSnapshot`; a web passa `rows={importedRotaData[selectedRota]?.<campo> ?? []}` para os 4 componentes (agora `({ rows })`), com estado vazio (linha "Nenhum ... para esta rota") e totais recomputados de `rows`.
+
+**Regra crítica de shape:** cada item das listas do app DEVE bater 1:1 com o row-type da web (`EmpRow`/`DespRow`/`RendRow`/`ClienteRow`) — os campos foram desenhados para casar. `DespRow`/`RendRow` = `typeof despesasData[0]`/`typeof rendimentosData[0]` (os arrays mock foram mantidos SÓ como fonte desses tipos; `EmpRow` já existia). Se mudar colunas de uma aba, ajuste os DOIS lados juntos ou a web renderiza campos vazios.
+
+**Armadilha (segundo call-site):** `RendimentosContent`/`DespesasContent` também são usados em `Liq. Períodos` (`LiqPeriodosContent`), fora do escopo da integração por rota — esses continuam recebendo os arrays mock (`rows={despesasData}`/`rows={rendimentosData}`). Não esquecer de alimentar TODOS os call-sites ao tornar um componente `rows`-driven.
+
+**Erros de typecheck pré-existentes (não da feature):** `cobranca-app` tem muitos erros de `tsc --noEmit` (ex.: `gastosData`, `Metodo`, `MetodoPagamento`) e `web-platform` tem 2 (`GcRow`/`rota`, `codigoAcesso` em `GaSolicitacao`) que já existiam. O build é `vite build` (esbuild, ignora tipos), então roda mesmo assim. Não confundir com regressão.
+
 ## Diagnóstico: snapshot chega SEM um campo novo mesmo com o dev servindo o código certo
 Sintoma: um campo novo do `snapshot` (ex.: `pagamentos`) some no banco (chave AUSENTE, não `[]`) enquanto os agregados chegam certos. Chave ausente (não vazia) ⇒ o código que RODOU não tinha a linha `campo: valor` (JSON.stringify só dropa `undefined`; um array vazio viraria `[]`). Como `buildDadosSnapshot` sempre produz array, ausência = **o app rodou bundle antigo**.
 

@@ -1774,6 +1774,131 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       };
     }).filter((x): x is NonNullable<typeof x> => x !== null);
 
+    // Lista de NOVOS empréstimos de hoje (novos + renovações) para a aba
+    // "Novos Empréstimos" da web. Reusa novosEmpHojeSnap já calculado.
+    const fmtDataVendaSnap = (iso: string): string => {
+      const d = new Date(iso);
+      if (!Number.isFinite(d.getTime())) return dataStr;
+      const p = (n: number) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+    };
+    const novosEmprestimosSnap = novosEmpHojeSnap.map((e) => {
+      const principal = Number(e.valorEmprestado) || 0;
+      const pct = Number(e.taxaJuros) || 0;
+      const parcelas = Number(e.quantidadeParcelas) || 0;
+      const parcela = Number(e.valorParcela) || 0;
+      return {
+        id: e.id,
+        consec: e.consecutivo ?? "",
+        freq: e.frequencia ?? (e.diario ? "Diário" : ""),
+        valorAnt: 0,
+        cliente: e.nomeCliente,
+        tag: (e.renovacao ? "Renovado" : "Novo") as "Novo" | "Renovado",
+        documento: e.cpf ?? "",
+        celular: e.telefone ?? "",
+        valorProd: principal,
+        parcelas,
+        pctJuros: pct,
+        valorJuros: principal * (pct / 100),
+        valorParcela: parcela,
+        dataVenda: fmtDataVendaSnap(e.criadoEm),
+        parcRest: parcelas,
+        saldo: parcela * parcelas,
+        numSeguro: "",
+        vrSeguro: 0,
+        chaveAutor: "",
+      };
+    });
+
+    // Listas de despesas e rendimentos do dia para as abas homônimas da web.
+    const fmtHoraSnap = (id: number) => Number.isFinite(id)
+      ? new Date(id).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+      : "";
+    const despesasListaSnap = despesas.map((d) => ({
+      id: d.id,
+      categoria: d.categoria,
+      descricao: d.observacao ?? d.categoria,
+      valor: d.valor,
+      data: d.data,
+      hora: fmtHoraSnap(d.id),
+      responsavel: "",
+      obs: d.observacao ?? "",
+    }));
+    const rendimentosListaSnap = rendimentos.map((r) => ({
+      id: r.id,
+      categoria: r.categoria,
+      descricao: r.observacao ?? r.categoria,
+      valor: r.valor,
+      data: r.data,
+      hora: fmtHoraSnap(r.id),
+      responsavel: "",
+      obs: r.observacao ?? "",
+    }));
+
+    // Lista de clientes ativos da carteira (saldo > 0), sem duplicar por id,
+    // para a aba "Clientes" da web.
+    const fmtDataTsSnap = (ts?: number): string => {
+      if (!ts || !Number.isFinite(ts)) return "";
+      const d = new Date(ts);
+      if (!Number.isFinite(d.getTime())) return "";
+      const p = (n: number) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    };
+    const clientesFontesSnap = [
+      ...clientes,
+      ...clientesAdicionaisHoje.filter(c => !clientes.some(k => k.id === c.id)),
+    ].filter(c => c.saldo > 0);
+    const clientesListaSnap = clientesFontesSnap.map((c) => {
+      const pct = Number(c.taxaJuros) || 0;
+      const cuotas = Number(c.totalParcelas) || 0;
+      const parcela = Number(c.parcela) || 0;
+      const total = parcela * cuotas;
+      const valorVenda = pct > 0 ? total / (1 + pct / 100) : total;
+      const pagas = Number(c.parcelasPagas) || 0;
+      const restantes = Math.max(0, cuotas - pagas);
+      const visitas = (registroPagamentos[c.id] ?? []).length;
+      const historicoCli = (historicoCreditos[c.id] ?? []).map(h => ({
+        data: h.dataInicio,
+        valor: h.valor,
+        total: h.valor + (Number(h.juros) || 0),
+        cuotas: h.parcelas,
+        status: (h.status ?? "").toUpperCase(),
+      }));
+      return {
+        id: c.id,
+        consec: c.consecutivo ?? "",
+        status: "ACTIVO",
+        visitas,
+        nome: c.nome,
+        tel1: c.telefone ?? "",
+        tel2: "",
+        freq: c.frequencia ?? "",
+        valorVenda,
+        pctJuros: pct,
+        total,
+        cuotas,
+        atrasadas: 0,
+        pagas,
+        restantes,
+        vlrCuota: parcela,
+        saldo: c.saldo,
+        documento: c.cpf ?? "",
+        dataNasc: "",
+        endereco: c.endereco ?? "",
+        bairro: c.bairro ?? "",
+        cidade: [c.cidade, c.uf].filter(Boolean).join(" - "),
+        estadoVerif: "Sem Verificação",
+        nroSeguro: "",
+        valorSeguro: 0,
+        nomeCodedor: "",
+        telCodedor: "",
+        dirCodedor: "",
+        observacoes: "",
+        dataEmprestimo: fmtDataTsSnap(c.creditoStartTimestamp),
+        historico: historicoCli,
+      };
+    });
+
     return {
       caixaFinal: caixaFinalSnap,
       snapshot: {
@@ -1805,6 +1930,10 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         carteiraFinal: carteiraFinalSnap,
         sancao: 0,
         pagamentosClientes: pagamentosClientesSnap,
+        novosEmprestimos: novosEmprestimosSnap,
+        despesasLista: despesasListaSnap,
+        rendimentosLista: rendimentosListaSnap,
+        clientesLista: clientesListaSnap,
       },
     };
   };
