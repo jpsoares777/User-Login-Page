@@ -1,4 +1,5 @@
-import { pgTable, serial, text, integer, numeric, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, numeric, jsonb, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { aplicativosTable } from "./aplicativos";
@@ -21,7 +22,13 @@ export const solicitacoesMovimentoTable = pgTable("solicitacoes_movimento", {
   status:       text("status").notNull().default("pendente"),
   solicitadoEm: timestamp("solicitado_em").defaultNow(),
   respondidoEm: timestamp("respondido_em"),
-});
+}, (t) => [
+  // Impede lançamentos duplicados para o mesmo (codigoAcesso, localId).
+  // Torna o POST idempotente mesmo com POSTs concorrentes (POST inicial + polling).
+  uniqueIndex("solic_mov_codigo_local_uidx")
+    .on(t.codigoAcesso, t.localId)
+    .where(sql`${t.localId} is not null`),
+]);
 
 export const insertSolicitacaoMovimentoSchema = createInsertSchema(solicitacoesMovimentoTable).omit({ id: true, solicitadoEm: true, respondidoEm: true });
 export const selectSolicitacaoMovimentoSchema = createSelectSchema(solicitacoesMovimentoTable);

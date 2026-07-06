@@ -54,7 +54,23 @@ router.post("/solicitacoes-movimento", async (req, res): Promise<void> => {
     localId:      localId != null ? String(localId) : null,
     payload:      payload ?? null,
     status:       "pendente",
-  }).returning();
+  }).onConflictDoNothing().returning();
+
+  // Corrida (POST inicial + polling concorrentes com o mesmo localId): o índice
+  // UNIQUE parcial rejeita o 2º insert; devolvemos o lançamento já existente.
+  if (!nova && localId) {
+    const [existente] = await db
+      .select()
+      .from(solicitacoesMovimentoTable)
+      .where(and(
+        eq(solicitacoesMovimentoTable.codigoAcesso, String(codigoAcesso)),
+        eq(solicitacoesMovimentoTable.localId, String(localId)),
+      ));
+    if (existente) {
+      res.status(200).json(existente);
+      return;
+    }
+  }
 
   res.status(201).json(nova);
 });

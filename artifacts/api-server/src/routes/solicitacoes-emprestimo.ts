@@ -59,7 +59,23 @@ router.post("/solicitacoes-emprestimo", async (req, res): Promise<void> => {
     consecutivo:     consecutivo != null ? String(consecutivo) : null,
     payload:         payload ?? null,
     status:          "pendente",
-  }).returning();
+  }).onConflictDoNothing().returning();
+
+  // Corrida (POST inicial + polling concorrentes com o mesmo localId): o índice
+  // UNIQUE parcial rejeita o 2º insert; devolvemos a solicitação já existente.
+  if (!nova && localId) {
+    const [existente] = await db
+      .select()
+      .from(solicitacoesEmprestimoTable)
+      .where(and(
+        eq(solicitacoesEmprestimoTable.codigoAcesso, String(codigoAcesso)),
+        eq(solicitacoesEmprestimoTable.localId, String(localId)),
+      ));
+    if (existente) {
+      res.status(200).json(existente);
+      return;
+    }
+  }
 
   res.status(201).json(nova);
 });
