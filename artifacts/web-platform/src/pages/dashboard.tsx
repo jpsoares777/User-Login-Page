@@ -3183,9 +3183,9 @@ function LiqPeriodosClientesContent({ rows = liqPerClientesData }: { rows?: LiqP
     { label: "Parc. Pag.",    w: "4%",  align: "center" as const },
     { label: "Parc. Rest.",   w: "4%",  align: "center" as const },
     { label: "Saldo",         w: "4%",  align: "right"  as const },
-    { label: "Int.",          w: "3%",  align: "center" as const },
+    { label: "Juros",         w: "3%",  align: "center" as const },
     { label: "Valor Prod.",   w: "5%",  align: "right"  as const },
-    { label: "Vl. Parcela",  w: "5%",  align: "right"  as const },
+    { label: "Valor Parc.",  w: "5%",  align: "right"  as const },
     { label: "Visitas",       w: "4%",  align: "center" as const },
     { label: "Frequência",    w: "5%",  align: "center" as const },
   ];
