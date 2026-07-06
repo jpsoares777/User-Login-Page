@@ -80,10 +80,18 @@ router.post("/solicitacoes-emprestimo", async (req, res): Promise<void> => {
   res.status(201).json(nova);
 });
 
-// Lista solicitações. Filtros opcionais: codigoAcesso, aplicativoId, status.
+// Lista solicitações. Filtros opcionais: rota, codigoAcesso, aplicativoId, status.
 router.get("/solicitacoes-emprestimo", async (req, res): Promise<void> => {
-  const { codigoAcesso, aplicativoId, status } = req.query;
+  const { rota, codigoAcesso, aplicativoId, status } = req.query;
   const conds = [];
+  if (rota) {
+    const [aplicativo] = await db
+      .select()
+      .from(aplicativosTable)
+      .where(eq(aplicativosTable.rota, String(rota)));
+    if (!aplicativo) { res.json([]); return; }
+    conds.push(eq(solicitacoesEmprestimoTable.aplicativoId, aplicativo.id));
+  }
   if (codigoAcesso) conds.push(eq(solicitacoesEmprestimoTable.codigoAcesso, String(codigoAcesso)));
   if (aplicativoId) conds.push(eq(solicitacoesEmprestimoTable.aplicativoId, Number(aplicativoId)));
   if (status) conds.push(eq(solicitacoesEmprestimoTable.status, String(status)));

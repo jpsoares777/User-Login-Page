@@ -4905,7 +4905,7 @@ function mapSolicitacao(r: any): AprovacaoItem {
   };
 }
 
-function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
+function CodigosAprovacaoModal({ onClose, rota }: { onClose: () => void; rota?: string | null }) {
   const hoje = new Date().toLocaleDateString("pt-BR");
   const [items, setItems] = useState<AprovacaoItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -4913,8 +4913,10 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
 
   // Solicitações reais criadas pelo App do Cobrador (empréstimos/renovações
   // acima do limite). Enquanto pendentes, o cliente NÃO entra no sistema.
+  // Quando uma rota está selecionada, mostra SOMENTE as solicitações dela.
   const carregar = () => {
-    fetch(`${import.meta.env.BASE_URL}api/solicitacoes-emprestimo?_t=${Date.now()}`)
+    const filtroRota = rota ? `&rota=${encodeURIComponent(rota)}` : "";
+    fetch(`${import.meta.env.BASE_URL}api/solicitacoes-emprestimo?_t=${Date.now()}${filtroRota}`)
       .then(r => (r.ok ? r.json() : []))
       .then((rows: any[]) => setItems(Array.isArray(rows) ? rows.map(mapSolicitacao) : []))
       .catch(() => {})
@@ -8904,7 +8906,7 @@ export default function DashboardPage() {
       {listaClientesOpen && <ListaClientesModal onClose={() => setListaClientesOpen(false)} />}
 
       {/* ── MODAL: Códigos de Aprovação ── */}
-      {codigosOpen && <CodigosAprovacaoModal onClose={() => setCodigosOpen(false)} />}
+      {codigosOpen && <CodigosAprovacaoModal onClose={() => setCodigosOpen(false)} rota={selectedRota} />}
 
       {/* ── MODAL: Aprovação de Despesas e Rendimentos ── */}
       {despRendOpen && <DespRendModal onClose={() => setDespRendOpen(false)} />}
