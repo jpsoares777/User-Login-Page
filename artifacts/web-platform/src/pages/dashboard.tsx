@@ -747,10 +747,22 @@ const pagamentosPorEmprestimo: Record<number, { nro: number; tipo: string; valor
   ],
 };
 
+type PagRow = { nro: number; tipo: string; valor: number; data: string; obs: string };
+
+// Pagamentos específicos de empréstimos do histórico (por consecutivo → nro do empréstimo no histórico)
+const historicoPagamentosPorEmp: Record<string, Record<number, PagRow[]>> = {
+  // Aira Cecilia — primeiro empréstimo (R$700) quitado antes da renovação
+  "4359614134": {
+    1: [
+      { nro: 1, tipo: "PARC.", valor: 840, data: "2026-07-06", obs: "Quitação total" },
+    ],
+  },
+};
+
 function PagamentosEmprestimoModal({
-  nroEmp, cliente, onClose,
-}: { nroEmp: number; cliente: string; onClose: () => void }) {
-  const pagamentos = pagamentosPorEmprestimo[nroEmp] ?? [];
+  nroEmp, cliente, onClose, pagamentos: pagamentosProp,
+}: { nroEmp: number; cliente: string; onClose: () => void; pagamentos?: PagRow[] }) {
+  const pagamentos = pagamentosProp ?? pagamentosPorEmprestimo[nroEmp] ?? [];
   const total = pagamentos.filter(p => p.tipo === "PARC.").reduce((a, p) => a + p.valor, 0);
   const trunc = (n: string) => n.length > 22 ? n.slice(0, 19) + "..." : n;
 
@@ -949,6 +961,7 @@ function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => vo
         <PagamentosEmprestimoModal
           nroEmp={selectedHistRow}
           cliente={row.cliente}
+          pagamentos={historicoPagamentosPorEmp[row.consec]?.[selectedHistRow]}
           onClose={() => setSelectedHistRow(null)}
         />
       )}
