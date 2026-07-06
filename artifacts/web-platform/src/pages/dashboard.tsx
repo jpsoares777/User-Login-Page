@@ -1107,15 +1107,14 @@ const categoriaColor: Record<string, { bg: string; text: string; border: string 
   "Outros":            { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" },
 };
 
-function DespesasContent({ rows }: { rows: DespRow[] }) {
+function DespesasContent({ rows, cobrador }: { rows: DespRow[]; cobrador?: string }) {
   const cols = [
     { label: "Nro.",          w: 54,  align: "center" as const },
     { label: "Categoria",     w: 150, align: "center" as const },
-    { label: "Descrição",     w: 300, align: "left"   as const },
     { label: "Valor",         w: 120, align: "right"  as const },
     { label: "Data",          w: 110, align: "center" as const },
     { label: "Hora",          w: 80,  align: "center" as const },
-    { label: "Responsável",   w: 160, align: "left"   as const },
+    { label: "Cobrador",      w: 160, align: "left"   as const },
     { label: "Observações",   w: 200, align: "left"   as const },
   ];
 
@@ -1167,11 +1166,10 @@ function DespesasContent({ rows }: { rows: DespRow[] }) {
                       background: cat.bg, color: cat.text, border: `1px solid ${cat.border}`,
                     }}>{r.categoria}</span>
                   </td>
-                  <td style={tdD("left", { color: "#374151" })}>{r.descricao}</td>
                   <td style={tdD("right", { fontWeight: 700, color: "#b91c1c" })}>{fmt(r.valor)}</td>
                   <td style={tdD("center", { color: "#6b7280" })}>{r.data}</td>
                   <td style={tdD("center", { color: "#6b7280" })}>{r.hora}</td>
-                  <td style={tdD("left", { color: "#374151" })}>{r.responsavel}</td>
+                  <td style={tdD("left", { color: "#374151" })}>{cobrador || r.responsavel}</td>
                   <td style={tdD("left", { color: "#6b7280", fontStyle: r.obs ? "normal" : "italic" })}>{r.obs || "—"}</td>
                 </tr>
               );
@@ -7929,7 +7927,7 @@ export default function DashboardPage() {
         ) : showEmprestimos ? (
           <EmprestimosNovosContent rows={selectedRota ? ((importedRotaData[selectedRota]?.novosEmprestimos ?? []) as EmpRow[]) : []} />
         ) : showDespesas ? (
-          <DespesasContent rows={selectedRota ? ((importedRotaData[selectedRota]?.despesasLista ?? []) as DespRow[]) : []} />
+          <DespesasContent rows={selectedRota ? ((importedRotaData[selectedRota]?.despesasLista ?? []) as DespRow[]) : []} cobrador={selectedRota ? (importedRotaData[selectedRota]?.cobradorNome || undefined) : undefined} />
         ) : showRendimentos ? (
           <RendimentosContent rows={selectedRota ? ((importedRotaData[selectedRota]?.rendimentosLista ?? []) as RendRow[]) : []} cobrador={selectedRota ? (importedRotaData[selectedRota]?.cobradorNome || undefined) : undefined} />
         ) : showClientes ? (
