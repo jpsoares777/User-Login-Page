@@ -1772,7 +1772,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       diario: emp.diario,
       frequencia: emp.frequencia,
       criadoEm: new Date().toISOString(),
-      valorEmprestado: novoSaldo,
+      valorEmprestado: emp.valorEmprestado,
       valorParcela: novaParcela,
       taxaJuros: emp.taxaJuros,
       quantidadeParcelas: novoTotal,
@@ -2036,6 +2036,18 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     // tempo real). Só entra quem o cobrador efetivamente visitou (está em
     // `cobrados`). Cliente ainda não cobrado NÃO aparece.
     const fmtBRSnap = (v: number) => (Number(v) || 0).toFixed(2).replace(".", ",");
+    // Valor EMPRESTADO (principal) do cliente. Fonte confiável: o registro do
+    // empréstimo (valorEmprestado). Muitos clientes têm taxaJuros=0 gravado, o
+    // que faz derivar do total/juros falhar (retornaria o total). Pega o
+    // empréstimo mais recente do cliente; só se não houver, deriva do juros.
+    const principalDoClienteSnap = (cid: number, parcela: number, cuotas: number, pct: number): number => {
+      const empCli = emprestimentos
+        .filter(e => (e.clienteId === cid || e.id === cid) && Number(e.valorEmprestado) > 0)
+        .sort((a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime())[0];
+      if (empCli) return Number(empCli.valorEmprestado);
+      const total = parcela * cuotas;
+      return pct > 0 ? total / (1 + pct / 100) : total;
+    };
     const fontesClientesSnap = [...clientes, ...clientesAdicionaisHoje];
     const pagamentosClientesSnap = cobrados.map((cid) => {
       const cli = fontesClientesSnap.find(c => c.id === cid);
@@ -2051,9 +2063,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         ? new Date(ultimoPag.id).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
         : "";
       const restantesCli = Math.max(0, (cli.totalParcelas ?? 0) - (cli.parcelasPagas ?? 0));
-      const pctCli = Number(cli.taxaJuros) || 0;
-      const totalCli = (cli.parcela ?? 0) * (cli.totalParcelas ?? 0);
-      const principalCli = pctCli > 0 ? totalCli / (1 + pctCli / 100) : totalCli;
+      const principalCli = principalDoClienteSnap(cid, cli.parcela ?? 0, cli.totalParcelas ?? 0, Number(cli.taxaJuros) || 0);
       const historicoCli = (registroPagamentos[cid] ?? []).map((p, idx) => ({
         nro: idx + 1,
         tipo: p.metodo === "Abono" ? "ABONO" : (p.valor > 0 ? "PARC." : "S/PAG."),
@@ -2168,7 +2178,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       const cuotas = Number(c.totalParcelas) || 0;
       const parcela = Number(c.parcela) || 0;
       const total = parcela * cuotas;
-      const valorVenda = pct > 0 ? total / (1 + pct / 100) : total;
+      const valorVenda = principalDoClienteSnap(c.id, parcela, cuotas, pct);
       const pagas = Number(c.parcelasPagas) || 0;
       const restantes = Math.max(0, cuotas - pagas);
       const visitas = (registroPagamentos[c.id] ?? []).length;

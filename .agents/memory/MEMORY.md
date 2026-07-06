@@ -4,4 +4,5 @@
 - [Snapshot: empréstimo ativo no histórico](snapshot-historico-ativo.md) — historico do snapshot só tinha créditos passados; injetar o empréstimo ATIVO atual senão a ficha do admin fica vazia (status "ACTIVO").
 - [Controle de parcelas (config admin ↔ app)](parcelas-config.md) — 3 campos: nº ao criar, nº por pagamento, nº p/ quitar; #3 sincroniza mas sem enforcement; clamp obrigatório no fetch tardio.
 - [Aprovação de despesas/rendimentos](aprovacao-movimento.md) — "Desp e Rend" é fluxo aceitar/recusar (espelha empréstimos); gasto/rendimento acima do limite vira solicitação pendente.
+- [Valor emprestado (principal) no snapshot](valor-emprestado-principal.md) — "Valor Empr." usa valorEmprestado do empréstimo (não derivar do juros: taxaJuros costuma ser 0); lookup por id||clienteId; renovação gravava total.
 - [Aprovação de empréstimo por limite](aprovacao-emprestimo-limite.md) — acima do valorVendaMax vira solicitação no admin; dedupe por localId no backend + pollingRef/materializadosRef no app garantem materialização única.
