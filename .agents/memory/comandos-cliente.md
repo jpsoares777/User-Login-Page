@@ -13,6 +13,8 @@ Regras duráveis:
 - **Ack escopado**: PATCH `/ack` exige `codigoAcesso` no body e faz UPDATE com `and(id, codigoAcesso)` — uma rota não consegue ackar comandos de outra (achado do architect).
 - **Consistência imediata no admin**: `clientes-rotas` aplica comandos PENDENTES por cima do snapshot (excluir filtra; editar faz merge `telefone→tel1`, `cidade+uf→"Cidade - UF"`), senão o admin só veria a mudança após o app sincronizar.
 - Mapeamento de campos comando→app: `documento→cpf`, `telefone→telefone/tel1`.
+- **Nome copiado em várias estruturas**: `emprestimentos` (nomeCliente/cpf/telefone/endereço) e `agendamentos` (nomeCliente) guardam cópias dos dados do cliente — o snapshot do admin lê dessas cópias, então editar/excluir precisa atualizá-las junto.
+- **Vínculo empréstimo↔cliente**: empréstimo de cadastro NÃO tem `clienteId` — o próprio `id` do empréstimo É o id do cliente; só renovações têm `clienteId`. Matching correto: `(e.clienteId ?? e.id) === clienteId`.
 
 **Why:** snapshot é publicado pelo app; qualquer edição do admin precisa viajar como comando e voltar via snapshot — o merge de pendentes cobre a janela intermediária.
 **Cuidado em testes:** se o app estiver aberto em dev, ele aplica comandos de teste em dados reais em ~20s; restaurar via novo comando com dados do snapshot fechado anterior.

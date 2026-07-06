@@ -1999,11 +1999,33 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
               ...(d.cidade !== undefined ? { cidade: d.cidade } : {}),
               ...(d.uf !== undefined ? { uf: d.uf } : {}),
             };
+            // O nome (e demais dados) do cliente também fica COPIADO nos
+            // empréstimos (nomeCliente/cpf/telefone/endereço) e nos
+            // agendamentos (nomeCliente) — o snapshot enviado ao admin lê
+            // dessas cópias, então elas precisam ser atualizadas junto.
+            // Empréstimos criados no cadastro NÃO têm clienteId — o próprio
+            // id do empréstimo é o id do cliente; só renovações têm clienteId.
+            const aplicarEdicaoEmp = (e: Emprestimo): Emprestimo => (e.clienteId ?? e.id) !== clienteAlvoId ? e : {
+              ...e,
+              ...(d.nome ? { nomeCliente: d.nome } : {}),
+              ...(d.documento !== undefined ? { cpf: d.documento } : {}),
+              ...(d.telefone !== undefined ? { telefone: d.telefone } : {}),
+              ...(d.endereco !== undefined ? { endereco: d.endereco } : {}),
+              ...(d.bairro !== undefined ? { bairro: d.bairro } : {}),
+              ...(d.cidade !== undefined ? { cidade: d.cidade } : {}),
+              ...(d.uf !== undefined ? { uf: d.uf } : {}),
+            };
+            const aplicarEdicaoAg = (a: Agendamento): Agendamento => a.clienteId !== clienteAlvoId ? a : {
+              ...a,
+              ...(d.nome ? { nomeCliente: d.nome } : {}),
+            };
             setClientes(prev => prev.map(aplicarEdicao));
             setClientesAdicionaisHoje(prev => prev.map(aplicarEdicao));
             setNovosClientesOutras(prev => prev.map(aplicarEdicao));
             setCobradosExtras(prev => prev.map(aplicarEdicao));
             setQuitadosClientes(prev => prev.map(aplicarEdicao));
+            setEmprestimentos(prev => prev.map(aplicarEdicaoEmp));
+            setAgendamentos(prev => prev.map(aplicarEdicaoAg));
             // Durabilidade ANTES do ack: grava a edição direto no banco local
             // persistido. Se o app fechar agora, a mudança já está salva.
             const dbA = loadDB();
@@ -2015,10 +2037,14 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                 novosClientesOutras: mapL(dbA.novosClientesOutras) ?? dbA.novosClientesOutras,
                 cobradosExtras: mapL(dbA.cobradosExtras) ?? dbA.cobradosExtras,
                 quitadosClientes: mapL(dbA.quitadosClientes) ?? dbA.quitadosClientes,
+                emprestimentos: (dbA.emprestimentos as Emprestimo[] | undefined)?.map(aplicarEdicaoEmp) ?? dbA.emprestimentos,
+                agendamentos: (dbA.agendamentos as Agendamento[] | undefined)?.map(aplicarEdicaoAg) ?? dbA.agendamentos,
               });
             }
           } else if (cmd.tipo === "excluir") {
-            setEmprestimentos(prev => prev.filter(e => e.clienteId !== clienteAlvoId));
+            // Mesmo critério da edição: empréstimo pertence ao cliente se
+            // clienteId (renovação) ou o próprio id (cadastro) casar.
+            setEmprestimentos(prev => prev.filter(e => (e.clienteId ?? e.id) !== clienteAlvoId));
             setNovosClientesIds(prev => { const s = new Set(prev); s.delete(clienteAlvoId); return s; });
             setRenovacoesIds(prev => { const s = new Set(prev); s.delete(clienteAlvoId); return s; });
             setClientesAdicionaisHoje(prev => prev.filter(c => c.id !== clienteAlvoId));
@@ -2045,7 +2071,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                 novosClientesOutras: semCliente(dbA.novosClientesOutras) ?? dbA.novosClientesOutras,
                 cobradosExtras: semCliente(dbA.cobradosExtras) ?? dbA.cobradosExtras,
                 quitadosClientes: semCliente(dbA.quitadosClientes) ?? dbA.quitadosClientes,
-                emprestimentos: (dbA.emprestimentos as { clienteId?: number }[] | undefined)?.filter(e => e.clienteId !== clienteAlvoId) ?? dbA.emprestimentos,
+                emprestimentos: (dbA.emprestimentos as { id?: number; clienteId?: number }[] | undefined)?.filter(e => (e.clienteId ?? e.id) !== clienteAlvoId) ?? dbA.emprestimentos,
                 ordemClientesIds: dbA.ordemClientesIds?.filter(oid => oid !== clienteAlvoId) ?? dbA.ordemClientesIds,
                 cobrados: dbA.cobrados?.filter(cid => cid !== clienteAlvoId) ?? dbA.cobrados,
                 cobradosValores: dbA.cobradosValores?.filter(x => x.id !== clienteAlvoId) ?? dbA.cobradosValores,
