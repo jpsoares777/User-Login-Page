@@ -2182,7 +2182,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
                               <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#15803d", fontWeight: 600 }}>{pagasH}</td>
                               <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: faltH > 0 ? "#b91c1c" : "#6b7280", fontWeight: faltH > 0 ? 700 : 400 }}>{faltH}</td>
                               <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: saldoH > 0 ? "#b91c1c" : "#15803d" }}>{fmtM(saldoH)}</td>
-                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: "#2563eb" }}>{fmtM(h.total)}</td>
+                              <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", fontWeight: 700, color: "#2563eb" }}>{fmtM(h.valor)}</td>
                               <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#6b7280" }}>{c.freq}</td>
                               <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "right", color: "#374151" }}>{fmtM(vrParc)}</td>
                               <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center", color: "#374151" }}>{c.visitas}</td>
@@ -2197,7 +2197,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 4px 0" }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>
                       TOTAL EMPRÉSTIMOS:&nbsp;
-                      <span style={{ color: "#2563eb" }}>{fmtM(c.historico.reduce((a, h) => a + h.total, 0))}</span>
+                      <span style={{ color: "#2563eb" }}>{fmtM(c.historico.reduce((a, h) => a + h.valor, 0))}</span>
                     </span>
                     <button onClick={() => setSelectedCliente(null)} style={{ background: "#3d6e8e", color: "#fff", border: "none", borderRadius: 5, padding: "7px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                       Cancelar
