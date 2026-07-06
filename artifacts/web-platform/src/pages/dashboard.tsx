@@ -948,7 +948,7 @@ const historicoVendasPorEmp: Record<string, HistVendaRow[]> = {
   ],
 };
 
-function HistorialVendasModal({ row, hist: histProp, onClose }: { row: EmpRow; hist?: HistVendaRow[]; onClose: () => void }) {
+function HistorialVendasModal({ row, hist: histProp, pagamentosReais, onClose }: { row: EmpRow; hist?: HistVendaRow[]; pagamentosReais?: Record<number, PagHistRow[]>; onClose: () => void }) {
   const [selectedHistRow, setSelectedHistRow] = useState<number | null>(null);
 
   const hist: HistVendaRow[] = histProp ?? historicoVendasPorEmp[row.consec] ?? [
@@ -1079,7 +1079,7 @@ function HistorialVendasModal({ row, hist: histProp, onClose }: { row: EmpRow; h
         <PagamentosEmprestimoModal
           nroEmp={selectedHistRow}
           cliente={row.cliente}
-          pagamentos={historicoPagamentosPorEmp[row.consec]?.[selectedHistRow]}
+          pagamentos={pagamentosReais ? (pagamentosReais[selectedHistRow] ?? []) : historicoPagamentosPorEmp[row.consec]?.[selectedHistRow]}
           onClose={() => setSelectedHistRow(null)}
         />
       )}
@@ -4219,7 +4219,7 @@ function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDro
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
-type GcRow = { id: number; appId?: number; codigoAcesso?: string; inativo?: boolean; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number; historico?: { data: string; valor: number; total: number; cuotas: number; status: string }[] };
+type GcRow = { id: number; appId?: number; codigoAcesso?: string; inativo?: boolean; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number; historico?: { data: string; valor: number; total: number; cuotas: number; status: string }[]; pagamentos?: PagHistRow[] };
 type GcDoc = { id: string; name: string; url: string; type: string };
 
 function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
@@ -5982,6 +5982,15 @@ export default function DashboardPage() {
           appId: Number(c.id) || undefined,
           codigoAcesso: c.codigoAcesso ?? undefined,
           inativo: String(c.status ?? "").toUpperCase() === "INACTIVO",
+          pagamentos: Array.isArray(c.pagamentos)
+            ? c.pagamentos.map((p: any, k: number) => ({
+                nro: Number(p.nro) || k + 1,
+                tipo: String(p.tipo ?? "PARC."),
+                valor: Number(p.valor) || 0,
+                data: String(p.data ?? ""),
+                obs: String(p.obs ?? ""),
+              }))
+            : [],
           rota: c.rota ?? "",
           consec: String(c.consec ?? ""),
           nome: c.nome ?? "",
@@ -8624,7 +8633,12 @@ export default function DashboardPage() {
                     visitas: gcr.visitas,
                     pctJuros: gcr.jurosPorc,
                   }];
-              return <HistorialVendasModal row={empRow} hist={histReal} onClose={() => setGcHistRowId(null)} />;
+              // Pagamentos REAIS por nro do empréstimo: só o crédito ATIVO tem
+              // registro de pagamentos no app; créditos anteriores ficam vazios
+              // (nunca mostramos dados fictícios).
+              const pagReais: Record<number, PagHistRow[]> = {};
+              for (const h of histReal) pagReais[h.nro] = h.estado === "Ativo" ? (gcr.pagamentos ?? []) : [];
+              return <HistorialVendasModal row={empRow} hist={histReal} pagamentosReais={pagReais} onClose={() => setGcHistRowId(null)} />;
             })()}
             {/* ── FICHA DO CLIENTE MODAL ── */}
             {gcModalOpen && (() => {

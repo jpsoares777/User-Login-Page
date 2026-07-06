@@ -2403,6 +2403,15 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         observacoes: "",
         dataEmprestimo: fmtDataTsSnap(c.creditoStartTimestamp),
         historico: historicoCli,
+        // Pagamentos REAIS do crédito ativo (ciclo atual), para o admin ver
+        // o histórico de pagamentos verdadeiro na ficha do cliente.
+        pagamentos: (historicoPagamentos[c.id] ?? []).map((p, idx) => ({
+          nro: idx + 1,
+          tipo: p.metodo === "Abono" ? "ABONO" : (p.valor > 0 ? "PARC." : "S/PAG."),
+          valor: p.valor,
+          data: p.data,
+          obs: p.valor > 0 && p.forma ? p.forma : "",
+        })),
       };
     });
 
