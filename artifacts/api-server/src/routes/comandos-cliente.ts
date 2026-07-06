@@ -12,8 +12,8 @@ router.post("/comandos-cliente", async (req, res): Promise<void> => {
     res.status(400).json({ error: "rota (ou codigoAcesso), tipo e clienteId são obrigatórios" });
     return;
   }
-  if (tipo !== "editar" && tipo !== "excluir") {
-    res.status(400).json({ error: "tipo deve ser 'editar' ou 'excluir'" });
+  if (tipo !== "editar" && tipo !== "excluir" && tipo !== "inativar" && tipo !== "reativar") {
+    res.status(400).json({ error: "tipo deve ser 'editar', 'excluir', 'inativar' ou 'reativar'" });
     return;
   }
 

@@ -4218,7 +4218,7 @@ function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDro
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
-type GcRow = { id: number; appId?: number; codigoAcesso?: string; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number; historico?: { data: string; valor: number; total: number; cuotas: number; status: string }[] };
+type GcRow = { id: number; appId?: number; codigoAcesso?: string; inativo?: boolean; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number; historico?: { data: string; valor: number; total: number; cuotas: number; status: string }[] };
 type GcDoc = { id: string; name: string; url: string; type: string };
 
 function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
@@ -4321,7 +4321,7 @@ function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function GcFichaClienteModal({ mr, onClose, viewMode = false, onSave, onDocumentos, docs = [], onAddDoc, onRemoveDoc }: { mr: GcRow; onClose: () => void; viewMode?: boolean; onSave?: (dados: { nome: string; documento: string; telefone: string; endereco: string; bairro: string; cidade: string; uf: string }) => void; onDocumentos?: () => void; docs?: GcDoc[]; onAddDoc?: (doc: GcDoc) => void; onRemoveDoc?: (id: string) => void }) {
+function GcFichaClienteModal({ mr, onClose, viewMode = false, onSave, onToggleAtivo, onDocumentos, docs = [], onAddDoc, onRemoveDoc }: { mr: GcRow; onClose: () => void; viewMode?: boolean; onSave?: (dados: { nome: string; documento: string; telefone: string; endereco: string; bairro: string; cidade: string; uf: string }) => void; onToggleAtivo?: () => void; onDocumentos?: () => void; docs?: GcDoc[]; onAddDoc?: (doc: GcDoc) => void; onRemoveDoc?: (id: string) => void }) {
   const nameColor = mr.atrasadas === 0 ? "#15803d" : mr.atrasadas >= 5 ? "#b91c1c" : "#b45309";
   const initials = mr.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
   const fichaFileRef = useRef<HTMLInputElement>(null);
@@ -4377,17 +4377,24 @@ function GcFichaClienteModal({ mr, onClose, viewMode = false, onSave, onDocument
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 17, fontWeight: 800, color: nameColor, marginBottom: 4 }}>{mr.nome}</div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "2px 7px" }}>Ativo</span>
+                  {mr.inativo
+                    ? <span style={{ fontSize: 11, fontWeight: 700, color: "#b91c1c", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 3, padding: "2px 7px" }}>Inativo</span>
+                    : <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "2px 7px" }}>Ativo</span>}
                   <span style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "2px 7px" }}>{mr.consec}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 3, padding: "2px 7px" }}>{mr.freq}</span>
                 </div>
                 <div style={{ fontSize: 12, color: "#6b7280" }}>Doc: <b style={{ color: "#374151" }}>{mr.doc}</b> &nbsp;|&nbsp; Nasc.: <b style={{ color: "#374151" }}>{mr.nasc}</b></div>
               </div>
-              {!viewMode && (
-                <button style={{ flexShrink: 0, background: "#b91c1c", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
-                  onClick={() => { alert(`Cliente ${mr.nome} marcado como INACTIVO.`); onClose(); }}>
-                  🚫 Inativar Cliente
-                </button>
+              {onToggleAtivo && (
+                mr.inativo
+                  ? <button style={{ flexShrink: 0, background: "#15803d", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                      onClick={onToggleAtivo}>
+                      ✅ Ativar Cliente
+                    </button>
+                  : <button style={{ flexShrink: 0, background: "#b91c1c", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                      onClick={onToggleAtivo}>
+                      🚫 Inativar Cliente
+                    </button>
               )}
             </div>
 
@@ -5909,7 +5916,7 @@ export default function DashboardPage() {
   const [gcLoading, setGcLoading] = useState(false);
   // Envia um comando (editar/excluir cliente) ao app do cobrador da rota.
   // O app aplica o comando no próximo polling e confirma (ack).
-  const enviarComandoCliente = async (gcr: GcRow, tipo: "editar" | "excluir", dados?: Record<string, unknown>): Promise<boolean> => {
+  const enviarComandoCliente = async (gcr: GcRow, tipo: "editar" | "excluir" | "inativar" | "reativar", dados?: Record<string, unknown>): Promise<boolean> => {
     if (!gcr.appId) { alert("Este cliente não possui identificador do app — não é possível sincronizar."); return false; }
     try {
       const res = await fetch(`${import.meta.env.BASE_URL}api/comandos-cliente`, {
@@ -5945,6 +5952,7 @@ export default function DashboardPage() {
           id: i + 1,
           appId: Number(c.id) || undefined,
           codigoAcesso: c.codigoAcesso ?? undefined,
+          inativo: String(c.status ?? "").toUpperCase() === "INACTIVO",
           rota: c.rota ?? "",
           consec: String(c.consec ?? ""),
           nome: c.nome ?? "",
@@ -5982,7 +5990,7 @@ export default function DashboardPage() {
     (!gcNome || r.nome.toLowerCase().includes(gcNome.toLowerCase())) &&
     (!gcSobrenome || r.nome.toLowerCase().includes(gcSobrenome.toLowerCase())) &&
     (!gcDocumento || r.doc.includes(gcDocumento)) &&
-    (gcEstado === "-- Todos --" || gcEstado === "Activo") &&
+    (gcEstado === "-- Todos --" || (gcEstado === "Inactivo" ? r.inativo === true : gcEstado === "Activo" ? !r.inativo : false)) &&
     (gcFrequencia === "-- Todas --" || r.freq === gcFrequencia)
   ), [gcRows, gcRota, gcNome, gcSobrenome, gcDocumento, gcEstado, gcFrequencia]);
   const [gaEmpresa, setGaEmpresa] = useState("");
@@ -8436,7 +8444,9 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ padding: "10px 10px" }}>
                         <div style={{ color: "#2563eb", fontWeight: 700, fontSize: 12, fontFamily: "monospace" }}>{row.consec}</div>
-                        <span style={{ display: "inline-block", marginTop: 3, background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 3, padding: "1px 6px", fontSize: 10, fontWeight: 700 }}>ATIVO</span>
+                        {row.inativo
+                          ? <span style={{ display: "inline-block", marginTop: 3, background: "#fee2e2", color: "#b91c1c", border: "1px solid #fca5a5", borderRadius: 3, padding: "1px 6px", fontSize: 10, fontWeight: 700 }}>INATIVO</span>
+                          : <span style={{ display: "inline-block", marginTop: 3, background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", borderRadius: 3, padding: "1px 6px", fontSize: 10, fontWeight: 700 }}>ATIVO</span>}
                       </td>
                       <td style={{ padding: "10px 10px", color: "#dc2626", fontWeight: 600, fontSize: 12 }}>{row.nome}</td>
                       <td style={{ padding: "10px 10px", color: "#374151", fontFamily: "monospace", fontSize: 11 }}>{row.doc}</td>
@@ -8596,6 +8606,20 @@ export default function DashboardPage() {
                 mr={mr}
                 onClose={() => setGcModalOpen(false)}
                 viewMode={gcModalMode === "view"}
+                onToggleAtivo={async () => {
+                  // Inativar: dados preservados no app, cliente só some das
+                  // listas do cobrador. Reativar: volta com os mesmos dados.
+                  const tipo = mr.inativo ? "reativar" : "inativar";
+                  const msg = mr.inativo
+                    ? `Ativar novamente o cliente ${mr.nome}? Ele voltará a aparecer no app do cobrador com os mesmos dados.`
+                    : `Inativar o cliente ${mr.nome}? Os dados dele continuam salvos — ele apenas desaparece do app do cobrador até ser reativado.`;
+                  if (!window.confirm(msg)) return;
+                  const ok = await enviarComandoCliente(mr, tipo);
+                  if (ok) {
+                    setGcRows(prev => prev.map(r => r.id === mr.id ? { ...r, inativo: !mr.inativo } : r));
+                    setGcModalOpen(false);
+                  }
+                }}
                 onSave={async (dados) => {
                   const ok = await enviarComandoCliente(mr, "editar", dados);
                   if (ok) {

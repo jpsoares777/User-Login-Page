@@ -196,7 +196,7 @@ function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendam
   const vrfLista = [...new Set(cobradosIds)]
     .filter(id => !vrfRemovidos.includes(id))
     .map(id => todosClientes.find(c => c.id === id) ?? cobradosExtras.find(c => c.id === id)!)
-    .filter(Boolean);
+    .filter(c => Boolean(c) && !c.inativo);
 
   /* ── MODO VRF ── */
   if (vrf) {
@@ -1536,7 +1536,9 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const ids = db?.ordemClientesIds?.length ? db.ordemClientesIds : clientesData.map(c => c.id);
     return ids.filter((id, i, arr) => arr.indexOf(id) === i);
   });
-  const clientesOrdenados = ordemClientesIds.map(id => clientes.find(c => c.id === id)!).filter(Boolean) as typeof clientesData;
+  // Clientes inativados pelo admin ficam FORA das listas visíveis do app,
+  // mas os dados permanecem salvos em `clientes` (e no localStorage).
+  const clientesOrdenados = (ordemClientesIds.map(id => clientes.find(c => c.id === id)!).filter(Boolean) as typeof clientesData).filter(c => !c.inativo);
   const [cobradosExtras, setCobradosExtras] = useState<ClienteItem[]>(() => {
     const db = loadDB();
     return (db?.cobradosExtras as ClienteItem[]) ?? [];
@@ -2041,6 +2043,29 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                 agendamentos: (dbA.agendamentos as Agendamento[] | undefined)?.map(aplicarEdicaoAg) ?? dbA.agendamentos,
               });
             }
+          } else if (cmd.tipo === "inativar" || cmd.tipo === "reativar") {
+            // Inativar: o cliente some das listas visíveis do app, mas TODOS
+            // os dados ficam salvos (flag inativo). Reativar: volta a aparecer
+            // exatamente com os mesmos dados de quando foi inativado.
+            const flag = cmd.tipo === "inativar";
+            const aplicarFlag = (c: ClienteItem): ClienteItem => c.id !== clienteAlvoId ? c : { ...c, inativo: flag };
+            setClientes(prev => prev.map(aplicarFlag));
+            setClientesAdicionaisHoje(prev => prev.map(aplicarFlag));
+            setNovosClientesOutras(prev => prev.map(aplicarFlag));
+            setCobradosExtras(prev => prev.map(aplicarFlag));
+            setQuitadosClientes(prev => prev.map(aplicarFlag));
+            // Durabilidade ANTES do ack.
+            const dbA = loadDB();
+            if (dbA) {
+              const mapF = (lista: unknown[] | undefined) => (lista as ClienteItem[] | undefined)?.map(aplicarFlag);
+              saveDB({
+                clientes: mapF(dbA.clientes) ?? dbA.clientes,
+                clientesAdicionaisHoje: mapF(dbA.clientesAdicionaisHoje) ?? dbA.clientesAdicionaisHoje,
+                novosClientesOutras: mapF(dbA.novosClientesOutras) ?? dbA.novosClientesOutras,
+                cobradosExtras: mapF(dbA.cobradosExtras) ?? dbA.cobradosExtras,
+                quitadosClientes: mapF(dbA.quitadosClientes) ?? dbA.quitadosClientes,
+              });
+            }
           } else if (cmd.tipo === "excluir") {
             // Mesmo critério da edição: empréstimo pertence ao cliente se
             // clienteId (renovação) ou o próprio id (cadastro) casar.
@@ -2349,7 +2374,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       return {
         id: c.id,
         consec: c.consecutivo ?? "",
-        status: "ACTIVO",
+        status: c.inativo ? "INACTIVO" : "ACTIVO",
         visitas,
         nome: c.nome,
         tel1: c.telefone ?? "",
@@ -2957,7 +2982,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             onSemPagamentos={() => {
               const elegiveis = [
                 ...clientesOrdenados.filter(c => !criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado),
-                ...clientesAdicionaisHoje.filter(c => (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientesOrdenados.some(k => k.id === c.id)),
+                ...clientesAdicionaisHoje.filter(c => !c.inativo && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientesOrdenados.some(k => k.id === c.id)),
               ];
               const pendentes = elegiveis.filter(c => !cobrados.includes(c.id) && !ausentes.includes(c.id) && c.saldo > 0);
               if (pendentes.length === 0) return;
@@ -2983,8 +3008,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             }}
           />
         : verRenovacao
-        ? <RenovacaoClientes onBack={() => setVerRenovacao(false)} onAddAgendamento={addAgendamento} onRenovar={setClienteParaRenovar} clientesQuitados={[]} todosClientes={[...clientesOrdenados, ...clientesAdicionaisHoje].filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i && c.saldo === 0)} />
-        : activeNav === 0 ? <TelaLista busca={busca} setBusca={setBusca} vrf={vrf} setVrf={setVrf} onSelectCliente={setClienteSelecionado} onAddAgendamento={addAgendamento} ausentes={ausentes} onAusentar={setClienteParaAusentar} cobrados={cobrados} onRemoverCobrado={(id) => { setCobrados(prev => prev.filter(x => x !== id)); setCobradosExtras(prev => prev.filter(x => x.id !== id)); setCobradosValores(prev => prev.filter(x => x.id !== id)); setRegistroPagamentos(prev => { const next = { ...prev }; delete next[id]; return next; }); setHistoricoPagamentos(prev => { const next = { ...prev }; if (next[id]?.length) next[id] = next[id].slice(1); return next; }); setQuitadosClientes(prev => prev.filter(x => x.id !== id)); setRenovacoesIds(prev => { const s = new Set(prev); s.delete(id); return s; }); setClientes(prev => prev.map(c => { if (c.id !== id) return c; const valorPago = cobradosValores.find(x => x.id === id)?.valor ?? c.parcela; const parcelasReverter = Math.round(valorPago / (c.parcela || 1)); const pp = Math.max(0, c.parcelasPagas - parcelasReverter); const saldoRestaurado = c.parcela * (c.totalParcelas - pp); return { ...c, parcelasPagas: pp, saldo: saldoRestaurado }; })); const reverterSaldo = (c: ClienteItem) => { if (c.id !== id) return c; const valorPago = cobradosValores.find(x => x.id === id)?.valor ?? c.parcela; const parcelasReverter = Math.round(valorPago / (c.parcela || 1)); const pp = Math.max(0, c.parcelasPagas - parcelasReverter); return { ...c, parcelasPagas: pp, saldo: c.parcela * (c.totalParcelas - pp) }; }; setClientesAdicionaisHoje(prev => prev.map(reverterSaldo)); setNovosClientesOutras(prev => prev.map(reverterSaldo)); }} clientesAdicionais={clientesAdicionaisHoje.map(enrichCliente)} cobradosExtras={cobradosExtras} cobradosValores={cobradosValores} pagamentosRegistro={historicoPagamentos} clientesBase={clientesOrdenadosEnriquecidos} />
+        ? <RenovacaoClientes onBack={() => setVerRenovacao(false)} onAddAgendamento={addAgendamento} onRenovar={setClienteParaRenovar} clientesQuitados={[]} todosClientes={[...clientesOrdenados, ...clientesAdicionaisHoje].filter((c, i, arr) => !c.inativo && arr.findIndex(x => x.id === c.id) === i && c.saldo === 0)} />
+        : activeNav === 0 ? <TelaLista busca={busca} setBusca={setBusca} vrf={vrf} setVrf={setVrf} onSelectCliente={setClienteSelecionado} onAddAgendamento={addAgendamento} ausentes={ausentes} onAusentar={setClienteParaAusentar} cobrados={cobrados} onRemoverCobrado={(id) => { setCobrados(prev => prev.filter(x => x !== id)); setCobradosExtras(prev => prev.filter(x => x.id !== id)); setCobradosValores(prev => prev.filter(x => x.id !== id)); setRegistroPagamentos(prev => { const next = { ...prev }; delete next[id]; return next; }); setHistoricoPagamentos(prev => { const next = { ...prev }; if (next[id]?.length) next[id] = next[id].slice(1); return next; }); setQuitadosClientes(prev => prev.filter(x => x.id !== id)); setRenovacoesIds(prev => { const s = new Set(prev); s.delete(id); return s; }); setClientes(prev => prev.map(c => { if (c.id !== id) return c; const valorPago = cobradosValores.find(x => x.id === id)?.valor ?? c.parcela; const parcelasReverter = Math.round(valorPago / (c.parcela || 1)); const pp = Math.max(0, c.parcelasPagas - parcelasReverter); const saldoRestaurado = c.parcela * (c.totalParcelas - pp); return { ...c, parcelasPagas: pp, saldo: saldoRestaurado }; })); const reverterSaldo = (c: ClienteItem) => { if (c.id !== id) return c; const valorPago = cobradosValores.find(x => x.id === id)?.valor ?? c.parcela; const parcelasReverter = Math.round(valorPago / (c.parcela || 1)); const pp = Math.max(0, c.parcelasPagas - parcelasReverter); return { ...c, parcelasPagas: pp, saldo: c.parcela * (c.totalParcelas - pp) }; }; setClientesAdicionaisHoje(prev => prev.map(reverterSaldo)); setNovosClientesOutras(prev => prev.map(reverterSaldo)); }} clientesAdicionais={clientesAdicionaisHoje.filter(c => !c.inativo).map(enrichCliente)} cobradosExtras={cobradosExtras} cobradosValores={cobradosValores} pagamentosRegistro={historicoPagamentos} clientesBase={clientesOrdenadosEnriquecidos} />
         : activeNav === 1 ? <CadastroCliente onBack={() => setActiveNav(0)} onSalvar={(emp) => {
             const limite = limiteNovo;
             if (limite > 0 && (emp.valorEmprestado ?? 0) > limite) {

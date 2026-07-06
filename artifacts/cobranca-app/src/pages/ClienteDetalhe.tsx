@@ -32,6 +32,8 @@ export interface ClienteItem {
   id: number;
   nome: string;
   consecutivo?: string;
+  // Inativado pelo admin: dados preservados, mas oculto das listas do app.
+  inativo?: boolean;
   parcela: number;
   saldo: number;
   status: string;

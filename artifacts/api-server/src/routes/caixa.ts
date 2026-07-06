@@ -168,6 +168,10 @@ router.get("/caixa/clientes-rotas", async (_req, res): Promise<void> => {
         for (const cmd of pendentes) {
           if (cmd.tipo === "excluir") {
             lista = lista.filter(c => String(c.id) !== cmd.clienteId);
+          } else if (cmd.tipo === "inativar") {
+            lista = lista.map(c => String(c.id) !== cmd.clienteId ? c : { ...c, status: "INACTIVO" });
+          } else if (cmd.tipo === "reativar") {
+            lista = lista.map(c => String(c.id) !== cmd.clienteId ? c : { ...c, status: "ACTIVO" });
           } else if (cmd.tipo === "editar" && cmd.dados && typeof cmd.dados === "object") {
             const d = cmd.dados as Record<string, string | undefined>;
             lista = lista.map(c => String(c.id) !== cmd.clienteId ? c : {
