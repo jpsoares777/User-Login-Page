@@ -2751,7 +2751,7 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
               <span className="font-semibold text-gray-800">{fmtV(mediaPorCliente)}</span>
               <span className="text-gray-400 text-[11px] ml-1">( INF% )</span>
             </Row>
-            <Row label="Recebimento Previsto Hoje" index={4}>
+            <Row label="Recebimento Previsto" index={4}>
               <span className="font-semibold text-gray-800">{fmtV(recebPrevisto)}</span>
               <span className="text-gray-400 text-[11px] ml-1">( 100% )</span>
             </Row>
@@ -8562,7 +8562,7 @@ export default function DashboardPage() {
                   <Row label="Carteira Inicial" bold index={1}>
                     <span className="text-green-700">{fmtV(rd.carteiraInicial)}</span>
                   </Row>
-                  <Row label="Recebimento Previsto Hoje" index={2}>
+                  <Row label="Recebimento Previsto" index={2}>
                     <span className="font-semibold text-gray-800">{fmtV(rd.recebPrevisto)}</span>
                     <span className="text-[11px] px-1.5 rounded font-medium" style={{ background: pctBg, color: pctTxt }}>{pct} %</span>
                   </Row>
