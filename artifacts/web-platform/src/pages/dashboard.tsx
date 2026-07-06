@@ -1940,8 +1940,8 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Estado</label>
           <select className={`${inputCls} w-32`}>
             <option value="">-- Todos --</option>
-            <option>ACTIVO</option>
-            <option>INACTIVO</option>
+            <option value="ACTIVO">Ativo</option>
+            <option value="INACTIVO">Inativo</option>
           </select>
         </div>
         <div className="flex flex-col gap-0.5">
@@ -2107,7 +2107,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 17, fontWeight: 800, color: nameColor, marginBottom: 4 }}>{c.nome}</div>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "2px 7px" }}>{c.status}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "2px 7px" }}>{c.status?.toUpperCase() === "ACTIVO" ? "Ativo" : c.status}</span>
                       <span style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "2px 7px" }}>{c.consec}</span>
                       <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 3, padding: "2px 7px" }}>{c.freq}</span>
                     </div>
@@ -2163,7 +2163,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
                                   color: isAtivo ? "#1d4ed8" : "#15803d",
                                   background: isAtivo ? "#eff6ff" : "#dcfce7",
                                   border: `1px solid ${isAtivo ? "#bfdbfe" : "#86efac"}` }}>
-                                  {isAtivo ? "Activo" : "Quitado"}
+                                  {isAtivo ? "Ativo" : "Quitado"}
                                 </span>
                               </td>
                               <td style={{ padding: "8px 7px", borderBottom: "1px solid #f0f0f0", textAlign: "center" }}>{h.cuotas}</td>
@@ -3995,7 +3995,7 @@ function GcFichaClienteModal({ mr, onClose, viewMode = false, onDocumentos, docs
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 17, fontWeight: 800, color: nameColor, marginBottom: 4 }}>{mr.nome}</div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "2px 7px" }}>ACTIVO</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 3, padding: "2px 7px" }}>Ativo</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "2px 7px" }}>{mr.consec}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 3, padding: "2px 7px" }}>{mr.freq}</span>
                 </div>
