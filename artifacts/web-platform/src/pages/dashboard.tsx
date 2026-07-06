@@ -4122,9 +4122,9 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
           {/* Section 1 — Limites de Valores */}
           {sectionTitle("Limites de Valores")}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, padding: "16px 20px" }}>
-            {/* Validar Valor Máximo de Vendas */}
+            {/* Validar Valor Máximo Empr. */}
             <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
-              {label("Validar Valor Máximo de Vendas")}
+              {label("Validar Valor Máximo Empr.")}
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 {sw(restVals.validarVendas, () => setRestVals(v => ({ ...v, validarVendas: !v.validarVendas })))}
                 <span style={{ fontSize: 11, color: restVals.validarVendas ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
@@ -4134,9 +4134,9 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
               {fieldInput(restVals.maxVendas, val => setRestVals(v => ({ ...v, maxVendas: val })))}
             </div>
 
-            {/* Validar Valor Gastos */}
+            {/* Validar Valor Despesas */}
             <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
-              {label("Validar Valor Gastos")}
+              {label("Validar Valor Despesas")}
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 {sw(restVals.validarGastos, () => setRestVals(v => ({ ...v, validarGastos: !v.validarGastos })))}
                 <span style={{ fontSize: 11, color: restVals.validarGastos ? "#16a34a" : "#94a3b8", fontWeight: 600 }}>
