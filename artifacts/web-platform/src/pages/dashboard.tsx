@@ -1841,7 +1841,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
                     <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
                       <div style={{ fontSize: 12, color: r.atrasadas > 0 ? "#b91c1c" : "#6b7280", fontWeight: r.atrasadas > 0 ? 700 : 400 }}>Atrasadas: {r.atrasadas}</div>
                       <div style={{ fontSize: 12, color: "#15803d" }}>Pagas: {r.pagas}</div>
-                      <div style={{ fontSize: 11, color: "#6b7280" }}>Rest.: {r.restantes} (Sanc. 0)</div>
+                      <div style={{ fontSize: 11, color: "#6b7280" }}>Rest.: {r.restantes}</div>
                       <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>Visitas: <span style={{ fontWeight: 700, color: r.visitas === 0 ? "#9ca3af" : r.atrasadas === 0 ? "#15803d" : r.atrasadas >= 5 ? "#b91c1c" : "#b45309" }}>{r.visitas}</span></div>
                     </div>
                   </td>
@@ -1850,7 +1850,6 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
 
                   <td style={tdC("right")}>
                     <span style={{ fontWeight: 700, color: saldoColor }}>{fmt(r.saldo)}</span>
-                    <div style={{ fontSize: 10, color: "#9ca3af" }}>Sanção: $ 0,00</div>
                   </td>
                 </tr>
               );
