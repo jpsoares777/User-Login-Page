@@ -979,10 +979,10 @@ function EmprestimosNovosContent() {
   });
 
   const cols = [
-    { label: "Histórico",     w: "6%",  align: "center" as const },
-    { label: "Consecutivo",   w: "9%",  align: "center" as const },
-    { label: "Frequência",    w: "6%",  align: "center" as const },
-    { label: "Valor Ant.",    w: "7%",  align: "right"  as const },
+    { label: "Histórico",       w: "6%",  align: "center" as const },
+    { label: "Nº do Empréstimo", w: "9%", align: "center" as const },
+    { label: "Frequência",      w: "6%",  align: "center" as const },
+    { label: "Valor Ant.",      w: "7%",  align: "right"  as const },
     { label: "Cliente",       w: "20%", align: "left"   as const },
     { label: "Valor Empr.",   w: "8%",  align: "right"  as const },
     { label: "Parcelas",      w: "6%",  align: "center" as const },
