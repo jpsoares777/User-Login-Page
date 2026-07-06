@@ -7,4 +7,5 @@ export * from "./movimentos_caixa";
 export * from "./aplicativos";
 export * from "./solicitacoes";
 export * from "./solicitacoes_emprestimo";
+export * from "./solicitacoes_movimento";
 export * from "./configuracoes";

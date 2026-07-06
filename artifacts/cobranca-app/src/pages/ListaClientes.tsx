@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Fragment, type ReactNode } from "react";
 import { loadDB, saveDB, getTodayStr, gerarConsecutivoUnico } from "../lib/storage";
-import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, fetchLimitesAprovacaoAPI, getLimitesAprovacaoCache, type DadosSnapshot } from "../lib/api";
+import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, postSolicitacaoMovimentoAPI, fetchSolicitacoesMovimentoAPI, fetchLimitesAprovacaoAPI, getLimitesAprovacaoCache, type DadosSnapshot } from "../lib/api";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ParcelaCliente } from "./ParcelaCliente";
 import { CadastroCliente } from "./CadastroCliente";
@@ -17,6 +17,14 @@ type PendenteAprovacao = {
   tipo: "novo" | "renovacao";
   emp: Emprestimo;
   clienteOriginal?: ClienteItem;
+  solicitacaoId?: number;
+};
+
+// Lançamento (despesa/rendimento) retido aguardando aprovação do dono.
+type PendenteMovimento = {
+  localId: string;
+  tipo: "despesa" | "rendimento";
+  item: LancamentoItem;
   solicitacaoId?: number;
 };
 

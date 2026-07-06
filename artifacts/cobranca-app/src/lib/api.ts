@@ -474,13 +474,71 @@ export async function fetchSolicitacoesEmprestimoAPI(): Promise<SolicitacaoEmpre
   }
 }
 
+export type SolicitacaoMovimentoStatus = "pendente" | "aceito" | "recusado";
+export type SolicitacaoMovimentoAPI = {
+  id: number;
+  codigoAcesso: string;
+  cobradorNome: string;
+  tipo: string;          // "despesa" | "rendimento"
+  categoria: string;
+  valor: string;
+  observacao: string | null;
+  localId: string | null;
+  payload: unknown;
+  status: SolicitacaoMovimentoStatus;
+};
+
+// App cria uma solicitação de despesa/rendimento acima do limite. O admin
+// aprova/recusa e o app materializa o lançamento apenas quando aceito.
+export async function postSolicitacaoMovimentoAPI(data: {
+  tipo: "despesa" | "rendimento";
+  categoria: string;
+  valor: number;
+  observacao?: string;
+  localId: string;
+  payload: unknown;
+}): Promise<SolicitacaoMovimentoAPI | null> {
+  const codigoAcesso = getCodigoAcesso();
+  if (!codigoAcesso) return null;
+  const sessao = getRotaSessao();
+  const deviceId = getOrCreateDeviceId();
+  try {
+    return await apiPost<SolicitacaoMovimentoAPI>("/solicitacoes-movimento", {
+      ...data,
+      codigoAcesso,
+      cobradorNome: sessao?.cobradorNome ?? "",
+      deviceId,
+    });
+  } catch {
+    return null;
+  }
+}
+
+// O app consulta o status das próprias solicitações de movimento (por código).
+export async function fetchSolicitacoesMovimentoAPI(): Promise<SolicitacaoMovimentoAPI[]> {
+  const codigoAcesso = getCodigoAcesso();
+  if (!codigoAcesso) return [];
+  try {
+    return await apiGet<SolicitacaoMovimentoAPI[]>(`/solicitacoes-movimento?codigoAcesso=${encodeURIComponent(codigoAcesso)}`);
+  } catch {
+    return [];
+  }
+}
+
 // Configurações globais definidas no admin (modal "Configurações"). Os limites
 // de aprovação (novos empréstimos e renovações) vêm daqui e valem para todas as
 // rotas. Retorna os limites já resolvidos (0 = sem limite / desativado).
-export type LimitesAprovacao = { limiteNovo: number; limiteRenovacao: number };
+export type LimitesAprovacao = {
+  limiteNovo: number;
+  limiteRenovacao: number;
+  limiteGasto: number;
+  limiteRendimento: number;
+};
 
 const LIMITE_NOVO_KEY = "sessao_limite_novo";
 const LIMITE_RENOV_KEY = "sessao_limite_renovacao";
+const LIMITE_GASTO_KEY = "sessao_limite_gasto";
+const LIMITE_REND_KEY = "sessao_limite_rendimento";
 
 // Último limite conhecido, persistido localmente. Serve de fallback fail-safe:
 // no boot e em falhas de rede o gate usa o último valor válido em vez de cair
@@ -488,9 +546,13 @@ const LIMITE_RENOV_KEY = "sessao_limite_renovacao";
 export function getLimitesAprovacaoCache(): LimitesAprovacao {
   const n = parseFloat(localStorage.getItem(LIMITE_NOVO_KEY) ?? "");
   const r = parseFloat(localStorage.getItem(LIMITE_RENOV_KEY) ?? "");
+  const g = parseFloat(localStorage.getItem(LIMITE_GASTO_KEY) ?? "");
+  const d = parseFloat(localStorage.getItem(LIMITE_REND_KEY) ?? "");
   return {
     limiteNovo: Number.isFinite(n) ? n : 0,
     limiteRenovacao: Number.isFinite(r) ? r : 0,
+    limiteGasto: Number.isFinite(g) ? g : 0,
+    limiteRendimento: Number.isFinite(d) ? d : 0,
   };
 }
 
@@ -502,9 +564,13 @@ export async function fetchLimitesAprovacaoAPI(): Promise<LimitesAprovacao> {
     const limites = {
       limiteNovo: rv.validarVendas ? num(rv.maxVendas) : 0,
       limiteRenovacao: rv.validarRenovacoes ? num(rv.maxRenovacoes) : 0,
+      limiteGasto: rv.validarGastos ? num(rv.maxGastos) : 0,
+      limiteRendimento: rv.validarRendimentos ? num(rv.maxRendimentos) : 0,
     };
     localStorage.setItem(LIMITE_NOVO_KEY, String(limites.limiteNovo));
     localStorage.setItem(LIMITE_RENOV_KEY, String(limites.limiteRenovacao));
+    localStorage.setItem(LIMITE_GASTO_KEY, String(limites.limiteGasto));
+    localStorage.setItem(LIMITE_REND_KEY, String(limites.limiteRendimento));
     return limites;
   } catch {
     // Falha de rede/API: preserva o último limite conhecido (fail-safe).
