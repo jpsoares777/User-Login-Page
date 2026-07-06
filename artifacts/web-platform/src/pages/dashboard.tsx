@@ -4218,7 +4218,7 @@ function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDro
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
-type GcRow = { id: number; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number };
+type GcRow = { id: number; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number };
 type GcDoc = { id: string; name: string; url: string; type: string };
 
 function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
@@ -5880,18 +5880,58 @@ export default function DashboardPage() {
   const [gcDocMap, setGcDocMap] = useState<Record<number, GcDoc[]>>({});
   const [gcHistRowId, setGcHistRowId] = useState<number | null>(null);
   const [gcDeleteId, setGcDeleteId] = useState<number | null>(null);
-  const [gcRows, setGcRows] = useState([
-    { id: 1,  rota: "Rota Cred Bank A", consec: "4700627026", nome: "Andreia de Jesus Costa Araújo",   doc: "012.345.678-90", nasc: "1985-03-12", tel1: "91633427315",   tel2: "98985014328",  endereco: "Rua Gama Lobo, nº 10, Quarto, Centro – São Luís – MA",        obs: "Cliente pontual. Prefere contato pelo WhatsApp.", freq: "Diário", dataEmprestimo: "2026-03-30", valorEmp: 1500, jurosPorc: 40, total: 2100, parcelas: 20, atrasadas: 0,  pagas: 12, rest: 8,  sancao: 0, visitas: 5,  valorParc: 105, saldo: 800  },
-    { id: 2,  rota: "Rota Cred Bank A", consec: "4700627080", nome: "Luciana Alves Da Silva",           doc: "03270213301",    nasc: "1990-07-22", tel1: "5599883457671",  tel2: "03270213301",  endereco: "Av. Colares Moreira, nº 500, Renascença II – São Luís – MA",  obs: "", freq: "Diário", dataEmprestimo: "2026-05-01", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 14, pagas: 0,  rest: 14, sancao: 0, visitas: 14, valorParc: 50,  saldo: 700  },
-    { id: 3,  rota: "Rota Cred Bank A", consec: "4700627079", nome: "Ana Paula Marques De Oliveira",    doc: "852592284372",   nasc: "1988-11-05", tel1: "989896248424",   tel2: "852592284372", endereco: "Rua do Sol, nº 35, Centro – São Luís – MA",                   obs: "", freq: "Diário", dataEmprestimo: "2026-05-10", valorEmp: 500,  jurosPorc: 20, total: 600,  parcelas: 20, atrasadas: 0,  pagas: 0,  rest: 20, sancao: 0, visitas: 0,  valorParc: 30,  saldo: 600  },
-    { id: 4,  rota: "Rota Cred Bank A", consec: "4700627078", nome: "Mariana Beatriz Rabelo Barbosa",   doc: "073.604.383-73", nasc: "1992-04-18", tel1: "98985721207",    tel2: "985721297",    endereco: "Rua da Paz, nº 120, Cohama – São Luís – MA",                  obs: "Prefere receber boletos por e-mail.", freq: "Diário", dataEmprestimo: "2026-05-05", valorEmp: 1000, jurosPorc: 40, total: 1400, parcelas: 14, atrasadas: 4,  pagas: 0,  rest: 14, sancao: 0, visitas: 4,  valorParc: 100, saldo: 1400 },
-    { id: 5,  rota: "Rota Cred Bank B", consec: "4700627077", nome: "Natanael Dos Santos Mendes",       doc: "11971269742",    nasc: "1986-09-30", tel1: "5511971269742",  tel2: "11971269742",  endereco: "Rua Jaime Tavares, nº 67, Tirirical – São Luís – MA",         obs: "", freq: "Diário", dataEmprestimo: "2026-04-20", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 13, pagas: 1,  rest: 13, sancao: 0, visitas: 14, valorParc: 50,  saldo: 650  },
-    { id: 6,  rota: "Rota Cred Bank B", consec: "4700627058", nome: "Aline Lima De Alencar",            doc: "034.286.733-44", nasc: "1994-02-14", tel1: "034286733440",   tel2: "98856332110",  endereco: "Rua das Flores, nº 22, Cohajap – São Luís – MA",              obs: "", freq: "Diário", dataEmprestimo: "2026-04-01", valorEmp: 800,  jurosPorc: 40, total: 1120, parcelas: 14, atrasadas: 2,  pagas: 4,  rest: 10, sancao: 0, visitas: 6,  valorParc: 80,  saldo: 570  },
-    { id: 7,  rota: "Rota Cred Bank B", consec: "4700627049", nome: "Ana Flávia Pereira Moraes",        doc: "61538186302",    nasc: "1991-06-08", tel1: "61538186302",    tel2: "98745612300",  endereco: "Trav. São Francisco, nº 8, Vila Embratel – São Luís – MA",    obs: "", freq: "Diário", dataEmprestimo: "2026-05-15", valorEmp: 500,  jurosPorc: 40, total: 700,  parcelas: 14, atrasadas: 0,  pagas: 0,  rest: 14, sancao: 0, visitas: 0,  valorParc: 50,  saldo: 700  },
-    { id: 8,  rota: "Rota Norte SL",    consec: "4700627027", nome: "Antônio Leite Neto",               doc: "00523478355",    nasc: "1980-12-25", tel1: "00523478355",    tel2: "99612345678",  endereco: "Rua Santa Clara, nº 100, Centro – São Luís – MA",             obs: "Pagamento sempre em dia.", freq: "Diário", dataEmprestimo: "2026-04-12", valorEmp: 600,  jurosPorc: 25, total: 750,  parcelas: 15, atrasadas: 3,  pagas: 2,  rest: 13, sancao: 0, visitas: 5,  valorParc: 50,  saldo: 500  },
-    { id: 9,  rota: "Rota Norte SL",    consec: "4700627025", nome: "Bianca de Araújo Alves",           doc: "60974118397",    nasc: "1997-03-19", tel1: "60974118397",    tel2: "98765432101",  endereco: "Rua Oswaldo Cruz, nº 45, Bequimão – São Luís – MA",            obs: "", freq: "Diário", dataEmprestimo: "2026-04-25", valorEmp: 300,  jurosPorc: 40, total: 420,  parcelas: 14, atrasadas: 1,  pagas: 6,  rest: 8,  sancao: 0, visitas: 7,  valorParc: 30,  saldo: 420  },
-    { id: 10, rota: "Rota Norte SL",    consec: "4700627022", nome: "Klailton Viana Gonçalves",         doc: "88899900011",    nasc: "1983-08-11", tel1: "88899900011",    tel2: "98700112233",  endereco: "Av. dos Holandeses, nº 300, Calhau – São Luís – MA",          obs: "", freq: "Diário", dataEmprestimo: "2026-04-06", valorEmp: 900,  jurosPorc: 40, total: 1260, parcelas: 14, atrasadas: 5,  pagas: 5,  rest: 9,  sancao: 0, visitas: 10, valorParc: 90,  saldo: 980  },
-  ]);
+  const [gcRows, setGcRows] = useState<GcRow[]>([]);
+  const [gcLoading, setGcLoading] = useState(false);
+  // Carrega os clientes REAIS de todas as rotas (snapshots dos aplicativos)
+  useEffect(() => {
+    if (activeMain !== "Gerenciar Clientes") return;
+    let cancel = false;
+    setGcLoading(true);
+    (async () => {
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}api/caixa/clientes-rotas?_t=${Date.now()}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancel || !Array.isArray(data)) return;
+        const rows: GcRow[] = data.map((c: any, i: number) => {
+          // Ficha do cliente espera "rua, ..., bairro – Cidade – UF" (split " – ").
+          // O snapshot traz endereco/bairro separados e cidade como "Cidade - UF".
+          const streetChunk = [c.endereco, c.bairro].filter(Boolean).join(", ");
+          const [cidadeNome, uf] = String(c.cidade ?? "").split(" - ").map((s: string) => s.trim());
+          const enderecoFmt = [streetChunk, cidadeNome, uf].filter(Boolean).join(" – ");
+          return {
+          id: i + 1,
+          rota: c.rota ?? "",
+          consec: String(c.consec ?? ""),
+          nome: c.nome ?? "",
+          doc: c.documento ?? "",
+          nasc: c.dataNasc ?? "",
+          tel1: c.tel1 ?? "",
+          tel2: c.tel2 ?? "",
+          endereco: enderecoFmt,
+          obs: c.observacoes ?? "",
+          freq: c.freq || "Diário",
+          dataEmprestimo: c.dataEmprestimo ?? "",
+          valorEmp: Number(c.valorVenda) || 0,
+          jurosPorc: Number(c.pctJuros) || 0,
+          total: Number(c.total) || 0,
+          parcelas: Number(c.cuotas) || 0,
+          atrasadas: Number(c.atrasadas) || 0,
+          pagas: Number(c.pagas) || 0,
+          rest: Number(c.restantes) || 0,
+          sancao: 0,
+          visitas: Number(c.visitas) || 0,
+          valorParc: Number(c.vlrCuota) || 0,
+          saldo: Number(c.saldo) || 0,
+          };
+        });
+        setGcRows(rows);
+      } catch { /* mantém a lista atual em caso de falha de rede */ }
+      finally { if (!cancel) setGcLoading(false); }
+    })();
+    return () => { cancel = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMain]);
   const gcFiltered = useMemo(() => gcRows.filter(r =>
     (gcRota === "-- Todas --" || r.rota === gcRota) &&
     (!gcNome || r.nome.toLowerCase().includes(gcNome.toLowerCase())) &&
@@ -5981,6 +6021,10 @@ export default function DashboardPage() {
     const fromEstados = Object.values(estadosData).flat().map(i => i.vendedor);
     return Array.from(new Set(fromEstados));
   }, [estadosData]);
+  // Rotas REAIS (cadastradas em aplicativos) para o filtro de Gerenciar Clientes
+  const gcRotas = useMemo(() =>
+    Array.from(new Set([...rotasAPI.map(r => r.rota), ...gcRows.map(r => r.rota)])).filter(Boolean),
+  [rotasAPI, gcRows]);
 
   const handleBuscarRota = () => {
     const nome = buscarRotaForm.nome.trim().toLowerCase();
@@ -6554,7 +6598,7 @@ export default function DashboardPage() {
               <select value={gcRota} onChange={e => setGcRota(e.target.value)}
                 className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400" style={{ width: 170 }}>
                 <option>-- Todas --</option>
-                {todasRotas.map(r => <option key={r}>{r}</option>)}
+                {gcRotas.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
             <div className="flex flex-col gap-0.5">
@@ -8308,7 +8352,7 @@ export default function DashboardPage() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* count bar */}
             <div className="shrink-0 flex items-center px-3 py-1.5" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb" }}>
-              <span className="text-xs text-gray-600 font-medium">{gcFiltered.length} registro{gcFiltered.length !== 1 ? "s" : ""} encontrado{gcFiltered.length !== 1 ? "s" : ""}</span>
+              <span className="text-xs text-gray-600 font-medium">{gcLoading ? "Carregando…" : `${gcFiltered.length} registro${gcFiltered.length !== 1 ? "s" : ""} encontrado${gcFiltered.length !== 1 ? "s" : ""}`}</span>
             </div>
             {/* table */}
             <div className="flex-1 overflow-auto" style={{ background: "#fff" }}>

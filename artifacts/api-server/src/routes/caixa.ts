@@ -128,6 +128,42 @@ router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
   }
 });
 
+// Gerenciamento de Clientes: retorna os clientes REAIS de todas as rotas.
+// Para cada aplicativo (rota), usa o snapshot mais recente (caixa aberto — dados
+// ao vivo — ou, na falta, o último fechado) e extrai a clientesLista, marcando
+// cada cliente com o nome da rota. Somente leitura.
+router.get("/caixa/clientes-rotas", async (_req, res): Promise<void> => {
+  res.setHeader("Cache-Control", "no-store");
+  const aplicativos = await db.select().from(aplicativosTable);
+  const clientes: any[] = [];
+
+  for (const aplicativo of aplicativos) {
+    let [caixa] = await db.select().from(caixaTable)
+      .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "aberto")))
+      .orderBy(desc(caixaTable.id))
+      .limit(1);
+
+    if (!caixa || !caixa.dadosSnapshot) {
+      [caixa] = await db.select().from(caixaTable)
+        .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "fechado")))
+        .orderBy(desc(caixaTable.dataFechamento), desc(caixaTable.id))
+        .limit(1);
+    }
+    if (!caixa || !caixa.dadosSnapshot) continue;
+
+    try {
+      const snap = JSON.parse(caixa.dadosSnapshot);
+      if (Array.isArray(snap?.clientesLista)) {
+        for (const c of snap.clientesLista) {
+          clientes.push({ ...c, rota: aplicativo.rota, cobradorNome: aplicativo.cobradorNome });
+        }
+      }
+    } catch { continue; }
+  }
+
+  res.json(clientes);
+});
+
 // Liquidação por Período: agrega todos os fechamentos (snapshots) de uma rota
 // dentro do intervalo [inicio, fim] (inclusive). Somente leitura — nada é
 // criado ou modificado. Se houver mais de um registro no mesmo dia (fechar +
