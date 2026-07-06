@@ -1323,6 +1323,41 @@ const clientesRows: ClienteRow[] = [
   { id:10, consec:"4700627023", status:"ACTIVO", visitas:9,  nome:"Elaira Kisley Conceição Lopes",    tel1:"98986543210",  tel2:"98986543211",  freq:"Diário", valorVenda:540.00,  pctJuros:40, total:756.00,  cuotas:14, atrasadas:9,  pagas:0,  restantes:9,  vlrCuota:54,  saldo:540.00,  documento:"888.999.000-11", dataNasc:"1993-02-17", endereco:"Rua do Sol, 33", bairro:"Cohab Anil", cidade:"São Luís - MA", estadoVerif:"Sem Verificação", nroSeguro:"", valorSeguro:0.00, nomeCodedor:"", telCodedor:"", dirCodedor:"", observacoes:"Muitos atrasos. Análise de renegociação.", dataEmprestimo:"2026-04-10", historico:[{data:"2026-04-10",valor:540,total:756,cuotas:14,status:"ACTIVO"}] },
 ];
 
+// ── Modal: Despesas e Rendimentos ─────────────────────────────────────────────
+function DespRendModal({ despRows, rendRows, cobrador, onClose }: {
+  despRows: DespRow[]; rendRows: RendRow[]; cobrador?: string; onClose: () => void;
+}) {
+  return (
+    <div style={{ position:"fixed", inset:0, zIndex:9999,
+        background:"rgba(15,23,42,.5)", display:"flex", alignItems:"center", justifyContent:"center" }}
+        onClick={onClose}>
+      <div style={{ background:"#fff", borderRadius:12, width:"96vw", maxWidth:1400,
+          height:"92vh", display:"flex", flexDirection:"column",
+          boxShadow:"0 25px 80px rgba(0,0,0,.35)", overflow:"hidden" }}
+          onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div style={{ background:"linear-gradient(135deg,#0f766e,#0d9488)", padding:"14px 20px",
+            display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
+          <TrendingUp size={20} color="#fff" strokeWidth={2} />
+          <span style={{ color:"#fff", fontWeight:700, fontSize:15, letterSpacing:".02em" }}>Despesas e Rendimentos</span>
+          <div style={{ flex:1 }} />
+          <button onClick={onClose} style={{ background:"rgba(255,255,255,.15)", border:"none",
+              color:"#fff", width:30, height:30, borderRadius:7, cursor:"pointer", fontSize:16, fontWeight:700, lineHeight:1 }}>×</button>
+        </div>
+        {/* Body: duas seções empilhadas */}
+        <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column" }}>
+          <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column", borderBottom:"3px solid #e2e8f0" }}>
+            <DespesasContent rows={despRows} cobrador={cobrador} />
+          </div>
+          <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column" }}>
+            <RendimentosContent rows={rendRows} cobrador={cobrador} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Agendados data ────────────────────────────────────────────────────────────
 type AgendadoRow = { id: number; data: string; hora: string; observacao: string; nomeCliente?: string };
 function AgendadosContent({ rotas = [], rows }: { rotas?: string[]; rows?: AgendadoRow[] }) {
@@ -5125,6 +5160,7 @@ export default function DashboardPage() {
   const [caixaModalOpen, setCaixaModalOpen] = useState(false);
   const [dataFechamentoCaixa, setDataFechamentoCaixa] = useState<string | null>(null);
   const [codigosOpen, setCodigosOpen] = useState(false);
+  const [despRendOpen, setDespRendOpen] = useState(false);
   const [lucroOpen, setLucroOpen] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [gerenciarAppsOpen, setGerenciarAppsOpen] = useState(false);
@@ -8202,6 +8238,7 @@ export default function DashboardPage() {
                           } catch {}
                         } },
                   { icon:<ClipboardCheck size={16} color="#7c3aed" strokeWidth={2} style={{ flexShrink:0 }} />, label:"Aprovações Empr.", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
+                  { icon:<TrendingUp size={16} color="#0d9488" strokeWidth={2} style={{ flexShrink:0 }} />, label:"Desp e Rend", accent:"#0d9488", onClick: () => setDespRendOpen(true) },
                 ] as { icon:React.ReactNode; label:string; accent:string; onClick:()=>void }[]).map(item => (
                   <button key={item.label} onClick={item.onClick}
                     style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
@@ -8309,6 +8346,13 @@ export default function DashboardPage() {
 
       {/* ── MODAL: Códigos de Aprovação ── */}
       {codigosOpen && <CodigosAprovacaoModal onClose={() => setCodigosOpen(false)} />}
+
+      {/* ── MODAL: Despesas e Rendimentos ── */}
+      {despRendOpen && <DespRendModal
+        despRows={selectedRota ? ((importedRotaData[selectedRota]?.despesasLista ?? []) as DespRow[]) : []}
+        rendRows={selectedRota ? ((importedRotaData[selectedRota]?.rendimentosLista ?? []) as RendRow[]) : []}
+        cobrador={selectedRota ? (importedRotaData[selectedRota]?.cobradorNome || undefined) : undefined}
+        onClose={() => setDespRendOpen(false)} />}
 
       {/* ── MODAL: Lucro ── */}
       {lucroOpen && <LucroModal onClose={() => setLucroOpen(false)} />}
