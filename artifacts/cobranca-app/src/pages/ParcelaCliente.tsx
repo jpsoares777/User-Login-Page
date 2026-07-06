@@ -59,18 +59,28 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
   const [valorParcelaStr, setValorParcelaStr] = useState(String(cliente.parcela));
   const [numeroParcela, setNumeroParcela] = useState(1);
   const [observacao, setObservacao] = useState("");
-  // Máximo de parcelas que o cobrador pode cobrar por pagamento (0 = sem limite).
+  // Limites de parcelas por pagamento (0 = sem limite). "por dia" = limite normal;
+  // "quitar" = teto máximo selecionável, que fica acima do limite por dia.
   const [maxParcelasDia, setMaxParcelasDia] = useState(() => getLimitesAprovacaoCache().maxParcelasDia);
-  useEffect(() => { fetchLimitesAprovacaoAPI().then(l => setMaxParcelasDia(l.maxParcelasDia)).catch(() => {}); }, []);
-  // Reduz a parcela selecionada ao teto por pagamento quando o limite chega/ muda (evita cobrar acima do máximo).
+  const [maxParcelasQuitar, setMaxParcelasQuitar] = useState(() => getLimitesAprovacaoCache().maxParcelasQuitar);
   useEffect(() => {
-    if (paymentType === "parcela" && maxParcelasDia > 0 && numeroParcela > maxParcelasDia) {
-      const total = parseFloat((maxParcelasDia * cliente.parcela).toFixed(2));
-      setNumeroParcela(maxParcelasDia);
+    fetchLimitesAprovacaoAPI().then(l => {
+      setMaxParcelasDia(l.maxParcelasDia);
+      setMaxParcelasQuitar(l.maxParcelasQuitar);
+    }).catch(() => {});
+  }, []);
+  // Teto de parcelas selecionáveis num pagamento: usa o limite de quitação (maior) quando definido,
+  // senão o limite por dia. 0 = sem teto configurado.
+  const tetoParcelas = Math.max(maxParcelasQuitar > 0 ? maxParcelasQuitar : 0, maxParcelasDia > 0 ? maxParcelasDia : 0);
+  // Reduz a parcela selecionada ao teto quando o limite chega/muda (evita cobrar acima do máximo).
+  useEffect(() => {
+    if (paymentType === "parcela" && tetoParcelas > 0 && numeroParcela > tetoParcelas) {
+      const total = parseFloat((tetoParcelas * cliente.parcela).toFixed(2));
+      setNumeroParcela(tetoParcelas);
       setValorParcela(total);
       setValorParcelaStr(String(total));
     }
-  }, [maxParcelasDia, paymentType]);
+  }, [tetoParcelas, paymentType]);
   const [selectedMethod, setSelectedMethod] = useState(PAYMENT_METHODS[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "success">("idle");
@@ -300,8 +310,8 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
                     }}
                     className="w-full appearance-none bg-transparent px-2 py-1.5 text-xs font-medium text-[#1B2236] focus:outline-none"
                   >
-                    {Array.from({ length: (paymentType === "parcela" && maxParcelasDia > 0)
-                        ? Math.max(1, maxParcelasDia)
+                    {Array.from({ length: (paymentType === "parcela" && tetoParcelas > 0)
+                        ? Math.max(1, tetoParcelas)
                         : Math.max(cliente.totalParcelas, numeroParcela, 60) }, (_, i) => i + 1).map((n) => (
                       <option key={n} value={n}>{n}</option>
                     ))}
