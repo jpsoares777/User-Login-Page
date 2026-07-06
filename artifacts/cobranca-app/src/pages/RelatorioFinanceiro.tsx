@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getRotaSessao } from "../lib/api";
 
 type RowDef =
   | { type: "row"; label: string; value: string; valueColor?: string; bold?: boolean; highlight?: boolean; editable?: boolean }
@@ -302,14 +303,14 @@ export function RelatorioFinanceiro({
                 {/* Título */}
                 <div style={{ textAlign: "center", marginBottom: 16 }}>
                   <div style={{ fontSize: 16, fontWeight: 800, color: "#3A5F82" }}>📊 Resumo de Caixa</div>
-                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 3 }}>Rota Cred Bank · Sistema de Cobrança</div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 3 }}>{getRotaSessao()?.rota || "Rota"} · Sistema de Cobrança</div>
                 </div>
 
                 {/* Info geral */}
                 <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e2e8f0", marginBottom: 12, overflow: "hidden" }}>
                   {[
                     { l: "Status de Liquidação", v: "✓ Correto", green: true },
-                    { l: "Sincronização", v: "Rota Cred Bank", green: false },
+                    { l: "Sincronização", v: getRotaSessao()?.rota || "Rota", green: false },
                     { l: "Data", v: dataStr, green: false },
                   ].map((r, i, arr) => (
                     <div key={r.l} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", borderBottom: i < arr.length - 1 ? "1px solid #f1f5f9" : "none" }}>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Fragment, type ReactNode } from "react";
 import { loadDB, saveDB, getTodayStr, gerarConsecutivoUnico } from "../lib/storage";
-import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, postSolicitacaoMovimentoAPI, fetchSolicitacoesMovimentoAPI, fetchLimitesAprovacaoAPI, getLimitesAprovacaoCache, type DadosSnapshot } from "../lib/api";
+import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, postSolicitacaoMovimentoAPI, fetchSolicitacoesMovimentoAPI, fetchLimitesAprovacaoAPI, getLimitesAprovacaoCache, getRotaSessao, type DadosSnapshot } from "../lib/api";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ParcelaCliente } from "./ParcelaCliente";
 import { CadastroCliente } from "./CadastroCliente";
@@ -2602,7 +2602,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             </div>
             {verRelatorio ? (
               <div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: "#FFFFFF", letterSpacing: 0.5, lineHeight: 1.2 }}>Rota Cred Bank</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "#FFFFFF", letterSpacing: 0.5, lineHeight: 1.2 }}>{getRotaSessao()?.rota || "Rota"}</div>
                 <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", fontWeight: 500, marginTop: 2 }}>Relatório Diário · {new Date().toLocaleDateString("pt-BR")}</div>
               </div>
             ) : verEmprestimentos ? (
