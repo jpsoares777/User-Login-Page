@@ -280,3 +280,11 @@
     inset: -1px;
   }
 }
+
+/* Linhas verticais divisórias na tabela de Gerenciar Clientes */
+.gc-table th:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+}
+.gc-table td:not(:last-child) {
+  border-right: 1px solid #e5e7eb;
+}

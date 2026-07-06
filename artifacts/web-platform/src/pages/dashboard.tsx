@@ -8356,7 +8356,7 @@ export default function DashboardPage() {
             </div>
             {/* table */}
             <div className="flex-1 overflow-auto" style={{ background: "#fff" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+              <table className="gc-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                 <thead>
                   <tr style={{ background: "#3d6e8e", color: "#fff" }}>
                     {[
