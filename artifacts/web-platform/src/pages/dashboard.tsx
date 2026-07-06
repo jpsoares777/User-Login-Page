@@ -1053,7 +1053,8 @@ function HistorialVendasModal({ row, hist: histProp, onClose }: { row: EmpRow; h
                   <td style={tdS("center", { color: "#374151", fontWeight: 600 })}>{h.parcelas}</td>
                   <td style={tdS("center", { color: "#374151" })}>{h.parcPagas}</td>
                   <td style={tdS("center", { color: h.parcFalt > 0 ? "#b91c1c" : "#9ca3af", fontWeight: h.parcFalt > 0 ? 600 : 400 })}>{h.parcFalt}</td>
-                  <td style={tdS("right", { fontWeight: 700, color: h.parcFalt > 0 ? "#374151" : "#9ca3af" })}>$ {h.valorEmpr - (h.parcPagas * h.vrParc) > 0 ? (h.valorEmpr - h.parcPagas * h.vrParc).toFixed(0) : "0"}</td>
+                  {/* Saldo = total COM JUROS ainda devido (parcelas faltantes × valor da parcela). */}
+                  <td style={tdS("right", { fontWeight: 700, color: h.parcFalt > 0 ? "#374151" : "#9ca3af" })}>$ {h.parcFalt > 0 ? Math.round(h.parcFalt * h.vrParc).toLocaleString("pt-BR") : "0"}</td>
                   <td style={tdS("right", { fontWeight: 700, color: "#1d4ed8" })}>$ {h.valorEmpr.toLocaleString("pt-BR")}</td>
                   <td style={tdS("center", { color: "#6b7280" })}>{h.freq}</td>
                   <td style={tdS("right", { color: "#374151", fontWeight: 600 })}>$ {h.vrParc}</td>
