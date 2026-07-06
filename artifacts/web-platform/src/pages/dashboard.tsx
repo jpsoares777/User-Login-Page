@@ -3034,7 +3034,7 @@ function VendasPorPeriodosContent({ rows = vendasPeriodosData }: { rows?: typeof
     { label: "Valor Ant.",        w: "5%",  align: "right"  as const },
     { label: "Cliente",           w: "24%", align: "left"   as const },
     { label: "Documento",      w: "8%",  align: "left"   as const },
-    { label: "Móvel",          w: "8%",  align: "left"   as const },
+    { label: "Telefone",       w: "8%",  align: "left"   as const },
     { label: "Valor Produto",  w: "6%",  align: "right"  as const },
     { label: "Cuotas",         w: "4%",  align: "center" as const },
     { label: "%Int",           w: "4%",  align: "center" as const },
