@@ -4218,7 +4218,7 @@ function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDro
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
-type GcRow = { id: number; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number; historico?: { data: string; valor: number; total: number; cuotas: number; status: string }[] };
+type GcRow = { id: number; appId?: number; codigoAcesso?: string; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number; historico?: { data: string; valor: number; total: number; cuotas: number; status: string }[] };
 type GcDoc = { id: string; name: string; url: string; type: string };
 
 function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
@@ -4321,10 +4321,31 @@ function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function GcFichaClienteModal({ mr, onClose, viewMode = false, onDocumentos, docs = [], onAddDoc, onRemoveDoc }: { mr: GcRow; onClose: () => void; viewMode?: boolean; onDocumentos?: () => void; docs?: GcDoc[]; onAddDoc?: (doc: GcDoc) => void; onRemoveDoc?: (id: string) => void }) {
+function GcFichaClienteModal({ mr, onClose, viewMode = false, onSave, onDocumentos, docs = [], onAddDoc, onRemoveDoc }: { mr: GcRow; onClose: () => void; viewMode?: boolean; onSave?: (dados: { nome: string; documento: string; telefone: string; endereco: string; bairro: string; cidade: string; uf: string }) => void; onDocumentos?: () => void; docs?: GcDoc[]; onAddDoc?: (doc: GcDoc) => void; onRemoveDoc?: (id: string) => void }) {
   const nameColor = mr.atrasadas === 0 ? "#15803d" : mr.atrasadas >= 5 ? "#b91c1c" : "#b45309";
   const initials = mr.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
   const fichaFileRef = useRef<HTMLInputElement>(null);
+  // Campos editáveis (modo edição). Endereço vem no formato "rua, ..., bairro – Cidade – UF".
+  const endPartes = mr.endereco.split(" – ");
+  const endStreet = endPartes[0] ?? mr.endereco;
+  const endSegs   = endStreet.split(",").map(s => s.trim()).filter(Boolean);
+  const [fNome, setFNome]           = useState(mr.nome.split(" ")[0] ?? "");
+  const [fSobrenome, setFSobrenome] = useState(mr.nome.split(" ").slice(1).join(" "));
+  const [fDoc, setFDoc]             = useState(mr.doc);
+  const [fTel, setFTel]             = useState(mr.tel1);
+  const [fRua, setFRua]             = useState(endSegs.length > 1 ? endSegs.slice(0, -1).join(", ") : (endSegs[0] ?? ""));
+  const [fBairro, setFBairro]       = useState(endSegs.length > 1 ? endSegs[endSegs.length - 1] : "");
+  const [fCidade, setFCidade]       = useState(endPartes[1] ?? "");
+  const [fUf, setFUf]               = useState(endPartes[2] ?? "");
+  const editBoxStyle: React.CSSProperties = { width: "100%", height: 28, border: "1px solid #93b4d4", borderRadius: 5, padding: "0 9px", fontSize: 12, fontWeight: 600, color: "#111827", background: "#fff", outline: "none", boxSizing: "border-box" };
+  const editBox = (label: string, value: string, onChange: (v: string) => void, req = true) => (
+    <div key={label}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+        {label}{req && <span style={{ color: "#ef4444" }}> *</span>}
+      </div>
+      <input style={editBoxStyle} value={value} onChange={e => onChange(e.target.value)} />
+    </div>
+  );
   const handleFichaFiles = (files: FileList | null) => {
     if (!files || !onAddDoc) return;
     Array.from(files).forEach(file => {
@@ -4389,10 +4410,10 @@ function GcFichaClienteModal({ mr, onClose, viewMode = false, onDocumentos, docs
                     <span style={{ fontWeight: 800, fontSize: 11, color: "#1e293b", letterSpacing: "0.06em" }}>DADOS DO CLIENTE</span>
                   </div>
                   <div style={{ padding: "10px 12px", background: "#fff", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 14px" }}>
-                    {fieldBox("CPF", mr.doc)}
-                    {fieldBox("TELEFONE", mr.tel1)}
-                    {fieldBox("NOME", mr.nome.split(" ")[0])}
-                    {fieldBox("SOBRENOME", mr.nome.split(" ").slice(1).join(" "), false)}
+                    {viewMode ? fieldBox("CPF", mr.doc) : editBox("CPF", fDoc, setFDoc)}
+                    {viewMode ? fieldBox("TELEFONE", mr.tel1) : editBox("TELEFONE", fTel, setFTel)}
+                    {viewMode ? fieldBox("NOME", mr.nome.split(" ")[0]) : editBox("NOME", fNome, setFNome)}
+                    {viewMode ? fieldBox("SOBRENOME", mr.nome.split(" ").slice(1).join(" "), false) : editBox("SOBRENOME", fSobrenome, setFSobrenome, false)}
                   </div>
                 </div>
               );
@@ -4425,11 +4446,11 @@ function GcFichaClienteModal({ mr, onClose, viewMode = false, onDocumentos, docs
                   </div>
                   <div style={{ padding: "10px 12px", background: "#fff", display: "grid", gridTemplateColumns: "1fr 2fr 0.6fr", gap: "8px 10px" }}>
                     {fieldBox("CEP", "-")}
-                    {fieldBox("RUA / AVENIDA", rua)}
-                    {fieldBox("Nº", numero)}
-                    {fieldBox("BAIRRO", bairro)}
-                    {fieldBox("CIDADE", cidade)}
-                    {fieldBox("UF", uf)}
+                    {viewMode ? fieldBox("RUA / AVENIDA", rua) : editBox("RUA / AVENIDA", fRua, setFRua)}
+                    {viewMode ? fieldBox("Nº", numero) : <div />}
+                    {viewMode ? fieldBox("BAIRRO", bairro) : editBox("BAIRRO", fBairro, setFBairro)}
+                    {viewMode ? fieldBox("CIDADE", cidade) : editBox("CIDADE", fCidade, setFCidade)}
+                    {viewMode ? fieldBox("UF", uf) : editBox("UF", fUf, setFUf)}
                   </div>
                 </div>
               );
@@ -4498,7 +4519,11 @@ function GcFichaClienteModal({ mr, onClose, viewMode = false, onDocumentos, docs
                 <button onClick={onClose} style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                   Cancelar
                 </button>
-                <button onClick={onClose} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                <button onClick={() => {
+                  const nome = `${fNome.trim()} ${fSobrenome.trim()}`.trim();
+                  if (!nome) { alert("O nome do cliente é obrigatório."); return; }
+                  onSave?.({ nome, documento: fDoc.trim(), telefone: fTel.trim(), endereco: fRua.trim(), bairro: fBairro.trim(), cidade: fCidade.trim(), uf: fUf.trim() });
+                }} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                   Salvar
                 </button>
               </div>
@@ -5882,6 +5907,23 @@ export default function DashboardPage() {
   const [gcDeleteId, setGcDeleteId] = useState<number | null>(null);
   const [gcRows, setGcRows] = useState<GcRow[]>([]);
   const [gcLoading, setGcLoading] = useState(false);
+  // Envia um comando (editar/excluir cliente) ao app do cobrador da rota.
+  // O app aplica o comando no próximo polling e confirma (ack).
+  const enviarComandoCliente = async (gcr: GcRow, tipo: "editar" | "excluir", dados?: Record<string, unknown>): Promise<boolean> => {
+    if (!gcr.appId) { alert("Este cliente não possui identificador do app — não é possível sincronizar."); return false; }
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}api/comandos-cliente`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rota: gcr.rota, codigoAcesso: gcr.codigoAcesso, tipo, clienteId: gcr.appId, consec: gcr.consec, dados: dados ?? null }),
+      });
+      if (!res.ok) { alert("Falha ao enviar a alteração ao app do cobrador. Tente novamente."); return false; }
+      return true;
+    } catch {
+      alert("Falha de conexão ao enviar a alteração ao app do cobrador. Tente novamente.");
+      return false;
+    }
+  };
   // Carrega os clientes REAIS de todas as rotas (snapshots dos aplicativos)
   useEffect(() => {
     if (activeMain !== "Gerenciar Clientes") return;
@@ -5901,6 +5943,8 @@ export default function DashboardPage() {
           const enderecoFmt = [streetChunk, cidadeNome, uf].filter(Boolean).join(" – ");
           return {
           id: i + 1,
+          appId: Number(c.id) || undefined,
+          codigoAcesso: c.codigoAcesso ?? undefined,
           rota: c.rota ?? "",
           consec: String(c.consec ?? ""),
           nome: c.nome ?? "",
@@ -8466,7 +8510,11 @@ export default function DashboardPage() {
                           style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                           Cancelar
                         </button>
-                        <button onClick={() => setGcDeleteId(null)}
+                        <button onClick={async () => {
+                          const ok = await enviarComandoCliente(gcr, "excluir");
+                          if (ok) setGcRows(prev => prev.filter(r => r.id !== gcr.id));
+                          setGcDeleteId(null);
+                        }}
                           style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                           Sim, Excluir
                         </button>
@@ -8548,6 +8596,18 @@ export default function DashboardPage() {
                 mr={mr}
                 onClose={() => setGcModalOpen(false)}
                 viewMode={gcModalMode === "view"}
+                onSave={async (dados) => {
+                  const ok = await enviarComandoCliente(mr, "editar", dados);
+                  if (ok) {
+                    // Atualiza a linha localmente com o mesmo formato "rua, bairro – Cidade – UF"
+                    const streetChunk = [dados.endereco, dados.bairro].filter(Boolean).join(", ");
+                    const enderecoFmt = [streetChunk, dados.cidade, dados.uf].filter(Boolean).join(" – ");
+                    setGcRows(prev => prev.map(r => r.id === mr.id
+                      ? { ...r, nome: dados.nome, doc: dados.documento, tel1: dados.telefone, endereco: enderecoFmt }
+                      : r));
+                    setGcModalOpen(false);
+                  }
+                }}
                 onDocumentos={() => setGcDocClientId(mr.id)}
                 docs={clientDocs}
                 onAddDoc={doc => setGcDocMap(prev => ({ ...prev, [mr.id]: [...(prev[mr.id] ?? []), doc] }))}

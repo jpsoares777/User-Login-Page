@@ -597,3 +597,45 @@ export async function fetchLimitesAprovacaoAPI(): Promise<LimitesAprovacao> {
     return getLimitesAprovacaoCache();
   }
 }
+
+// ── Comandos administrativos (editar/excluir cliente vindos do painel web) ──
+export type ComandoClienteAPI = {
+  id: number;
+  codigoAcesso: string;
+  tipo: "editar" | "excluir";
+  clienteId: string;
+  consec: string | null;
+  dados: {
+    nome?: string; documento?: string; telefone?: string;
+    endereco?: string; bairro?: string; cidade?: string; uf?: string;
+  } | null;
+  status: string;
+};
+
+// Busca comandos pendentes da rota (polling do app).
+export async function fetchComandosClienteAPI(): Promise<ComandoClienteAPI[]> {
+  const codigoAcesso = getCodigoAcesso();
+  if (!codigoAcesso) return [];
+  try {
+    return await apiGet<ComandoClienteAPI[]>(`/comandos-cliente?codigoAcesso=${encodeURIComponent(codigoAcesso)}`);
+  } catch {
+    return [];
+  }
+}
+
+// Confirma que o comando foi aplicado no banco local do app.
+// Envia o codigoAcesso da rota: o servidor só acka comandos da própria rota.
+export async function ackComandoClienteAPI(id: number): Promise<boolean> {
+  const codigoAcesso = getCodigoAcesso();
+  if (!codigoAcesso) return false;
+  try {
+    const res = await fetch(`${API_BASE}/comandos-cliente/${id}/ack`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ codigoAcesso }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}

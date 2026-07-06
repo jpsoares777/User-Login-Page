@@ -8,4 +8,5 @@ export * from "./aplicativos";
 export * from "./solicitacoes";
 export * from "./solicitacoes_emprestimo";
 export * from "./solicitacoes_movimento";
+export * from "./comandos_cliente";
 export * from "./configuracoes";

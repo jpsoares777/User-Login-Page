@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Fragment, type ReactNode } from "react";
-import { loadDB, saveDB, getTodayStr, gerarConsecutivoUnico } from "../lib/storage";
-import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, postSolicitacaoMovimentoAPI, fetchSolicitacoesMovimentoAPI, fetchLimitesAprovacaoAPI, getLimitesAprovacaoCache, getRotaSessao, type DadosSnapshot } from "../lib/api";
+import { loadDB, saveDB, getTodayStr, gerarConsecutivoUnico, type AppDB } from "../lib/storage";
+import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, postSolicitacaoMovimentoAPI, fetchSolicitacoesMovimentoAPI, fetchLimitesAprovacaoAPI, getLimitesAprovacaoCache, getRotaSessao, fetchComandosClienteAPI, ackComandoClienteAPI, type DadosSnapshot } from "../lib/api";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ParcelaCliente } from "./ParcelaCliente";
 import { CadastroCliente } from "./CadastroCliente";
@@ -1966,6 +1966,113 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     return () => { cancelled = true; clearInterval(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendentesMovimento]);
+
+  // ── Comandos administrativos (painel web → app) ──────────────────────────
+  // O admin pode editar ou excluir um cliente na aba "Gerenciar Clientes".
+  // O app busca comandos pendentes (polling 20s), aplica no banco local e
+  // confirma (ack). Guarda de idempotência: cada comando é aplicado uma vez.
+  const comandosAplicadosRef = useRef<Set<number>>(new Set());
+  const comandosBusyRef = useRef(false);
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      if (comandosBusyRef.current) return;
+      comandosBusyRef.current = true;
+      try {
+        const comandos = await fetchComandosClienteAPI();
+        if (cancelled || comandos.length === 0) return;
+        for (const cmd of comandos) {
+          if (comandosAplicadosRef.current.has(cmd.id)) continue;
+          const clienteAlvoId = Number(cmd.clienteId);
+          if (!Number.isFinite(clienteAlvoId)) { await ackComandoClienteAPI(cmd.id); continue; }
+          comandosAplicadosRef.current.add(cmd.id);
+
+          if (cmd.tipo === "editar" && cmd.dados) {
+            const d = cmd.dados;
+            const aplicarEdicao = (c: ClienteItem): ClienteItem => c.id !== clienteAlvoId ? c : {
+              ...c,
+              ...(d.nome ? { nome: d.nome } : {}),
+              ...(d.documento !== undefined ? { cpf: d.documento } : {}),
+              ...(d.telefone !== undefined ? { telefone: d.telefone } : {}),
+              ...(d.endereco !== undefined ? { endereco: d.endereco } : {}),
+              ...(d.bairro !== undefined ? { bairro: d.bairro } : {}),
+              ...(d.cidade !== undefined ? { cidade: d.cidade } : {}),
+              ...(d.uf !== undefined ? { uf: d.uf } : {}),
+            };
+            setClientes(prev => prev.map(aplicarEdicao));
+            setClientesAdicionaisHoje(prev => prev.map(aplicarEdicao));
+            setNovosClientesOutras(prev => prev.map(aplicarEdicao));
+            setCobradosExtras(prev => prev.map(aplicarEdicao));
+            setQuitadosClientes(prev => prev.map(aplicarEdicao));
+            // Durabilidade ANTES do ack: grava a edição direto no banco local
+            // persistido. Se o app fechar agora, a mudança já está salva.
+            const dbA = loadDB();
+            if (dbA) {
+              const mapL = (lista: unknown[] | undefined) => (lista as ClienteItem[] | undefined)?.map(aplicarEdicao);
+              saveDB({
+                clientes: mapL(dbA.clientes) ?? dbA.clientes,
+                clientesAdicionaisHoje: mapL(dbA.clientesAdicionaisHoje) ?? dbA.clientesAdicionaisHoje,
+                novosClientesOutras: mapL(dbA.novosClientesOutras) ?? dbA.novosClientesOutras,
+                cobradosExtras: mapL(dbA.cobradosExtras) ?? dbA.cobradosExtras,
+                quitadosClientes: mapL(dbA.quitadosClientes) ?? dbA.quitadosClientes,
+              });
+            }
+          } else if (cmd.tipo === "excluir") {
+            setEmprestimentos(prev => prev.filter(e => e.clienteId !== clienteAlvoId));
+            setNovosClientesIds(prev => { const s = new Set(prev); s.delete(clienteAlvoId); return s; });
+            setRenovacoesIds(prev => { const s = new Set(prev); s.delete(clienteAlvoId); return s; });
+            setClientesAdicionaisHoje(prev => prev.filter(c => c.id !== clienteAlvoId));
+            setNovosClientesOutras(prev => prev.filter(c => c.id !== clienteAlvoId));
+            setClientes(prev => prev.filter(c => c.id !== clienteAlvoId));
+            setOrdemClientesIds(prev => prev.filter(oid => oid !== clienteAlvoId));
+            setCobrados(prev => prev.filter(cid => cid !== clienteAlvoId));
+            setCobradosValores(prev => prev.filter(x => x.id !== clienteAlvoId));
+            setCobradosExtras(prev => prev.filter(c => c.id !== clienteAlvoId));
+            setQuitadosClientes(prev => prev.filter(q => q.id !== clienteAlvoId));
+            setHistoricoPagamentos(prev => { const next = { ...prev }; delete next[clienteAlvoId]; return next; });
+            setRegistroPagamentos(prev => { const next = { ...prev }; delete next[clienteAlvoId]; return next; });
+            setHistoricoCreditos(prev => { const next = { ...prev }; delete next[clienteAlvoId]; return next; });
+            setAgendamentos(prev => prev.filter(a => a.clienteId !== clienteAlvoId));
+            // Durabilidade ANTES do ack: aplica a exclusão direto no banco
+            // local persistido (mesmas remoções feitas no estado React).
+            const dbA = loadDB();
+            if (dbA) {
+              const semCliente = (lista: unknown[] | undefined) => (lista as ClienteItem[] | undefined)?.filter(c => c.id !== clienteAlvoId);
+              const semChave = (rec: Record<number, unknown> | undefined) => { if (!rec) return rec; const next = { ...rec }; delete next[clienteAlvoId]; return next; };
+              saveDB({
+                clientes: semCliente(dbA.clientes) ?? dbA.clientes,
+                clientesAdicionaisHoje: semCliente(dbA.clientesAdicionaisHoje) ?? dbA.clientesAdicionaisHoje,
+                novosClientesOutras: semCliente(dbA.novosClientesOutras) ?? dbA.novosClientesOutras,
+                cobradosExtras: semCliente(dbA.cobradosExtras) ?? dbA.cobradosExtras,
+                quitadosClientes: semCliente(dbA.quitadosClientes) ?? dbA.quitadosClientes,
+                emprestimentos: (dbA.emprestimentos as { clienteId?: number }[] | undefined)?.filter(e => e.clienteId !== clienteAlvoId) ?? dbA.emprestimentos,
+                ordemClientesIds: dbA.ordemClientesIds?.filter(oid => oid !== clienteAlvoId) ?? dbA.ordemClientesIds,
+                cobrados: dbA.cobrados?.filter(cid => cid !== clienteAlvoId) ?? dbA.cobrados,
+                cobradosValores: dbA.cobradosValores?.filter(x => x.id !== clienteAlvoId) ?? dbA.cobradosValores,
+                novosClientesIds: dbA.novosClientesIds?.filter(nid => nid !== clienteAlvoId) ?? dbA.novosClientesIds,
+                renovacoesIds: dbA.renovacoesIds?.filter(rid => rid !== clienteAlvoId) ?? dbA.renovacoesIds,
+                historicoPagamentos: semChave(dbA.historicoPagamentos) as AppDB["historicoPagamentos"] ?? dbA.historicoPagamentos,
+                registroPagamentos: semChave(dbA.registroPagamentos) as AppDB["registroPagamentos"] ?? dbA.registroPagamentos,
+                historicoCreditos: semChave(dbA.historicoCreditos) as AppDB["historicoCreditos"] ?? dbA.historicoCreditos,
+                agendamentos: (dbA.agendamentos as { clienteId?: number }[] | undefined)?.filter(a => a.clienteId !== clienteAlvoId) ?? dbA.agendamentos,
+              });
+            }
+          }
+
+          const ok = await ackComandoClienteAPI(cmd.id);
+          // Ack falhou (rede): permite reprocessar no próximo ciclo — a
+          // aplicação é idempotente (map/filter sobre o mesmo id).
+          if (!ok) comandosAplicadosRef.current.delete(cmd.id);
+        }
+      } finally {
+        comandosBusyRef.current = false;
+      }
+    };
+    check();
+    const t = setInterval(check, 20000);
+    return () => { cancelled = true; clearInterval(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Monta o snapshot dos dados da rota a partir do estado atual. Usado tanto no
   // fechamento do caixa quanto no envio AO VIVO (tempo real). Mantido em um unico

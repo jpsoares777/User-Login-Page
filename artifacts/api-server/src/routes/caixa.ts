@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, and, desc } from "drizzle-orm";
-import { db, caixaTable, movimentosCaixaTable, aplicativosTable } from "@workspace/db";
+import { db, caixaTable, movimentosCaixaTable, aplicativosTable, comandosClienteTable } from "@workspace/db";
 
 const router: IRouter = Router();
 
@@ -154,8 +154,38 @@ router.get("/caixa/clientes-rotas", async (_req, res): Promise<void> => {
     try {
       const snap = JSON.parse(caixa.dadosSnapshot);
       if (Array.isArray(snap?.clientesLista)) {
-        for (const c of snap.clientesLista) {
-          clientes.push({ ...c, rota: aplicativo.rota, cobradorNome: aplicativo.cobradorNome });
+        // Aplica os comandos administrativos PENDENTES por cima do snapshot:
+        // o admin vê imediatamente a edição/exclusão que fez, mesmo antes de o
+        // app do cobrador sincronizar e publicar um snapshot novo.
+        const pendentes = await db.select().from(comandosClienteTable)
+          .where(and(
+            eq(comandosClienteTable.codigoAcesso, aplicativo.codigoAcesso),
+            eq(comandosClienteTable.status, "pendente"),
+          ))
+          .orderBy(comandosClienteTable.id);
+
+        let lista: any[] = snap.clientesLista;
+        for (const cmd of pendentes) {
+          if (cmd.tipo === "excluir") {
+            lista = lista.filter(c => String(c.id) !== cmd.clienteId);
+          } else if (cmd.tipo === "editar" && cmd.dados && typeof cmd.dados === "object") {
+            const d = cmd.dados as Record<string, string | undefined>;
+            lista = lista.map(c => String(c.id) !== cmd.clienteId ? c : {
+              ...c,
+              ...(d.nome ? { nome: d.nome } : {}),
+              ...(d.documento !== undefined ? { documento: d.documento } : {}),
+              ...(d.telefone !== undefined ? { tel1: d.telefone } : {}),
+              ...(d.endereco !== undefined ? { endereco: d.endereco } : {}),
+              ...(d.bairro !== undefined ? { bairro: d.bairro } : {}),
+              ...(d.cidade !== undefined || d.uf !== undefined
+                ? { cidade: [d.cidade, d.uf].filter(Boolean).join(" - ") }
+                : {}),
+            });
+          }
+        }
+
+        for (const c of lista) {
+          clientes.push({ ...c, rota: aplicativo.rota, cobradorNome: aplicativo.cobradorNome, codigoAcesso: aplicativo.codigoAcesso });
         }
       }
     } catch { continue; }
