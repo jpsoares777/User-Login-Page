@@ -6,6 +6,7 @@ import {
 
 import { Emprestimo } from "./EmprestimosDoDia";
 import { compressToBase64, saveFotoCliente, gerarConsecutivoUnico } from "../lib/storage";
+import { getLimitesAprovacaoCache, fetchLimitesAprovacaoAPI } from "../lib/api";
 
 const P_CC = { headerTop: "#3A5F82", headerBot: "#4A6F8E" };
 
@@ -99,6 +100,16 @@ export function CadastroCliente({ onBack, onSalvar, initialData }: {
   const [salvo, setSalvo] = useState(false);
   const [showConfirmacao, setShowConfirmacao] = useState(false);
   const [formKey, setFormKey] = useState(0);
+
+  // Máximo de parcelas permitido ao criar/renovar um empréstimo (config global do admin).
+  const [maxParcelasNovo, setMaxParcelasNovo] = useState(() => getLimitesAprovacaoCache().maxParcelasNovo);
+  useEffect(() => { fetchLimitesAprovacaoAPI().then(l => setMaxParcelasNovo(l.maxParcelasNovo)).catch(() => {}); }, []);
+  // Garante que o valor selecionado nunca ultrapasse o máximo (limite tardio via fetch ou dados de renovação).
+  useEffect(() => {
+    if (maxParcelasNovo > 0) {
+      setLoanForm(f => (parseInt(f.parcelas) > maxParcelasNovo ? { ...f, parcelas: String(maxParcelasNovo) } : f));
+    }
+  }, [maxParcelasNovo]);
 
   const [submitted, setSubmitted] = useState(false);
   const [cpfField, setCpfField] = useState(initialData?.cpf ?? "");
@@ -381,7 +392,7 @@ export function CadastroCliente({ onBack, onSalvar, initialData }: {
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <SelectField label="Nº de Parcelas"
-                      options={Array.from({ length: 99 }, (_, i) => String(i + 1))}
+                      options={Array.from({ length: Math.max(1, maxParcelasNovo) }, (_, i) => String(i + 1))}
                       value={loanForm.parcelas} onChange={setL("parcelas")} />
                   </div>
                   <div className="flex-1">

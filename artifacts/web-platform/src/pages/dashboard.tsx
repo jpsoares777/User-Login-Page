@@ -4264,6 +4264,7 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
     validarParcelasDia: false,
     validarRenovacoes: true,   maxRenovacoes: "500",
     renovacaoDiaSeg: false,
+    maxParcelasDia: "", numeroParcelas: "99", telefoneAprovacoes: "",
   });
 
   // Carrega as configurações salvas no servidor ao abrir o modal.
@@ -4463,10 +4464,12 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
                   {restVals.validarParcelasDia ? "Ativo" : "Inativo"}
                 </span>
               </div>
-              <select style={{ width: "100%", height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
+              <select value={restVals.maxParcelasDia}
+                onChange={e => setRestVals(v => ({ ...v, maxParcelasDia: e.target.value }))}
+                style={{ width: "100%", height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
                   padding: "0 10px", fontSize: 13, color: "#1e293b", background: "#f8fafc" }}>
-                <option>Selecione</option>
-                {[1,2,3,5,10].map(n => <option key={n}>{n}</option>)}
+                <option value="">Selecione</option>
+                {[1,2,3,5,10].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </div>
 
@@ -4474,7 +4477,9 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
             <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "12px 14px" }}>
               {label("Número de Parcelas")}
               <div style={{ height: 30, marginBottom: 10 }} />
-              <input type="number" defaultValue={99} style={{ width: "100%", height: 34, border: "1px solid #e2e8f0",
+              <input type="number" value={restVals.numeroParcelas}
+                onChange={e => setRestVals(v => ({ ...v, numeroParcelas: e.target.value }))}
+                style={{ width: "100%", height: 34, border: "1px solid #e2e8f0",
                   borderRadius: 6, padding: "0 10px", fontSize: 13, color: "#1e293b", background: "#f8fafc",
                   outline: "none", boxSizing: "border-box" }} />
             </div>
@@ -4484,6 +4489,8 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
               {label("Nº Celular — Solicitações de Aprovações")}
               <div style={{ height: 30, marginBottom: 10 }} />
               <input type="tel" placeholder="Ex: (99) 99999-9999"
+                value={restVals.telefoneAprovacoes}
+                onChange={e => setRestVals(v => ({ ...v, telefoneAprovacoes: e.target.value }))}
                 style={{ width: "100%", height: 34, border: "1px solid #e2e8f0", borderRadius: 6,
                   padding: "0 10px", fontSize: 13, color: "#1e293b", background: "#f8fafc",
                   outline: "none", boxSizing: "border-box" }} />

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { getLimitesAprovacaoCache, fetchLimitesAprovacaoAPI } from "../lib/api";
 
 const PAYMENT_METHODS = [
   { id: 1, label: "Dinheiro" },
@@ -58,6 +59,18 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
   const [valorParcelaStr, setValorParcelaStr] = useState(String(cliente.parcela));
   const [numeroParcela, setNumeroParcela] = useState(1);
   const [observacao, setObservacao] = useState("");
+  // Máximo de parcelas que o cobrador pode cobrar por pagamento (0 = sem limite).
+  const [maxParcelasDia, setMaxParcelasDia] = useState(() => getLimitesAprovacaoCache().maxParcelasDia);
+  useEffect(() => { fetchLimitesAprovacaoAPI().then(l => setMaxParcelasDia(l.maxParcelasDia)).catch(() => {}); }, []);
+  // Reduz a parcela selecionada ao teto por pagamento quando o limite chega/ muda (evita cobrar acima do máximo).
+  useEffect(() => {
+    if (paymentType === "parcela" && maxParcelasDia > 0 && numeroParcela > maxParcelasDia) {
+      const total = parseFloat((maxParcelasDia * cliente.parcela).toFixed(2));
+      setNumeroParcela(maxParcelasDia);
+      setValorParcela(total);
+      setValorParcelaStr(String(total));
+    }
+  }, [maxParcelasDia, paymentType]);
   const [selectedMethod, setSelectedMethod] = useState(PAYMENT_METHODS[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "success">("idle");
@@ -287,7 +300,9 @@ export function ParcelaCliente({ cliente, onBack, onSaved }: { cliente: Cliente;
                     }}
                     className="w-full appearance-none bg-transparent px-2 py-1.5 text-xs font-medium text-[#1B2236] focus:outline-none"
                   >
-                    {Array.from({ length: Math.max(cliente.totalParcelas, numeroParcela, 60) }, (_, i) => i + 1).map((n) => (
+                    {Array.from({ length: (paymentType === "parcela" && maxParcelasDia > 0)
+                        ? Math.max(1, maxParcelasDia)
+                        : Math.max(cliente.totalParcelas, numeroParcela, 60) }, (_, i) => i + 1).map((n) => (
                       <option key={n} value={n}>{n}</option>
                     ))}
                   </select>

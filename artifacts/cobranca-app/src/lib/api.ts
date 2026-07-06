@@ -533,12 +533,19 @@ export type LimitesAprovacao = {
   limiteRenovacao: number;
   limiteGasto: number;
   limiteRendimento: number;
+  // Controle de parcelas (0 = sem limite; maxParcelasNovo cai para 99 quando não definido).
+  maxParcelasNovo: number;     // máximo de parcelas ao criar/renovar um empréstimo
+  maxParcelasDia: number;      // máximo de parcelas que o cobrador pode cobrar por pagamento
+  maxParcelasQuitar: number;   // máximo de parcelas que o cliente pode pagar para quitar
 };
 
 const LIMITE_NOVO_KEY = "sessao_limite_novo";
 const LIMITE_RENOV_KEY = "sessao_limite_renovacao";
 const LIMITE_GASTO_KEY = "sessao_limite_gasto";
 const LIMITE_REND_KEY = "sessao_limite_rendimento";
+const PARC_NOVO_KEY = "sessao_parcelas_novo";
+const PARC_DIA_KEY = "sessao_parcelas_dia";
+const PARC_QUITAR_KEY = "sessao_parcelas_quitar";
 
 // Último limite conhecido, persistido localmente. Serve de fallback fail-safe:
 // no boot e em falhas de rede o gate usa o último valor válido em vez de cair
@@ -548,11 +555,17 @@ export function getLimitesAprovacaoCache(): LimitesAprovacao {
   const r = parseFloat(localStorage.getItem(LIMITE_RENOV_KEY) ?? "");
   const g = parseFloat(localStorage.getItem(LIMITE_GASTO_KEY) ?? "");
   const d = parseFloat(localStorage.getItem(LIMITE_REND_KEY) ?? "");
+  const pn = parseFloat(localStorage.getItem(PARC_NOVO_KEY) ?? "");
+  const pd = parseFloat(localStorage.getItem(PARC_DIA_KEY) ?? "");
+  const pq = parseFloat(localStorage.getItem(PARC_QUITAR_KEY) ?? "");
   return {
     limiteNovo: Number.isFinite(n) ? n : 0,
     limiteRenovacao: Number.isFinite(r) ? r : 0,
     limiteGasto: Number.isFinite(g) ? g : 0,
     limiteRendimento: Number.isFinite(d) ? d : 0,
+    maxParcelasNovo: Number.isFinite(pn) && pn > 0 ? pn : 99,
+    maxParcelasDia: Number.isFinite(pd) ? pd : 0,
+    maxParcelasQuitar: Number.isFinite(pq) ? pq : 0,
   };
 }
 
@@ -561,16 +574,23 @@ export async function fetchLimitesAprovacaoAPI(): Promise<LimitesAprovacao> {
     const cfg = await apiGet<Record<string, any>>("/configuracoes");
     const rv = cfg?.restVals ?? {};
     const num = (v: unknown) => { const n = parseFloat(String(v ?? "0")); return Number.isFinite(n) ? n : 0; };
-    const limites = {
+    const parcelasNovo = num(rv.numeroParcelas);
+    const limites: LimitesAprovacao = {
       limiteNovo: rv.validarVendas ? num(rv.maxVendas) : 0,
       limiteRenovacao: rv.validarRenovacoes ? num(rv.maxRenovacoes) : 0,
       limiteGasto: rv.validarGastos ? num(rv.maxGastos) : 0,
       limiteRendimento: rv.validarRendimentos ? num(rv.maxRendimentos) : 0,
+      maxParcelasNovo: parcelasNovo > 0 ? parcelasNovo : 99,
+      maxParcelasDia: rv.validarParcelasDia ? num(rv.maxParcelasDia) : 0,
+      maxParcelasQuitar: rv.validarParcelasCancelar ? num(rv.maxParcelasCancelar) : 0,
     };
     localStorage.setItem(LIMITE_NOVO_KEY, String(limites.limiteNovo));
     localStorage.setItem(LIMITE_RENOV_KEY, String(limites.limiteRenovacao));
     localStorage.setItem(LIMITE_GASTO_KEY, String(limites.limiteGasto));
     localStorage.setItem(LIMITE_REND_KEY, String(limites.limiteRendimento));
+    localStorage.setItem(PARC_NOVO_KEY, String(limites.maxParcelasNovo));
+    localStorage.setItem(PARC_DIA_KEY, String(limites.maxParcelasDia));
+    localStorage.setItem(PARC_QUITAR_KEY, String(limites.maxParcelasQuitar));
     return limites;
   } catch {
     // Falha de rede/API: preserva o último limite conhecido (fail-safe).
