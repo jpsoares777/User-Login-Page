@@ -4038,6 +4038,44 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
     renovacaoDiaSeg: false,
   });
 
+  // Carrega as configurações salvas no servidor ao abrir o modal.
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}api/configuracoes`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && typeof data === "object") {
+          if (data.vals && typeof data.vals === "object") setVals(v => ({ ...v, ...data.vals }));
+          if (data.restVals && typeof data.restVals === "object") setRestVals(v => ({ ...v, ...data.restVals }));
+        }
+      } catch { /* mantém padrões locais */ }
+    })();
+  }, []);
+
+  const [salvando, setSalvando] = useState(false);
+  const [erroSalvar, setErroSalvar] = useState(false);
+
+  // Persiste todas as configurações (toggles + limites) no servidor. Só fecha o
+  // modal se o servidor confirmar a gravação; em falha, mantém aberto e avisa.
+  const salvarConfig = async () => {
+    setSalvando(true);
+    setErroSalvar(false);
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}api/configuracoes`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vals, restVals }),
+      });
+      if (!res.ok) throw new Error("PUT falhou");
+      onClose();
+    } catch {
+      setErroSalvar(true);
+    } finally {
+      setSalvando(false);
+    }
+  };
+
   const Toggle = ({ label }: { label: string }) => (
     <label className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer select-none">
       <div
@@ -4229,10 +4267,15 @@ function ConfiguracoesModal({ onClose }: { onClose: () => void }) {
         {/* Footer */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "12px 20px",
             borderTop: "1px solid #e2e8f0", background: "#f8fafc", flexShrink: 0 }}>
-          <button onClick={onClose} style={{ padding: "9px 28px", background: "#2563eb", color: "#fff",
-              border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer",
+          {erroSalvar && (
+            <span style={{ alignSelf: "center", marginRight: "auto", color: "#dc2626", fontSize: 12, fontWeight: 600 }}>
+              Não foi possível salvar. Verifique a conexão e tente novamente.
+            </span>
+          )}
+          <button onClick={salvarConfig} disabled={salvando} style={{ padding: "9px 28px", background: salvando ? "#93b4f0" : "#2563eb", color: "#fff",
+              border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: salvando ? "default" : "pointer",
               boxShadow: "0 2px 8px rgba(37,99,235,.3)" }}>
-            Salvar
+            {salvando ? "Salvando..." : "Salvar"}
           </button>
           <button onClick={onClose} style={{ padding: "9px 28px", background: "#fff", color: "#64748b",
               border: "1px solid #e2e8f0", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>

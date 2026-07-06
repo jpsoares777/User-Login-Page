@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Fragment, type ReactNode } from "react";
 import { loadDB, saveDB, getTodayStr, gerarConsecutivoUnico } from "../lib/storage";
-import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, getValorVendaMax, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, type DadosSnapshot } from "../lib/api";
+import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, fetchLimitesAprovacaoAPI, getLimitesAprovacaoCache, type DadosSnapshot } from "../lib/api";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ParcelaCliente } from "./ParcelaCliente";
 import { CadastroCliente } from "./CadastroCliente";
@@ -1798,6 +1798,24 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     if (sol) setPendentesAprovacao(prev => prev.map(p => p.localId === localId ? { ...p, solicitacaoId: sol.id } : p));
   };
 
+  // Limites globais de aprovação (0 = sem limite). Definidos no admin em
+  // "Configurações" e válidos para todas as rotas. Recarregados periodicamente
+  // para refletir mudanças feitas pelo dono sem exigir novo login.
+  const [limiteNovo, setLimiteNovo] = useState(() => getLimitesAprovacaoCache().limiteNovo);
+  const [limiteRenovacao, setLimiteRenovacao] = useState(() => getLimitesAprovacaoCache().limiteRenovacao);
+  useEffect(() => {
+    let cancel = false;
+    const load = async () => {
+      const l = await fetchLimitesAprovacaoAPI();
+      if (cancel) return;
+      setLimiteNovo(l.limiteNovo);
+      setLimiteRenovacao(l.limiteRenovacao);
+    };
+    load();
+    const t = setInterval(load, 30000);
+    return () => { cancel = true; clearInterval(t); };
+  }, []);
+
   // Evita execuções sobrepostas do polling e materialização em duplicidade.
   const pollingRef = useRef(false);
   const materializadosRef = useRef<Set<string>>(new Set());
@@ -2381,7 +2399,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         onBack={() => setClienteParaRenovar(null)}
         onSalvar={(emp) => {
           const original = clienteParaRenovar!;
-          const limite = getValorVendaMax();
+          const limite = limiteRenovacao;
           const fecharRenovacao = () => setTimeout(() => { setClienteParaRenovar(null); setVerRenovacao(false); setActiveNav(0); }, 1600);
           if (limite > 0 && (emp.valorEmprestado ?? 0) > limite) {
             // Acima do limite: retém e envia para aprovação do dono.
@@ -2694,7 +2712,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         ? <RenovacaoClientes onBack={() => setVerRenovacao(false)} onAddAgendamento={addAgendamento} onRenovar={setClienteParaRenovar} clientesQuitados={[]} todosClientes={[...clientesOrdenados, ...clientesAdicionaisHoje].filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i && c.saldo === 0)} />
         : activeNav === 0 ? <TelaLista busca={busca} setBusca={setBusca} vrf={vrf} setVrf={setVrf} onSelectCliente={setClienteSelecionado} onAddAgendamento={addAgendamento} ausentes={ausentes} onAusentar={setClienteParaAusentar} cobrados={cobrados} onRemoverCobrado={(id) => { setCobrados(prev => prev.filter(x => x !== id)); setCobradosExtras(prev => prev.filter(x => x.id !== id)); setCobradosValores(prev => prev.filter(x => x.id !== id)); setRegistroPagamentos(prev => { const next = { ...prev }; delete next[id]; return next; }); setHistoricoPagamentos(prev => { const next = { ...prev }; if (next[id]?.length) next[id] = next[id].slice(1); return next; }); setQuitadosClientes(prev => prev.filter(x => x.id !== id)); setRenovacoesIds(prev => { const s = new Set(prev); s.delete(id); return s; }); setClientes(prev => prev.map(c => { if (c.id !== id) return c; const valorPago = cobradosValores.find(x => x.id === id)?.valor ?? c.parcela; const parcelasReverter = Math.round(valorPago / (c.parcela || 1)); const pp = Math.max(0, c.parcelasPagas - parcelasReverter); const saldoRestaurado = c.parcela * (c.totalParcelas - pp); return { ...c, parcelasPagas: pp, saldo: saldoRestaurado }; })); const reverterSaldo = (c: ClienteItem) => { if (c.id !== id) return c; const valorPago = cobradosValores.find(x => x.id === id)?.valor ?? c.parcela; const parcelasReverter = Math.round(valorPago / (c.parcela || 1)); const pp = Math.max(0, c.parcelasPagas - parcelasReverter); return { ...c, parcelasPagas: pp, saldo: c.parcela * (c.totalParcelas - pp) }; }; setClientesAdicionaisHoje(prev => prev.map(reverterSaldo)); setNovosClientesOutras(prev => prev.map(reverterSaldo)); }} clientesAdicionais={clientesAdicionaisHoje.map(enrichCliente)} cobradosExtras={cobradosExtras} cobradosValores={cobradosValores} pagamentosRegistro={historicoPagamentos} clientesBase={clientesOrdenadosEnriquecidos} />
         : activeNav === 1 ? <CadastroCliente onBack={() => setActiveNav(0)} onSalvar={(emp) => {
-            const limite = getValorVendaMax();
+            const limite = limiteNovo;
             if (limite > 0 && (emp.valorEmprestado ?? 0) > limite) {
               // Acima do limite: retém e envia para aprovação do dono.
               enviarParaAprovacao("novo", emp);

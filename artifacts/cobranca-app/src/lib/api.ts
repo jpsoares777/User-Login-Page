@@ -473,3 +473,41 @@ export async function fetchSolicitacoesEmprestimoAPI(): Promise<SolicitacaoEmpre
     return [];
   }
 }
+
+// Configurações globais definidas no admin (modal "Configurações"). Os limites
+// de aprovação (novos empréstimos e renovações) vêm daqui e valem para todas as
+// rotas. Retorna os limites já resolvidos (0 = sem limite / desativado).
+export type LimitesAprovacao = { limiteNovo: number; limiteRenovacao: number };
+
+const LIMITE_NOVO_KEY = "sessao_limite_novo";
+const LIMITE_RENOV_KEY = "sessao_limite_renovacao";
+
+// Último limite conhecido, persistido localmente. Serve de fallback fail-safe:
+// no boot e em falhas de rede o gate usa o último valor válido em vez de cair
+// para "sem limite" (o que deixaria passar empréstimos que exigem aprovação).
+export function getLimitesAprovacaoCache(): LimitesAprovacao {
+  const n = parseFloat(localStorage.getItem(LIMITE_NOVO_KEY) ?? "");
+  const r = parseFloat(localStorage.getItem(LIMITE_RENOV_KEY) ?? "");
+  return {
+    limiteNovo: Number.isFinite(n) ? n : 0,
+    limiteRenovacao: Number.isFinite(r) ? r : 0,
+  };
+}
+
+export async function fetchLimitesAprovacaoAPI(): Promise<LimitesAprovacao> {
+  try {
+    const cfg = await apiGet<Record<string, any>>("/configuracoes");
+    const rv = cfg?.restVals ?? {};
+    const num = (v: unknown) => { const n = parseFloat(String(v ?? "0")); return Number.isFinite(n) ? n : 0; };
+    const limites = {
+      limiteNovo: rv.validarVendas ? num(rv.maxVendas) : 0,
+      limiteRenovacao: rv.validarRenovacoes ? num(rv.maxRenovacoes) : 0,
+    };
+    localStorage.setItem(LIMITE_NOVO_KEY, String(limites.limiteNovo));
+    localStorage.setItem(LIMITE_RENOV_KEY, String(limites.limiteRenovacao));
+    return limites;
+  } catch {
+    // Falha de rede/API: preserva o último limite conhecido (fail-safe).
+    return getLimitesAprovacaoCache();
+  }
+}

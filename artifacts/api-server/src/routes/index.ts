@@ -8,6 +8,7 @@ import caixaRouter from "./caixa";
 import aplicativosRouter from "./aplicativos";
 import solicitacoesRouter from "./solicitacoes";
 import solicitacoesEmprestimoRouter from "./solicitacoes-emprestimo";
+import configuracoesRouter from "./configuracoes";
 import importarRotaRouter from "./importar-rota";
 import importarResumoRouter from "./importar-resumo";
 
@@ -22,6 +23,7 @@ router.use(caixaRouter);
 router.use(aplicativosRouter);
 router.use(solicitacoesRouter);
 router.use(solicitacoesEmprestimoRouter);
+router.use(configuracoesRouter);
 router.use(importarRotaRouter);
 router.use(importarResumoRouter);
 
