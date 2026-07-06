@@ -3176,9 +3176,8 @@ function LiqPeriodosClientesContent({ rows = liqPerClientesData }: { rows?: LiqP
     { label: "Rota",          w: "8%",  align: "left"   as const },
     { label: "Data Venda",    w: "7%",  align: "center" as const },
     { label: "Consec.",       w: "13%", align: "left"   as const },
-    { label: "Cliente",       w: "13%", align: "left"   as const },
-    { label: "Id Venda",      w: "7%",  align: "left"   as const },
-    { label: "Celular",       w: "8%",  align: "left"   as const },
+    { label: "Cliente",       w: "17%", align: "left"   as const },
+    { label: "Telefone",      w: "8%",  align: "left"   as const },
     { label: "Endereço",      w: "10%", align: "left"   as const },
     { label: "Parcelas",      w: "4%",  align: "center" as const },
     { label: "Parc. Pag.",    w: "4%",  align: "center" as const },
@@ -3290,9 +3289,6 @@ function LiqPeriodosClientesContent({ rows = liqPerClientesData }: { rows?: LiqP
                     </span>
                   </td>
                   <td style={tdC("left", { color: "#374151", fontWeight: 500 })}>{r.cliente}</td>
-                  <td style={tdC("left", { color: "#2563eb", fontWeight: 700, fontSize: 13 })}>
-                    <span style={{ borderBottom: "1px dashed #93c5fd" }}>{r.idVenta}</span>
-                  </td>
                   <td style={tdC("left", { color: "#6b7280" })}>{r.movel}</td>
                   <td style={tdC("left", { color: "#9ca3af", fontStyle: r.direc ? "normal" : "italic", fontSize: 13 })}>{r.direc || "—"}</td>
                   <td style={tdC("center", { color: "#374151" })}>{r.cuotas}</td>
