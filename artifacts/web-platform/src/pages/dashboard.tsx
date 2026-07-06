@@ -4325,6 +4325,8 @@ function GcFichaClienteModal({ mr, onClose, viewMode = false, onSave, onToggleAt
   const nameColor = mr.atrasadas === 0 ? "#15803d" : mr.atrasadas >= 5 ? "#b91c1c" : "#b45309";
   const initials = mr.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
   const fichaFileRef = useRef<HTMLInputElement>(null);
+  // Confirmação em duas etapas para inativar/reativar (botão dedicado, sem window.confirm).
+  const [confirmaToggle, setConfirmaToggle] = useState(false);
   // Campos editáveis (modo edição). Endereço vem no formato "rua, ..., bairro – Cidade – UF".
   const endPartes = mr.endereco.split(" – ");
   const endStreet = endPartes[0] ?? mr.endereco;
@@ -4388,13 +4390,39 @@ function GcFichaClienteModal({ mr, onClose, viewMode = false, onSave, onToggleAt
               {onToggleAtivo && (
                 mr.inativo
                   ? <button style={{ flexShrink: 0, background: "#15803d", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
-                      onClick={onToggleAtivo}>
+                      onClick={() => setConfirmaToggle(true)}>
                       ✅ Ativar Cliente
                     </button>
                   : <button style={{ flexShrink: 0, background: "#b91c1c", color: "#fff", border: "none", borderRadius: 5, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
-                      onClick={onToggleAtivo}>
+                      onClick={() => setConfirmaToggle(true)}>
                       🚫 Inativar Cliente
                     </button>
+              )}
+              {confirmaToggle && onToggleAtivo && (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onClick={() => setConfirmaToggle(false)}>
+                  <div style={{ background: "#fff", borderRadius: 10, padding: "22px 24px", width: 400, maxWidth: "90vw", boxShadow: "0 20px 50px rgba(0,0,0,0.3)" }}
+                    onClick={e => e.stopPropagation()}>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: mr.inativo ? "#15803d" : "#b91c1c", marginBottom: 10 }}>
+                      {mr.inativo ? "✅ Ativar Cliente" : "🚫 Inativar Cliente"}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.5, marginBottom: 18 }}>
+                      {mr.inativo
+                        ? <>Ativar novamente o cliente <b>{mr.nome}</b>? Ele voltará a aparecer no app do cobrador com os mesmos dados.</>
+                        : <>Inativar o cliente <b>{mr.nome}</b>? Os dados dele continuam salvos — ele apenas desaparece do app do cobrador até ser reativado.</>}
+                    </div>
+                    <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                      <button style={{ background: "#f3f4f6", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+                        onClick={() => setConfirmaToggle(false)}>
+                        Cancelar
+                      </button>
+                      <button style={{ background: mr.inativo ? "#15803d" : "#b91c1c", color: "#fff", border: "none", borderRadius: 6, padding: "8px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+                        onClick={() => { setConfirmaToggle(false); onToggleAtivo(); }}>
+                        Confirmar
+                      </button>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
@@ -8609,11 +8637,8 @@ export default function DashboardPage() {
                 onToggleAtivo={async () => {
                   // Inativar: dados preservados no app, cliente só some das
                   // listas do cobrador. Reativar: volta com os mesmos dados.
+                  // A confirmação é feita pelo diálogo próprio dentro do modal.
                   const tipo = mr.inativo ? "reativar" : "inativar";
-                  const msg = mr.inativo
-                    ? `Ativar novamente o cliente ${mr.nome}? Ele voltará a aparecer no app do cobrador com os mesmos dados.`
-                    : `Inativar o cliente ${mr.nome}? Os dados dele continuam salvos — ele apenas desaparece do app do cobrador até ser reativado.`;
-                  if (!window.confirm(msg)) return;
                   const ok = await enviarComandoCliente(mr, tipo);
                   if (ok) {
                     setGcRows(prev => prev.map(r => r.id === mr.id ? { ...r, inativo: !mr.inativo } : r));
