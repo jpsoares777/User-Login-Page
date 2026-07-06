@@ -2051,6 +2051,9 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         ? new Date(ultimoPag.id).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
         : "";
       const restantesCli = Math.max(0, (cli.totalParcelas ?? 0) - (cli.parcelasPagas ?? 0));
+      const pctCli = Number(cli.taxaJuros) || 0;
+      const totalCli = (cli.parcela ?? 0) * (cli.totalParcelas ?? 0);
+      const principalCli = pctCli > 0 ? totalCli / (1 + pctCli / 100) : totalCli;
       const historicoCli = (registroPagamentos[cid] ?? []).map((p, idx) => ({
         nro: idx + 1,
         tipo: p.metodo === "Abono" ? "ABONO" : (p.valor > 0 ? "PARC." : "S/PAG."),
@@ -2069,7 +2072,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         valor: fmtBRSnap(valorPagoSnap),
         fecha: dataStr,
         hora: horaCli,
-        valorProd: fmtBRSnap((cli.parcela ?? 0) * (cli.totalParcelas ?? 0)),
+        valorProd: fmtBRSnap(principalCli),
         sancao: "0,00",
         saldo: fmtBRSnap(cli.saldo ?? 0),
         restantes: String(restantesCli),
