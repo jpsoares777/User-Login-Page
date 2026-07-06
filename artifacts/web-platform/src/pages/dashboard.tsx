@@ -4272,7 +4272,7 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
   const hoje = new Date().toLocaleDateString("pt-BR");
   const [items, setItems] = useState<AprovacaoItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filtro, setFiltro] = useState<"todos"|"pendente"|"aceito"|"recusado">("todos");
+  const [filtro, setFiltro] = useState<"pendente"|"aceito"|"recusado">("pendente");
 
   // Solicitações reais criadas pelo App do Cobrador (empréstimos/renovações
   // acima do limite). Enquanto pendentes, o cliente NÃO entra no sistema.
@@ -4298,7 +4298,7 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const visíveis = filtro === "todos" ? items : items.filter(i => i.status === filtro);
+  const visíveis = items.filter(i => i.status === filtro);
   const pendentes  = items.filter(i => i.status === "pendente").length;
   const aceitos    = items.filter(i => i.status === "aceito").length;
   const recusados  = items.filter(i => i.status === "recusado").length;
@@ -4339,11 +4339,10 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
         <div style={{ display:"flex", gap:10, padding:"10px 20px",
             borderBottom:"1px solid #e2e8f0", background:"#f1f5f9", flexShrink:0 }}>
           {([
-            { key:"todos",    label:"Todos",     value:items.length, bg:"#1e3a5f", bgOff:"#e2e8f0", textOff:"#475569" },
             { key:"pendente", label:"Pendentes", value:pendentes,    bg:"#d97706", bgOff:"#fef3c7", textOff:"#92400e" },
             { key:"aceito",   label:"Aceitos",   value:aceitos,      bg:"#16a34a", bgOff:"#dcfce7", textOff:"#166534" },
             { key:"recusado", label:"Recusados", value:recusados,    bg:"#dc2626", bgOff:"#fee2e2", textOff:"#991b1b" },
-          ] as { key:"todos"|"pendente"|"aceito"|"recusado"; label:string; value:number; bg:string; bgOff:string; textOff:string }[]).map(s => {
+          ] as { key:"pendente"|"aceito"|"recusado"; label:string; value:number; bg:string; bgOff:string; textOff:string }[]).map(s => {
             const ativo = filtro === s.key;
             return (
               <button key={s.key} onClick={() => setFiltro(s.key)}
