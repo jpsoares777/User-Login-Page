@@ -2142,10 +2142,10 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
                       </thead>
                       <tbody>
                         {[...c.historico].reverse().map((h, idx) => {
-                          const isAtivo = false;
-                          const pagasH = h.cuotas;
-                          const faltH  = 0;
-                          const saldoH = 0;
+                          const isAtivo = h.status === "ACTIVO";
+                          const pagasH = isAtivo ? c.pagas : h.cuotas;
+                          const faltH  = isAtivo ? c.atrasadas : 0;
+                          const saldoH = isAtivo ? c.saldo : 0;
                           const vrParc = h.total / h.cuotas;
                           const pctJurosH = Math.round((h.total / h.valor - 1) * 100);
                           const nro = c.historico.length - idx;

@@ -1,6 +1,7 @@
 - [Cobrador app — integração e ícones](cobrador-integracao.md) — ícones exigem import.meta.env.BASE_URL (JSX e objetos JS); sincronização com API ainda pendente.
 - [Consecutivo (id do empréstimo)](consecutivo-identificacao.md) — número único de 10 dígitos por empréstimo; unicidade via registro localStorage + varredura do DB; propaga em cadastro/renovação/fechamento.
 - [Dedupe de solicitações (corrida POST+polling)](aprovacao-dedupe-corrida.md) — solicitações duplicavam por SELECT+INSERT não-atômico; fix é índice UNIQUE parcial (codigo_acesso, local_id) + onConflictDoNothing.
+- [Snapshot: empréstimo ativo no histórico](snapshot-historico-ativo.md) — historico do snapshot só tinha créditos passados; injetar o empréstimo ATIVO atual senão a ficha do admin fica vazia (status "ACTIVO").
 - [Controle de parcelas (config admin ↔ app)](parcelas-config.md) — 3 campos: nº ao criar, nº por pagamento, nº p/ quitar; #3 sincroniza mas sem enforcement; clamp obrigatório no fetch tardio.
 - [Aprovação de despesas/rendimentos](aprovacao-movimento.md) — "Desp e Rend" é fluxo aceitar/recusar (espelha empréstimos); gasto/rendimento acima do limite vira solicitação pendente.
 - [Aprovação de empréstimo por limite](aprovacao-emprestimo-limite.md) — acima do valorVendaMax vira solicitação no admin; dedupe por localId no backend + pollingRef/materializadosRef no app garantem materialização única.

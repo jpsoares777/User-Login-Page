@@ -2176,6 +2176,18 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         cuotas: h.parcelas,
         status: (h.status ?? "").toUpperCase(),
       }));
+      // O empréstimo ATIVO atual não fica em historicoCreditos (só entra ao
+      // renovar/quitar). Sem ele, a web não acha o "Empréstimo Ativo" e mostra
+      // a ficha vazia. Adiciona o empréstimo em curso como ACTIVO.
+      if (cuotas > 0 && !historicoCli.some(h => h.status === "ACTIVO")) {
+        historicoCli.push({
+          data: fmtDataTsSnap(c.creditoStartTimestamp) || dataStr,
+          valor: valorVenda,
+          total,
+          cuotas,
+          status: "ACTIVO",
+        });
+      }
       return {
         id: c.id,
         consec: c.consecutivo ?? "",
@@ -2262,7 +2274,13 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
           dirCodedor: "",
           observacoes: "",
           dataEmprestimo: fmtDataIsoSnap(e.criadoEm),
-          historico: [],
+          historico: cuotas > 0 ? [{
+            data: fmtDataIsoSnap(e.criadoEm),
+            valor: principal,
+            total,
+            cuotas,
+            status: "ACTIVO",
+          }] : [],
         };
       })
       .filter(c => c.saldo > 0);
