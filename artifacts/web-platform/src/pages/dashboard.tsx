@@ -7703,7 +7703,7 @@ export default function DashboardPage() {
                       <td style={{ padding: "10px 10px", fontSize: 11 }}>
                         <div style={{ color: row.atrasadas > 0 ? "#dc2626" : "#374151", fontWeight: row.atrasadas > 0 ? 700 : 400 }}>Atrasadas: {row.atrasadas}</div>
                         <div style={{ color: "#374151" }}>Pagas: {row.pagas}</div>
-                        <div style={{ color: "#374151" }}>Rest: {row.rest} (Sanc. {row.sancao})</div>
+                        <div style={{ color: "#374151" }}>Rest: {row.rest}</div>
                         <div style={{ color: "#374151" }}>Visitas: {row.visitas}</div>
                       </td>
                       <td style={{ padding: "10px 10px", textAlign: "right", color: "#374151", fontSize: 12, whiteSpace: "nowrap" }}>
@@ -7711,7 +7711,6 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ padding: "10px 10px", textAlign: "right", whiteSpace: "nowrap" }}>
                         <div style={{ color: "#dc2626", fontWeight: 700, fontSize: 13 }}>$ {row.saldo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div>
-                        <div style={{ color: "#6b7280", fontSize: 10, marginTop: 1 }}>Sanção: $ 0.00</div>
                       </td>
                       <td style={{ padding: "8px 10px", textAlign: "center", verticalAlign: "middle" }}>
                         <div style={{ display: "inline-flex", gap: 5 }}>
