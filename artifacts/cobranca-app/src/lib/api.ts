@@ -52,7 +52,27 @@ export type AplicativoSessao = {
   cobradorNome: string;
   vencimento: string;
   saldoInicial: number;
+  valorVendaMax: number;
+  codigoAcesso: string;
 };
+
+export function getCodigoAcesso(): string | null {
+  return localStorage.getItem("sessao_codigo_acesso");
+}
+
+export function setCodigoAcesso(codigo: string) {
+  localStorage.setItem("sessao_codigo_acesso", codigo);
+}
+
+// Limite máximo de empréstimo/renovação (0 = sem limite / desativado).
+export function getValorVendaMax(): number {
+  const v = localStorage.getItem("sessao_valor_venda_max");
+  return v ? parseFloat(v) : 0;
+}
+
+export function setValorVendaMax(valor: number) {
+  localStorage.setItem("sessao_valor_venda_max", String(valor));
+}
 
 export function getOrCreateDeviceId(): string {
   let id = localStorage.getItem("device_id");
@@ -390,5 +410,66 @@ export async function postNovoEmprestimoAPI(data: {
     return true;
   } catch {
     return false;
+  }
+}
+
+// ── Solicitações de empréstimo (acima do limite) ──────────────────────────
+export type SolicitacaoEmprestimoStatus = "pendente" | "aceito" | "recusado";
+
+export type SolicitacaoEmprestimoAPI = {
+  id: number;
+  codigoAcesso: string;
+  cobradorNome: string;
+  tipo: string;
+  clienteNome: string;
+  valorEmprestimo: string;
+  totalPagar: string;
+  jurosPct: string;
+  jurosValor: string;
+  numParcelas: number;
+  valorParcela: string;
+  localId: string | null;
+  consecutivo: string | null;
+  payload: unknown;
+  status: SolicitacaoEmprestimoStatus;
+};
+
+export async function postSolicitacaoEmprestimoAPI(data: {
+  tipo: string;
+  clienteNome: string;
+  valorEmprestimo: number;
+  totalPagar: number;
+  jurosPct: number;
+  jurosValor: number;
+  numParcelas: number;
+  valorParcela: number;
+  localId: string;
+  consecutivo?: string;
+  payload: unknown;
+}): Promise<SolicitacaoEmprestimoAPI | null> {
+  const codigoAcesso = getCodigoAcesso();
+  if (!codigoAcesso) return null;
+  const sessao = getRotaSessao();
+  const deviceId = getOrCreateDeviceId();
+  try {
+    return await apiPost<SolicitacaoEmprestimoAPI>("/solicitacoes-emprestimo", {
+      ...data,
+      codigoAcesso,
+      cobradorNome: sessao?.cobradorNome ?? "",
+      deviceId,
+    });
+  } catch {
+    return null;
+  }
+}
+
+// O app consulta o status das próprias solicitações (por código de acesso).
+export async function fetchSolicitacoesEmprestimoAPI(): Promise<SolicitacaoEmprestimoAPI[]> {
+  const codigoAcesso = getCodigoAcesso();
+  if (!codigoAcesso) return [];
+  try {
+    return await apiGet<SolicitacaoEmprestimoAPI[]>(`/solicitacoes-emprestimo?codigoAcesso=${encodeURIComponent(codigoAcesso)}`);
+  } catch {
+    return [];
   }
 }

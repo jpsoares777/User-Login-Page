@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { loginPorCodigo, setCobradorId, getCobradorId, setRotaSessao, setSaldoInicial, submitSolicitacao, getCaixaAberto } from "../lib/api";
+import { loginPorCodigo, setCobradorId, getCobradorId, setRotaSessao, setSaldoInicial, setCodigoAcesso, setValorVendaMax, submitSolicitacao, getCaixaAberto } from "../lib/api";
 import { loadDB, saveDB, clearDB } from "../lib/storage";
 
 const GRAD_TOP = "#2d4f6b";
@@ -87,6 +87,8 @@ export function PinLogin({ onUnlock }: { onUnlock: (cobradorId: number) => void 
       setCobradorId(sessao.id);
       setRotaSessao(sessao.rota, sessao.cobradorNome);
       setSaldoInicial(sessao.saldoInicial);
+      setCodigoAcesso(sessao.codigoAcesso ?? cod);
+      setValorVendaMax(sessao.valorVendaMax ?? 0);
 
       const aberto = await getCaixaAberto(sessao.id);
       if (!aberto) {

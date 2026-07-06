@@ -1,6 +1,6 @@
-import { useState, useEffect, Fragment, type ReactNode } from "react";
+import { useState, useEffect, useRef, Fragment, type ReactNode } from "react";
 import { loadDB, saveDB, getTodayStr, gerarConsecutivoUnico } from "../lib/storage";
-import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, type DadosSnapshot } from "../lib/api";
+import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, getValorVendaMax, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, type DadosSnapshot } from "../lib/api";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ParcelaCliente } from "./ParcelaCliente";
 import { CadastroCliente } from "./CadastroCliente";
@@ -8,6 +8,17 @@ import { LancamentoFinanceiro } from "./LancamentoFinanceiro";
 import { RelatorioFinanceiro } from "./RelatorioFinanceiro";
 import { EmprestimosDoDia, Emprestimo, emprestimentosIniciais } from "./EmprestimosDoDia";
 import { ClienteDetalhe, ClienteDetalheRenovacao, ClienteItem, Agendamento, Pagamento, MetodoPagamento, CreditoRecord } from "./ClienteDetalhe";
+
+// Empréstimo/renovação acima do limite: fica retido aguardando aprovação do dono
+// no painel admin. Enquanto pendente, o cliente NÃO entra na carteira nem no
+// snapshot enviado para a web.
+type PendenteAprovacao = {
+  localId: string;
+  tipo: "novo" | "renovacao";
+  emp: Emprestimo;
+  clienteOriginal?: ClienteItem;
+  solicitacaoId?: number;
+};
 
 const clientesData: ClienteItem[] = [];
 
@@ -1548,6 +1559,10 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   });
   const addAgendamento = (a: Agendamento) => setAgendamentos(prev => [...prev, a]);
   const [clienteParaRenovar, setClienteParaRenovar] = useState<ClienteItem | null>(null);
+  const [pendentesAprovacao, setPendentesAprovacao] = useState<PendenteAprovacao[]>(() => {
+    const db = loadDB();
+    return (db?.pendentesAprovacao as PendenteAprovacao[]) ?? [];
+  });
   const [historicoCreditos, setHistoricoCreditos] = useState<Record<number, CreditoRecord[]>>(() => {
     const db = loadDB();
     return (db?.historicoCreditos as Record<number, CreditoRecord[]>) ?? {};
@@ -1644,11 +1659,190 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       rendimentos,
       clientes,
       historicoCreditos,
+      pendentesAprovacao,
       caixaFinal: caixaFinalVal,
     });
   }, [cobrados, ausentes, cobradosValores, registroPagamentos, historicoPagamentos, quitadosClientes,
       ordemClientesIds, cobradosExtras, emprestimentos, novosClientesIds, renovacoesIds,
-      clientesAdicionaisHoje, novosClientesOutras, agendamentos, despesas, rendimentos, clientes, historicoCreditos, caixaInicial]);
+      clientesAdicionaisHoje, novosClientesOutras, agendamentos, despesas, rendimentos, clientes, historicoCreditos, pendentesAprovacao, caixaInicial]);
+
+  // Aplica de fato um NOVO empréstimo na carteira. Chamado diretamente quando o
+  // valor está dentro do limite, ou depois que o dono aprova a solicitação.
+  const aplicarNovoEmprestimo = (emp: Emprestimo) => {
+    setEmprestimentos(prev => prev.some(e => e.id === emp.id) ? prev : [emp, ...prev]);
+    setNovosClientesIds(prev => new Set([...prev, emp.id]));
+    const novoCliente: ClienteItem = {
+      id: emp.id,
+      consecutivo: emp.consecutivo,
+      nome: emp.nomeCliente,
+      parcela: emp.valorParcela,
+      saldo: emp.valorParcela * emp.quantidadeParcelas,
+      status: "novo",
+      endereco: emp.endereco ?? "",
+      parcelasPagas: 0,
+      totalParcelas: emp.quantidadeParcelas,
+      telefone: emp.telefone ?? "",
+      frequencia: emp.frequencia,
+      cpf: emp.cpf,
+      cep: emp.cep,
+      numero: emp.numero,
+      bairro: emp.bairro,
+      cidade: emp.cidade,
+      uf: emp.uf,
+      creditoStartTimestamp: emp.id,
+      pagamentoAdiantado: emp.pagamentoAdiantado,
+    };
+    if (emp.pagamentoAdiantado) {
+      setClientesAdicionaisHoje(prev => prev.some(c => c.id === novoCliente.id) ? prev : [novoCliente, ...prev]);
+    }
+    if (!emp.diario) {
+      setNovosClientesOutras(prev => prev.some(c => c.id === novoCliente.id) ? prev : [novoCliente, ...prev]);
+    }
+  };
+
+  // Aplica de fato uma RENOVAÇÃO (finaliza o crédito antigo e reinicia o ciclo).
+  const aplicarRenovacao = (emp: Emprestimo, original: ClienteItem) => {
+    const idOriginal = original.id;
+    const novaParcela = emp.valorParcela;
+    const novoTotal = emp.quantidadeParcelas;
+    const novoSaldo = novaParcela * novoTotal;
+    const renovacaoTs = Date.now();
+
+    const pagsCiclo = (historicoPagamentos[idOriginal] ?? []).filter(p =>
+      !original.creditoStartTimestamp || p.id >= original.creditoStartTimestamp!
+    );
+    const pagasAntes = pagsCiclo.filter(p => p.metodo !== "Sem pagamento").length;
+    const naoPagasAntes = pagsCiclo.filter(p => p.metodo === "Sem pagamento").length;
+    const fmtD = (ts: number) => { const d = new Date(ts); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; };
+    const duracaoAntes = original.creditoStartTimestamp
+      ? Math.round((renovacaoTs - original.creditoStartTimestamp!) / (1000 * 60 * 60 * 24))
+      : 0;
+    const creditoFinalizado: CreditoRecord = {
+      dataInicio: original.creditoStartTimestamp ? fmtD(original.creditoStartTimestamp!) : fmtD(renovacaoTs),
+      dataCancelamento: fmtD(renovacaoTs),
+      valor: original.parcela * original.totalParcelas,
+      parcelas: original.totalParcelas,
+      pagas: pagasAntes,
+      naoPagas: naoPagasAntes,
+      juros: original.taxaJuros ?? 0,
+      duracao: duracaoAntes,
+      status: "Quitado",
+    };
+    setHistoricoCreditos(prev => ({
+      ...prev,
+      [idOriginal]: [...(prev[idOriginal] ?? []), creditoFinalizado],
+    }));
+    setHistoricoPagamentos(prev => ({ ...prev, [idOriginal]: [] }));
+
+    setClientes(prev => prev.map(c => c.id === idOriginal
+      ? { ...c, consecutivo: emp.consecutivo ?? c.consecutivo, parcela: novaParcela, totalParcelas: novoTotal, parcelasPagas: 0, saldo: novoSaldo, creditoStartTimestamp: renovacaoTs, frequencia: emp.frequencia ?? c.frequencia, taxaJuros: emp.taxaJuros, pagamentoAdiantado: emp.pagamentoAdiantado }
+      : c
+    ));
+    setQuitadosClientes(prev => prev.filter(q => q.id !== idOriginal));
+    if (!emp.pagamentoAdiantado) {
+      setCobrados(prev => prev.includes(idOriginal) ? prev : [...prev, idOriginal]);
+    }
+    setRenovacoesIds(prev => new Set([...prev, idOriginal]));
+    setEmprestimentos(prev => [...prev, {
+      id: Date.now(),
+      consecutivo: emp.consecutivo,
+      nomeCliente: original.nome,
+      diario: emp.diario,
+      frequencia: emp.frequencia,
+      criadoEm: new Date().toISOString(),
+      valorEmprestado: novoSaldo,
+      valorParcela: novaParcela,
+      taxaJuros: emp.taxaJuros,
+      quantidadeParcelas: novoTotal,
+      telefone: emp.telefone,
+      cpf: emp.cpf,
+      endereco: emp.endereco,
+      cep: emp.cep,
+      numero: emp.numero,
+      bairro: emp.bairro,
+      cidade: emp.cidade,
+      uf: emp.uf,
+      renovacao: true,
+      clienteId: idOriginal,
+    }]);
+  };
+
+  // Envia (ou reenvia) a solicitação de um pendente ao servidor. O backend faz
+  // dedupe por localId, então chamar mais de uma vez é seguro/idempotente.
+  const criarSolicitacaoNoServidor = (p: PendenteAprovacao) => {
+    const emp = p.emp;
+    const valorEmprestimo = emp.valorEmprestado ?? 0;
+    const numParcelas = emp.quantidadeParcelas ?? 0;
+    const valorParcela = emp.valorParcela ?? 0;
+    const totalPagar = valorParcela * numParcelas;
+    const jurosPct = emp.taxaJuros ?? 0;
+    const jurosValor = Math.max(0, totalPagar - valorEmprestimo);
+    return postSolicitacaoEmprestimoAPI({
+      tipo: p.tipo === "novo" ? "novo_emprestimo" : "renovacao",
+      clienteNome: emp.nomeCliente,
+      valorEmprestimo, totalPagar, jurosPct, jurosValor, numParcelas, valorParcela,
+      localId: p.localId,
+      consecutivo: emp.consecutivo,
+      payload: { emp, clienteOriginal: p.clienteOriginal },
+    });
+  };
+
+  // Retém um empréstimo/renovação acima do limite e cria a solicitação no
+  // servidor para o dono aprovar/recusar no painel admin. Se o POST falhar, o
+  // pendente fica sem solicitacaoId e o polling reenvia automaticamente.
+  const enviarParaAprovacao = async (tipo: "novo" | "renovacao", emp: Emprestimo, clienteOriginal?: ClienteItem) => {
+    const localId = String(emp.id);
+    const pendente: PendenteAprovacao = { localId, tipo, emp, clienteOriginal };
+    setPendentesAprovacao(prev => prev.some(p => p.localId === localId) ? prev : [...prev, pendente]);
+    const sol = await criarSolicitacaoNoServidor(pendente);
+    if (sol) setPendentesAprovacao(prev => prev.map(p => p.localId === localId ? { ...p, solicitacaoId: sol.id } : p));
+  };
+
+  // Evita execuções sobrepostas do polling e materialização em duplicidade.
+  const pollingRef = useRef(false);
+  const materializadosRef = useRef<Set<string>>(new Set());
+
+  // Consulta periodicamente o status das solicitações pendentes. Quando o dono
+  // ACEITA no admin, o cliente finalmente entra no sistema; se RECUSA, some da fila.
+  useEffect(() => {
+    if (pendentesAprovacao.length === 0) return;
+    let cancelled = false;
+    const check = async () => {
+      if (pollingRef.current) return;
+      pollingRef.current = true;
+      try {
+        // Reenvia solicitações cujo POST inicial falhou (sem solicitacaoId).
+        for (const p of pendentesAprovacao.filter(p => !p.solicitacaoId)) {
+          const sol = await criarSolicitacaoNoServidor(p);
+          if (!cancelled && sol) setPendentesAprovacao(prev => prev.map(x => x.localId === p.localId ? { ...x, solicitacaoId: sol.id } : x));
+        }
+        const sols = await fetchSolicitacoesEmprestimoAPI();
+        if (cancelled) return;
+        const statusPorLocal = new Map(sols.filter(s => s.localId).map(s => [s.localId as string, s.status]));
+        const aplicar: PendenteAprovacao[] = [];
+        const remover = new Set<string>();
+        for (const p of pendentesAprovacao) {
+          const st = statusPorLocal.get(p.localId);
+          if (st === "aceito") { aplicar.push(p); remover.add(p.localId); }
+          else if (st === "recusado") { remover.add(p.localId); }
+        }
+        // Guarda de idempotência: materializa cada localId no máximo uma vez.
+        for (const p of aplicar) {
+          if (materializadosRef.current.has(p.localId)) continue;
+          materializadosRef.current.add(p.localId);
+          if (p.tipo === "novo") aplicarNovoEmprestimo(p.emp);
+          else if (p.clienteOriginal) aplicarRenovacao(p.emp, p.clienteOriginal);
+        }
+        if (remover.size) setPendentesAprovacao(prev => prev.filter(p => !remover.has(p.localId)));
+      } finally {
+        pollingRef.current = false;
+      }
+    };
+    check();
+    const t = setInterval(check, 20000);
+    return () => { cancelled = true; clearInterval(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendentesAprovacao]);
 
   // Monta o snapshot dos dados da rota a partir do estado atual. Usado tanto no
   // fechamento do caixa quanto no envio AO VIVO (tempo real). Mantido em um unico
@@ -2186,72 +2380,17 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       <CadastroCliente
         onBack={() => setClienteParaRenovar(null)}
         onSalvar={(emp) => {
-          const idOriginal = clienteParaRenovar!.id;
-          const novaParcela = emp.valorParcela;
-          const novoTotal = emp.quantidadeParcelas;
-          const novoSaldo = novaParcela * novoTotal;
-          const renovacaoTs = Date.now();
-
-          // Finaliza crédito antigo
-          const pagsCiclo = (historicoPagamentos[idOriginal] ?? []).filter(p =>
-            !clienteParaRenovar!.creditoStartTimestamp || p.id >= clienteParaRenovar!.creditoStartTimestamp!
-          );
-          const pagasAntes = pagsCiclo.filter(p => p.metodo !== "Sem pagamento").length;
-          const naoPagasAntes = pagsCiclo.filter(p => p.metodo === "Sem pagamento").length;
-          const fmtD = (ts: number) => { const d = new Date(ts); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; };
-          const duracaoAntes = clienteParaRenovar!.creditoStartTimestamp
-            ? Math.round((renovacaoTs - clienteParaRenovar!.creditoStartTimestamp!) / (1000 * 60 * 60 * 24))
-            : 0;
-          const creditoFinalizado: CreditoRecord = {
-            dataInicio: clienteParaRenovar!.creditoStartTimestamp ? fmtD(clienteParaRenovar!.creditoStartTimestamp!) : fmtD(renovacaoTs),
-            dataCancelamento: fmtD(renovacaoTs),
-            valor: clienteParaRenovar!.parcela * clienteParaRenovar!.totalParcelas,
-            parcelas: clienteParaRenovar!.totalParcelas,
-            pagas: pagasAntes,
-            naoPagas: naoPagasAntes,
-            juros: clienteParaRenovar!.taxaJuros ?? 0,
-            duracao: duracaoAntes,
-            status: "Quitado",
-          };
-          setHistoricoCreditos(prev => ({
-            ...prev,
-            [idOriginal]: [...(prev[idOriginal] ?? []), creditoFinalizado],
-          }));
-          // Limpa histórico de pagamentos do ciclo antigo
-          setHistoricoPagamentos(prev => ({ ...prev, [idOriginal]: [] }));
-
-          setClientes(prev => prev.map(c => c.id === idOriginal
-            ? { ...c, consecutivo: emp.consecutivo ?? c.consecutivo, parcela: novaParcela, totalParcelas: novoTotal, parcelasPagas: 0, saldo: novoSaldo, creditoStartTimestamp: renovacaoTs, frequencia: emp.frequencia ?? c.frequencia, taxaJuros: emp.taxaJuros, pagamentoAdiantado: emp.pagamentoAdiantado }
-            : c
-          ));
-          setQuitadosClientes(prev => prev.filter(q => q.id !== idOriginal));
-          if (!emp.pagamentoAdiantado) {
-            setCobrados(prev => prev.includes(idOriginal) ? prev : [...prev, idOriginal]);
+          const original = clienteParaRenovar!;
+          const limite = getValorVendaMax();
+          const fecharRenovacao = () => setTimeout(() => { setClienteParaRenovar(null); setVerRenovacao(false); setActiveNav(0); }, 1600);
+          if (limite > 0 && (emp.valorEmprestado ?? 0) > limite) {
+            // Acima do limite: retém e envia para aprovação do dono.
+            enviarParaAprovacao("renovacao", emp, original);
+            fecharRenovacao();
+            return;
           }
-          setRenovacoesIds(prev => new Set([...prev, idOriginal]));
-          setEmprestimentos(prev => [...prev, {
-            id: Date.now(),
-            consecutivo: emp.consecutivo,
-            nomeCliente: clienteParaRenovar!.nome,
-            diario: emp.diario,
-            frequencia: emp.frequencia,
-            criadoEm: new Date().toISOString(),
-            valorEmprestado: novoSaldo,
-            valorParcela: novaParcela,
-            taxaJuros: emp.taxaJuros,
-            quantidadeParcelas: novoTotal,
-            telefone: emp.telefone,
-            cpf: emp.cpf,
-            endereco: emp.endereco,
-            cep: emp.cep,
-            numero: emp.numero,
-            bairro: emp.bairro,
-            cidade: emp.cidade,
-            uf: emp.uf,
-            renovacao: true,
-            clienteId: idOriginal,
-          }]);
-          setTimeout(() => { setClienteParaRenovar(null); setVerRenovacao(false); setActiveNav(0); }, 1600);
+          aplicarRenovacao(emp, original);
+          fecharRenovacao();
         }}
         initialData={{
           nome: primeiroNome,
@@ -2555,36 +2694,14 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         ? <RenovacaoClientes onBack={() => setVerRenovacao(false)} onAddAgendamento={addAgendamento} onRenovar={setClienteParaRenovar} clientesQuitados={[]} todosClientes={[...clientesOrdenados, ...clientesAdicionaisHoje].filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i && c.saldo === 0)} />
         : activeNav === 0 ? <TelaLista busca={busca} setBusca={setBusca} vrf={vrf} setVrf={setVrf} onSelectCliente={setClienteSelecionado} onAddAgendamento={addAgendamento} ausentes={ausentes} onAusentar={setClienteParaAusentar} cobrados={cobrados} onRemoverCobrado={(id) => { setCobrados(prev => prev.filter(x => x !== id)); setCobradosExtras(prev => prev.filter(x => x.id !== id)); setCobradosValores(prev => prev.filter(x => x.id !== id)); setRegistroPagamentos(prev => { const next = { ...prev }; delete next[id]; return next; }); setHistoricoPagamentos(prev => { const next = { ...prev }; if (next[id]?.length) next[id] = next[id].slice(1); return next; }); setQuitadosClientes(prev => prev.filter(x => x.id !== id)); setRenovacoesIds(prev => { const s = new Set(prev); s.delete(id); return s; }); setClientes(prev => prev.map(c => { if (c.id !== id) return c; const valorPago = cobradosValores.find(x => x.id === id)?.valor ?? c.parcela; const parcelasReverter = Math.round(valorPago / (c.parcela || 1)); const pp = Math.max(0, c.parcelasPagas - parcelasReverter); const saldoRestaurado = c.parcela * (c.totalParcelas - pp); return { ...c, parcelasPagas: pp, saldo: saldoRestaurado }; })); const reverterSaldo = (c: ClienteItem) => { if (c.id !== id) return c; const valorPago = cobradosValores.find(x => x.id === id)?.valor ?? c.parcela; const parcelasReverter = Math.round(valorPago / (c.parcela || 1)); const pp = Math.max(0, c.parcelasPagas - parcelasReverter); return { ...c, parcelasPagas: pp, saldo: c.parcela * (c.totalParcelas - pp) }; }; setClientesAdicionaisHoje(prev => prev.map(reverterSaldo)); setNovosClientesOutras(prev => prev.map(reverterSaldo)); }} clientesAdicionais={clientesAdicionaisHoje.map(enrichCliente)} cobradosExtras={cobradosExtras} cobradosValores={cobradosValores} pagamentosRegistro={historicoPagamentos} clientesBase={clientesOrdenadosEnriquecidos} />
         : activeNav === 1 ? <CadastroCliente onBack={() => setActiveNav(0)} onSalvar={(emp) => {
-            setEmprestimentos(prev => [emp, ...prev]);
-            setNovosClientesIds(prev => new Set([...prev, emp.id]));
-            const novoCliente: ClienteItem = {
-              id: emp.id,
-              consecutivo: emp.consecutivo,
-              nome: emp.nomeCliente,
-              parcela: emp.valorParcela,
-              // Saldo = dívida real (capital + juros) = valor da parcela × total de parcelas.
-              saldo: emp.valorParcela * emp.quantidadeParcelas,
-              status: "novo",
-              endereco: emp.endereco ?? "",
-              parcelasPagas: 0,
-              totalParcelas: emp.quantidadeParcelas,
-              telefone: emp.telefone ?? "",
-              frequencia: emp.frequencia,
-              cpf: emp.cpf,
-              cep: emp.cep,
-              numero: emp.numero,
-              bairro: emp.bairro,
-              cidade: emp.cidade,
-              uf: emp.uf,
-              creditoStartTimestamp: emp.id,
-              pagamentoAdiantado: emp.pagamentoAdiantado,
-            };
-            if (emp.pagamentoAdiantado) {
-              setClientesAdicionaisHoje(prev => prev.some(c => c.id === novoCliente.id) ? prev : [novoCliente, ...prev]);
+            const limite = getValorVendaMax();
+            if (limite > 0 && (emp.valorEmprestado ?? 0) > limite) {
+              // Acima do limite: retém e envia para aprovação do dono.
+              enviarParaAprovacao("novo", emp);
+              setTimeout(() => setActiveNav(0), 1600);
+              return;
             }
-            if (!emp.diario) {
-              setNovosClientesOutras(prev => [novoCliente, ...prev]);
-            }
+            aplicarNovoEmprestimo(emp);
             setTimeout(() => setActiveNav(0), 1600);
           }} />
         : activeNav === 2 ? <LancamentoFinanceiro onAddDespesa={addDespesa} onAddRendimento={addRendimento} onSalvo={() => setTimeout(() => setActiveNav(0), 1500)} />

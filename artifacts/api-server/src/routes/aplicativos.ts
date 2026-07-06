@@ -67,7 +67,7 @@ router.post("/aplicativos/login", async (req, res): Promise<void> => {
     }
   }
 
-  res.json({ id: row.id, rota: row.rota, cobradorNome: row.cobradorNome, vencimento: row.vencimento, saldoInicial: parseFloat(row.saldoInicial ?? "0") });
+  res.json({ id: row.id, rota: row.rota, cobradorNome: row.cobradorNome, vencimento: row.vencimento, saldoInicial: parseFloat(row.saldoInicial ?? "0"), valorVendaMax: parseFloat(row.valorVendaMax ?? "0"), codigoAcesso: row.codigoAcesso });
 });
 
 router.get("/aplicativos", async (req, res): Promise<void> => {

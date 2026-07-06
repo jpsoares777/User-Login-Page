@@ -4252,28 +4252,51 @@ interface AprovacaoItem {
   vcuota: number; tipo: string; status: AprovacaoStatus;
 }
 
-const APROVACOES_INICIAL: AprovacaoItem[] = [
-  { id:1,  clave:"rs9", cliente:"Andreia de Jesus Costa Araújo",   fecha:"2026-05-25", valorPrestado:1500, valorPagar:2100, parcelas:20, vcuota:105, tipo:"Renovar Cliente",   status:"pendente" },
-  { id:2,  clave:"c51", cliente:"Luciana Abreu Da Silva",           fecha:"2026-05-25", valorPrestado:500,  valorPagar:700,  parcelas:14, vcuota:50,  tipo:"Novo Empréstimo",  status:"pendente" },
-  { id:3,  clave:"fhl", cliente:"Mariana Beatriz Rabelo Barbosa",   fecha:"2026-05-25", valorPrestado:1000, valorPagar:1400, parcelas:14, vcuota:100, tipo:"Renovar Cliente",   status:"pendente" },
-  { id:4,  clave:"hcz", cliente:"Natanael Dos Santos Mendes",       fecha:"2026-05-25", valorPrestado:500,  valorPagar:700,  parcelas:14, vcuota:50,  tipo:"Novo Empréstimo",  status:"pendente" },
-  { id:5,  clave:"6md", cliente:"Rosângela Silvestre Silva",        fecha:"2026-05-25", valorPrestado:400,  valorPagar:560,  parcelas:14, vcuota:40,  tipo:"Cancelar Venda",   status:"pendente" },
-  { id:6,  clave:"262", cliente:"António Leite Neto",               fecha:"2026-05-25", valorPrestado:600,  valorPagar:840,  parcelas:14, vcuota:60,  tipo:"Ajuste de Parcela",status:"pendente" },
-  { id:7,  clave:"swb", cliente:"João Felipe Pereira",              fecha:"2026-05-25", valorPrestado:300,  valorPagar:420,  parcelas:14, vcuota:30,  tipo:"Renovar Cliente",   status:"pendente" },
-  { id:8,  clave:"t11", cliente:"José Francisco Chaves",            fecha:"2026-05-25", valorPrestado:500,  valorPagar:700,  parcelas:14, vcuota:50,  tipo:"Novo Empréstimo",  status:"pendente" },
-  { id:9,  clave:"v7g", cliente:"Kledon Viana Gonçalves",           fecha:"2026-06-12", valorPrestado:900,  valorPagar:1170, parcelas:13, vcuota:90,  tipo:"Renovar Cliente",   status:"pendente" },
-  { id:10, clave:"n3n", cliente:"Patrick Michael Sá Menezes",       fecha:"2026-06-12", valorPrestado:500,  valorPagar:700,  parcelas:14, vcuota:50,  tipo:"Novo Empréstimo",  status:"pendente" },
-  { id:11, clave:"tbl", cliente:"Borei Viana De Souza",             fecha:"2026-06-12", valorPrestado:400,  valorPagar:560,  parcelas:14, vcuota:40,  tipo:"Ajuste de Parcela",status:"pendente" },
-  { id:12, clave:"xl3", cliente:"Erick Pereira Santos",             fecha:"2026-06-12", valorPrestado:600,  valorPagar:840,  parcelas:14, vcuota:60,  tipo:"Renovar Cliente",   status:"pendente" },
-];
+// Converte uma solicitação vinda da API no item exibido no card.
+function mapSolicitacao(r: any): AprovacaoItem {
+  return {
+    id: r.id,
+    clave: r.consecutivo ?? r.codigoAcesso ?? "",
+    cliente: r.clienteNome ?? "",
+    fecha: typeof r.solicitadoEm === "string" ? r.solicitadoEm.slice(0, 10) : "",
+    valorPrestado: parseFloat(r.valorEmprestimo ?? "0"),
+    valorPagar: parseFloat(r.totalPagar ?? "0"),
+    parcelas: Number(r.numParcelas ?? 0),
+    vcuota: parseFloat(r.valorParcela ?? "0"),
+    tipo: r.tipo === "renovacao" ? "Renovar Cliente" : r.tipo === "novo_emprestimo" ? "Novo Empréstimo" : String(r.tipo ?? ""),
+    status: (r.status as AprovacaoStatus) ?? "pendente",
+  };
+}
 
 function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
   const hoje = new Date().toLocaleDateString("pt-BR");
-  const [items, setItems] = useState<AprovacaoItem[]>(APROVACOES_INICIAL);
+  const [items, setItems] = useState<AprovacaoItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState<"todos"|"pendente"|"aceito"|"recusado">("todos");
 
-  const mudar = (id: number, status: AprovacaoStatus) =>
+  // Solicitações reais criadas pelo App do Cobrador (empréstimos/renovações
+  // acima do limite). Enquanto pendentes, o cliente NÃO entra no sistema.
+  const carregar = () => {
+    fetch(`${import.meta.env.BASE_URL}api/solicitacoes-emprestimo?_t=${Date.now()}`)
+      .then(r => (r.ok ? r.json() : []))
+      .then((rows: any[]) => setItems(Array.isArray(rows) ? rows.map(mapSolicitacao) : []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+  useEffect(() => { carregar(); }, []);
+
+  // Aceitar/Recusar persiste no servidor; o App do Cobrador consulta o status e,
+  // ao ser ACEITO, finalmente materializa o cliente na carteira.
+  const mudar = async (id: number, status: Exclude<AprovacaoStatus, "pendente">) => {
+    const endpoint = status === "aceito" ? "aceitar" : "recusar";
     setItems(prev => prev.map(it => it.id === id ? { ...it, status } : it));
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}api/solicitacoes-emprestimo/${id}/${endpoint}`, { method: "PATCH" });
+      if (!res.ok) carregar(); // desfaz o update otimista recarregando o estado real
+    } catch {
+      carregar();
+    }
+  };
 
   const visíveis = filtro === "todos" ? items : items.filter(i => i.status === filtro);
   const pendentes  = items.filter(i => i.status === "pendente").length;
@@ -4353,7 +4376,7 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
 
           {visíveis.length === 0 ? (
             <div style={{ textAlign:"center", padding:"60px", color:"#94a3b8", fontSize:13 }}>
-              Nenhuma solicitação neste filtro.
+              {loading ? "Carregando solicitações..." : "Nenhuma solicitação neste filtro."}
             </div>
           ) : (
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",
@@ -4428,13 +4451,8 @@ function CodigosAprovacaoModal({ onClose }: { onClose: () => void }) {
                         </button>
                       </div>
                     ) : (
-                      <div style={{ textAlign:"center" }}>
-                        <button onClick={() => mudar(it.id, "pendente")}
-                          style={{ padding:"6px 16px", background:"#fff", color:"#64748b",
-                            border:"1px solid #cbd5e1", borderRadius:6, fontSize:11, fontWeight:600,
-                            cursor:"pointer" }}>
-                          ↩ Desfazer
-                        </button>
+                      <div style={{ textAlign:"center", fontSize:11, fontWeight:600, color: sc.text }}>
+                        {it.status === "aceito" ? "✓ Empréstimo aceito" : "✕ Empréstimo recusado"}
                       </div>
                     )}
                   </div>
