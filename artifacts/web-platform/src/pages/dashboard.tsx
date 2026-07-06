@@ -1324,34 +1324,227 @@ const clientesRows: ClienteRow[] = [
 ];
 
 // ── Modal: Despesas e Rendimentos ─────────────────────────────────────────────
-function DespRendModal({ despRows, rendRows, cobrador, onClose }: {
-  despRows: DespRow[]; rendRows: RendRow[]; cobrador?: string; onClose: () => void;
-}) {
+interface MovimentoItem {
+  id: number; tipo: "despesa" | "rendimento"; categoria: string;
+  valor: number; observacao: string; cobrador: string; fecha: string;
+  status: AprovacaoStatus;
+}
+
+// Converte uma solicitação de movimento vinda da API no item exibido no card.
+function mapMovimento(r: any): MovimentoItem {
+  return {
+    id: r.id,
+    tipo: r.tipo === "rendimento" ? "rendimento" : "despesa",
+    categoria: r.categoria ?? "",
+    valor: parseFloat(r.valor ?? "0"),
+    observacao: r.observacao ?? "",
+    cobrador: r.cobradorNome ?? "",
+    fecha: typeof r.solicitadoEm === "string" ? r.solicitadoEm.slice(0, 10) : "",
+    status: (r.status as AprovacaoStatus) ?? "pendente",
+  };
+}
+
+// Aprovação de despesas/rendimentos acima do limite — espelha CodigosAprovacaoModal.
+// O App do Cobrador cria a solicitação; enquanto pendente, o lançamento NÃO entra
+// na rota. Ao ACEITAR, o app materializa a despesa/rendimento; ao RECUSAR, some.
+function DespRendModal({ onClose }: { onClose: () => void }) {
+  const hoje = new Date().toLocaleDateString("pt-BR");
+  const [items, setItems] = useState<MovimentoItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filtro, setFiltro] = useState<"pendente"|"aceito"|"recusado">("pendente");
+
+  const carregar = () => {
+    fetch(`${import.meta.env.BASE_URL}api/solicitacoes-movimento?_t=${Date.now()}`)
+      .then(r => (r.ok ? r.json() : []))
+      .then((rows: any[]) => setItems(Array.isArray(rows) ? rows.map(mapMovimento) : []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+  useEffect(() => { carregar(); }, []);
+
+  const mudar = async (id: number, status: Exclude<AprovacaoStatus, "pendente">) => {
+    const endpoint = status === "aceito" ? "aceitar" : "recusar";
+    setItems(prev => prev.map(it => it.id === id ? { ...it, status } : it));
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}api/solicitacoes-movimento/${id}/${endpoint}`, { method: "PATCH" });
+      if (!res.ok) carregar();
+    } catch {
+      carregar();
+    }
+  };
+
+  const visíveis = items.filter(i => i.status === filtro);
+  const pendentes  = items.filter(i => i.status === "pendente").length;
+  const aceitos    = items.filter(i => i.status === "aceito").length;
+  const recusados  = items.filter(i => i.status === "recusado").length;
+
+  const fmtBRL = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits:2 });
+
+  const statusColor: Record<AprovacaoStatus, { bg: string; text: string; label: string }> = {
+    pendente: { bg:"#fef9c3", text:"#a16207",  label:"Pendente"  },
+    aceito:   { bg:"#dcfce7", text:"#16a34a",  label:"Aceito"    },
+    recusado: { bg:"#fee2e2", text:"#dc2626",  label:"Recusado"  },
+  };
+
   return (
     <div style={{ position:"fixed", inset:0, zIndex:9999,
         background:"rgba(15,23,42,.5)", display:"flex", alignItems:"center", justifyContent:"center" }}
         onClick={onClose}>
-      <div style={{ background:"#fff", borderRadius:12, width:"96vw", maxWidth:1400,
-          height:"92vh", display:"flex", flexDirection:"column",
+      <div style={{ background:"#fff", borderRadius:12, width:960, maxWidth:"96vw",
+          maxHeight:"92vh", display:"flex", flexDirection:"column",
           boxShadow:"0 25px 80px rgba(0,0,0,.35)", overflow:"hidden" }}
           onClick={e => e.stopPropagation()}>
+
         {/* Header */}
         <div style={{ background:"linear-gradient(135deg,#0f766e,#0d9488)", padding:"14px 20px",
-            display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
-          <TrendingUp size={20} color="#fff" strokeWidth={2} />
-          <span style={{ color:"#fff", fontWeight:700, fontSize:15, letterSpacing:".02em" }}>Despesas e Rendimentos</span>
-          <div style={{ flex:1 }} />
-          <button onClick={onClose} style={{ background:"rgba(255,255,255,.15)", border:"none",
-              color:"#fff", width:30, height:30, borderRadius:7, cursor:"pointer", fontSize:16, fontWeight:700, lineHeight:1 }}>×</button>
+            display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <TrendingUp size={18} color="#fff" strokeWidth={2} />
+            <span style={{ color:"#fff", fontWeight:700, fontSize:15, letterSpacing:".02em" }}>Aprovação de Desp. e Rend.</span>
+            <span style={{ color:"rgba(255,255,255,.55)", fontSize:11 }}>{hoje}</span>
+          </div>
+          <button onClick={onClose} style={{ background:"rgba(255,255,255,.15)", border:"none", borderRadius:6,
+              color:"#fff", width:28, height:28, cursor:"pointer", fontSize:16, display:"flex",
+              alignItems:"center", justifyContent:"center", lineHeight:1 }}>✕</button>
         </div>
-        {/* Body: duas seções empilhadas */}
-        <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column" }}>
-          <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column", borderBottom:"3px solid #e2e8f0" }}>
-            <DespesasContent rows={despRows} cobrador={cobrador} />
+
+        {/* Filtro strip */}
+        <div style={{ display:"flex", gap:10, padding:"10px 20px",
+            borderBottom:"1px solid #e2e8f0", background:"#f1f5f9", flexShrink:0 }}>
+          {([
+            { key:"pendente", label:"Pendentes", value:pendentes,    bg:"#d97706", bgOff:"#fef3c7", textOff:"#92400e" },
+            { key:"aceito",   label:"Aceitos",   value:aceitos,      bg:"#16a34a", bgOff:"#dcfce7", textOff:"#166534" },
+            { key:"recusado", label:"Recusados", value:recusados,    bg:"#dc2626", bgOff:"#fee2e2", textOff:"#991b1b" },
+          ] as { key:"pendente"|"aceito"|"recusado"; label:string; value:number; bg:string; bgOff:string; textOff:string }[]).map(s => {
+            const ativo = filtro === s.key;
+            return (
+              <button key={s.key} onClick={() => setFiltro(s.key)}
+                style={{ flex:1, padding:"8px 10px", border:"none", cursor:"pointer", borderRadius:8,
+                  background: ativo ? s.bg : s.bgOff,
+                  display:"flex", alignItems:"center", justifyContent:"center", gap:8,
+                  boxShadow: ativo ? `0 2px 8px ${s.bg}55` : "none",
+                  transition:"all .15s" }}>
+                <span style={{ fontSize:12, fontWeight:700, color: ativo ? "#fff" : s.textOff }}>{s.label}</span>
+                <span style={{ background: ativo ? "rgba(255,255,255,.25)" : "rgba(0,0,0,.1)",
+                    color: ativo ? "#fff" : s.textOff,
+                    borderRadius:20, padding:"1px 8px", fontSize:12, fontWeight:800, minWidth:22, textAlign:"center" }}>
+                  {s.value}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Body */}
+        <div style={{ overflowY:"auto", flex:1 }}>
+
+          <div style={{ fontSize:11, fontWeight:700, color:"#0f766e", textTransform:"uppercase",
+              letterSpacing:".08em", padding:"10px 20px 8px",
+              borderBottom:"2px solid #e2e8f0", background:"#f1f5f9", display:"flex", alignItems:"center", gap:6 }}>
+            <div style={{ width:3, height:14, background:"#0d9488", borderRadius:2 }} />
+            Solicitações de Despesas e Rendimentos
           </div>
-          <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column" }}>
-            <RendimentosContent rows={rendRows} cobrador={cobrador} />
-          </div>
+
+          {visíveis.length === 0 ? (
+            <div style={{ textAlign:"center", padding:"60px", color:"#94a3b8", fontSize:13 }}>
+              {loading ? "Carregando solicitações..." : "Nenhuma solicitação neste filtro."}
+            </div>
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",
+                gap:16, padding:"16px 20px" }}>
+              {visíveis.map(it => {
+                const sc = statusColor[it.status];
+                const isDesp = it.tipo === "despesa";
+                const tipoCor = isDesp ? "#dc2626" : "#16a34a";
+                const tipoBg  = isDesp ? "#fee2e2" : "#dcfce7";
+                return (
+                  <div key={it.id} style={{ background:"#f8fafc", border:"1px solid #e2e8f0",
+                      borderRadius:8, padding:"12px 14px", display:"flex", flexDirection:"column", gap:10 }}>
+
+                    {/* topo do card */}
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                        <span style={{ background:sc.bg, color:sc.text, borderRadius:5,
+                            padding:"2px 7px", fontSize:10, fontWeight:700 }}>{sc.label}</span>
+                        <span style={{ background:tipoBg, color:tipoCor, borderRadius:5,
+                            padding:"2px 7px", fontSize:10, fontWeight:700 }}>{isDesp ? "Despesa" : "Rendimento"}</span>
+                      </div>
+                      <span style={{ fontSize:10, color:"#94a3b8" }}>{it.fecha}</span>
+                    </div>
+
+                    {/* categoria / cobrador */}
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <div style={{ background:tipoBg, borderRadius:"50%", width:30, height:30,
+                          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                        <TrendingUp size={16} color={tipoCor} strokeWidth={2}
+                          style={{ transform: isDesp ? "rotate(90deg)" : "none" }} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize:12, fontWeight:700, color:"#1e293b", lineHeight:1.2 }}>{it.categoria}</div>
+                        <div style={{ fontSize:10, color:"#64748b" }}>{it.cobrador || "—"}</div>
+                      </div>
+                    </div>
+
+                    {/* valores */}
+                    <div style={{ display:"grid", gridTemplateColumns: it.observacao ? "1fr 1fr" : "1fr", gap:6 }}>
+                      <div style={{ background:"#fff", borderRadius:6, padding:"6px 8px", border:"1px solid #e2e8f0" }}>
+                        <div style={{ fontSize:9, color:"#94a3b8", fontWeight:600,
+                            textTransform:"uppercase", letterSpacing:.4 }}>Valor</div>
+                        <div style={{ fontSize:14, fontWeight:800, color:tipoCor, marginTop:1 }}>R$ {fmtBRL(it.valor)}</div>
+                      </div>
+                      {it.observacao && (
+                        <div style={{ background:"#fff", borderRadius:6, padding:"6px 8px", border:"1px solid #e2e8f0" }}>
+                          <div style={{ fontSize:9, color:"#94a3b8", fontWeight:600,
+                              textTransform:"uppercase", letterSpacing:.4 }}>Observação</div>
+                          <div style={{ fontSize:11, fontWeight:600, color:"#475569", marginTop:1,
+                              whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{it.observacao}</div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* botões */}
+                    {it.status === "pendente" ? (
+                      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                        <button onClick={() => mudar(it.id, "recusado")}
+                          style={{ padding:"8px 0", background:"#fee2e2", color:"#dc2626",
+                            border:"1px solid #fca5a5", borderRadius:6, fontSize:12, fontWeight:700,
+                            cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:4 }}>
+                          <svg viewBox="0 0 24 24" style={{ width:13, height:13, fill:"#dc2626" }}>
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                          </svg>
+                          Recusar
+                        </button>
+                        <button onClick={() => mudar(it.id, "aceito")}
+                          style={{ padding:"8px 0", background:"#dcfce7", color:"#16a34a",
+                            border:"1px solid #86efac", borderRadius:6, fontSize:12, fontWeight:700,
+                            cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:4 }}>
+                          <svg viewBox="0 0 24 24" style={{ width:13, height:13, fill:"#16a34a" }}>
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                          </svg>
+                          Aceitar
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ textAlign:"center", fontSize:11, fontWeight:600, color: sc.text }}>
+                        {it.status === "aceito" ? "✓ Lançamento aceito" : "✕ Lançamento recusado"}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div style={{ display:"flex", alignItems:"center", padding:"10px 20px",
+            borderTop:"1px solid #e2e8f0", background:"#f8fafc", flexShrink:0, gap:10 }}>
+          <div style={{ flex:1 }} />
+          <button onClick={onClose}
+            style={{ padding:"8px 28px", background:"#fff", color:"#374151",
+              border:"1px solid #cbd5e1", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
+            Fechar
+          </button>
         </div>
       </div>
     </div>
@@ -8347,12 +8540,8 @@ export default function DashboardPage() {
       {/* ── MODAL: Códigos de Aprovação ── */}
       {codigosOpen && <CodigosAprovacaoModal onClose={() => setCodigosOpen(false)} />}
 
-      {/* ── MODAL: Despesas e Rendimentos ── */}
-      {despRendOpen && <DespRendModal
-        despRows={selectedRota ? ((importedRotaData[selectedRota]?.despesasLista ?? []) as DespRow[]) : []}
-        rendRows={selectedRota ? ((importedRotaData[selectedRota]?.rendimentosLista ?? []) as RendRow[]) : []}
-        cobrador={selectedRota ? (importedRotaData[selectedRota]?.cobradorNome || undefined) : undefined}
-        onClose={() => setDespRendOpen(false)} />}
+      {/* ── MODAL: Aprovação de Despesas e Rendimentos ── */}
+      {despRendOpen && <DespRendModal onClose={() => setDespRendOpen(false)} />}
 
       {/* ── MODAL: Lucro ── */}
       {lucroOpen && <LucroModal onClose={() => setLucroOpen(false)} />}

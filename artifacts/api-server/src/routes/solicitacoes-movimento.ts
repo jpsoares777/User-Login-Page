@@ -26,7 +26,8 @@ router.post("/solicitacoes-movimento", async (req, res): Promise<void> => {
     return;
   }
 
-  // Evita duplicar a mesma solicitação (mesmo localId ainda pendente).
+  // Evita duplicar a mesma solicitação: se já existe uma com o mesmo
+  // codigoAcesso + localId (qualquer status), retorna a existente.
   if (localId) {
     const [existente] = await db
       .select()

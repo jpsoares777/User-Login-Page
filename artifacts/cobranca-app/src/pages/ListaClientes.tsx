@@ -1586,11 +1586,24 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const db = loadDB(); const hoje = getTodayStr();
     return (db && db.lastDate === hoje && (db.rendimentos as LancamentoItem[])?.length) ? (db.rendimentos as LancamentoItem[]) : rendimentosIniciais;
   });
+  const [pendentesMovimento, setPendentesMovimento] = useState<PendenteMovimento[]>(() => {
+    const db = loadDB();
+    return (db?.pendentesMovimento as PendenteMovimento[]) ?? [];
+  });
   const hoje = new Date().toLocaleDateString("pt-BR");
-  const addDespesa = (categoria: string, valor: number, observacao: string) =>
-    setDespesas(prev => [...prev, { id: Date.now(), data: hoje, categoria, valor, observacao: observacao || undefined }]);
-  const addRendimento = (categoria: string, valor: number, observacao: string) =>
-    setRendimentos(prev => [...prev, { id: Date.now(), data: hoje, categoria, valor, observacao: observacao || undefined }]);
+  // Despesa acima do limite global vai para APROVAÇÃO do dono em vez de ser
+  // aplicada direto; dentro do limite, aplica normalmente.
+  const addDespesa = (categoria: string, valor: number, observacao: string) => {
+    const item: LancamentoItem = { id: Date.now(), data: hoje, categoria, valor, observacao: observacao || undefined };
+    if (limiteGasto > 0 && valor > limiteGasto) { enviarMovimentoParaAprovacao("despesa", item); return; }
+    setDespesas(prev => [...prev, item]);
+  };
+  // Rendimento acima do limite global também exige aprovação.
+  const addRendimento = (categoria: string, valor: number, observacao: string) => {
+    const item: LancamentoItem = { id: Date.now(), data: hoje, categoria, valor, observacao: observacao || undefined };
+    if (limiteRendimento > 0 && valor > limiteRendimento) { enviarMovimentoParaAprovacao("rendimento", item); return; }
+    setRendimentos(prev => [...prev, item]);
+  };
 
   // Reabertura no mesmo dia: o caixaInicial foi "carimbado" com o saldo no fechamento
   // (ja com os emprestimos descontados). Como PinLogin so deixa entrar com o caixa aberto,
@@ -1668,11 +1681,12 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       clientes,
       historicoCreditos,
       pendentesAprovacao,
+      pendentesMovimento,
       caixaFinal: caixaFinalVal,
     });
   }, [cobrados, ausentes, cobradosValores, registroPagamentos, historicoPagamentos, quitadosClientes,
       ordemClientesIds, cobradosExtras, emprestimentos, novosClientesIds, renovacoesIds,
-      clientesAdicionaisHoje, novosClientesOutras, agendamentos, despesas, rendimentos, clientes, historicoCreditos, pendentesAprovacao, caixaInicial]);
+      clientesAdicionaisHoje, novosClientesOutras, agendamentos, despesas, rendimentos, clientes, historicoCreditos, pendentesAprovacao, pendentesMovimento, caixaInicial]);
 
   // Aplica de fato um NOVO empréstimo na carteira. Chamado diretamente quando o
   // valor está dentro do limite, ou depois que o dono aprova a solicitação.
@@ -1811,6 +1825,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   // para refletir mudanças feitas pelo dono sem exigir novo login.
   const [limiteNovo, setLimiteNovo] = useState(() => getLimitesAprovacaoCache().limiteNovo);
   const [limiteRenovacao, setLimiteRenovacao] = useState(() => getLimitesAprovacaoCache().limiteRenovacao);
+  const [limiteGasto, setLimiteGasto] = useState(() => getLimitesAprovacaoCache().limiteGasto);
+  const [limiteRendimento, setLimiteRendimento] = useState(() => getLimitesAprovacaoCache().limiteRendimento);
   useEffect(() => {
     let cancel = false;
     const load = async () => {
@@ -1818,6 +1834,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       if (cancel) return;
       setLimiteNovo(l.limiteNovo);
       setLimiteRenovacao(l.limiteRenovacao);
+      setLimiteGasto(l.limiteGasto);
+      setLimiteRendimento(l.limiteRendimento);
     };
     load();
     const t = setInterval(load, 30000);
@@ -1869,6 +1887,73 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     return () => { cancelled = true; clearInterval(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendentesAprovacao]);
+
+  // Envia (ou reenvia) a solicitação de um lançamento pendente ao servidor.
+  // Dedupe por localId no backend torna a chamada idempotente.
+  const criarSolicitacaoMovimentoNoServidor = (p: PendenteMovimento) =>
+    postSolicitacaoMovimentoAPI({
+      tipo: p.tipo,
+      categoria: p.item.categoria,
+      valor: p.item.valor,
+      observacao: p.item.observacao,
+      localId: p.localId,
+      payload: { item: p.item },
+    });
+
+  // Retém uma despesa/rendimento acima do limite e cria a solicitação para o
+  // dono aprovar/recusar. Se o POST falhar, o polling reenvia automaticamente.
+  const enviarMovimentoParaAprovacao = async (tipo: "despesa" | "rendimento", item: LancamentoItem) => {
+    const localId = String(item.id);
+    const pendente: PendenteMovimento = { localId, tipo, item };
+    setPendentesMovimento(prev => prev.some(p => p.localId === localId) ? prev : [...prev, pendente]);
+    const sol = await criarSolicitacaoMovimentoNoServidor(pendente);
+    if (sol) setPendentesMovimento(prev => prev.map(p => p.localId === localId ? { ...p, solicitacaoId: sol.id } : p));
+  };
+
+  // Evita execuções sobrepostas do polling de movimentos e materialização dupla.
+  const pollingMovRef = useRef(false);
+  const materializadosMovRef = useRef<Set<string>>(new Set());
+
+  // Consulta o status das solicitações de despesa/rendimento. Ao ser ACEITA, o
+  // lançamento finalmente entra na rota; se RECUSADA, some da fila.
+  useEffect(() => {
+    if (pendentesMovimento.length === 0) return;
+    let cancelled = false;
+    const check = async () => {
+      if (pollingMovRef.current) return;
+      pollingMovRef.current = true;
+      try {
+        for (const p of pendentesMovimento.filter(p => !p.solicitacaoId)) {
+          const sol = await criarSolicitacaoMovimentoNoServidor(p);
+          if (!cancelled && sol) setPendentesMovimento(prev => prev.map(x => x.localId === p.localId ? { ...x, solicitacaoId: sol.id } : x));
+        }
+        const sols = await fetchSolicitacoesMovimentoAPI();
+        if (cancelled) return;
+        const statusPorLocal = new Map(sols.filter(s => s.localId).map(s => [s.localId as string, s.status]));
+        const aplicar: PendenteMovimento[] = [];
+        const remover = new Set<string>();
+        for (const p of pendentesMovimento) {
+          const st = statusPorLocal.get(p.localId);
+          if (st === "aceito") { aplicar.push(p); remover.add(p.localId); }
+          else if (st === "recusado") { remover.add(p.localId); }
+        }
+        // Guarda de idempotência: materializa cada localId no máximo uma vez.
+        for (const p of aplicar) {
+          if (materializadosMovRef.current.has(p.localId)) continue;
+          materializadosMovRef.current.add(p.localId);
+          if (p.tipo === "despesa") setDespesas(prev => prev.some(d => d.id === p.item.id) ? prev : [...prev, p.item]);
+          else setRendimentos(prev => prev.some(r => r.id === p.item.id) ? prev : [...prev, p.item]);
+        }
+        if (remover.size) setPendentesMovimento(prev => prev.filter(p => !remover.has(p.localId)));
+      } finally {
+        pollingMovRef.current = false;
+      }
+    };
+    check();
+    const t = setInterval(check, 20000);
+    return () => { cancelled = true; clearInterval(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendentesMovimento]);
 
   // Monta o snapshot dos dados da rota a partir do estado atual. Usado tanto no
   // fechamento do caixa quanto no envio AO VIVO (tempo real). Mantido em um unico
