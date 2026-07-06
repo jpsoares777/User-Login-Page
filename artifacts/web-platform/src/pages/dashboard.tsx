@@ -948,10 +948,10 @@ const historicoVendasPorEmp: Record<string, HistVendaRow[]> = {
   ],
 };
 
-function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => void }) {
+function HistorialVendasModal({ row, hist: histProp, onClose }: { row: EmpRow; hist?: HistVendaRow[]; onClose: () => void }) {
   const [selectedHistRow, setSelectedHistRow] = useState<number | null>(null);
 
-  const hist: HistVendaRow[] = historicoVendasPorEmp[row.consec] ?? [
+  const hist: HistVendaRow[] = histProp ?? historicoVendasPorEmp[row.consec] ?? [
     {
       nro: 1,
       data: (row.dataVenda || "").slice(0, 10),
@@ -4218,7 +4218,7 @@ function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDro
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
-type GcRow = { id: number; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number };
+type GcRow = { id: number; rota: string; consec: string; nome: string; doc: string; nasc: string; tel1: string; tel2: string; endereco: string; obs: string; freq: string; dataEmprestimo: string; valorEmp: number; jurosPorc: number; total: number; parcelas: number; atrasadas: number; pagas: number; rest: number; sancao: number; visitas: number; valorParc: number; saldo: number; historico?: { data: string; valor: number; total: number; cuotas: number; status: string }[] };
 type GcDoc = { id: string; name: string; url: string; type: string };
 
 function GcNovoClienteModal({ onClose }: { onClose: () => void }) {
@@ -5923,6 +5923,7 @@ export default function DashboardPage() {
           visitas: Number(c.visitas) || 0,
           valorParc: Number(c.vlrCuota) || 0,
           saldo: Number(c.saldo) || 0,
+          historico: Array.isArray(c.historico) ? c.historico : [],
           };
         });
         setGcRows(rows);
@@ -8493,14 +8494,50 @@ export default function DashboardPage() {
                 pctJuros: gcr.jurosPorc,
                 valorJuros: gcr.total - gcr.valorEmp,
                 valorParcela: gcr.valorParc,
-                dataVenda: "2026-04-08 00:00:00",
+                dataVenda: gcr.dataEmprestimo ? `${gcr.dataEmprestimo} 00:00:00` : "",
                 parcRest: gcr.rest,
                 saldo: gcr.saldo,
                 numSeguro: "",
                 vrSeguro: 0,
                 chaveAutor: "",
               };
-              return <HistorialVendasModal row={empRow} onClose={() => setGcHistRowId(null)} />;
+              // Histórico REAL vindo do snapshot da rota (créditos anteriores + ativo).
+              // Sempre passa `hist` para nunca cair no mock historicoVendasPorEmp.
+              const histReal: HistVendaRow[] = (gcr.historico && gcr.historico.length > 0)
+                ? gcr.historico.map((h, idx) => {
+                    const status = String(h.status ?? "").toUpperCase();
+                    const ativo = status === "ACTIVO";
+                    const pagas = ativo ? gcr.pagas : h.cuotas;
+                    return {
+                      nro: idx + 1,
+                      data: (h.data || "").slice(0, 10),
+                      estado: ativo ? "Ativo" : status === "QUITADO" ? "Quitado" : status ? (status.charAt(0) + status.slice(1).toLowerCase()) : "-",
+                      parcelas: h.cuotas,
+                      parcPagas: pagas,
+                      parcFalt: Math.max(0, h.cuotas - pagas),
+                      sancao: 0,
+                      valorEmpr: h.total,
+                      vrParc: h.cuotas > 0 ? h.total / h.cuotas : 0,
+                      freq: gcr.freq,
+                      visitas: ativo ? gcr.visitas : 0,
+                      pctJuros: h.valor > 0 ? Math.round((h.total / h.valor - 1) * 100) : 0,
+                    };
+                  })
+                : [{
+                    nro: 1,
+                    data: (gcr.dataEmprestimo || "").slice(0, 10),
+                    estado: gcr.rest <= 0 ? "Quitado" : "Ativo",
+                    parcelas: gcr.parcelas,
+                    parcPagas: gcr.pagas,
+                    parcFalt: Math.max(0, gcr.rest),
+                    sancao: 0,
+                    valorEmpr: gcr.total,
+                    vrParc: gcr.valorParc,
+                    freq: gcr.freq,
+                    visitas: gcr.visitas,
+                    pctJuros: gcr.jurosPorc,
+                  }];
+              return <HistorialVendasModal row={empRow} hist={histReal} onClose={() => setGcHistRowId(null)} />;
             })()}
             {/* ── FICHA DO CLIENTE MODAL ── */}
             {gcModalOpen && (() => {
