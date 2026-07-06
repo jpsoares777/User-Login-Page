@@ -1772,7 +1772,7 @@ function ClientesContent({ rows }: { rows: ClienteRow[] }) {
             <tr>
               {cols.map(c => (
                 <th key={c.label} style={{
-                  padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
+                  padding: "3px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
                   whiteSpace: "nowrap", color: "#e2e8f0", background: "#3d6e8e",
                   borderRight: "1px solid #4a7fa0", letterSpacing: "0.02em",
                   position: "sticky", top: 0, zIndex: 1,
