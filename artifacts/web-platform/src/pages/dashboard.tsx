@@ -3671,25 +3671,67 @@ function CoinIcon() {
   );
 }
 
-function ConsolidadosContent() {
-  const [cobrador,   setCobrador]   = useState("Rota Cred Bank -");
-  const [dataFiltro, setDataFiltro] = useState("2026-04-15");
+function ConsolidadosContent({ rotas = [], estadosData = {} }: { rotas?: string[]; estadosData?: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]> }) {
+  const [rotaSel,    setRotaSel]    = useState<string | null>(rotas[0] ?? null);
+  const [dataFiltro, setDataFiltro] = useState(new Date().toISOString().slice(0, 10));
+  const [reloadTick, setReloadTick] = useState(0);
+  const [snap,       setSnap]       = useState<RotaFakeData | null>(null);
+
+  // Seleciona a primeira rota automaticamente quando a lista chegar
+  useEffect(() => { if (!rotaSel && rotas.length > 0) setRotaSel(rotas[0]); }, [rotas, rotaSel]);
+
+  // Busca o snapshot da rota (polling a cada 10s) — mesmos dados reais da Liq. Diária
+  useEffect(() => {
+    if (!rotaSel) { setSnap(null); return; }
+    let alive = true;
+    const load = () => {
+      fetch(`${import.meta.env.BASE_URL}api/caixa/fechamento-rota?rota=${encodeURIComponent(rotaSel)}&_t=${Date.now()}`)
+        .then(res => res.ok ? res.json() : null)
+        .then((d: RotaFakeData | null) => { if (alive) setSnap(d ?? null); })
+        .catch(() => {});
+    };
+    load();
+    const iv = setInterval(load, 10000);
+    return () => { alive = false; clearInterval(iv); };
+  }, [rotaSel, reloadTick]);
+
+  const cobrador = rotaSel ?? "";
+
+  // Localização (estado / cidade) a partir da árvore de rotas
+  let pais = "", cidade = "";
+  for (const [estado, items] of Object.entries(estadosData)) {
+    const hit = items.find(i => i.vendedor === rotaSel);
+    if (hit) { pais = estado; cidade = hit.cidade; break; }
+  }
 
   const inputCls = "h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700";
   const fmt      = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
   const fmtR     = (v: number) => `R$ ${fmt(v)}`;
 
-  const r = consolidadosData[0];
-
-  if (!r) return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 12, color: "#9ca3af" }}>
-      <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-      <p style={{ fontSize: 14, fontWeight: 600, color: "#6b7280" }}>Sem dados de consolidação</p>
-      <p style={{ fontSize: 12 }}>Selecione um cobrador e uma data para carregar o consolidado</p>
-    </div>
-  );
+  // Espelha os mesmos dados reais da Liq. Diária
+  const r = snap ? {
+    pais, cidade,
+    clientesIniciais:    snap.clientesIniciais ?? 0,
+    clientesNovos:       snap.clientesNovos ?? 0,
+    clientesRenovados:   snap.renovados ?? 0,
+    pagos:               snap.pagos ?? 0,
+    noPagos:             snap.noPagos ?? 0,
+    totalClientes:       (snap.clientesIniciais ?? 0) + (snap.clientesNovos ?? 0),
+    cajaInicial:         snap.caixaInicial ?? 0,
+    carteiraInicial:     snap.carteiraInicial ?? 0,
+    recebimentoPrevisto: snap.recebPrevisto ?? 0,
+    recaudo:             snap.recebAtual ?? 0,
+    ventas:              snap.novosEmp ?? 0,
+    juros:               snap.juros ?? 0,
+    ingresos:            snap.rendimentos ?? 0,
+    egresos:             snap.despesas ?? 0,
+    retiradaCaixa:       snap.retirada ?? 0,
+    cajaFinal:           snap.caixaFinal ?? 0,
+    cartera:             snap.carteiraFinal ?? 0,
+  } : null;
 
   const handlePDF = () => {
+    if (!r) return;
     const dateFmtLocal = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
     const pct = r.recebimentoPrevisto > 0 ? ((r.recaudo / r.recebimentoPrevisto) * 100).toFixed(1) : "0,0";
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
@@ -3789,6 +3831,7 @@ function ConsolidadosContent() {
   };
 
   const handleWhatsApp = () => {
+    if (!r) return;
     const dateFmtWa = new Date(dataFiltro + "T12:00:00").toLocaleDateString("pt-BR");
     const pct = r.recebimentoPrevisto > 0 ? ((r.recaudo / r.recebimentoPrevisto) * 100).toFixed(1) : "0,0";
     const lines = [
@@ -3864,15 +3907,16 @@ function ConsolidadosContent() {
       <div className="shrink-0 flex items-end gap-2 flex-wrap px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
         <div className="flex flex-col gap-0.5">
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Cobrador (Rota)</label>
-          <select value={cobrador} onChange={e => setCobrador(e.target.value)} className={`${inputCls} w-48`}>
-            <option value="Rota Cred Bank -">Rota Cred Bank -</option>
+          <select value={rotaSel ?? ""} onChange={e => setRotaSel(e.target.value)} className={`${inputCls} w-48`}>
+            {rotas.length === 0 && <option value="">— Sem rotas —</option>}
+            {rotas.map(rt => <option key={rt} value={rt}>{rt}</option>)}
           </select>
         </div>
         <div className="flex flex-col gap-0.5">
           <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Data</label>
           <input type="date" value={dataFiltro} onChange={e => setDataFiltro(e.target.value)} className={`${inputCls} w-36`} />
         </div>
-        <button className="h-7 px-4 rounded text-xs font-bold text-white"
+        <button onClick={() => setReloadTick(t => t + 1)} className="h-7 px-4 rounded text-xs font-bold text-white"
           style={{ background: "#2563eb", border: "none", cursor: "pointer", alignSelf: "flex-end" }}>
           🔍 Pesquisar
         </button>
@@ -3892,11 +3936,19 @@ function ConsolidadosContent() {
       {/* ── Dashboard content ── */}
       <div className="flex-1 overflow-auto" style={{ background: "#f1f5f9", padding: "20px 24px" }}>
 
+        {!r ? (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 12, color: "#9ca3af" }}>
+            <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            <p style={{ fontSize: 14, fontWeight: 600, color: "#6b7280" }}>{rotaSel ? "Sem dados para esta rota" : "Selecione uma rota"}</p>
+            <p style={{ fontSize: 12 }}>Selecione um cobrador e uma data para carregar o consolidado</p>
+          </div>
+        ) : (<>
+
         {/* ── Top identity bar ── */}
         <div style={{ background: "linear-gradient(135deg, #2d5474 0%, #3d6e8e 100%)", borderRadius: 10, padding: "14px 20px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" as const, gap: 12 }}>
           <div>
             <div style={{ fontSize: 15, fontWeight: 800, color: "#fff", marginBottom: 2 }}>📊 Consolidado Diário</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>{cobrador} · {r.pais} · {r.cidade}</div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>{snap?.cobradorNome || cobrador} · {r.pais} · {r.cidade}</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{ fontSize: 13, color: "rgba(255,255,255,0.85)" }}>📅 {dateFmt}</span>
@@ -3949,6 +4001,7 @@ function ConsolidadosContent() {
         <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8" }}>
           Gerado em {new Date().toLocaleString("pt-BR")} · Sistema de Cobrança
         </div>
+        </>)}
       </div>
 
       {/* ── Blue footer bar ── */}
@@ -8346,7 +8399,7 @@ export default function DashboardPage() {
         ) : activeMain === "Liq. Períodos" ? (
           <LiqPeriodosContent activeSub={activeSubPeriodos} selectedEstado={selectedEstado} estadosData={estadosData} onCloseDropdown={() => setEstadoDropdownOpen(false)} />
         ) : activeMain === "Consolidados" ? (
-          <ConsolidadosContent />
+          <ConsolidadosContent rotas={todasRotas} estadosData={estadosData} />
         ) : showPagamentos ? (
           <PagamentosContent rows={selectedRota ? ((importedRotaData[selectedRota]?.pagamentosClientes ?? []) as PagRow[]) : []} />
         ) : showEmprestimos ? (
