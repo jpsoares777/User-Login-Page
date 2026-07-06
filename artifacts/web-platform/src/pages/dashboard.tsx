@@ -4084,17 +4084,129 @@ function ConsolidadosContent({ rotas = [], estadosData = {} }: { rotas?: string[
   );
 }
 
+function PeriodoEstadoVazio({ titulo, sub }: { titulo: string; sub?: string }) {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center gap-2" style={{ background: "#f8fafc" }}>
+      <svg viewBox="0 0 24 24" className="w-10 h-10" style={{ fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+      <p className="text-sm font-semibold text-gray-500">{titulo}</p>
+      {sub && <p className="text-xs text-gray-400">{sub}</p>}
+    </div>
+  );
+}
+
 function LiqPeriodosContent({ activeSub, selectedEstado, estadosData, onCloseDropdown }: { activeSub: string; selectedEstado: string; estadosData: Record<string, { cidade: string; vendedor: string; data: string; ativa: boolean }[]>; onCloseDropdown: () => void }) {
   // Estado elevado: mantém a rota/período selecionados ao navegar entre as
   // sub-abas (ex.: ir a Pagamentos e voltar para Liquidação).
   const [periodoConfirmado, setPeriodoConfirmado] = useState<{ rota: string; inicio: string; fim: string } | null>(null);
+  const [perDados, setPerDados] = useState<any>(null);
+  const [perLoading, setPerLoading] = useState(false);
+  const [perErro, setPerErro] = useState(false);
+
+  useEffect(() => {
+    if (!periodoConfirmado) { setPerDados(null); setPerErro(false); return; }
+    let ativo = true;
+    setPerLoading(true); setPerErro(false);
+    fetch(`${import.meta.env.BASE_URL}api/caixa/liquidacao-periodo?rota=${encodeURIComponent(periodoConfirmado.rota)}&inicio=${periodoConfirmado.inicio}&fim=${periodoConfirmado.fim}&_t=${Date.now()}`)
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(d => { if (ativo) setPerDados(d); })
+      .catch(() => { if (ativo) setPerErro(true); })
+      .finally(() => { if (ativo) setPerLoading(false); });
+    return () => { ativo = false; };
+  }, [periodoConfirmado]);
+
+  const rotaLabel = periodoConfirmado?.rota ?? "";
+  const periodoLabel = periodoConfirmado ? `${periodoConfirmado.inicio} a ${periodoConfirmado.fim}` : "";
+
+  const listas = useMemo(() => {
+    if (!perDados?.encontrado) return null;
+    const numV = (v: unknown) => (Number(v) || 0);
+    const pagamentos: typeof liqPerPagData = (perDados.pagamentos ?? []).map((p: any, i: number) => ({
+      nro: i + 1,
+      consecutivo: String(p.consecutivo ?? ""),
+      linkColor: "#2563eb",
+      cliente: String(p.cliente ?? ""),
+      clienteColor: "#16a34a",
+      parcela: numV(p.pagadas),
+      tipo: String(p.tipo ?? ""),
+      formaPgto: String(p.formaPago ?? ""),
+      valor: String(p.valor ?? "0,00"),
+      data: String(p.fecha ?? p.dia ?? ""),
+      valorProd: String(p.valorProd ?? "0,00"),
+      saldo: String(p.saldo ?? "0,00"),
+      restantes: String(p.restantes ?? ""),
+    }));
+    const vendas: typeof vendasPeriodosData = (perDados.emprestimos ?? []).map((e: any, i: number) => ({
+      id: i + 1,
+      vendedor: rotaLabel,
+      consec: String(e.consec ?? ""),
+      freq: String(e.freq ?? ""),
+      valorAnt: numV(e.valorAnt),
+      idVenta: String(e.id ?? ""),
+      cliente: String(e.cliente ?? ""),
+      tag: String(e.tag ?? ""),
+      documento: String(e.documento ?? ""),
+      movel: String(e.celular ?? ""),
+      valorProd: numV(e.valorProd),
+      cuotas: numV(e.parcelas),
+      pctInt: numV(e.pctJuros),
+      cuota: numV(e.valorParcela),
+      fecha: String(e.dataVenda ?? e.dia ?? ""),
+      cuotRest: numV(e.parcRest),
+      saldo: numV(e.saldo),
+    }));
+    const clientes: LiqPerClienteRow[] = (perDados.clientesLista ?? []).map((c: any, i: number) => ({
+      id: i + 1,
+      vendedor: rotaLabel,
+      fechaVenta: String(c.dataEmprestimo ?? ""),
+      consec: String(c.consec ?? ""),
+      status: String(c.status ?? "").toUpperCase() === "ACTIVO" ? "Activo" : "Cancelado",
+      cancelDate: "",
+      cliente: String(c.nome ?? ""),
+      idVenta: String(c.consec ?? ""),
+      movel: String(c.tel1 ?? ""),
+      direc: String(c.endereco ?? ""),
+      cuotas: numV(c.cuotas),
+      cuoPag: numV(c.pagas),
+      cuoFalt: numV(c.restantes),
+      saldo: numV(c.saldo),
+      int: numV(c.pctJuros),
+      valorProd: numV(c.total),
+      vrCuota: numV(c.vlrCuota),
+      visitas: numV(c.visitas),
+      freq: String(c.freq ?? ""),
+    }));
+    const mapMov = (m: any, i: number) => ({
+      id: i + 1,
+      categoria: String(m.categoria ?? ""),
+      descricao: String(m.descricao ?? ""),
+      valor: numV(m.valor),
+      data: String(m.data ?? m.dia ?? ""),
+      hora: String(m.hora ?? ""),
+      responsavel: String(m.responsavel ?? ""),
+      obs: String(m.obs ?? ""),
+    });
+    const despesasRows: DespRow[] = (perDados.despesasLista ?? []).map(mapMov);
+    const rendimentosRows: RendRow[] = (perDados.rendimentosLista ?? []).map(mapMov);
+    return { pagamentos, vendas, clientes, despesasRows, rendimentosRows };
+  }, [perDados, rotaLabel]);
+
   if (activeSub === "Liquidação")          return <LiqPeriodosLiquidacaoView selectedEstado={selectedEstado} estadosData={estadosData} onCloseDropdown={onCloseDropdown} periodoConfirmado={periodoConfirmado} setPeriodoConfirmado={setPeriodoConfirmado} />;
-  if (activeSub === "Pagamentos")          return <LiqPeriodosPagamentosContent />;
-  if (activeSub === "Empr. por Períodos")  return <VendasPorPeriodosContent />;
-  if (activeSub === "Rendimentos")         return <RendimentosContent rows={rendimentosData} />;
-  if (activeSub === "Despesas")            return <DespesasContent rows={despesasData} />;
-  if (activeSub === "Clientes")            return <LiqPeriodosClientesContent />;
   if (activeSub === "Resumo")              return <ResumoContent periodoConfirmado={periodoConfirmado} />;
+
+  const abasDados = ["Pagamentos", "Empr. por Períodos", "Rendimentos", "Despesas", "Clientes"];
+  if (abasDados.includes(activeSub)) {
+    if (!periodoConfirmado) return <PeriodoEstadoVazio titulo="Selecione a rota e o período na aba Liquidação" sub={`A aba ${activeSub} usa os mesmos dados do período selecionado`} />;
+    if (perLoading)         return <PeriodoEstadoVazio titulo="Buscando registros do período..." />;
+    if (perErro)            return <PeriodoEstadoVazio titulo="Erro ao consultar o período. Tente novamente." />;
+    if (!listas)            return <PeriodoEstadoVazio titulo="Não foram encontrados registros de liquidação no período" sub={`${periodoLabel} · ${rotaLabel}`} />;
+
+    if (activeSub === "Pagamentos")         return <LiqPeriodosPagamentosContent rows={listas.pagamentos} rota={rotaLabel} periodoLabel={periodoLabel} />;
+    if (activeSub === "Empr. por Períodos") return <VendasPorPeriodosContent rows={listas.vendas} />;
+    if (activeSub === "Rendimentos")        return <RendimentosContent rows={listas.rendimentosRows} cobrador={perDados?.cobradorNome || rotaLabel} />;
+    if (activeSub === "Despesas")           return <DespesasContent rows={listas.despesasRows} cobrador={perDados?.cobradorNome || rotaLabel} />;
+    if (activeSub === "Clientes")           return <LiqPeriodosClientesContent rows={listas.clientes} />;
+  }
+
   return (
     <div className="flex-1 flex items-center justify-center" style={{ background: "#f8fafc" }}>
       <p className="text-gray-400 text-sm">{activeSub} — em desenvolvimento</p>
