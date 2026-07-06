@@ -128,6 +128,92 @@ router.get("/caixa/fechamento-rota", async (req, res): Promise<void> => {
   }
 });
 
+// Liquidação por Período: agrega todos os fechamentos (snapshots) de uma rota
+// dentro do intervalo [inicio, fim] (inclusive). Somente leitura — nada é
+// criado ou modificado. Se houver mais de um registro no mesmo dia (fechar +
+// reabrir), vale o ÚLTIMO do dia, pois o snapshot é acumulado do dia inteiro.
+router.get("/caixa/liquidacao-periodo", async (req, res): Promise<void> => {
+  res.setHeader("Cache-Control", "no-store");
+  const { rota, inicio, fim } = req.query;
+  if (!rota || !inicio || !fim) { res.status(400).json({ error: "rota, inicio e fim são obrigatórios" }); return; }
+  const dtRe = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dtRe.test(String(inicio)) || !dtRe.test(String(fim)) || String(fim) < String(inicio)) {
+    res.status(400).json({ error: "intervalo de datas inválido (use YYYY-MM-DD e fim >= inicio)" });
+    return;
+  }
+
+  const [aplicativo] = await db.select().from(aplicativosTable)
+    .where(eq(aplicativosTable.rota, String(rota)));
+  if (!aplicativo) { res.json({ encontrado: false, registros: 0 }); return; }
+
+  // Apenas LIQUIDAÇÕES: caixas FECHADOS com snapshot e data de fechamento.
+  // Caixas abertos (snapshot ao vivo, parcial) ficam de fora.
+  const rows = await db.select().from(caixaTable)
+    .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "fechado")))
+    .orderBy(caixaTable.dataFechamento, caixaTable.id);
+
+  const noPeriodo = rows.filter(r =>
+    !!r.dadosSnapshot && !!r.dataFechamento &&
+    r.dataFechamento >= String(inicio) && r.dataFechamento <= String(fim)
+  );
+
+  // Último fechamento de cada dia (ordenado por data+id ⇒ o último sobrescreve).
+  const porDia = new Map<string, typeof noPeriodo[number]>();
+  for (const r of noPeriodo) porDia.set(r.dataFechamento!, r);
+  const dias = Array.from(porDia.keys()).sort();
+
+  if (dias.length === 0) { res.json({ encontrado: false, registros: 0 }); return; }
+
+  const num = (v: unknown) => (Number(v) || 0);
+  let recebPrevisto = 0, recebAtual = 0, novosEmp = 0, juros = 0, rendimentos = 0,
+      despesas = 0, retirada = 0, clientesNovos = 0, renovados = 0;
+  let primeiro: any = null, ultimo: any = null;
+  let registros = 0;
+
+  for (const dia of dias) {
+    const row = porDia.get(dia)!;
+    let snap: any;
+    try { snap = JSON.parse(row.dadosSnapshot!); } catch { continue; }
+    if (!snap) continue;
+    registros++;
+    if (!primeiro) primeiro = snap;
+    ultimo = snap;
+    recebPrevisto += num(snap.recebPrevisto);
+    recebAtual    += num(snap.recebAtual);
+    novosEmp      += num(snap.novosEmp);
+    juros         += num(snap.juros);
+    rendimentos   += num(snap.rendimentos);
+    despesas      += num(snap.despesas);
+    retirada      += num(snap.retirada);
+    clientesNovos += num(snap.clientesNovos);
+    renovados     += num(snap.renovados);
+  }
+
+  if (registros === 0 || !primeiro || !ultimo) { res.json({ encontrado: false, registros: 0 }); return; }
+
+  res.json({
+    encontrado: true,
+    registros,
+    dias,
+    cobradorNome: aplicativo.cobradorNome,
+    codigoAcesso: aplicativo.codigoAcesso,
+    recebPrevisto,
+    recebAtual,
+    novosEmp,
+    juros,
+    rendimentos,
+    despesas,
+    retirada,
+    clientesNovos,
+    renovados,
+    caixaInicial: num(primeiro.caixaInicial),
+    caixaFinal: num(ultimo.caixaFinal),
+    carteiraInicial: num(primeiro.carteiraInicial),
+    carteiraFinal: num(ultimo.carteiraFinal),
+    totalClientes: num(ultimo.clientesIniciais) + num(ultimo.clientesNovos),
+  });
+});
+
 router.post("/caixa/fechar-admin", async (req, res): Promise<void> => {
   const { rota } = req.body;
   if (!rota) { res.status(400).json({ error: "rota é obrigatória" }); return; }

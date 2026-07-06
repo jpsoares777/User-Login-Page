@@ -2603,6 +2603,22 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
   const [periodoModalOpen, setPeriodoModalOpen] = useState(false);
   const [periodoForm, setPeriodoForm] = useState({ inicio: "", fim: "" });
   const [periodoConfirmado, setPeriodoConfirmado] = useState<{ rota: string; inicio: string; fim: string } | null>(null);
+  const [perDados, setPerDados] = useState<any | null>(null);
+  const [perLoading, setPerLoading] = useState(false);
+  const [perErro, setPerErro] = useState(false);
+  useEffect(() => {
+    if (!periodoConfirmado) { setPerDados(null); setPerErro(false); return; }
+    let vivo = true;
+    setPerLoading(true);
+    setPerDados(null);
+    setPerErro(false);
+    fetch(`${import.meta.env.BASE_URL}api/caixa/liquidacao-periodo?rota=${encodeURIComponent(periodoConfirmado.rota)}&inicio=${periodoConfirmado.inicio}&fim=${periodoConfirmado.fim}&_t=${Date.now()}`)
+      .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(d => { if (vivo) setPerDados(d); })
+      .catch(() => { if (vivo) { setPerDados(null); setPerErro(true); } })
+      .finally(() => { if (vivo) setPerLoading(false); });
+    return () => { vivo = false; };
+  }, [periodoConfirmado]);
   const toggleCidade = (cidade: string) => setCollapsed(prev => {
     const next = new Set(prev);
     next.has(cidade) ? next.delete(cidade) : next.add(cidade);
@@ -2671,35 +2687,47 @@ function LiqPeriodosLiquidacaoView({ selectedEstado, estadosData, onCloseDropdow
             <p className="text-xs text-gray-400">Clique em qualquer rota na árvore à esquerda</p>
           </div>
         ) : (() => {
-          const rd = rotasFakeData[periodoConfirmado.rota];
-          if (!rd) return (
+          if (perLoading) return (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
               <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-              <p className="text-sm font-medium text-gray-500">Sem dados para esta rota</p>
+              <p className="text-sm font-medium text-gray-500">Buscando registros do período...</p>
+            </div>
+          );
+          if (perErro) return (
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
+              <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+              <p className="text-sm font-medium text-gray-500">Erro ao consultar o período. Tente novamente.</p>
+            </div>
+          );
+          const rd = perDados;
+          if (!rd || !rd.encontrado) return (
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
+              <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, fill: "#cbd5e1" }}><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+              <p className="text-sm font-medium text-gray-500">Não foram encontrados registros de liquidação no período</p>
+              <p className="text-xs text-gray-400">{periodoConfirmado.inicio} a {periodoConfirmado.fim} · {periodoConfirmado.rota}</p>
             </div>
           );
           const d1 = new Date(periodoConfirmado.inicio);
           const d2 = new Date(periodoConfirmado.fim);
-          const days = Math.max(1, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
-          const sc = days / 30;
+          const days = Math.max(1, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) + 1);
           const fmtV = (n: number) => `$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
           const fmtN = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
-          const totalClientes = rd.clientesIniciais + Math.round(rd.clientesNovos * sc);
-          const clientesNovos = Math.round(rd.clientesNovos * sc);
-          const clientesRenovados = Math.round(rd.renovados * sc);
-          const recebTotal = Math.round(rd.recebAtual * sc);
-          const totalEmp = Math.round(rd.carteiraInicial + rd.novosEmp * sc);
-          const juros = Math.round(rd.juros * sc);
+          const totalClientes = rd.totalClientes as number;
+          const clientesNovos = rd.clientesNovos as number;
+          const clientesRenovados = rd.renovados as number;
+          const recebTotal = rd.recebAtual as number;
+          const totalEmp = (rd.carteiraInicial as number) + (rd.novosEmp as number);
+          const juros = rd.juros as number;
           const pctJuros = totalEmp > 0 ? (juros / totalEmp * 100).toFixed(2) : "0";
-          const retirada = Math.round(rd.retirada * sc);
-          const despesas = Math.round(rd.despesas * sc);
+          const retirada = rd.retirada as number;
+          const despesas = rd.despesas as number;
           const pctDesp = recebTotal > 0 && despesas > 0 ? (despesas / recebTotal * 100).toFixed(2) : "0";
-          const ingressos = Math.round(rd.novosEmp * sc);
+          const ingressos = rd.rendimentos as number;
           const mediaPorCliente = totalClientes > 0 ? recebTotal / totalClientes : 0;
-          const recebPrevisto = Math.round(rd.recebPrevisto * sc);
-          const caixaInicial = rd.caixaInicial;
-          const caixaFinal = Math.round(caixaInicial + recebTotal + ingressos - despesas - retirada);
-          const lucroTotal = caixaFinal - caixaInicial;
+          const recebPrevisto = rd.recebPrevisto as number;
+          const caixaInicial = rd.caixaInicial as number;
+          const caixaFinal = rd.caixaFinal as number;
+          const lucroTotal = juros + ingressos - despesas - retirada;
           return (<>
             <SectionHeader title="Dados da Rota" color="#2563eb" />
             <Row label="Cobrador" index={0}>
