@@ -8361,7 +8361,7 @@ export default function DashboardPage() {
                   <tr style={{ background: "#3d6e8e", color: "#fff" }}>
                     {[
                       { label: "Histórico", align: "center" as const },
-                      { label: "Consecutivo", align: "left" as const },
+                      { label: "Nº do Empréstimo", align: "left" as const },
                       { label: "Nome e Sobrenome", align: "left" as const },
                       { label: "CPF / RG", align: "left" as const },
                       { label: "Frequência", align: "center" as const },
