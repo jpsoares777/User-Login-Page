@@ -5345,10 +5345,8 @@ export default function DashboardPage() {
     setSelectedEstado(estadoNome);
     setHasSearched(true);
     setCollapsedEstadoMain(false);
-    const cidadesComMatch = new Set(filtradas.map(f => f.cidade));
-    const todasCidades = Array.from(new Set(items.map(i => i.cidade)));
-    setCollapsedCidades(new Set(todasCidades.filter(c => !cidadesComMatch.has(c))));
-    setSelectedRota(filtradas.length === 1 ? filtradas[0].vendedor : null);
+    setCollapsedCidades(new Set(items.map(i => i.cidade)));
+    setSelectedRota(null);
     setBuscarRotaMsg(null);
     setBuscarRotaOpen(false);
   };
