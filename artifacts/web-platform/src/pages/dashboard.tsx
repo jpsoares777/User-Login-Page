@@ -683,9 +683,9 @@ function PagamentosContent({ rows }: { rows: PagRow[] }) {
 
 // ── Empréstimos Novos data ─────────────────────────────────────────────────────
 const emprestimosData = [
-  { id: 1,  consec: "4700627026", freq: "Diário",    valorAnt: 600.00,  cliente: "Andrela de Jesus Costa Araújo",  tag: "Renovado", documento: "91633427315",  celular: "98985014328",  valorProd: 800.00,  parcelas: 14, pctJuros: 40, valorJuros: 320.00,  valorParcela: 80.00,  dataVenda: "2026-03-30 14:03:51", parcRest: 0,  saldo: 0.00,    numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 2,  consec: "4700627089", freq: "Diário",    valorAnt: 0.00,    cliente: "Geilson Eduardo Rosa de Jesus",   tag: "Novo",     documento: "00503307300",  celular: "9885397102",   valorProd: 700.00,  parcelas: 14, pctJuros: 40, valorJuros: 280.00,  valorParcela: 70.00,  dataVenda: "2026-03-30 19:39:09", parcRest: 10, saldo: 700.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
-  { id: 3,  consec: "4700627090", freq: "Diário",    valorAnt: 0.00,    cliente: "Daniele Texeira Lindoso",         tag: "Novo",     documento: "01148713379",  celular: "559899687036", valorProd: 1000.00, parcelas: 14, pctJuros: 40, valorJuros: 400.00,  valorParcela: 100.00, dataVenda: "2026-03-30 21:03:29", parcRest: 9,  saldo: 900.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
+  { id: 1,  consec: "5376411752", freq: "Diário",    valorAnt: 0.00,    cliente: "Janielle Santos",                 tag: "Novo",     documento: "",  celular: "",  valorProd: 500.00,  parcelas: 20, pctJuros: 20, valorJuros: 100.00,  valorParcela: 30.00,  dataVenda: "2026-07-06 08:56:00", parcRest: 20, saldo: 600.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
+  { id: 2,  consec: "9395246711", freq: "Diário",    valorAnt: 0.00,    cliente: "Joao Paulo Soares",               tag: "Novo",     documento: "",  celular: "",  valorProd: 1000.00, parcelas: 20, pctJuros: 20, valorJuros: 200.00,  valorParcela: 60.00,  dataVenda: "2026-07-06 08:57:00", parcRest: 20, saldo: 1200.00, numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
+  { id: 3,  consec: "4359614134", freq: "Diário",    valorAnt: 700.00,  cliente: "Aira Cecilia",                    tag: "Renovado", documento: "",  celular: "",  valorProd: 600.00,  parcelas: 20, pctJuros: 20, valorJuros: 120.00,  valorParcela: 30.00,  dataVenda: "2026-07-06 09:11:00", parcRest: 20, saldo: 600.00,  numSeguro: "",       vrSeguro: 0.00,   chaveAutor: "" },
 ];
 
 type EmpRow = typeof emprestimosData[0];
@@ -821,10 +821,20 @@ function PagamentosEmprestimoModal({
   );
 }
 
+type HistVendaRow = { nro: number; data: string; estado: string; parcelas: number; parcPagas: number; parcFalt: number; sancao: number; valorEmpr: number; vrParc: number; freq: string; visitas: number; pctJuros: number };
+
+// Histórico de empréstimos anteriores por consecutivo (empréstimos quitados/renovados)
+const historicoVendasPorEmp: Record<string, HistVendaRow[]> = {
+  // Aira Cecilia — primeiro empréstimo (quitado) antes da renovação
+  "4359614134": [
+    { nro: 1, data: "2026-07-06", estado: "Quitado", parcelas: 20, parcPagas: 20, parcFalt: 0, sancao: 0, valorEmpr: 700, vrParc: 42, freq: "Diário", visitas: 20, pctJuros: 20 },
+  ],
+};
+
 function HistorialVendasModal({ row, onClose }: { row: EmpRow; onClose: () => void }) {
   const [selectedHistRow, setSelectedHistRow] = useState<number | null>(null);
 
-  const hist = [
+  const hist: HistVendaRow[] = historicoVendasPorEmp[row.consec] ?? [
     { nro: 2, data: "2026-04-08", estado: "Quitado",          parcelas: 20, parcPagas: 12.4, parcFalt: 7.6, sancao: 0, valorEmpr: 2100, vrParc: 105, freq: "Diário", visitas: 5,  pctJuros: 40 },
     { nro: 1, data: "2026-03-14", estado: "Quitado",          parcelas: 14, parcPagas: 14,   parcFalt: 0,   sancao: 0, valorEmpr: 840,  vrParc: 60,  freq: "Diário", visitas: 8,  pctJuros: 40 },
   ];
