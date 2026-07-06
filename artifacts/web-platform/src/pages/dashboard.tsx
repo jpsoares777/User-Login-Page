@@ -339,9 +339,23 @@ const RotatedYLabel = ({ value, viewBox }: any) => {
   );
 };
 
-// Extrai mês (0-11) e ano de uma string de data "YYYY-MM-DD..." (aceita hora)
-const _mesDe = (s?: string): number => { const m = /^(\d{4})-(\d{2})/.exec(s ?? ""); return m ? Number(m[2]) - 1 : -1; };
-const _anoDe = (s?: string): number => { const m = /^(\d{4})/.exec(s ?? ""); return m ? Number(m[1]) : -1; };
+// Extrai mês (0-11) e ano — aceita "YYYY-MM-DD[ HH:MM]" e "DD/MM/YYYY"
+const _mesDe = (s?: string): number => {
+  if (!s) return -1;
+  let m = /^(\d{4})-(\d{2})/.exec(s);      // YYYY-MM-DD
+  if (m) return Number(m[2]) - 1;
+  m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(s); // DD/MM/YYYY
+  if (m) return Number(m[2]) - 1;
+  return -1;
+};
+const _anoDe = (s?: string): number => {
+  if (!s) return -1;
+  let m = /^(\d{4})-\d{2}/.exec(s);        // YYYY-MM-DD
+  if (m) return Number(m[1]);
+  m = /^\d{2}\/\d{2}\/(\d{4})/.exec(s);    // DD/MM/YYYY
+  if (m) return Number(m[1]);
+  return -1;
+};
 const PIE_PALETTE = ["#3d9cd2", "#4cae4c", "#e8a838", "#2e2e2e", "#8b5cf6", "#ef4444", "#0ea5e9", "#f59e0b", "#14b8a6", "#a855f7"];
 
 function DesempenhoContent({ rotas = [] }: { rotas?: string[] }) {
