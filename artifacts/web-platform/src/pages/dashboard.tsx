@@ -3028,12 +3028,11 @@ function VendasPorPeriodosContent({ rows = vendasPeriodosData }: { rows?: typeof
   };
 
   const cols = [
-    { label: "Rota",           w: "9%",  align: "left"   as const },
-    { label: "Consec.",        w: "7%",  align: "left"   as const },
-    { label: "Frec.",          w: "5%",  align: "center" as const },
-    { label: "Valor Ant.",     w: "5%",  align: "right"  as const },
-    { label: "Id Venta",       w: "8%",  align: "left"   as const },
-    { label: "Cliente",        w: "21%", align: "left"   as const },
+    { label: "Rota",              w: "9%",  align: "left"   as const },
+    { label: "Nº do Empréstimo",  w: "12%", align: "left"   as const },
+    { label: "Frec.",             w: "5%",  align: "center" as const },
+    { label: "Valor Ant.",        w: "5%",  align: "right"  as const },
+    { label: "Cliente",           w: "24%", align: "left"   as const },
     { label: "Documento",      w: "8%",  align: "left"   as const },
     { label: "Móvel",          w: "8%",  align: "left"   as const },
     { label: "Valor Produto",  w: "6%",  align: "right"  as const },
@@ -3089,7 +3088,6 @@ function VendasPorPeriodosContent({ rows = vendasPeriodosData }: { rows?: typeof
                   <td style={tdV("right",  { color: r.valorAnt > 0 ? "#374151" : "#9ca3af", fontWeight: r.valorAnt > 0 ? 600 : 400 })}>
                     {r.valorAnt > 0 ? fmtV(r.valorAnt) : "$ 0"}
                   </td>
-                  <td style={tdV("left",   { color: "#6b7280", fontSize: 12 })}>{r.idVenta}</td>
                   <td style={tdV("left")}>
                     <span style={{ color: "#374151", fontWeight: 500, marginRight: 4, overflow: "hidden", textOverflow: "ellipsis" }}>{r.cliente}</span>
                     <span style={{ fontSize: 11, ...tagStyle(r.tag) }}>&gt;&gt;&gt; {r.tag}</span>
