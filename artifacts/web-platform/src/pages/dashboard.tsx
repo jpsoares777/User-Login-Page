@@ -747,10 +747,10 @@ const pagamentosPorEmprestimo: Record<number, { nro: number; tipo: string; valor
   ],
 };
 
-type PagRow = { nro: number; tipo: string; valor: number; data: string; obs: string };
+type PagHistRow = { nro: number; tipo: string; valor: number; data: string; obs: string };
 
 // Pagamentos específicos de empréstimos do histórico (por consecutivo → nro do empréstimo no histórico)
-const historicoPagamentosPorEmp: Record<string, Record<number, PagRow[]>> = {
+const historicoPagamentosPorEmp: Record<string, Record<number, PagHistRow[]>> = {
   // Aira Cecilia — primeiro empréstimo (R$700) quitado antes da renovação
   "4359614134": {
     1: [
@@ -761,7 +761,7 @@ const historicoPagamentosPorEmp: Record<string, Record<number, PagRow[]>> = {
 
 function PagamentosEmprestimoModal({
   nroEmp, cliente, onClose, pagamentos: pagamentosProp,
-}: { nroEmp: number; cliente: string; onClose: () => void; pagamentos?: PagRow[] }) {
+}: { nroEmp: number; cliente: string; onClose: () => void; pagamentos?: PagHistRow[] }) {
   const pagamentos = pagamentosProp ?? pagamentosPorEmprestimo[nroEmp] ?? [];
   const total = pagamentos.filter(p => p.tipo === "PARC.").reduce((a, p) => a + p.valor, 0);
   const trunc = (n: string) => n.length > 22 ? n.slice(0, 19) + "..." : n;
