@@ -65,30 +65,39 @@ const PersonIcon = () => (
 
 // ── Chart card wrapper ────────────────────────────────────────────────────────
 
-function ChartCard({ children, year = "2026", subtitle, showMonth = false, rotas = [] }: { children: React.ReactNode; year?: string; subtitle?: string; showMonth?: boolean; rotas?: string[] }) {
+function ChartCard({ children, year = "2026", subtitle, showMonth = false, rotas = [],
+  rotaSel, onRota, anoSel, onAno, mesSel, onMes, onReload }: {
+    children: React.ReactNode; year?: string; subtitle?: string; showMonth?: boolean; rotas?: string[];
+    rotaSel?: string | null; onRota?: (r: string) => void;
+    anoSel?: string; onAno?: (y: string) => void;
+    mesSel?: string; onMes?: (m: string) => void;
+    onReload?: () => void;
+  }) {
+  const anoBase = Number(year);
   return (
     <div className="bg-white border border-gray-200 rounded flex flex-col flex-1 min-w-0 min-h-0" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-3 py-1.5 border-b border-gray-100 shrink-0">
-        <button className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 30, height: 30 }}>
+        <button onClick={() => onReload?.()} className="flex items-center justify-center rounded shrink-0" style={{ background: "#16a34a", width: 30, height: 30 }}>
           <svg viewBox="0 0 24 24" style={{ width: 16, height: 16 }} className="fill-white">
             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
           </svg>
         </button>
-        <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
-          {rotas.length > 0 ? rotas.map(r => <option key={r}>{r}</option>) : <option>— Selecione —</option>}
+        <select value={rotaSel ?? ""} onChange={e => onRota?.(e.target.value)} className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
+          <option value="">— Selecione —</option>
+          {rotas.map(r => <option key={r} value={r}>{r}</option>)}
         </select>
-        <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
-          <option>{year}</option>
-          <option>{String(Number(year) - 1)}</option>
+        <select value={anoSel ?? year} onChange={e => onAno?.(e.target.value)} className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
+          <option value={String(anoBase)}>{anoBase}</option>
+          <option value={String(anoBase - 1)}>{anoBase - 1}</option>
         </select>
         {showMonth && (
-          <select className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
+          <select value={mesSel ?? ""} onChange={e => onMes?.(e.target.value)} className="text-[13px] border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 cursor-pointer">
             <option value="">--Mes--</option>
-            <option>Jan.</option><option>Fev.</option><option>Mar.</option>
-            <option>Abr.</option><option>Mai.</option><option>Jun.</option>
-            <option>Jul.</option><option>Ago.</option><option>Set.</option>
-            <option>Out.</option><option>Nov.</option><option>Dez.</option>
+            <option value="1">Jan.</option><option value="2">Fev.</option><option value="3">Mar.</option>
+            <option value="4">Abr.</option><option value="5">Mai.</option><option value="6">Jun.</option>
+            <option value="7">Jul.</option><option value="8">Ago.</option><option value="9">Set.</option>
+            <option value="10">Out.</option><option value="11">Nov.</option><option value="12">Dez.</option>
           </select>
         )}
         <div className="flex-1" />
@@ -330,48 +339,130 @@ const RotatedYLabel = ({ value, viewBox }: any) => {
   );
 };
 
+// Extrai mês (0-11) e ano de uma string de data "YYYY-MM-DD..." (aceita hora)
+const _mesDe = (s?: string): number => { const m = /^(\d{4})-(\d{2})/.exec(s ?? ""); return m ? Number(m[2]) - 1 : -1; };
+const _anoDe = (s?: string): number => { const m = /^(\d{4})/.exec(s ?? ""); return m ? Number(m[1]) : -1; };
+const PIE_PALETTE = ["#3d9cd2", "#4cae4c", "#e8a838", "#2e2e2e", "#8b5cf6", "#ef4444", "#0ea5e9", "#f59e0b", "#14b8a6", "#a855f7"];
+
 function DesempenhoContent({ rotas = [] }: { rotas?: string[] }) {
+  const [rotaSel, setRotaSel] = useState<string | null>(rotas[0] ?? null);
+  const [ano, setAno] = useState("2026");
+  const [mes, setMes] = useState(""); // "" = ano todo; "1".."12" = mês
+  const [reloadTick, setReloadTick] = useState(0);
+  const [data, setData] = useState<RotaFakeData | null>(null);
+
+  // Seleciona a primeira rota automaticamente quando a lista chegar
+  useEffect(() => { if (!rotaSel && rotas.length > 0) setRotaSel(rotas[0]); }, [rotas, rotaSel]);
+
+  // Busca o snapshot da rota (polling a cada 10s) — mesmos dados reais das outras abas
+  useEffect(() => {
+    if (!rotaSel) { setData(null); return; }
+    let alive = true;
+    const load = () => {
+      fetch(`${import.meta.env.BASE_URL}api/caixa/fechamento-rota?rota=${encodeURIComponent(rotaSel)}&_t=${Date.now()}`)
+        .then(r => r.ok ? r.json() : null)
+        .then((d: RotaFakeData | null) => { if (alive) setData(d ?? null); })
+        .catch(() => {});
+    };
+    load();
+    const iv = setInterval(load, 10000);
+    return () => { alive = false; clearInterval(iv); };
+  }, [rotaSel, reloadTick]);
+
+  const anoN = Number(ano);
+  const mesN = mes ? Number(mes) - 1 : -1;
+  const clientes = (data?.clientesLista ?? []) as ClienteRow[];
+  const despesas = (data?.despesasLista ?? []) as DespRow[];
+  const rendimentos = (data?.rendimentosLista ?? []) as RendRow[];
+
+  const kCliCur = `Clientes ${anoN}`, kCliPrev = `Clientes ${anoN - 1}`;
+  const kEmpCur = `Empréstimo ${anoN}`, kEmpPrev = `Empréstimo ${anoN - 1}`;
+
+  // Gráficos por mês, calculados a partir do histórico de crédito de cada cliente
+  const clientesChart = MONTHS.map((m, i) => {
+    let cur = 0, prev = 0;
+    clientes.forEach(c => (c.historico ?? []).forEach(h => {
+      if (_mesDe(h.data) !== i) return;
+      const y = _anoDe(h.data);
+      if (y === anoN) cur++; else if (y === anoN - 1) prev++;
+    }));
+    return { mes: m, [kCliCur]: cur, [kCliPrev]: prev } as Record<string, string | number>;
+  });
+
+  const emprestimoChart = MONTHS.map((m, i) => {
+    let cur = 0, prev = 0;
+    clientes.forEach(c => (c.historico ?? []).forEach(h => {
+      if (_mesDe(h.data) !== i) return;
+      const y = _anoDe(h.data);
+      if (y === anoN) cur += h.valor || 0; else if (y === anoN - 1) prev += h.valor || 0;
+    }));
+    return { mes: m, [kEmpCur]: cur, [kEmpPrev]: prev } as Record<string, string | number>;
+  });
+
+  const rendVsDespChart = MONTHS.map((m, i) => {
+    let rend = 0, desp = 0;
+    rendimentos.forEach(r => { if (_mesDe(r.data) === i && _anoDe(r.data) === anoN) rend += r.valor || 0; });
+    despesas.forEach(d => { if (_mesDe(d.data) === i && _anoDe(d.data) === anoN) desp += d.valor || 0; });
+    return { mes: m, Rendimentos: rend, Despesas: desp };
+  });
+
+  // Pizzas por categoria (filtra por ano e, se selecionado, por mês)
+  const noPeriodo = (s?: string) => _anoDe(s) === anoN && (mesN < 0 || _mesDe(s) === mesN);
+  const groupCat = (rows: { categoria: string; valor: number; data: string }[]) => {
+    const map = new Map<string, number>();
+    rows.forEach(r => { if (noPeriodo(r.data)) { const k = r.categoria || "Outros"; map.set(k, (map.get(k) || 0) + (r.valor || 0)); } });
+    const arr = Array.from(map.entries()).map(([name, value], i) => ({
+      name: `${name} (${value.toLocaleString("pt-BR")})`, value, color: PIE_PALETTE[i % PIE_PALETTE.length],
+    }));
+    const total = arr.reduce((s, d) => s + d.value, 0);
+    return total > 0 ? arr : [{ name: "Sem dados", value: 1, color: "#e2e8f0" }];
+  };
+  const despPie = groupCat(despesas);
+  const rendPie = groupCat(rendimentos);
+
+  const reload = () => setReloadTick(t => t + 1);
+  const cardCommon = { rotas, rotaSel, onRota: setRotaSel, anoSel: ano, onAno: setAno, onReload: reload };
+
   return (
     <div className="flex-1 flex flex-col min-h-0" style={{ background: "#f0f2f5", gap: 16, padding: 12 }}>
 
       {/* Row 1: 3 bar charts */}
       <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
-        <ChartCard rotas={rotas}>
+        <ChartCard {...cardCommon}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={clientesData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
+            <BarChart data={clientesChart} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <Customized component={Background3D} />
               <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: "#222", fontWeight: "bold" }} axisLine={false} tickLine={false} width={28} />
+              <YAxis tick={{ fontSize: 11, fill: "#222", fontWeight: "bold" }} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
               <Tooltip contentStyle={{ fontSize: 10 }} />
               <Legend iconSize={7} iconType="circle" wrapperStyle={{ fontSize: 8, paddingTop: 2 }} />
-              <Bar dataKey="Clientes 2026" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
-              <Bar dataKey="Clientes 2025" fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey={kCliCur} fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey={kCliPrev} fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard rotas={rotas}>
+        <ChartCard {...cardCommon}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={ventasData} margin={{ top: 14, right: 20, left: 14, bottom: 4 }}>
+            <BarChart data={emprestimoChart} margin={{ top: 14, right: 20, left: 14, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <Customized component={Background3D} />
               <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#222", fontWeight: "bold" }} axisLine={false} tickLine={false} width={34}
-                domain={[0, 20000]} ticks={[0, 5000, 10000, 15000, 20000]}
                 tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : String(v)} />
               <Tooltip contentStyle={{ fontSize: 10 }} formatter={(v: number) => `$ ${v.toLocaleString("pt-BR")}`} />
               <Legend iconSize={7} iconType="circle" wrapperStyle={{ fontSize: 8, paddingTop: 2 }} />
-              <Bar dataKey="Empréstimo 2026" fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
-              <Bar dataKey="Empréstimo 2025" fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey={kEmpCur} fill="#5b9bd5" maxBarSize={20} shape={<Bar3D depth={10} />} />
+              <Bar dataKey={kEmpPrev} fill="#2c2c2c" maxBarSize={20} shape={<Bar3D depth={10} />} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard rotas={rotas}>
+        <ChartCard {...cardCommon}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={gastosIngresosData} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
+            <BarChart data={rendVsDespChart} margin={{ top: 14, right: 20, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="" stroke="#d8dde3" />
               <Customized component={Background3D} />
               <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#333", fontWeight: "bold" }} axisLine={false} tickLine={false} />
@@ -390,12 +481,12 @@ function DesempenhoContent({ rotas = [] }: { rotas?: string[] }) {
       {/* Row 2: 2 pie charts + empty third */}
       <div className="flex min-h-0" style={{ flex: 1, gap: 16 }}>
 
-        <ChartCard subtitle="Despesas por Categoria – 2026" year="2026" showMonth rotas={rotas}>
-          <Pie3DChart data={gastosPieData} />
+        <ChartCard {...cardCommon} subtitle={`Despesas por Categoria – ${anoN}`} year={ano} showMonth mesSel={mes} onMes={setMes}>
+          <Pie3DChart data={despPie} />
         </ChartCard>
 
-        <ChartCard subtitle="Rendimentos por Categoria 2026" year="2026" showMonth rotas={rotas}>
-          <Pie3DChart data={ingresosPieData} />
+        <ChartCard {...cardCommon} subtitle={`Rendimentos por Categoria ${anoN}`} year={ano} showMonth mesSel={mes} onMes={setMes}>
+          <Pie3DChart data={rendPie} />
         </ChartCard>
 
         <div className="flex-1" />
