@@ -1216,14 +1216,14 @@ const rendCategoriaColor: Record<string, { bg: string; text: string; border: str
   "Outros":        { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" },
 };
 
-function RendimentosContent({ rows }: { rows: RendRow[] }) {
+function RendimentosContent({ rows, cobrador }: { rows: RendRow[]; cobrador?: string }) {
   const cols = [
     { label: "Nro.",          w: 54,  align: "center" as const },
     { label: "Categoria",     w: 150, align: "center" as const },
     { label: "Valor",         w: 120, align: "right"  as const },
     { label: "Data",          w: 110, align: "center" as const },
     { label: "Hora",          w: 80,  align: "center" as const },
-    { label: "Responsável",   w: 160, align: "left"   as const },
+    { label: "Cobrador",      w: 160, align: "left"   as const },
     { label: "Observações",   w: 200, align: "left"   as const },
   ];
 
@@ -1277,7 +1277,7 @@ function RendimentosContent({ rows }: { rows: RendRow[] }) {
                   <td style={tdR("right", { fontWeight: 700, color: "#15803d" })}>{fmt(r.valor)}</td>
                   <td style={tdR("center", { color: "#6b7280" })}>{r.data}</td>
                   <td style={tdR("center", { color: "#6b7280" })}>{r.hora}</td>
-                  <td style={tdR("left", { color: "#374151" })}>{r.responsavel}</td>
+                  <td style={tdR("left", { color: "#374151" })}>{cobrador || r.responsavel}</td>
                   <td style={tdR("left", { color: "#6b7280", fontStyle: r.obs ? "normal" : "italic" })}>{r.obs || "—"}</td>
                 </tr>
               );
@@ -7931,7 +7931,7 @@ export default function DashboardPage() {
         ) : showDespesas ? (
           <DespesasContent rows={selectedRota ? ((importedRotaData[selectedRota]?.despesasLista ?? []) as DespRow[]) : []} />
         ) : showRendimentos ? (
-          <RendimentosContent rows={selectedRota ? ((importedRotaData[selectedRota]?.rendimentosLista ?? []) as RendRow[]) : []} />
+          <RendimentosContent rows={selectedRota ? ((importedRotaData[selectedRota]?.rendimentosLista ?? []) as RendRow[]) : []} cobrador={selectedRota ? (importedRotaData[selectedRota]?.cobradorNome || undefined) : undefined} />
         ) : showClientes ? (
           <ClientesContent rows={selectedRota ? ((importedRotaData[selectedRota]?.clientesLista ?? []) as ClienteRow[]) : []} />
         ) : showAgendados ? (
