@@ -8141,7 +8141,7 @@ export default function DashboardPage() {
                             if (r.ok) { setCaixaAberto(true); }
                           } catch {}
                         } },
-                  { icon:<ClipboardCheck size={16} color="#7c3aed" strokeWidth={2} style={{ flexShrink:0 }} />, label:"Código Aprovações", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
+                  { icon:<ClipboardCheck size={16} color="#7c3aed" strokeWidth={2} style={{ flexShrink:0 }} />, label:"Aprovações Empr.", accent:"#7c3aed", onClick: () => setCodigosOpen(true) },
                 ] as { icon:React.ReactNode; label:string; accent:string; onClick:()=>void }[]).map(item => (
                   <button key={item.label} onClick={item.onClick}
                     style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"11px 12px",
