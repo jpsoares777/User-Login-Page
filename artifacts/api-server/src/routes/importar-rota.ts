@@ -18,6 +18,8 @@ interface ClienteImport {
   parcelasPagas: number;
   parcelasRestantes: number;
   saldo: number;
+  atrasadas?: number;
+  visitas?: number;
 }
 
 router.post("/importar-rota", async (req, res): Promise<void> => {
@@ -112,6 +114,8 @@ router.post("/importar-rota", async (req, res): Promise<void> => {
           parcelasPagas: c.parcelasPagas ?? 0,
           parcelasRestantes: c.parcelasRestantes ?? 0,
           saldo: c.saldo ?? 0,
+          atrasadas: c.atrasadas ?? 0,
+          visitas: c.visitas ?? 0,
         },
         status: "pendente",
       });

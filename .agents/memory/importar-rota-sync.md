@@ -11,6 +11,8 @@ Regra: toda ação da web que precisa refletir no app do cobrador vai pela fila 
 
 **Dedupe (importante):** reimportar a mesma planilha gera novos comandos/ids. O app deduplica por id, por `consecutivo` e — quando a planilha não tem consecutivo — por chave composta nome+telefone+endereço normalizada.
 
+**Atrasadas/visitas:** na ficha do app esses números são DERIVADOS do histórico de pagamentos do ciclo (atrasadas = "Sem pagamento"; visitas = total com id >= creditoStartTimestamp). A importação sintetiza esse histórico: `pagas` entradas "Parcela" + atrasadas entradas "Sem pagamento" (fallback: visitas − pagas). O snapshot ao admin também deriva visitas/atrasadas de historicoPagamentos (registro do dia como piso) — nunca gravar 0 fixo.
+
 **Why:** o app trabalha com DB local (localStorage); inserir só no Postgres não aparece no app. Aplicar/persistir antes do ack garante durabilidade se o app fechar.
 
 **How to apply:** novos fluxos web→app devem seguir o mesmo padrão (novo tipo na fila, aplicação idempotente, saveDB antes do ack, dedupe que sobreviva a re-envio).

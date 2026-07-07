@@ -5837,7 +5837,7 @@ export default function DashboardPage() {
   const [importarArquivoClientes, setImportarArquivoClientes] = useState<File | null>(null);
   const [importarLoading, setImportarLoading] = useState(false);
   const [importarStatus, setImportarStatus] = useState<{ ok: boolean; msg: string } | null>(null);
-  type ImportClienteRow = { nome: string; telefone: string; endereco: string; consecutivo: string; dataInicio: string; valorProduto: number; totalAPagar: number; jurosPct: number; valorParcela: number; numParcelas: number; parcelasPagas: number; parcelasRestantes: number; saldo: number; };
+  type ImportClienteRow = { nome: string; telefone: string; endereco: string; consecutivo: string; dataInicio: string; valorProduto: number; totalAPagar: number; jurosPct: number; valorParcela: number; numParcelas: number; parcelasPagas: number; parcelasRestantes: number; saldo: number; atrasadas: number; visitas: number; };
   const [importarPreviewClientes, setImportarPreviewClientes] = useState<ImportClienteRow[]>([]);
 
   // ── Faturas ──
@@ -6279,6 +6279,8 @@ export default function DashboardPage() {
     const pagasCol    = c("C.PAGAS","PAGAS","CUOTAS PAGAS","PARCELAS PAGAS");
     const restaCol    = c("C.RESTA","RESTANTES","RESTA","CUOTAS RESTANTES","PARCELAS RESTANTES");
     const saldoCol    = c("SALDO");
+    const atrasCol    = c("C.NO PAGAS","NO PAGAS","NO PAGADAS","ATRASADAS","ATRASOS","CUOTAS ATRASADAS","PARCELAS ATRASADAS");
+    const visitCol    = c("VISITAS","NRO VISITAS","VISITAS FEITAS");
 
     return rows.map(r => ({
       nome:              r[nomeCol]    ?? "",
@@ -6294,6 +6296,8 @@ export default function DashboardPage() {
       parcelasPagas:     parseNum(r[pagasCol]),
       parcelasRestantes: parseNum(r[restaCol]),
       saldo:             parseNum(r[saldoCol]),
+      atrasadas:         Math.round(parseNum(r[atrasCol])),
+      visitas:           Math.round(parseNum(r[visitCol])),
     })).filter(r => r.nome.trim() !== "");
   };
 
@@ -6402,11 +6406,11 @@ export default function DashboardPage() {
         jurosPorc: c.jurosPct || 40,
         total: c.totalAPagar,
         parcelas: c.numParcelas,
-        atrasadas: 0,
+        atrasadas: c.atrasadas || 0,
         pagas: Math.round(c.parcelasPagas),
         rest: Math.round(c.parcelasRestantes),
         sancao: 0,
-        visitas: 0,
+        visitas: c.visitas || (Math.round(c.parcelasPagas) + (c.atrasadas || 0)),
         valorParc: c.valorParcela,
         saldo: c.saldo,
       }));

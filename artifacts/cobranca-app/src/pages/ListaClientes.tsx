@@ -7,7 +7,7 @@ import { CadastroCliente } from "./CadastroCliente";
 import { LancamentoFinanceiro } from "./LancamentoFinanceiro";
 import { RelatorioFinanceiro } from "./RelatorioFinanceiro";
 import { EmprestimosDoDia, Emprestimo, emprestimentosIniciais } from "./EmprestimosDoDia";
-import { ClienteDetalhe, ClienteDetalheRenovacao, ClienteItem, Agendamento, Pagamento, MetodoPagamento, CreditoRecord } from "./ClienteDetalhe";
+import { ClienteDetalhe, ClienteDetalheRenovacao, ClienteItem, Agendamento, Pagamento, MetodoPagamento, FormaPagamento, CreditoRecord } from "./ClienteDetalhe";
 
 // Empréstimo/renovação acima do limite: fica retido aguardando aprovação do dono
 // no painel admin. Enquanto pendente, o cliente NÃO entra na carteira nem no
@@ -2103,6 +2103,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
               nome?: string; telefone?: string; endereco?: string; consecutivo?: string;
               dataInicio?: string; jurosPct?: number; valorParcela?: number;
               numParcelas?: number; parcelasPagas?: number; parcelasRestantes?: number; saldo?: number;
+              atrasadas?: number; visitas?: number;
             };
             const valorParcela = Number(d.valorParcela) || 0;
             const totalParc = Math.max(1, Math.round(Number(d.numParcelas) || 1));
@@ -2137,14 +2138,43 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                 (!novoImportado.consecutivo && chaveImp(c) === chaveNovo))
                 ? prev : [...prev, novoImportado];
             const addOrdem = (prev: number[]) => prev.includes(clienteAlvoId) ? prev : [...prev, clienteAlvoId];
+            // Histórico de visitas sintetizado a partir da planilha: `pagas`
+            // parcelas pagas + atrasadas como "Sem pagamento". Assim a ficha
+            // do cliente mostra Atrasadas e Visitas corretas (o app deriva
+            // esses números do histórico de pagamentos do ciclo).
+            const atrasImp = Math.max(0, Math.round(Number(d.atrasadas) || 0));
+            const visitasImp = Math.max(0, Math.round(Number(d.visitas) || 0));
+            const semPagImp = atrasImp > 0 ? atrasImp : Math.max(0, visitasImp - pagas);
+            const baseTs = novoImportado.creditoStartTimestamp ?? clienteAlvoId;
+            const fmtDataPag = (ts: number) => {
+              const dt = new Date(ts);
+              return `${String(dt.getDate()).padStart(2, "0")}/${String(dt.getMonth() + 1).padStart(2, "0")}/${dt.getFullYear()}`;
+            };
+            const pagsSintetizados: Pagamento[] = [];
+            for (let i = 0; i < pagas + semPagImp; i++) {
+              const ts = baseTs + (i + 1) * 86400000;
+              pagsSintetizados.push({
+                id: Math.max(ts, baseTs + i + 1),
+                data: fmtDataPag(Math.min(ts, Date.now())),
+                parcela: i + 1,
+                valor: i < pagas ? valorParcela : 0,
+                metodo: (i < pagas ? "Parcela" : "Sem pagamento") as MetodoPagamento,
+                ...(i < pagas ? { forma: "Dinheiro" as FormaPagamento } : {}),
+              });
+            }
+            const addHist = (prev: Record<number, Pagamento[]>) =>
+              (prev[clienteAlvoId]?.length || pagsSintetizados.length === 0)
+                ? prev : { ...prev, [clienteAlvoId]: pagsSintetizados };
             setClientes(addImportado);
             setOrdemClientesIds(addOrdem);
+            setHistoricoPagamentos(addHist);
             // Durabilidade ANTES do ack.
             const dbA = loadDB();
             if (dbA) {
               saveDB({
                 clientes: addImportado((dbA.clientes as ClienteItem[] | undefined) ?? []),
                 ordemClientesIds: addOrdem(dbA.ordemClientesIds ?? []),
+                historicoPagamentos: addHist((dbA.historicoPagamentos as Record<number, Pagamento[]> | undefined) ?? {}),
               });
             }
           } else if (cmd.tipo === "excluir") {
@@ -2432,7 +2462,13 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       const valorVenda = principalDoClienteSnap(c.id, parcela, cuotas, pct);
       const pagas = Number(c.parcelasPagas) || 0;
       const restantes = Math.max(0, cuotas - pagas);
-      const visitas = (registroPagamentos[c.id] ?? []).length;
+      // Visitas/atrasadas do ciclo atual derivadas do histórico de pagamentos
+      // (mesma regra da ficha do app) — cobre clientes importados; usa o
+      // registro do dia como piso para não perder visitas de hoje.
+      const pagsCicloSnap = (historicoPagamentos[c.id] ?? []).filter(p =>
+        !c.creditoStartTimestamp || p.id >= c.creditoStartTimestamp);
+      const visitas = Math.max((registroPagamentos[c.id] ?? []).length, pagsCicloSnap.length);
+      const atrasadasSnap = pagsCicloSnap.filter(p => p.metodo === "Sem pagamento").length;
       const historicoCli = (historicoCreditos[c.id] ?? []).map(h => ({
         data: h.dataInicio,
         valor: h.valor,
@@ -2465,7 +2501,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         pctJuros: pct,
         total,
         cuotas,
-        atrasadas: 0,
+        atrasadas: atrasadasSnap,
         pagas,
         restantes,
         vlrCuota: parcela,
