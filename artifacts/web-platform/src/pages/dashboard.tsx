@@ -6353,10 +6353,15 @@ export default function DashboardPage() {
         });
         setImportarStatus({ ok: true, msg: `Resumen importado para "${rotaKey}" com sucesso!` });
         setImportarArquivo(null);
-        // Permanece na página Importar Rotas (sem navegar para Liq. Diária).
+        // Permanece na página Importar Rotas (sem navegar para Liq. Diária)
+        // e mantém a árvore de cidades fechada.
         setSelectedRota(rotaKey);
         setHasSearched(true);
         setCollapsedEstadoMain(false);
+        setCollapsedCidades(new Set([
+          ...Object.values(estadosData).flat().map(i => i.cidade),
+          estadosData[selectedEstado]?.[0]?.cidade ?? (selectedEstado || "IMPORTADO"),
+        ]));
         return;
       }
 
