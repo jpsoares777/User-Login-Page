@@ -5830,13 +5830,44 @@ export default function DashboardPage() {
   const [caixaErro, setCaixaErro] = useState<string | null>(null);
   type CaixaMovRow = { id: number; tipo: "Entrada" | "Retirada" | "Saída"; descricao: string; valor: number; data: string; };
   const [caixaMovs, setCaixaMovs] = useState<CaixaMovRow[]>([]);
+  const [caixaDataFiltro, setCaixaDataFiltro] = useState("");
   const caixaReqIdRef = useRef(0);
-  const fetchCaixaGeral = async (rota: string) => {
+  const fetchCaixaGeral = async (rota: string, dataFiltro = "") => {
     const reqId = ++caixaReqIdRef.current;
-    // Troca de rota: zera o estado imediatamente para nunca exibir dados de outra rota.
+    // Troca de rota/data: zera o estado imediatamente para nunca exibir dados de outra rota.
     setCaixaMovs([]); setCaixaSaldo(0); setCaixaErro(null);
     if (!rota) { setCaixaLoading(false); return; }
     setCaixaLoading(true);
+    const num = (v: unknown) => Number(v) || 0;
+    // ── Data específica: usa o fechamento (liquidação) daquele dia ──
+    if (dataFiltro) {
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}api/caixa/liquidacao-periodo?rota=${encodeURIComponent(rota)}&inicio=${dataFiltro}&fim=${dataFiltro}`);
+        if (!res.ok) throw new Error("HTTP");
+        const liq = await res.json();
+        if (reqId !== caixaReqIdRef.current) return;
+        if (!liq?.encontrado) { setCaixaMovs([]); setCaixaSaldo(0); setCaixaLoading(false); return; }
+        const movs: CaixaMovRow[] = [];
+        let seq = 1;
+        movs.push({ id: seq++, tipo: "Entrada", descricao: `Saldo inicial do caixa — ${rota}`, valor: num(liq.caixaInicial), data: dataFiltro });
+        if (num(liq.recebAtual) > 0) movs.push({ id: seq++, tipo: "Entrada", descricao: `Cobrança do dia (liquidação) — ${rota}`, valor: num(liq.recebAtual), data: dataFiltro });
+        if (num(liq.novosEmp) > 0)   movs.push({ id: seq++, tipo: "Saída",   descricao: `Novos empréstimos — ${rota}`,            valor: num(liq.novosEmp),   data: dataFiltro });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        for (const r of (Array.isArray(liq.rendimentosLista) ? liq.rendimentosLista : []) as any[]) movs.push({ id: seq++, tipo: "Entrada", descricao: `Rendimento: ${r.categoria}${r.obs ? ` — ${r.obs}` : ""}`, valor: num(r.valor), data: String(r.data || dataFiltro) });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const despLista = (Array.isArray(liq.despesasLista) ? liq.despesasLista : []) as any[];
+        for (const d of despLista.filter(d => d.categoria !== "Retirada de Caixa")) movs.push({ id: seq++, tipo: "Saída",    descricao: `Despesa: ${d.categoria}${d.obs ? ` — ${d.obs}` : ""}`, valor: num(d.valor), data: String(d.data || dataFiltro) });
+        for (const d of despLista.filter(d => d.categoria === "Retirada de Caixa")) movs.push({ id: seq++, tipo: "Retirada", descricao: d.obs ? `Retirada — ${d.obs}` : "Retirada de caixa",     valor: num(d.valor), data: String(d.data || dataFiltro) });
+        setCaixaMovs(movs);
+        setCaixaSaldo(num(liq.caixaFinal));
+      } catch {
+        if (reqId !== caixaReqIdRef.current) return;
+        setCaixaMovs([]); setCaixaSaldo(0);
+        setCaixaErro("Erro ao carregar o caixa desta data. Tente novamente.");
+      }
+      if (reqId === caixaReqIdRef.current) setCaixaLoading(false);
+      return;
+    }
     try {
       const [snapRes, movRes] = await Promise.all([
         fetch(`${import.meta.env.BASE_URL}api/caixa/fechamento-rota?rota=${encodeURIComponent(rota)}`),
@@ -5846,7 +5877,6 @@ export default function DashboardPage() {
       const snap = await snapRes.json();
       const movsAll = await movRes.json();
       if (reqId !== caixaReqIdRef.current) return; // resposta obsoleta: rota mudou
-      const num = (v: unknown) => Number(v) || 0;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const despesasRota: any[] = (movsAll?.despesas ?? []).filter((m: any) => m.rota === rota);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -5880,9 +5910,9 @@ export default function DashboardPage() {
     if (reqId === caixaReqIdRef.current) setCaixaLoading(false);
   };
   useEffect(() => {
-    if (activeMain === "Caixa Geral") fetchCaixaGeral(caixaRetiradaRota);
+    if (activeMain === "Caixa Geral") fetchCaixaGeral(caixaRetiradaRota, caixaDataFiltro);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeMain, caixaRetiradaRota]);
+  }, [activeMain, caixaRetiradaRota, caixaDataFiltro]);
   const [importarVendedor, setImportarVendedor] = useState("");
   const [importarMasivo, setImportarMasivo] = useState(true);
   const [importarArquivo, setImportarArquivo] = useState<File | null>(null);
@@ -7078,6 +7108,21 @@ export default function DashboardPage() {
                 </select>
               </div>
 
+              {/* Filtro de Data */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <label style={{ fontSize: 10, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Data</label>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <input type="date" value={caixaDataFiltro} onChange={e => setCaixaDataFiltro(e.target.value)}
+                    style={{ height: 34, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, color: caixaDataFiltro ? "#334155" : "#94a3b8", background: "#f8fafc", outline: "none" }} />
+                  {caixaDataFiltro && (
+                    <button onClick={() => setCaixaDataFiltro("")}
+                      style={{ height: 34, background: "#eff6ff", color: "#1d4ed8", border: "1.5px solid #bfdbfe", borderRadius: 7, padding: "0 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                      Hoje
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <div style={{ flex: 1 }} />
 
               {/* Retirada de Caixa */}
@@ -7125,7 +7170,7 @@ export default function DashboardPage() {
                     ))}
                     {caixaMovs.length === 0 && (
                       <tr><td colSpan={4} style={{ padding: "40px", textAlign: "center", color: caixaErro ? "#dc2626" : "#94a3b8", fontSize: 13, fontWeight: caixaErro ? 600 : 400 }}>
-                        {caixaLoading ? "Carregando..." : caixaErro ? caixaErro : caixaRetiradaRota ? "Nenhum movimento de caixa para esta rota." : "Selecione a rota para ver o saldo e os movimentos do caixa."}
+                        {caixaLoading ? "Carregando..." : caixaErro ? caixaErro : !caixaRetiradaRota ? "Selecione a rota para ver o saldo e os movimentos do caixa." : caixaDataFiltro ? "Nenhum fechamento de caixa nesta data para esta rota." : "Nenhum movimento de caixa para esta rota."}
                       </td></tr>
                     )}
                   </tbody>
@@ -7175,6 +7220,7 @@ export default function DashboardPage() {
                       <button disabled={caixaRetiradaEnviando} onClick={async () => {
                         const v = parseFloat(caixaRetiradaValor);
                         if (!caixaRetiradaRota) { setCaixaRetiradaErro("Selecione a rota na barra acima antes de retirar."); return; }
+                        if (caixaDataFiltro) { setCaixaRetiradaErro("A retirada é sempre na data atual. Clique em \"Hoje\" para limpar o filtro de data."); return; }
                         if (!v || v <= 0) { setCaixaRetiradaErro("Informe um valor válido."); return; }
                         if (v > caixaSaldo) { setCaixaRetiradaErro("Valor maior que o saldo atual do caixa."); return; }
                         setCaixaRetiradaEnviando(true);
