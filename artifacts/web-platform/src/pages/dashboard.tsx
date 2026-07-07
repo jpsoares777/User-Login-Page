@@ -8396,7 +8396,7 @@ export default function DashboardPage() {
               <div className="flex-1 overflow-auto">
                 <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1100 }}>
                   <colgroup>
-                    {[54, 150, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
+                    {[54, 150, 120, 110, 80, 160, 200].map((w, i) => <col key={i} style={{ width: w }} />)}
                   </colgroup>
                   <thead>
                     <tr>
@@ -8408,7 +8408,6 @@ export default function DashboardPage() {
                         { label: "Hora",        align: "center" as const },
                         { label: "Cobrador",    align: "left"   as const },
                         { label: "Observações", align: "left"   as const },
-                        { label: "Ações",       align: "center" as const },
                       ].map(c => (
                         <th key={c.label} style={{
                           padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
@@ -8437,23 +8436,11 @@ export default function DashboardPage() {
                           <td style={td("center", { color: "#6b7280" })}>{row.hora}</td>
                           <td style={td("left", { color: "#374151" })}>{row.responsavel}</td>
                           <td style={td("left", { color: "#6b7280", fontStyle: row.obs ? "normal" : "italic" })}>{row.obs || "—"}</td>
-                          <td style={td("center")}>
-                            <div style={{ display: "inline-flex", gap: 4 }}>
-                              <button title="Editar" onClick={() => { setRpEditId(row.id); setRpForm({ ...row }); setRpModalOpen(true); }}
-                                style={{ background: "#2563eb", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                              </button>
-                              <button title="Excluir" onClick={() => setRpDeleteId(row.id)}
-                                style={{ background: "#dc2626", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                              </button>
-                            </div>
-                          </td>
                         </tr>
                       );
                     })}
                     {rpFiltered.length === 0 && (
-                      <tr><td colSpan={8} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum rendimento encontrado no período.</td></tr>
+                      <tr><td colSpan={7} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum rendimento encontrado no período.</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -8618,7 +8605,7 @@ export default function DashboardPage() {
               <div className="flex-1 overflow-auto">
                 <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1100 }}>
                   <colgroup>
-                    {[54, 150, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
+                    {[54, 150, 120, 110, 80, 160, 200].map((w, i) => <col key={i} style={{ width: w }} />)}
                   </colgroup>
                   <thead>
                     <tr>
@@ -8630,7 +8617,6 @@ export default function DashboardPage() {
                         { label: "Hora",        align: "center" as const },
                         { label: "Cobrador",    align: "left"   as const },
                         { label: "Observações", align: "left"   as const },
-                        { label: "Ações",       align: "center" as const },
                       ].map(c => (
                         <th key={c.label} style={{
                           padding: "7px 8px", textAlign: c.align, fontSize: 13, fontWeight: 700,
@@ -8659,23 +8645,11 @@ export default function DashboardPage() {
                           <td style={td("center", { color: "#6b7280" })}>{row.hora}</td>
                           <td style={td("left", { color: "#374151" })}>{row.responsavel}</td>
                           <td style={td("left", { color: "#6b7280", fontStyle: row.obs ? "normal" : "italic" })}>{row.obs || "—"}</td>
-                          <td style={td("center")}>
-                            <div style={{ display: "inline-flex", gap: 4 }}>
-                              <button title="Editar" onClick={() => { setGpEditId(row.id); setGpForm({ ...row }); setGpModalOpen(true); }}
-                                style={{ background: "#2563eb", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                              </button>
-                              <button title="Excluir" onClick={() => setGpDeleteId(row.id)}
-                                style={{ background: "#dc2626", border: "none", borderRadius: 4, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: "#fff" }}><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                              </button>
-                            </div>
-                          </td>
                         </tr>
                       );
                     })}
                     {gpFiltered.length === 0 && (
-                      <tr><td colSpan={8} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada no período.</td></tr>
+                      <tr><td colSpan={7} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada no período.</td></tr>
                     )}
                   </tbody>
                 </table>
