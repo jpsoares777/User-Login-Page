@@ -7270,7 +7270,6 @@ export default function DashboardPage() {
                       {[
                         { label: "Nro",      w: 110, align: "left"   as const },
                         { label: "Data",     w: 105, align: "center" as const },
-                        { label: "IVA",      w: 60,  align: "center" as const },
                         { label: "Valor",    w: 180, align: "left"   as const },
                         { label: "Meses",    w: 70,  align: "center" as const },
                         { label: "Conceito",          align: "left"   as const },
@@ -7307,11 +7306,6 @@ export default function DashboardPage() {
                           {/* Data */}
                           <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center", color: "#475569", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}>
                             {fmtDataFatura(row.data)}
-                          </td>
-
-                          {/* IVA */}
-                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center", color: "#94a3b8", fontSize: 12, fontWeight: 600 }}>
-                            {row.iva}%
                           </td>
 
                           {/* Valor */}
@@ -7383,7 +7377,7 @@ export default function DashboardPage() {
                       );
                     })}
                     {faturaRows.length === 0 && (
-                      <tr><td colSpan={11} style={{ padding: "60px", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>Nenhuma fatura cadastrada.</td></tr>
+                      <tr><td colSpan={10} style={{ padding: "60px", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>Nenhuma fatura cadastrada.</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -7577,11 +7571,10 @@ export default function DashboardPage() {
                         { label: "Data",       value: fmtDataFatura(fr.data) },
                         { label: "Vencimento", value: fmtDataFatura(fr.vencimento) },
                         { label: "Valor",      value: fmtRealFatura(fr.valorCop) },
-                        { label: "IVA",        value: `${fr.iva}%` },
                         { label: "Meses",      value: `${fr.meses}` },
                         { label: "País",       value: fr.pais === "BR" ? "🇧🇷 Brasil" : "🇨🇴 Colômbia" },
                       ].map(({ label, value }, i) => (
-                        <div key={label} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderBottom: i < 6 ? "1px solid #f1f5f9" : "none" }}>
+                        <div key={label} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderBottom: i < 5 ? "1px solid #f1f5f9" : "none" }}>
                           <span style={{ width: 120, fontSize: 11, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>{label}</span>
                           <span style={{ fontSize: 13, fontWeight: 600, color: "#1e293b" }}>{value}</span>
                         </div>
