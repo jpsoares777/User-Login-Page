@@ -5922,7 +5922,7 @@ export default function DashboardPage() {
   // (mesma fonte da Liq. Diária). Responsável = cobrador da rota.
   useEffect(() => {
     if (activeMain !== "Gerenciar Despesas" && activeMain !== "Gerenciar Rendimentos" &&
-        activeMain !== "Gastos Períodos" && activeMain !== "Rendimentos Períodos") return;
+        activeMain !== "Despesas Períodos" && activeMain !== "Rendimentos Períodos") return;
     let cancel = false;
     (async () => {
       try {
@@ -6452,7 +6452,7 @@ export default function DashboardPage() {
               { icon: null,  label: "Gerenc. rendimentos",          color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)", onClick: () => { setGerenciarRendimentosOpen(true); setActiveMain("Gerenciar Rendimentos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Importar rotas",                color: "#7c3aed", img: iconImportarRota, imgSize: 21, onClick: () => { setImportarRotasOpen(true); setActiveMain("Importar Rotas"); setSideMenuOpen(false); } },
               { icon: null,  label: "Faturas",                       color: "#0891b2", img: iconFaturas, imgSize: 22, imgFilter: "invert(39%) sepia(90%) saturate(400%) hue-rotate(170deg) brightness(85%)", onClick: () => { setFaturasOpen(true); setActiveMain("Faturas"); setSideMenuOpen(false); } },
-              { icon: null,  label: "Gerenc. gastos períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)", onClick: () => { setGastosPeriodosOpen(true); setActiveMain("Gastos Períodos"); setSideMenuOpen(false); } },
+              { icon: null,  label: "Gerenc. despesas períodos",       color: "#dc2626", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(29%) sepia(96%) saturate(800%) hue-rotate(327deg) brightness(85%)", onClick: () => { setGastosPeriodosOpen(true); setActiveMain("Despesas Períodos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Gerenc. rendimentos períodos", color: "#16a34a", img: iconFinanceiro, imgSize: 22, imgFilter: "invert(48%) sepia(79%) saturate(400%) hue-rotate(90deg) brightness(85%)", onClick: () => { setRendPeriodosOpen(true); setActiveMain("Rendimentos Períodos"); setSideMenuOpen(false); } },
               { icon: null,  label: "Caixa geral",                  color: "#6b7280", img: iconCaixaGeral, imgSize: 34, onClick: () => { setCaixaGeralOpen(true); setActiveMain("Caixa Geral"); setSideMenuOpen(false); } },
             ].map(({ icon, label, color, img, imgBg, darkIcon, imgSize, imgFilter, imgTransform, useMask, onClick: itemOnClick }: { icon: string | null, label: string, color: string, img?: string, imgBg?: string, darkIcon?: boolean, imgSize?: number, imgFilter?: string, imgTransform?: string, useMask?: boolean, onClick?: () => void }) => (
@@ -6613,16 +6613,16 @@ export default function DashboardPage() {
           </button>
         )}
         {gastosPeriodosOpen && (
-          <button onClick={() => setActiveMain("Gastos Períodos")}
+          <button onClick={() => setActiveMain("Despesas Períodos")}
             className="flex items-center gap-2 px-4 h-10 text-sm font-medium transition-all rounded-t"
             style={{
-              background: activeMain === "Gastos Períodos" ? "#2563eb" : "rgba(255,255,255,0.08)",
-              color: activeMain === "Gastos Períodos" ? "#fff" : "rgba(255,255,255,0.65)",
-              border: activeMain === "Gastos Períodos" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
+              background: activeMain === "Despesas Períodos" ? "#2563eb" : "rgba(255,255,255,0.08)",
+              color: activeMain === "Despesas Períodos" ? "#fff" : "rgba(255,255,255,0.65)",
+              border: activeMain === "Despesas Períodos" ? "1px solid #2563eb" : "1px solid rgba(255,255,255,0.15)",
               borderBottom: "none",
             }}>
-            Gastos Períodos
-            <span onClick={e => { e.stopPropagation(); setGastosPeriodosOpen(false); if (activeMain === "Gastos Períodos") setActiveMain("Liq. Diária"); }}
+            Despesas Períodos
+            <span onClick={e => { e.stopPropagation(); setGastosPeriodosOpen(false); if (activeMain === "Despesas Períodos") setActiveMain("Liq. Diária"); }}
               style={{ fontSize: 14, lineHeight: 1, opacity: 0.75, marginLeft: 2 }}>×</span>
           </button>
         )}
@@ -6870,8 +6870,8 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── FILTER BAR (Gastos Períodos) ── */}
-      {activeMain === "Gastos Períodos" && (
+      {/* ── FILTER BAR (Despesas Períodos) ── */}
+      {activeMain === "Despesas Períodos" && (
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
             <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
@@ -8334,7 +8334,7 @@ export default function DashboardPage() {
             </div>
           );
         })()
-        : activeMain === "Gastos Períodos" ? (() => {
+        : activeMain === "Despesas Períodos" ? (() => {
           const gpFiltered = gpRows.filter(r =>
             (gpFiltroRota === "-- Todas --" || r.rota === gpFiltroRota) &&
             (gpFiltroCategoria === "-- Selecione --" || r.categoria === gpFiltroCategoria) &&
@@ -8347,7 +8347,7 @@ export default function DashboardPage() {
               <div className="shrink-0 flex items-center gap-2 px-3 py-2" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
                 <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
                   <svg viewBox="0 0 24 24" className="w-4 h-4 fill-gray-500"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5l4-4h10v4z"/></svg>
-                  Gastos Períodos
+                  Despesas Períodos
                 </span>
                 <div className="flex-1" />
                 {(gpFiltroDataInicial || gpFiltroDataFinal) && (
