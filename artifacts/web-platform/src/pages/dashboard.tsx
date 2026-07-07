@@ -5886,21 +5886,14 @@ export default function DashboardPage() {
   // ── Gerenciar Rendimentos ──
   type RendGRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; };
   const emptyRend: RendGRow = { id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "" };
-  const [rendGRows, setRendGRows] = useState<RendGRow[]>([
-    { id: 1, data: "2026-06-01", hora: "07:00", categoria: "Aporte",        descricao: "Aporte inicial de caixa para rota",        valor: 1500.00, responsavel: "Carlos Souza", obs: "Abertura do dia" },
-    { id: 2, data: "2026-06-03", hora: "08:30", categoria: "Depósito",      descricao: "Depósito bancário transferido para caixa",  valor: 800.00,  responsavel: "João Mendes",  obs: "" },
-    { id: 3, data: "2026-06-05", hora: "10:45", categoria: "Entrada Extra", descricao: "Entrada extra – venda de serviço avulso",   valor: 150.00,  responsavel: "Ana Lima",     obs: "Serviço pontual" },
-    { id: 4, data: "2026-06-07", hora: "12:00", categoria: "Transferência", descricao: "Transferência entre rotas – matriz",         valor: 500.00,  responsavel: "Carlos Souza", obs: "Autorizado" },
-    { id: 5, data: "2026-06-10", hora: "14:20", categoria: "Aporte",        descricao: "Aporte emergencial para cobertura",         valor: 300.00,  responsavel: "João Mendes",  obs: "Saldo baixo" },
-    { id: 6, data: "2026-06-11", hora: "15:50", categoria: "Entrada Extra", descricao: "Recebimento de taxa administrativa",        valor: 75.00,   responsavel: "Ana Lima",     obs: "" },
-  ]);
+  const [rendGRows, setRendGRows] = useState<RendGRow[]>([]);
   const [rendGFiltroCategoria, setRendGFiltroCategoria] = useState("-- Selecione --");
   const [rendGFiltroData, setRendGFiltroData] = useState("");
   const [rendGModalOpen, setRendGModalOpen] = useState(false);
   const [rendGEditId, setRendGEditId] = useState<number | null>(null);
   const [rendGForm, setRendGForm] = useState<RendGRow>(emptyRend);
   const [rendGDeleteId, setRendGDeleteId] = useState<number | null>(null);
-  const rendGCategorias = ["Aporte", "Depósito", "Entrada Extra", "Transferência", "Outros"];
+  const rendGCategorias = ["Aporte ao Caixa", "Recuperação de Crédito", "Outros Rendimentos"];
   const rendGFiltered = rendGRows.filter(r =>
     (rendGFiltroCategoria === "-- Selecione --" || r.categoria === rendGFiltroCategoria) &&
     (!rendGFiltroData || r.data === rendGFiltroData)
@@ -5909,25 +5902,55 @@ export default function DashboardPage() {
   // ── Gerenciar Despesas ──
   type DespRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; };
   const emptyDesp: DespRow = { id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "" };
-  const [despRows, setDespRows] = useState<DespRow[]>([
-    { id: 1, data: "2026-06-01", hora: "07:45", categoria: "Combustível",        descricao: "Gasolina – rota diária",           valor: 220.00, responsavel: "Carlos Souza",  obs: "" },
-    { id: 2, data: "2026-06-03", hora: "12:30", categoria: "Alimentação",        descricao: "Almoço equipe cobrança",           valor: 85.50,  responsavel: "João Mendes",   obs: "3 pessoas" },
-    { id: 3, data: "2026-06-05", hora: "16:00", categoria: "Manutenção",         descricao: "Troca de óleo – veículo",          valor: 310.00, responsavel: "Carlos Souza",  obs: "Aguardando NF" },
-    { id: 4, data: "2026-06-07", hora: "09:15", categoria: "Material",           descricao: "Papelaria e impressões",           valor: 67.80,  responsavel: "Ana Lima",      obs: "" },
-    { id: 5, data: "2026-06-10", hora: "14:20", categoria: "Combustível",        descricao: "Gasolina – visita clientes",       valor: 195.00, responsavel: "João Mendes",   obs: "" },
-    { id: 6, data: "2026-06-11", hora: "08:50", categoria: "Retirada de Caixa", descricao: "Retirada diária do operador",      valor: 500.00, responsavel: "Carlos Souza",  obs: "Autorizado" },
-  ]);
+  const [despRows, setDespRows] = useState<DespRow[]>([]);
   const [despFiltroCategoria, setDespFiltroCategoria] = useState("-- Selecione --");
   const [despFiltroData, setDespFiltroData] = useState("");
   const [despModalOpen, setDespModalOpen] = useState(false);
   const [despEditId, setDespEditId] = useState<number | null>(null);
   const [despForm, setDespForm] = useState<DespRow>(emptyDesp);
   const [despDeleteId, setDespDeleteId] = useState<number | null>(null);
-  const despCategorias = ["Combustível", "Alimentação", "Retirada de Caixa", "Material", "Manutenção", "Outros"];
+  const despCategorias = [
+    "Ajuste de Caixa", "Alimentação", "Adiantamento Salarial",
+    "Manutenção de Transporte", "Aluguel", "Energia", "Água",
+    "Troca de Óleo", "Celular", "Comissões", "Diferença de Caixa",
+    "Desconto de Multa", "Combustível", "Mensalidade do Sistema",
+    "Multas", "Outros", "Pagamento de Supervisor", "Outra Cobrança",
+    "Recargas", "Retirada de Caixa", "Salário", "Diárias de Viagem",
+    "Internet", "Comissão de Cobrador", "Bonificação de Funcionário",
+    "Material de Limpeza", "Manutenção de Veículos", "Rastreamento Veicular",
+  ];
   const despFiltered = despRows.filter(r =>
     (despFiltroCategoria === "-- Selecione --" || r.categoria === despFiltroCategoria) &&
     (!despFiltroData || r.data === despFiltroData)
   );
+
+  // Dados REAIS: despesas e rendimentos vindos do snapshot do app do cobrador
+  // (mesma fonte da Liq. Diária). Responsável = cobrador da rota.
+  useEffect(() => {
+    if (activeMain !== "Gerenciar Despesas" && activeMain !== "Gerenciar Rendimentos") return;
+    let cancel = false;
+    (async () => {
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}api/caixa/movimentos-rotas?_t=${Date.now()}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancel || !data || typeof data !== "object") return;
+        const mapMov = (m: any, i: number) => ({
+          id: Number(m.id) || i + 1,
+          data: String(m.data ?? ""),
+          hora: String(m.hora ?? ""),
+          categoria: String(m.categoria ?? ""),
+          descricao: String(m.descricao ?? ""),
+          valor: Number(m.valor) || 0,
+          responsavel: String(m.responsavel ?? ""),
+          obs: String(m.obs ?? ""),
+        });
+        if (Array.isArray(data.despesas))    setDespRows(data.despesas.map(mapMov));
+        if (Array.isArray(data.rendimentos)) setRendGRows(data.rendimentos.map(mapMov));
+      } catch { /* mantém listas atuais */ }
+    })();
+    return () => { cancel = true; };
+  }, [activeMain]);
   const [gcRota, setGcRota] = useState("-- Todas --");
   const [gcDocumento, setGcDocumento] = useState("");
   const [gcNome, setGcNome] = useState("");
@@ -7634,14 +7657,13 @@ export default function DashboardPage() {
             <div className="flex-1 overflow-auto">
               <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1100 }}>
                 <colgroup>
-                  {[54, 150, 280, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
+                  {[54, 200, 130, 110, 80, 200, 260, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
                 </colgroup>
                 <thead>
                   <tr>
                     {[
                       { label: "Nro.",        align: "center" as const },
                       { label: "Categoria",   align: "center" as const },
-                      { label: "Descrição",   align: "left"   as const },
                       { label: "Valor",       align: "right"  as const },
                       { label: "Data",        align: "center" as const },
                       { label: "Hora",        align: "center" as const },
@@ -7671,7 +7693,6 @@ export default function DashboardPage() {
                         <td style={td("center")}>
                           <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: cat.bg, color: cat.text, border: `1px solid ${cat.border}` }}>{row.categoria}</span>
                         </td>
-                        <td style={td("left", { color: "#374151" })}>{row.descricao}</td>
                         <td style={td("right", { fontWeight: 700, color: "#15803d" })}>R$ {row.valor.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
                         <td style={td("center", { color: "#6b7280" })}>{row.data}</td>
                         <td style={td("center", { color: "#6b7280" })}>{row.hora}</td>
@@ -7693,7 +7714,7 @@ export default function DashboardPage() {
                     );
                   })}
                   {rendGFiltered.length === 0 && (
-                    <tr><td colSpan={9} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum rendimento encontrado.</td></tr>
+                    <tr><td colSpan={8} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum rendimento encontrado.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -7735,11 +7756,6 @@ export default function DashboardPage() {
                         <option value="">-- Selecione --</option>
                         {rendGCategorias.map(c => <option key={c}>{c}</option>)}
                       </select>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Descrição *</label>
-                      <input type="text" value={rendGForm.descricao} onChange={e => setRendGForm(f => ({ ...f, descricao: e.target.value }))}
-                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                       <div>
@@ -7794,8 +7810,8 @@ export default function DashboardPage() {
                     </div>
                     <div style={{ padding: "22px 20px" }}>
                       <p style={{ fontSize: 14, color: "#374151", margin: "0 0 6px" }}>Tem certeza que deseja excluir:</p>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>{rr.descricao}</p>
-                      <p style={{ fontSize: 12, color: "#6b7280", margin: "0 0 4px" }}>{rr.categoria} · {rr.data}</p>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>{rr.categoria}</p>
+                      <p style={{ fontSize: 12, color: "#6b7280", margin: "0 0 4px" }}>{rr.data}</p>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#15803d", margin: "0 0 20px" }}>
                         R$ {rr.valor.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                       </p>
@@ -7831,14 +7847,13 @@ export default function DashboardPage() {
             <div className="flex-1 overflow-auto">
               <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1100 }}>
                 <colgroup>
-                  {[54, 150, 280, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
+                  {[54, 200, 130, 110, 80, 200, 260, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
                 </colgroup>
                 <thead>
                   <tr>
                     {[
                       { label: "Nro.",        align: "center" as const },
                       { label: "Categoria",   align: "center" as const },
-                      { label: "Descrição",   align: "left"   as const },
                       { label: "Valor",       align: "right"  as const },
                       { label: "Data",        align: "center" as const },
                       { label: "Hora",        align: "center" as const },
@@ -7868,7 +7883,6 @@ export default function DashboardPage() {
                         <td style={td("center")}>
                           <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: cat.bg, color: cat.text, border: `1px solid ${cat.border}` }}>{row.categoria}</span>
                         </td>
-                        <td style={td("left", { color: "#374151" })}>{row.descricao}</td>
                         <td style={td("right", { fontWeight: 700, color: "#b91c1c" })}>R$ {row.valor.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
                         <td style={td("center", { color: "#6b7280" })}>{row.data}</td>
                         <td style={td("center", { color: "#6b7280" })}>{row.hora}</td>
@@ -7890,7 +7904,7 @@ export default function DashboardPage() {
                     );
                   })}
                   {despFiltered.length === 0 && (
-                    <tr><td colSpan={9} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada.</td></tr>
+                    <tr><td colSpan={8} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -7936,11 +7950,6 @@ export default function DashboardPage() {
                         <option value="">-- Selecione --</option>
                         {despCategorias.map(c => <option key={c}>{c}</option>)}
                       </select>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Descrição *</label>
-                      <input type="text" value={despForm.descricao} onChange={e => setDespForm(f => ({ ...f, descricao: e.target.value }))}
-                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                       <div>
@@ -7995,8 +8004,8 @@ export default function DashboardPage() {
                     </div>
                     <div style={{ padding: "22px 20px" }}>
                       <p style={{ fontSize: 14, color: "#374151", margin: "0 0 6px" }}>Tem certeza que deseja excluir:</p>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>{dr.descricao}</p>
-                      <p style={{ fontSize: 12, color: "#6b7280", margin: "0 0 4px" }}>{dr.categoria} · {dr.data}</p>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>{dr.categoria}</p>
+                      <p style={{ fontSize: 12, color: "#6b7280", margin: "0 0 4px" }}>{dr.data}</p>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#dc2626", margin: "0 0 20px" }}>
                         $ {dr.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                       </p>
