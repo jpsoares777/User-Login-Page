@@ -7676,7 +7676,7 @@ export default function DashboardPage() {
                       { label: "Valor",       align: "right"  as const },
                       { label: "Data",        align: "center" as const },
                       { label: "Hora",        align: "center" as const },
-                      { label: "Responsável", align: "left"   as const },
+                      { label: "Cobrador",    align: "left"   as const },
                       { label: "Observações", align: "left"   as const },
                       { label: "Ações",       align: "center" as const },
                     ].map(c => (
@@ -7773,7 +7773,7 @@ export default function DashboardPage() {
                           style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Responsável</label>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Cobrador</label>
                         <input type="text" value={rendGForm.responsavel} onChange={e => setRendGForm(f => ({ ...f, responsavel: e.target.value }))}
                           style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                       </div>
@@ -7866,7 +7866,7 @@ export default function DashboardPage() {
                       { label: "Valor",       align: "right"  as const },
                       { label: "Data",        align: "center" as const },
                       { label: "Hora",        align: "center" as const },
-                      { label: "Responsável", align: "left"   as const },
+                      { label: "Cobrador",    align: "left"   as const },
                       { label: "Observações", align: "left"   as const },
                       { label: "Ações",       align: "center" as const },
                     ].map(c => (
@@ -7967,7 +7967,7 @@ export default function DashboardPage() {
                           style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Responsável</label>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Cobrador</label>
                         <input type="text" value={despForm.responsavel} onChange={e => setDespForm(f => ({ ...f, responsavel: e.target.value }))}
                           style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                       </div>
@@ -8071,7 +8071,7 @@ export default function DashboardPage() {
                         { label: "Valor",       align: "right"  as const },
                         { label: "Data",        align: "center" as const },
                         { label: "Hora",        align: "center" as const },
-                        { label: "Responsável", align: "left"   as const },
+                        { label: "Cobrador",    align: "left"   as const },
                         { label: "Observações", align: "left"   as const },
                         { label: "Ações",       align: "center" as const },
                       ].map(c => (
@@ -8174,7 +8174,7 @@ export default function DashboardPage() {
                             style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                         </div>
                         <div>
-                          <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Responsável</label>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Cobrador</label>
                           <input type="text" value={rpForm.responsavel} onChange={e => setRpForm(f => ({ ...f, responsavel: e.target.value }))}
                             style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                         </div>
@@ -8280,7 +8280,7 @@ export default function DashboardPage() {
                         { label: "Valor",       align: "right"  as const },
                         { label: "Data",        align: "center" as const },
                         { label: "Hora",        align: "center" as const },
-                        { label: "Responsável", align: "left"   as const },
+                        { label: "Cobrador",    align: "left"   as const },
                         { label: "Observações", align: "left"   as const },
                         { label: "Ações",       align: "center" as const },
                       ].map(c => (
@@ -8387,7 +8387,7 @@ export default function DashboardPage() {
                             style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                         </div>
                         <div>
-                          <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Responsável</label>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Cobrador</label>
                           <input type="text" value={gpForm.responsavel} onChange={e => setGpForm(f => ({ ...f, responsavel: e.target.value }))}
                             style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }} />
                         </div>
