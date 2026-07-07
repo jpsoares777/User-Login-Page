@@ -6782,7 +6782,7 @@ export default function DashboardPage() {
             </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 190 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Conceito (*):</label>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Categoria (*):</label>
             <select value={rendGFiltroCategoria} onChange={e => setRendGFiltroCategoria(e.target.value)}
               className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 175 }}>
               <option>-- Selecione --</option>
@@ -6818,7 +6818,7 @@ export default function DashboardPage() {
             </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 190 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Conceito (*):</label>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Categoria (*):</label>
             <select value={despFiltroCategoria} onChange={e => setDespFiltroCategoria(e.target.value)}
               className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 175 }}>
               <option>-- Selecione --</option>
@@ -6852,7 +6852,7 @@ export default function DashboardPage() {
             </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 190 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Conceito (*):</label>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Categoria (*):</label>
             <select value={rpFiltroCategoria} onChange={e => setRpFiltroCategoria(e.target.value)}
               className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 175 }}>
               <option>-- Selecione --</option>
@@ -6891,7 +6891,7 @@ export default function DashboardPage() {
             </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 190 }}>
-            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Conceito (*):</label>
+            <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Categoria (*):</label>
             <select value={gpFiltroCategoria} onChange={e => setGpFiltroCategoria(e.target.value)}
               className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 175 }}>
               <option>-- Selecione --</option>
