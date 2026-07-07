@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { TrendingUp, Users, AlertCircle, Trash2 } from "lucide-react";
 
 export interface Emprestimo {
@@ -43,6 +44,7 @@ interface Props {
 export function EmprestimosDoDia({ lista = [], onDelete, onBack }: Props) {
   const totalEmprestado = lista.reduce((s, e) => s + e.valorEmprestado, 0);
   const totalClientes = lista.length;
+  const [confirmar, setConfirmar] = useState<Emprestimo | null>(null);
 
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#eef1f5", overflowY: "auto", paddingBottom: 80 }}>
@@ -106,7 +108,7 @@ export function EmprestimosDoDia({ lista = [], onDelete, onBack }: Props) {
                   {emp.frequencia ?? (emp.diario ? "Diário" : "Mensal")}
                 </span>
                 <span style={{ fontSize: 9, color: "#9ca3af", flexShrink: 0 }}>{formatTime(emp.criadoEm)}</span>
-                <button onClick={() => onDelete(emp.id)} style={{ background: "#fee2e2", border: "1px solid #fca5a5", cursor: "pointer", padding: "3px 7px", borderRadius: 6, color: "#dc2626", display: "flex", alignItems: "center", gap: 3, flexShrink: 0, fontWeight: 600, fontSize: 10 }}>
+                <button onClick={() => setConfirmar(emp)} style={{ background: "#fee2e2", border: "1px solid #fca5a5", cursor: "pointer", padding: "3px 7px", borderRadius: 6, color: "#dc2626", display: "flex", alignItems: "center", gap: 3, flexShrink: 0, fontWeight: 600, fontSize: 10 }}>
                   <Trash2 size={11} />
                   Excluir
                 </button>
@@ -128,6 +130,35 @@ export function EmprestimosDoDia({ lista = [], onDelete, onBack }: Props) {
           ))
         )}
       </div>
+
+      {/* ===== MODAL CONFIRMAR EXCLUSÃO ===== */}
+      {confirmar && (
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20 }} onClick={() => setConfirmar(null)}>
+          <div style={{ backgroundColor: "white", borderRadius: 14, padding: 20, width: "100%", maxWidth: 320, boxShadow: "0 12px 40px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: "#fee2e2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Trash2 size={18} color="#dc2626" />
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>Excluir Empréstimo</div>
+            </div>
+            <div style={{ fontSize: 13, color: "#555", marginBottom: 6 }}>Tem certeza que deseja excluir?</div>
+            <div style={{ backgroundColor: "#f5f5f5", borderRadius: 8, padding: "8px 10px", marginBottom: 16, fontSize: 13 }}>
+              <div style={{ fontWeight: 600, color: "#111827" }}>{confirmar.nomeCliente}</div>
+              {confirmar.consecutivo && (
+                <div style={{ fontSize: 11, color: "#6b7280", fontFamily: "monospace", marginTop: 1 }}>Nº {confirmar.consecutivo}</div>
+              )}
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+                <span style={{ color: "#757575", fontSize: 12 }}>{confirmar.quantidadeParcelas}× de {formatMoney(confirmar.valorParcela)}</span>
+                <span style={{ fontWeight: 700, color: "#dc2626" }}>{formatMoney(confirmar.valorEmprestado)}</span>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setConfirmar(null)} style={{ flex: 1, padding: "10px 0", borderRadius: 9, border: "1.5px solid #e0e0e0", backgroundColor: "white", color: "#616161", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Cancelar</button>
+              <button onClick={() => { onDelete(confirmar.id); setConfirmar(null); }} style={{ flex: 1, padding: "10px 0", borderRadius: 9, border: "none", backgroundColor: "#dc2626", color: "white", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Excluir</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
