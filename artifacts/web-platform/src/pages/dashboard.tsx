@@ -6798,7 +6798,7 @@ export default function DashboardPage() {
             <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
-            <button onClick={() => { setRendGEditId(null); setRendGForm({ ...emptyRend, id: Date.now() }); setRendGModalOpen(true); }}
+            <button onClick={() => { setRendGEditId(null); setRendGForm({ ...emptyRend, id: Date.now(), rota: rendGFiltroRota !== "-- Todas --" ? rendGFiltroRota : "" }); setRendGModalOpen(true); }}
               className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
@@ -6834,7 +6834,7 @@ export default function DashboardPage() {
             <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
-            <button onClick={() => { setDespEditId(null); setDespForm({ ...emptyDesp, id: Date.now() }); setDespModalOpen(true); }}
+            <button onClick={() => { setDespEditId(null); setDespForm({ ...emptyDesp, id: Date.now(), rota: despFiltroRota !== "-- Todas --" ? despFiltroRota : "" }); setDespModalOpen(true); }}
               className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
@@ -7747,12 +7747,10 @@ export default function DashboardPage() {
                   </div>
                   <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
                     <div>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Rota *</label>
-                      <select value={rendGForm.rota} onChange={e => setRendGForm(f => ({ ...f, rota: e.target.value }))} disabled={!!rendGEditId}
-                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
-                        <option value="">-- Selecione --</option>
-                        {rotasAPI.map(r => <option key={r.rota} value={r.rota}>{r.rota}</option>)}
-                      </select>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Rota</label>
+                      <div style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, boxSizing: "border-box", background: "#f3f4f6", display: "flex", alignItems: "center", fontWeight: 700, color: rendGForm.rota ? "#111827" : "#9ca3af" }}>
+                        {rendGForm.rota || "Selecione a rota no filtro acima"}
+                      </div>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                       <div>
@@ -7802,8 +7800,12 @@ export default function DashboardPage() {
                           setRendGModalOpen(false);
                           return;
                         }
-                        if (!rendGForm.rota || !rendGForm.categoria || !(rendGForm.valor > 0)) {
-                          alert("Preencha Rota, Categoria e Valor.");
+                        if (!rendGForm.rota) {
+                          alert("Selecione a rota no filtro acima antes de adicionar.");
+                          return;
+                        }
+                        if (!rendGForm.categoria || !(rendGForm.valor > 0)) {
+                          alert("Preencha Categoria e Valor.");
                           return;
                         }
                         // Id = timestamp de data+hora (com segundos aleatórios p/ evitar colisão).
@@ -7970,12 +7972,10 @@ export default function DashboardPage() {
                   </div>
                   <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
                     <div>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Rota *</label>
-                      <select value={despForm.rota} onChange={e => setDespForm(f => ({ ...f, rota: e.target.value }))} disabled={!!despEditId}
-                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
-                        <option value="">-- Selecione --</option>
-                        {rotasAPI.map(r => <option key={r.rota} value={r.rota}>{r.rota}</option>)}
-                      </select>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Rota</label>
+                      <div style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, boxSizing: "border-box", background: "#f3f4f6", display: "flex", alignItems: "center", fontWeight: 700, color: despForm.rota ? "#111827" : "#9ca3af" }}>
+                        {despForm.rota || "Selecione a rota no filtro acima"}
+                      </div>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                       <div>
@@ -8025,8 +8025,12 @@ export default function DashboardPage() {
                           setDespModalOpen(false);
                           return;
                         }
-                        if (!despForm.rota || !despForm.categoria || !(despForm.valor > 0)) {
-                          alert("Preencha Rota, Categoria e Valor.");
+                        if (!despForm.rota) {
+                          alert("Selecione a rota no filtro acima antes de adicionar.");
+                          return;
+                        }
+                        if (!despForm.categoria || !(despForm.valor > 0)) {
+                          alert("Preencha Categoria e Valor.");
                           return;
                         }
                         // Id = timestamp de data+hora (com segundos aleatórios p/ evitar colisão).
