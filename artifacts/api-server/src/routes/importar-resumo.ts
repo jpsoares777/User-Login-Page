@@ -60,16 +60,20 @@ function parseMovSheet(workbook: XLSX.WorkBook, sheetName: string, dataMov: stri
     if (!(valor > 0)) continue;
     const obs = parseStr(row[2]);
     // Convenção do sistema: retirada de caixa é uma despesa com esta categoria.
-    const categoria = /retiros?\s+de\s+caja/i.test(concepto) ? "Retirada de Caixa" : concepto;
+    // Demais lançamentos importados entram como "Outros" (não dá para saber a
+    // categoria exata na importação); o concepto original fica na observação.
+    const retirada = /retiros?\s+de\s+caja/i.test(concepto);
+    const categoria = retirada ? "Retirada de Caixa" : "Outros";
+    const obsFinal = retirada ? obs : (obs ? `${concepto} — ${obs}` : concepto);
     itens.push({
       id: baseId + idOffset + itens.length,
       categoria,
-      descricao: obs || categoria,
+      descricao: obsFinal || categoria,
       valor,
       data: dataMov,
       hora: "",
       responsavel: "",
-      obs,
+      obs: obsFinal,
     });
   }
   return itens;
