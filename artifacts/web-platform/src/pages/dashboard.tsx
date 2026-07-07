@@ -5814,7 +5814,7 @@ export default function DashboardPage() {
   const [faturasOpen, setFaturasOpen] = useState(false);
   const [importarRotasOpen, setImportarRotasOpen] = useState(false);
   const [caixaGeralOpen, setCaixaGeralOpen] = useState(false);
-  const [caixaSaldo, setCaixaSaldo] = useState(12450.75);
+  const [caixaSaldo, setCaixaSaldo] = useState(0);
   const [caixaVendedor, setCaixaVendedor] = useState("");
   const [caixaConceito, setCaixaConceito] = useState("");
   const [caixaValor, setCaixaValor] = useState("");
@@ -5824,13 +5824,65 @@ export default function DashboardPage() {
   const [caixaRetiradaValor, setCaixaRetiradaValor] = useState("");
   const [caixaRetiradaObs, setCaixaRetiradaObs] = useState("");
   const [caixaRetiradaRota, setCaixaRetiradaRota] = useState("");
-  type CaixaMovRow = { id: number; tipo: "Entrada" | "Retirada"; descricao: string; valor: number; data: string; };
-  const [caixaMovs, setCaixaMovs] = useState<CaixaMovRow[]>([
-    { id: 1, tipo: "Entrada",  descricao: "Liquidação Rota SP Centro",  valor: 5200.00, data: "2026-06-10" },
-    { id: 2, tipo: "Entrada",  descricao: "Liquidação Rota Zona Sul",   valor: 4800.50, data: "2026-06-11" },
-    { id: 3, tipo: "Retirada", descricao: "Retirada operacional",       valor: 1500.00, data: "2026-06-11" },
-    { id: 4, tipo: "Entrada",  descricao: "Liquidação Rota ABC",        valor: 3950.25, data: "2026-06-12" },
-  ]);
+  const [caixaRetiradaErro, setCaixaRetiradaErro] = useState<string | null>(null);
+  const [caixaRetiradaEnviando, setCaixaRetiradaEnviando] = useState(false);
+  const [caixaLoading, setCaixaLoading] = useState(false);
+  const [caixaErro, setCaixaErro] = useState<string | null>(null);
+  type CaixaMovRow = { id: number; tipo: "Entrada" | "Retirada" | "Saída"; descricao: string; valor: number; data: string; };
+  const [caixaMovs, setCaixaMovs] = useState<CaixaMovRow[]>([]);
+  const caixaReqIdRef = useRef(0);
+  const fetchCaixaGeral = async (rota: string) => {
+    const reqId = ++caixaReqIdRef.current;
+    // Troca de rota: zera o estado imediatamente para nunca exibir dados de outra rota.
+    setCaixaMovs([]); setCaixaSaldo(0); setCaixaErro(null);
+    if (!rota) { setCaixaLoading(false); return; }
+    setCaixaLoading(true);
+    try {
+      const [snapRes, movRes] = await Promise.all([
+        fetch(`${import.meta.env.BASE_URL}api/caixa/fechamento-rota?rota=${encodeURIComponent(rota)}`),
+        fetch(`${import.meta.env.BASE_URL}api/caixa/movimentos-rotas`),
+      ]);
+      if (!snapRes.ok || !movRes.ok) throw new Error("HTTP");
+      const snap = await snapRes.json();
+      const movsAll = await movRes.json();
+      if (reqId !== caixaReqIdRef.current) return; // resposta obsoleta: rota mudou
+      const num = (v: unknown) => Number(v) || 0;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const despesasRota: any[] = (movsAll?.despesas ?? []).filter((m: any) => m.rota === rota);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rendimentosRota: any[] = (movsAll?.rendimentos ?? []).filter((m: any) => m.rota === rota);
+      const caixaInicial = num(snap?.caixaInicial);
+      const recebAtual   = num(snap?.recebAtual);
+      const novosEmp     = num(snap?.novosEmp);
+      const retiradas      = despesasRota.filter(d => d.categoria === "Retirada de Caixa");
+      const outrasDespesas = despesasRota.filter(d => d.categoria !== "Retirada de Caixa");
+      const totRend = rendimentosRota.reduce((s, r) => s + num(r.valor), 0);
+      const totRet  = retiradas.reduce((s, r) => s + num(r.valor), 0);
+      const totDesp = outrasDespesas.reduce((s, r) => s + num(r.valor), 0);
+      const dataDia = String(snap?.dataFechamento ?? snap?.dataInicio ?? new Date().toISOString().slice(0, 10));
+      const movs: CaixaMovRow[] = [];
+      let seq = 1;
+      if (snap) {
+        movs.push({ id: seq++, tipo: "Entrada", descricao: `Saldo inicial do caixa — ${rota}`, valor: caixaInicial, data: String(snap?.dataInicio ?? dataDia) });
+        if (recebAtual > 0) movs.push({ id: seq++, tipo: "Entrada", descricao: `Cobrança do dia (liquidação) — ${rota}`, valor: recebAtual, data: dataDia });
+        if (novosEmp > 0)   movs.push({ id: seq++, tipo: "Saída",   descricao: `Novos empréstimos — ${rota}`,            valor: novosEmp,   data: dataDia });
+      }
+      for (const r of rendimentosRota) movs.push({ id: seq++, tipo: "Entrada",  descricao: `Rendimento: ${r.categoria}${r.obs ? ` — ${r.obs}` : ""}`, valor: num(r.valor), data: String(r.data || dataDia) });
+      for (const d of outrasDespesas)  movs.push({ id: seq++, tipo: "Saída",    descricao: `Despesa: ${d.categoria}${d.obs ? ` — ${d.obs}` : ""}`,     valor: num(d.valor), data: String(d.data || dataDia) });
+      for (const d of retiradas)       movs.push({ id: seq++, tipo: "Retirada", descricao: d.obs ? `Retirada — ${d.obs}` : "Retirada de caixa",        valor: num(d.valor), data: String(d.data || dataDia) });
+      setCaixaMovs(movs);
+      setCaixaSaldo(caixaInicial + recebAtual + totRend - novosEmp - totDesp - totRet);
+    } catch {
+      if (reqId !== caixaReqIdRef.current) return;
+      setCaixaMovs([]); setCaixaSaldo(0);
+      setCaixaErro("Erro ao carregar o caixa desta rota. Tente novamente.");
+    }
+    if (reqId === caixaReqIdRef.current) setCaixaLoading(false);
+  };
+  useEffect(() => {
+    if (activeMain === "Caixa Geral") fetchCaixaGeral(caixaRetiradaRota);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMain, caixaRetiradaRota]);
   const [importarVendedor, setImportarVendedor] = useState("");
   const [importarMasivo, setImportarMasivo] = useState(true);
   const [importarArquivo, setImportarArquivo] = useState<File | null>(null);
@@ -7022,14 +7074,14 @@ export default function DashboardPage() {
                 <select value={caixaRetiradaRota} onChange={e => setCaixaRetiradaRota(e.target.value)}
                   style={{ height: 34, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, color: caixaRetiradaRota ? "#334155" : "#94a3b8", background: "#f8fafc", outline: "none", minWidth: 200 }}>
                   <option value="">-- Selecione a rota --</option>
-                  {todasRotas.map(r => <option key={r} value={r}>{r}</option>)}
+                  {rotasAPI.map(r => <option key={r.rota} value={r.rota}>{r.rota}</option>)}
                 </select>
               </div>
 
               <div style={{ flex: 1 }} />
 
               {/* Retirada de Caixa */}
-              <button onClick={() => { setCaixaRetiradaValor(""); setCaixaRetiradaObs(""); setCaixaRetiradaOpen(true); }}
+              <button onClick={() => { setCaixaRetiradaValor(""); setCaixaRetiradaObs(""); setCaixaRetiradaErro(null); setCaixaRetiradaOpen(true); }}
                 style={{ display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(220,38,38,0.35)" }}>
                 <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: "#fff" }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                 Retirada de Caixa
@@ -7066,11 +7118,16 @@ export default function DashboardPage() {
                         </td>
                         <td style={{ padding: "10px 14px", color: "#334155" }}>{m.descricao}</td>
                         <td style={{ padding: "10px 14px", textAlign: "right", fontWeight: 700, color: m.tipo === "Entrada" ? "#15803d" : "#dc2626" }}>
-                          {m.tipo === "Retirada" ? "- " : "+ "}R$ {m.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                          {m.tipo === "Entrada" ? "+ " : "- "}R$ {m.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                         </td>
                         <td style={{ padding: "10px 14px", color: "#64748b" }}>{m.data}</td>
                       </tr>
                     ))}
+                    {caixaMovs.length === 0 && (
+                      <tr><td colSpan={4} style={{ padding: "40px", textAlign: "center", color: caixaErro ? "#dc2626" : "#94a3b8", fontSize: 13, fontWeight: caixaErro ? 600 : 400 }}>
+                        {caixaLoading ? "Carregando..." : caixaErro ? caixaErro : caixaRetiradaRota ? "Nenhum movimento de caixa para esta rota." : "Selecione a rota para ver o saldo e os movimentos do caixa."}
+                      </td></tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -7107,19 +7164,42 @@ export default function DashboardPage() {
                       <textarea value={caixaRetiradaObs} onChange={e => setCaixaRetiradaObs(e.target.value)} rows={3}
                         style={{ width: "100%", border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "8px 10px", fontSize: 13, outline: "none", resize: "none", boxSizing: "border-box", fontFamily: "inherit", background: "#f8fafc" }} />
                     </div>
+                    {caixaRetiradaErro && (
+                      <p style={{ margin: "0 0 14px", fontSize: 12, fontWeight: 600, color: "#b91c1c", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 7, padding: "8px 12px" }}>{caixaRetiradaErro}</p>
+                    )}
                     <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
                       <button onClick={() => setCaixaRetiradaOpen(false)}
                         style={{ background: "#f1f5f9", color: "#475569", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                         Cancelar
                       </button>
-                      <button onClick={() => {
+                      <button disabled={caixaRetiradaEnviando} onClick={async () => {
                         const v = parseFloat(caixaRetiradaValor);
-                        if (!v || v <= 0 || v > caixaSaldo) return;
-                        setCaixaMovs(prev => [...prev, { id: Date.now(), tipo: "Retirada", descricao: (caixaRetiradaRota ? `${caixaRetiradaRota} — ` : "") + (caixaRetiradaObs || "Retirada de caixa"), valor: v, data: new Date().toISOString().slice(0,10) }]);
-                        setCaixaSaldo(s => s - v);
-                        setCaixaRetiradaOpen(false);
-                      }} style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-                        Confirmar Retirada
+                        if (!caixaRetiradaRota) { setCaixaRetiradaErro("Selecione a rota na barra acima antes de retirar."); return; }
+                        if (!v || v <= 0) { setCaixaRetiradaErro("Informe um valor válido."); return; }
+                        if (v > caixaSaldo) { setCaixaRetiradaErro("Valor maior que o saldo atual do caixa."); return; }
+                        setCaixaRetiradaEnviando(true);
+                        try {
+                          const agora = new Date();
+                          const dataStr = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`;
+                          const horaStr = `${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`;
+                          const res = await fetch(`${import.meta.env.BASE_URL}api/comandos-cliente`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              rota: caixaRetiradaRota, tipo: "despesa", clienteId: Date.now(),
+                              dados: { categoria: "Retirada de Caixa", valor: v, data: dataStr, hora: horaStr, obs: caixaRetiradaObs || "Retirada pela web" },
+                            }),
+                          });
+                          if (!res.ok) throw new Error(String(res.status));
+                          setCaixaRetiradaOpen(false);
+                          setCaixaRetiradaErro(null);
+                          fetchCaixaGeral(caixaRetiradaRota);
+                        } catch {
+                          setCaixaRetiradaErro("Erro ao registrar a retirada no servidor. Tente novamente.");
+                        }
+                        setCaixaRetiradaEnviando(false);
+                      }} style={{ background: caixaRetiradaEnviando ? "#fca5a5" : "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: caixaRetiradaEnviando ? "not-allowed" : "pointer" }}>
+                        {caixaRetiradaEnviando ? "Enviando..." : "Confirmar Retirada"}
                       </button>
                     </div>
                   </div>
