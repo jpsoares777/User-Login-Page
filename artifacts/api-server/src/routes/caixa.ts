@@ -226,32 +226,42 @@ router.get("/caixa/movimentos-rotas", async (_req, res): Promise<void> => {
       responsavel: aplicativo.cobradorNome ?? "",
     });
 
-    // Ids já presentes no snapshot desta rota (para não duplicar pendentes).
+    // Listas desta rota (snapshot + pendentes) antes de aplicar exclusões.
+    const despRota: any[] = [];
+    const rendRota: any[] = [];
     const idsExistentes = new Set<string>();
 
     if (caixa?.dadosSnapshot) {
       try {
         const snap = JSON.parse(caixa.dadosSnapshot);
         if (Array.isArray(snap?.despesasLista)) {
-          for (const m of snap.despesasLista) { idsExistentes.add(String(m?.id)); despesas.push(tag(m)); }
+          for (const m of snap.despesasLista) { idsExistentes.add(String(m?.id)); despRota.push(tag(m)); }
         }
         if (Array.isArray(snap?.rendimentosLista)) {
-          for (const m of snap.rendimentosLista) { idsExistentes.add(String(m?.id)); rendimentos.push(tag(m)); }
+          for (const m of snap.rendimentosLista) { idsExistentes.add(String(m?.id)); rendRota.push(tag(m)); }
         }
       } catch { /* snapshot inválido: segue só com pendentes */ }
     }
 
-    // Movimentos criados na WEB e ainda não aplicados pelo app (comandos
-    // pendentes tipo despesa/rendimento): aparecem imediatamente no admin.
+    // Comandos pendentes de movimento (criados/excluídos na WEB e ainda não
+    // aplicados pelo app): refletem imediatamente no admin.
     const pendentes = await db.select().from(comandosClienteTable)
       .where(and(
         eq(comandosClienteTable.codigoAcesso, aplicativo.codigoAcesso),
         eq(comandosClienteTable.status, "pendente"),
-        inArray(comandosClienteTable.tipo, ["despesa", "rendimento"]),
+        inArray(comandosClienteTable.tipo, ["despesa", "rendimento", "despesa-excluir", "rendimento-excluir"]),
       ))
       .orderBy(comandosClienteTable.id);
 
+    const excluirDesp = new Set<string>();
+    const excluirRend = new Set<string>();
     for (const p of pendentes) {
+      if (p.tipo === "despesa-excluir")    excluirDesp.add(String(p.clienteId));
+      if (p.tipo === "rendimento-excluir") excluirRend.add(String(p.clienteId));
+    }
+
+    for (const p of pendentes) {
+      if (p.tipo !== "despesa" && p.tipo !== "rendimento") continue;
       if (idsExistentes.has(String(p.clienteId))) continue;
       const d = (p.dados ?? {}) as any;
       const mov = tag({
@@ -263,8 +273,11 @@ router.get("/caixa/movimentos-rotas", async (_req, res): Promise<void> => {
         hora: String(d.hora ?? ""),
         obs: String(d.obs ?? ""),
       });
-      if (p.tipo === "despesa") despesas.push(mov); else rendimentos.push(mov);
+      if (p.tipo === "despesa") despRota.push(mov); else rendRota.push(mov);
     }
+
+    despesas.push(...despRota.filter(m => !excluirDesp.has(String(m.id))));
+    rendimentos.push(...rendRota.filter(m => !excluirRend.has(String(m.id))));
   }
 
   res.json({ despesas, rendimentos });

@@ -7861,7 +7861,20 @@ export default function DashboardPage() {
                           style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                           Cancelar
                         </button>
-                        <button onClick={() => { setRendGRows(prev => prev.filter(r => r.id !== rendGDeleteId)); setRendGDeleteId(null); }}
+                        <button onClick={async () => {
+                          try {
+                            const res = await fetch(`${import.meta.env.BASE_URL}api/comandos-cliente`, {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ rota: rr.rota, tipo: "rendimento-excluir", clienteId: rr.id }),
+                            });
+                            if (!res.ok) throw new Error(String(res.status));
+                            setRendGRows(prev => prev.filter(r => r.id !== rendGDeleteId));
+                            setRendGDeleteId(null);
+                          } catch {
+                            alert("Erro ao excluir o rendimento no servidor. Tente novamente.");
+                          }
+                        }}
                           style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                           Sim, Excluir
                         </button>
@@ -8086,7 +8099,20 @@ export default function DashboardPage() {
                           style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                           Cancelar
                         </button>
-                        <button onClick={() => { setDespRows(prev => prev.filter(r => r.id !== despDeleteId)); setDespDeleteId(null); }}
+                        <button onClick={async () => {
+                          try {
+                            const res = await fetch(`${import.meta.env.BASE_URL}api/comandos-cliente`, {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ rota: dr.rota, tipo: "despesa-excluir", clienteId: dr.id }),
+                            });
+                            if (!res.ok) throw new Error(String(res.status));
+                            setDespRows(prev => prev.filter(r => r.id !== despDeleteId));
+                            setDespDeleteId(null);
+                          } catch {
+                            alert("Erro ao excluir a despesa no servidor. Tente novamente.");
+                          }
+                        }}
                           style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                           Sim, Excluir
                         </button>

@@ -2086,6 +2086,16 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
               if (cmd.tipo === "despesa") saveDB({ despesas: addItem((dbA.despesas as LancamentoItem[] | undefined) ?? []) });
               else saveDB({ rendimentos: addItem((dbA.rendimentos as LancamentoItem[] | undefined) ?? []) });
             }
+          } else if (cmd.tipo === "despesa-excluir" || cmd.tipo === "rendimento-excluir") {
+            // Movimento financeiro excluído na WEB: remove da lista local.
+            const remItem = (prev: LancamentoItem[]) => prev.filter(x => x.id !== clienteAlvoId);
+            if (cmd.tipo === "despesa-excluir") setDespesas(remItem); else setRendimentos(remItem);
+            // Durabilidade ANTES do ack.
+            const dbA = loadDB();
+            if (dbA) {
+              if (cmd.tipo === "despesa-excluir") saveDB({ despesas: remItem((dbA.despesas as LancamentoItem[] | undefined) ?? []) });
+              else saveDB({ rendimentos: remItem((dbA.rendimentos as LancamentoItem[] | undefined) ?? []) });
+            }
           } else if (cmd.tipo === "excluir") {
             // Mesmo critério da edição: empréstimo pertence ao cliente se
             // clienteId (renovação) ou o próprio id (cadastro) casar.

@@ -12,9 +12,9 @@ router.post("/comandos-cliente", async (req, res): Promise<void> => {
     res.status(400).json({ error: "rota (ou codigoAcesso), tipo e clienteId são obrigatórios" });
     return;
   }
-  const tiposValidos = ["editar", "excluir", "inativar", "reativar", "despesa", "rendimento"];
+  const tiposValidos = ["editar", "excluir", "inativar", "reativar", "despesa", "rendimento", "despesa-excluir", "rendimento-excluir"];
   if (!tiposValidos.includes(tipo)) {
-    res.status(400).json({ error: "tipo deve ser 'editar', 'excluir', 'inativar', 'reativar', 'despesa' ou 'rendimento'" });
+    res.status(400).json({ error: `tipo inválido; use um de: ${tiposValidos.join(", ")}` });
     return;
   }
   // Movimentos financeiros criados na web precisam dos dados do lançamento.
