@@ -5791,36 +5791,26 @@ export default function DashboardPage() {
   const [gerenciarClientesOpen, setGerenciarClientesOpen] = useState(false);
   const [gerenciarDespesasOpen, setGerenciarDespesasOpen] = useState(false);
   const [gastosPeriodosOpen, setGastosPeriodosOpen] = useState(false);
+  const [gpFiltroRota, setGpFiltroRota] = useState("-- Todas --");
   const [gpFiltroCategoria, setGpFiltroCategoria] = useState("-- Selecione --");
   const [gpFiltroDataInicial, setGpFiltroDataInicial] = useState("");
   const [gpFiltroDataFinal, setGpFiltroDataFinal] = useState("");
-  const [gpRows, setGpRows] = useState<Array<{ id: number; categoria: string; descricao: string; valor: number; data: string; hora: string; responsavel: string; obs: string }>>([
-    { id: 1, categoria: "Combustível",      descricao: "Abastecimento frota Rota SP Centro",   valor: 450.00,  data: "2026-06-01", hora: "08:30", responsavel: "Carlos Silva",  obs: "Posto Shell" },
-    { id: 2, categoria: "Alimentação",      descricao: "Almoço equipe comercial",              valor: 180.50,  data: "2026-06-03", hora: "12:15", responsavel: "Ana Pereira",   obs: "" },
-    { id: 3, categoria: "Manutenção",       descricao: "Revisão veículo placa ABC-1234",       valor: 920.00,  data: "2026-06-05", hora: "09:00", responsavel: "João Santos",   obs: "Troca de óleo" },
-    { id: 4, categoria: "Retirada de Caixa","descricao": "Retirada operacional junho",         valor: 1500.00, data: "2026-06-10", hora: "17:45", responsavel: "Carlos Silva",  obs: "" },
-    { id: 5, categoria: "Outros",           descricao: "Material de escritório",               valor: 135.75,  data: "2026-06-12", hora: "11:20", responsavel: "Maria Oliveira",obs: "Papelaria Alfa" },
-  ]);
+  const [gpRows, setGpRows] = useState<Array<{ id: number; categoria: string; descricao: string; valor: number; data: string; hora: string; responsavel: string; obs: string; rota: string }>>([]);
   const [gpEditId, setGpEditId] = useState<number | null>(null);
   const [gpModalOpen, setGpModalOpen] = useState(false);
   const [gpDeleteId, setGpDeleteId] = useState<number | null>(null);
-  const [gpForm, setGpForm] = useState<{ id: number; categoria: string; descricao: string; valor: number; data: string; hora: string; responsavel: string; obs: string }>({ id: 0, categoria: "", descricao: "", valor: 0, data: "", hora: "", responsavel: "", obs: "" });
+  const [gpForm, setGpForm] = useState<{ id: number; categoria: string; descricao: string; valor: number; data: string; hora: string; responsavel: string; obs: string; rota: string }>({ id: 0, categoria: "", descricao: "", valor: 0, data: "", hora: "", responsavel: "", obs: "", rota: "" });
   const [gerenciarRendimentosOpen, setGerenciarRendimentosOpen] = useState(false);
   const [rendPeriodosOpen, setRendPeriodosOpen] = useState(false);
+  const [rpFiltroRota, setRpFiltroRota] = useState("-- Todas --");
   const [rpFiltroCategoria, setRpFiltroCategoria] = useState("-- Selecione --");
   const [rpFiltroDataInicial, setRpFiltroDataInicial] = useState("");
   const [rpFiltroDataFinal, setRpFiltroDataFinal] = useState("");
-  const [rpRows, setRpRows] = useState<RendGRow[]>([
-    { id: 1, categoria: "Aporte",       descricao: "Aporte inicial operação junho",       valor: 8000.00, data: "2026-06-01", hora: "09:00", responsavel: "Carlos Silva",  obs: "Capital inicial" },
-    { id: 2, categoria: "Depósito",     descricao: "Depósito Rota SP Centro",             valor: 5200.00, data: "2026-06-10", hora: "10:30", responsavel: "Ana Pereira",   obs: "" },
-    { id: 3, categoria: "Entrada Extra",descricao: "Recebimento parcela atrasada cliente",valor: 450.50,  data: "2026-06-11", hora: "14:15", responsavel: "João Santos",   obs: "Cliente Rota Zona Sul" },
-    { id: 4, categoria: "Depósito",     descricao: "Depósito Rota Zona Sul",              valor: 4800.50, data: "2026-06-11", hora: "17:00", responsavel: "Maria Oliveira",obs: "" },
-    { id: 5, categoria: "Depósito",     descricao: "Depósito Rota ABC",                  valor: 3950.25, data: "2026-06-12", hora: "11:45", responsavel: "Pedro Costa",   obs: "" },
-  ]);
+  const [rpRows, setRpRows] = useState<RendGRow[]>([]);
   const [rpEditId, setRpEditId] = useState<number | null>(null);
   const [rpModalOpen, setRpModalOpen] = useState(false);
   const [rpDeleteId, setRpDeleteId] = useState<number | null>(null);
-  const [rpForm, setRpForm] = useState<RendGRow>({ id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "" });
+  const [rpForm, setRpForm] = useState<RendGRow>({ id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "", rota: "" });
   const [faturasOpen, setFaturasOpen] = useState(false);
   const [importarRotasOpen, setImportarRotasOpen] = useState(false);
   const [caixaGeralOpen, setCaixaGeralOpen] = useState(false);
@@ -5931,7 +5921,8 @@ export default function DashboardPage() {
   // Dados REAIS: despesas e rendimentos vindos do snapshot do app do cobrador
   // (mesma fonte da Liq. Diária). Responsável = cobrador da rota.
   useEffect(() => {
-    if (activeMain !== "Gerenciar Despesas" && activeMain !== "Gerenciar Rendimentos") return;
+    if (activeMain !== "Gerenciar Despesas" && activeMain !== "Gerenciar Rendimentos" &&
+        activeMain !== "Gastos Períodos" && activeMain !== "Rendimentos Períodos") return;
     let cancel = false;
     (async () => {
       try {
@@ -5950,8 +5941,8 @@ export default function DashboardPage() {
           obs: String(m.obs ?? ""),
           rota: String(m.rota ?? ""),
         });
-        if (Array.isArray(data.despesas))    setDespRows(data.despesas.map(mapMov));
-        if (Array.isArray(data.rendimentos)) setRendGRows(data.rendimentos.map(mapMov));
+        if (Array.isArray(data.despesas))    { const rows = data.despesas.map(mapMov);    setDespRows(rows);  setGpRows(rows); }
+        if (Array.isArray(data.rendimentos)) { const rows = data.rendimentos.map(mapMov); setRendGRows(rows); setRpRows(rows); }
       } catch { /* mantém listas atuais */ }
     })();
     return () => { cancel = true; };
@@ -6847,8 +6838,10 @@ export default function DashboardPage() {
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
             <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
-            <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
-              <option>– Rota Cred Bank –</option>
+            <select value={rpFiltroRota} onChange={e => setRpFiltroRota(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
+              <option>-- Todas --</option>
+              {rotasAPI.map(r => <option key={r.rota} value={r.rota}>{r.rota}</option>)}
             </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 190 }}>
@@ -6873,10 +6866,6 @@ export default function DashboardPage() {
             <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
-            <button onClick={() => { setRpEditId(null); setRpForm({ ...emptyRend, id: Date.now() }); setRpModalOpen(true); }}
-              className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            </button>
           </div>
         </div>
       )}
@@ -6886,8 +6875,10 @@ export default function DashboardPage() {
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
             <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
-            <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
-              <option>– Rota Cred Bank –</option>
+            <select value={gpFiltroRota} onChange={e => setGpFiltroRota(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
+              <option>-- Todas --</option>
+              {rotasAPI.map(r => <option key={r.rota} value={r.rota}>{r.rota}</option>)}
             </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 190 }}>
@@ -6911,10 +6902,6 @@ export default function DashboardPage() {
           <div className="flex items-end pb-0.5 gap-2" style={{ alignSelf: "flex-end" }}>
             <button className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            </button>
-            <button onClick={() => { setGpEditId(null); setGpForm({ id: Date.now(), categoria: "", descricao: "", valor: 0, data: "", hora: "", responsavel: "", obs: "" }); setGpModalOpen(true); }}
-              className="flex items-center justify-center w-9 h-7 rounded" style={{ background: "#2563eb" }}>
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
           </div>
         </div>
@@ -8125,6 +8112,7 @@ export default function DashboardPage() {
           </div>
         ) : activeMain === "Rendimentos Períodos" ? (() => {
           const rpFiltered = rpRows.filter(r =>
+            (rpFiltroRota === "-- Todas --" || r.rota === rpFiltroRota) &&
             (rpFiltroCategoria === "-- Selecione --" || r.categoria === rpFiltroCategoria) &&
             (!rpFiltroDataInicial || r.data >= rpFiltroDataInicial) &&
             (!rpFiltroDataFinal   || r.data <= rpFiltroDataFinal)
@@ -8319,7 +8307,21 @@ export default function DashboardPage() {
                             style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                             Cancelar
                           </button>
-                          <button onClick={() => { setRpRows(prev => prev.filter(r => r.id !== rpDeleteId)); setRpDeleteId(null); }}
+                          <button onClick={async () => {
+                            try {
+                              const res = await fetch(`${import.meta.env.BASE_URL}api/comandos-cliente`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ rota: rr.rota, tipo: "rendimento-excluir", clienteId: rr.id }),
+                              });
+                              if (!res.ok) throw new Error(String(res.status));
+                              setRpRows(prev => prev.filter(r => r.id !== rpDeleteId));
+                              setRendGRows(prev => prev.filter(r => r.id !== rpDeleteId));
+                              setRpDeleteId(null);
+                            } catch {
+                              alert("Erro ao excluir o rendimento no servidor. Tente novamente.");
+                            }
+                          }}
                             style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                             Sim, Excluir
                           </button>
@@ -8334,6 +8336,7 @@ export default function DashboardPage() {
         })()
         : activeMain === "Gastos Períodos" ? (() => {
           const gpFiltered = gpRows.filter(r =>
+            (gpFiltroRota === "-- Todas --" || r.rota === gpFiltroRota) &&
             (gpFiltroCategoria === "-- Selecione --" || r.categoria === gpFiltroCategoria) &&
             (!gpFiltroDataInicial || r.data >= gpFiltroDataInicial) &&
             (!gpFiltroDataFinal   || r.data <= gpFiltroDataFinal)
@@ -8532,7 +8535,21 @@ export default function DashboardPage() {
                             style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                             Cancelar
                           </button>
-                          <button onClick={() => { setGpRows(prev => prev.filter(r => r.id !== gpDeleteId)); setGpDeleteId(null); }}
+                          <button onClick={async () => {
+                            try {
+                              const res = await fetch(`${import.meta.env.BASE_URL}api/comandos-cliente`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ rota: dr.rota, tipo: "despesa-excluir", clienteId: dr.id }),
+                              });
+                              if (!res.ok) throw new Error(String(res.status));
+                              setGpRows(prev => prev.filter(r => r.id !== gpDeleteId));
+                              setDespRows(prev => prev.filter(r => r.id !== gpDeleteId));
+                              setGpDeleteId(null);
+                            } catch {
+                              alert("Erro ao excluir a despesa no servidor. Tente novamente.");
+                            }
+                          }}
                             style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                             Sim, Excluir
                           </button>
