@@ -6351,16 +6351,12 @@ export default function DashboardPage() {
             }],
           };
         });
-        setImportarStatus({ ok: true, msg: `Resumen importado para "${rotaKey}" — abrindo Relatório Diário...` });
+        setImportarStatus({ ok: true, msg: `Resumen importado para "${rotaKey}" com sucesso!` });
         setImportarArquivo(null);
-        // Navigate to Relatório Diário with the selected rota
-        setTimeout(() => {
-          setSelectedRota(rotaKey);
-          setHasSearched(true);
-          setCollapsedEstadoMain(false);
-          setActiveMain("Liq. Diária");
-          setActiveSub("Relatório Diário");
-        }, 800);
+        // Permanece na página Importar Rotas (sem navegar para Liq. Diária).
+        setSelectedRota(rotaKey);
+        setHasSearched(true);
+        setCollapsedEstadoMain(false);
         return;
       }
 
