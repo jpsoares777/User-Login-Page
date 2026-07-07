@@ -2398,7 +2398,17 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         : "";
       const restantesCli = Math.max(0, (cli.totalParcelas ?? 0) - (cli.parcelasPagas ?? 0));
       const principalCli = principalDoClienteSnap(cid, cli.parcela ?? 0, cli.totalParcelas ?? 0, Number(cli.taxaJuros) || 0);
-      const historicoCli = (registroPagamentos[cid] ?? []).map((p, idx) => ({
+      // Histórico REAL de parcelas do ciclo atual: vem de historicoPagamentos
+      // (inclui as parcelas sintetizadas na importação da rota E os pagamentos
+      // feitos no app, que gravam nos dois registros). registroPagamentos só
+      // tem os lançamentos de HOJE — para cliente importado ficaria vazio.
+      const pagsCicloCli = [...(historicoPagamentos[cid] ?? [])]
+        .filter(p => !cli.creditoStartTimestamp || p.id >= cli.creditoStartTimestamp)
+        .sort((a, b) => a.id - b.id);
+      const fonteHistCli = pagsCicloCli.length > 0
+        ? pagsCicloCli
+        : [...(registroPagamentos[cid] ?? [])].sort((a, b) => a.id - b.id);
+      const historicoCli = fonteHistCli.map((p, idx) => ({
         nro: idx + 1,
         tipo: p.metodo === "Abono" ? "ABONO" : (p.valor > 0 ? "PARC." : "S/PAG."),
         valor: p.valor,
