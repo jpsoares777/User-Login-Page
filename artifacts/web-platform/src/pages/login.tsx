@@ -2,24 +2,34 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import logoImg from "@assets/ChatGPT_Image_17_de_abr._de_2026,_20_49_18_(2)_1776469795366.png";
 
-const VALID_USER = "admin";
-const VALID_PASS = "admin123";
-
 export default function LoginPage() {
   const [, navigate] = useLocation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === VALID_USER && password === VALID_PASS) {
-      setError("");
-      navigate("/dashboard");
-    } else {
-      setError("Usuário ou senha incorretos.");
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario: username.trim(), senha: password }),
+      });
+      if (res.ok) {
+        setError("");
+        navigate("/dashboard");
+      } else {
+        setError("Usuário ou senha incorretos.");
+      }
+    } catch {
+      setError("Erro de conexão com o servidor. Tente novamente.");
     }
+    setLoading(false);
   };
 
   return (

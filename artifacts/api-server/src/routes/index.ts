@@ -14,6 +14,7 @@ import configuracoesRouter from "./configuracoes";
 import importarRotaRouter from "./importar-rota";
 import importarResumoRouter from "./importar-resumo";
 import faturasRouter from "./faturas";
+import authRouter from "./auth";
 
 const router: IRouter = Router();
 
@@ -32,5 +33,6 @@ router.use(configuracoesRouter);
 router.use(importarRotaRouter);
 router.use(importarResumoRouter);
 router.use(faturasRouter);
+router.use(authRouter);
 
 export default router;

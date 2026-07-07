@@ -5814,6 +5814,13 @@ export default function DashboardPage() {
   const [faturasOpen, setFaturasOpen] = useState(false);
   const [importarRotasOpen, setImportarRotasOpen] = useState(false);
   const [caixaGeralOpen, setCaixaGeralOpen] = useState(false);
+  const [senhaModalOpen, setSenhaModalOpen] = useState(false);
+  const [senhaAtual, setSenhaAtual] = useState("");
+  const [senhaNova, setSenhaNova] = useState("");
+  const [senhaConfirma, setSenhaConfirma] = useState("");
+  const [senhaErro, setSenhaErro] = useState<string | null>(null);
+  const [senhaOk, setSenhaOk] = useState(false);
+  const [senhaEnviando, setSenhaEnviando] = useState(false);
   const [caixaSaldo, setCaixaSaldo] = useState(0);
   const [caixaVendedor, setCaixaVendedor] = useState("");
   const [caixaConceito, setCaixaConceito] = useState("");
@@ -6581,10 +6588,95 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between h-12 px-3 shrink-0" style={{ background: "#2d5474" }}>
         <img src={menuIcon} alt="Menu" className="h-8 w-8 object-contain select-none cursor-pointer" draggable={false} onClick={() => setSideMenuOpen(true)} />
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1 px-3 h-7 text-sm font-medium rounded" style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.8)" }}>🔑 Alterar Senha</button>
+          <button onClick={() => { setSenhaAtual(""); setSenhaNova(""); setSenhaConfirma(""); setSenhaErro(null); setSenhaOk(false); setSenhaModalOpen(true); }}
+            className="flex items-center gap-1 px-3 h-7 text-sm font-medium rounded" style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.8)", cursor: "pointer" }}>🔑 Alterar Senha</button>
           <button onClick={() => navigate("/")} className="flex items-center gap-1 px-3 h-7 text-sm font-medium rounded" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)" }}>⏻ Sair</button>
         </div>
       </div>
+
+      {/* ── MODAL ALTERAR SENHA ── */}
+      {senhaModalOpen && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setSenhaModalOpen(false)}>
+          <div style={{ background: "#fff", borderRadius: 14, width: 420, boxShadow: "0 25px 70px rgba(0,0,0,0.4)", overflow: "hidden" }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ background: "linear-gradient(135deg,#2563eb,#1d4ed8)", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, fill: "#fff" }}><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Alterar Senha</span>
+              </div>
+              <button onClick={() => setSenhaModalOpen(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 6, width: 28, height: 28, cursor: "pointer", fontSize: 15, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+            </div>
+            <div style={{ padding: "22px 22px" }}>
+              {senhaOk ? (
+                <div style={{ textAlign: "center", padding: "10px 0 6px" }}>
+                  <div style={{ width: 52, height: 52, margin: "0 auto 12px", background: "#dcfce7", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg viewBox="0 0 24 24" style={{ width: 28, height: 28, fill: "#16a34a" }}><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  </div>
+                  <p style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 700, color: "#15803d" }}>Senha alterada com sucesso!</p>
+                  <p style={{ margin: "0 0 16px", fontSize: 12, color: "#64748b" }}>Use a nova senha no próximo login.</p>
+                  <button onClick={() => setSenhaModalOpen(false)}
+                    style={{ background: "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 28px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                    Fechar
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Senha Atual *</label>
+                    <input type="password" value={senhaAtual} onChange={e => setSenhaAtual(e.target.value)} autoComplete="current-password"
+                      style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
+                  </div>
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Nova Senha * <span style={{ fontWeight: 500, color: "#94a3b8" }}>(mínimo 6 caracteres)</span></label>
+                    <input type="password" value={senhaNova} onChange={e => setSenhaNova(e.target.value)} autoComplete="new-password"
+                      style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
+                  </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Confirmar Nova Senha *</label>
+                    <input type="password" value={senhaConfirma} onChange={e => setSenhaConfirma(e.target.value)} autoComplete="new-password"
+                      style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
+                  </div>
+                  {senhaErro && (
+                    <p style={{ margin: "0 0 14px", fontSize: 12, fontWeight: 600, color: "#b91c1c", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 7, padding: "8px 12px" }}>{senhaErro}</p>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+                    <button onClick={() => setSenhaModalOpen(false)}
+                      style={{ background: "#f1f5f9", color: "#475569", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                      Cancelar
+                    </button>
+                    <button disabled={senhaEnviando} onClick={async () => {
+                      if (!senhaAtual) { setSenhaErro("Informe a senha atual."); return; }
+                      if (!senhaNova || senhaNova.length < 6) { setSenhaErro("A nova senha deve ter pelo menos 6 caracteres."); return; }
+                      if (senhaNova !== senhaConfirma) { setSenhaErro("A confirmação não confere com a nova senha."); return; }
+                      setSenhaEnviando(true);
+                      try {
+                        const res = await fetch(`${import.meta.env.BASE_URL}api/auth/alterar-senha`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ usuario: "admin", senhaAtual, senhaNova }),
+                        });
+                        if (res.ok) {
+                          setSenhaErro(null);
+                          setSenhaOk(true);
+                        } else {
+                          const body = await res.json().catch(() => null);
+                          setSenhaErro(body?.error === "Senha atual incorreta" ? "Senha atual incorreta." : (body?.error || "Erro ao alterar a senha. Tente novamente."));
+                        }
+                      } catch {
+                        setSenhaErro("Erro de conexão com o servidor. Tente novamente.");
+                      }
+                      setSenhaEnviando(false);
+                    }} style={{ background: senhaEnviando ? "#93c5fd" : "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: senhaEnviando ? "not-allowed" : "pointer" }}>
+                      {senhaEnviando ? "Salvando..." : "Salvar Nova Senha"}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── MAIN TABS ROW ── */}
       <div className="flex items-end px-2 gap-1 pt-1 shrink-0" style={{ background: "#2d5474" }}>
