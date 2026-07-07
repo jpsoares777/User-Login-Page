@@ -905,9 +905,37 @@ type LancamentoItem = { id: number; data: string; categoria: string; valor: numb
 
 const despesasIniciais: LancamentoItem[] = [];
 
+function ModalConfirmarExclusao({ titulo, item, cor, onCancelar, onConfirmar }: { titulo: string; item: LancamentoItem; cor: string; onCancelar: () => void; onConfirmar: () => void }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20 }} onClick={onCancelar}>
+      <div style={{ backgroundColor: "white", borderRadius: 14, padding: 20, width: "100%", maxWidth: 320, boxShadow: "0 12px 40px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: "#FFEBEE", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Trash2 size={18} color="#C62828" />
+          </div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#212121" }}>{titulo}</div>
+        </div>
+        <div style={{ fontSize: 13, color: "#555", marginBottom: 6 }}>Tem certeza que deseja excluir?</div>
+        <div style={{ backgroundColor: "#F5F5F5", borderRadius: 8, padding: "8px 10px", marginBottom: 16, fontSize: 13 }}>
+          <div style={{ fontWeight: 600, color: "#212121" }}>{item.categoria}</div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+            <span style={{ color: "#757575", fontSize: 12 }}>{item.data}</span>
+            <span style={{ fontWeight: 700, color: cor }}>R$ {item.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={onCancelar} style={{ flex: 1, padding: "10px 0", borderRadius: 9, border: "1.5px solid #E0E0E0", backgroundColor: "white", color: "#616161", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Cancelar</button>
+          <button onClick={onConfirmar} style={{ flex: 1, padding: "10px 0", borderRadius: 9, border: "none", backgroundColor: "#C62828", color: "white", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Excluir</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function RelatorioDespesas({ onVoltar, despesas = [], onDelete }: { onVoltar: () => void; despesas?: LancamentoItem[]; onDelete?: (id: number) => void }) {
   const totalDespesas = despesas.reduce((s, d) => s + d.valor, 0);
   const [aberto, setAberto] = useState<number | null>(null);
+  const [confirmar, setConfirmar] = useState<LancamentoItem | null>(null);
   return (
     <div style={{ fontFamily: "Roboto, sans-serif", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
       <div style={{ background: "linear-gradient(160deg, #3A5F82 0%, #4A6F8E 100%)", padding: "16px 16px 14px", boxShadow: "0 4px 20px rgba(15,23,42,0.3)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -940,7 +968,7 @@ function RelatorioDespesas({ onVoltar, despesas = [], onDelete }: { onVoltar: ()
                   <span onClick={() => setAberto(expandido ? null : d.id)} style={{ flex: 2, color: "#212121", cursor: "pointer" }}>{d.categoria}</span>
                   <span onClick={() => setAberto(expandido ? null : d.id)} style={{ flex: 1, textAlign: "center", color: "#757575", fontSize: 12, cursor: "pointer" }}>{d.data}</span>
                   <span onClick={() => setAberto(expandido ? null : d.id)} style={{ flex: 1, textAlign: "right", color: "#C62828", fontWeight: 500, cursor: "pointer" }}>R$ {d.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-                  <button onClick={() => { if (confirm("Excluir esta despesa?")) { onDelete?.(d.id); if (aberto === d.id) setAberto(null); } }}
+                  <button onClick={() => setConfirmar(d)}
                     style={{ width: 28, height: 26, display: "flex", alignItems: "center", justifyContent: "center", background: "#FFEBEE", border: "1px solid #FFCDD2", borderRadius: 5, cursor: "pointer", color: "#C62828", flexShrink: 0, marginLeft: 10 }}>
                     <Trash2 size={13} />
                   </button>
@@ -962,6 +990,15 @@ function RelatorioDespesas({ onVoltar, despesas = [], onDelete }: { onVoltar: ()
           </div>
         </div>
       </div>
+      {confirmar && (
+        <ModalConfirmarExclusao
+          titulo="Excluir Despesa"
+          item={confirmar}
+          cor="#C62828"
+          onCancelar={() => setConfirmar(null)}
+          onConfirmar={() => { onDelete?.(confirmar.id); if (aberto === confirmar.id) setAberto(null); setConfirmar(null); }}
+        />
+      )}
     </div>
   );
 }
@@ -971,6 +1008,7 @@ const rendimentosIniciais: LancamentoItem[] = [];
 function RelatorioRendimentos({ onVoltar, rendimentos = [], onDelete }: { onVoltar: () => void; rendimentos?: LancamentoItem[]; onDelete?: (id: number) => void }) {
   const totalRendimentos = rendimentos.reduce((s, r) => s + r.valor, 0);
   const [aberto, setAberto] = useState<number | null>(null);
+  const [confirmar, setConfirmar] = useState<LancamentoItem | null>(null);
   return (
     <div style={{ fontFamily: "Roboto, sans-serif", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
       <div style={{ background: "linear-gradient(160deg, #3A5F82 0%, #4A6F8E 100%)", padding: "16px 16px 14px", boxShadow: "0 4px 20px rgba(15,23,42,0.3)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -1003,7 +1041,7 @@ function RelatorioRendimentos({ onVoltar, rendimentos = [], onDelete }: { onVolt
                   <span onClick={() => setAberto(expandido ? null : r.id)} style={{ flex: 2, color: "#212121", cursor: "pointer" }}>{r.categoria}</span>
                   <span onClick={() => setAberto(expandido ? null : r.id)} style={{ flex: 1, textAlign: "center", color: "#757575", fontSize: 12, cursor: "pointer" }}>{r.data}</span>
                   <span onClick={() => setAberto(expandido ? null : r.id)} style={{ flex: 1, textAlign: "right", color: "#2E7D32", fontWeight: 500, cursor: "pointer" }}>R$ {r.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-                  <button onClick={() => { if (confirm("Excluir este rendimento?")) { onDelete?.(r.id); if (aberto === r.id) setAberto(null); } }}
+                  <button onClick={() => setConfirmar(r)}
                     style={{ width: 28, height: 26, display: "flex", alignItems: "center", justifyContent: "center", background: "#F1F8E9", border: "1px solid #C8E6C9", borderRadius: 5, cursor: "pointer", color: "#2E7D32", flexShrink: 0, marginLeft: 10 }}>
                     <Trash2 size={13} />
                   </button>
@@ -1025,6 +1063,15 @@ function RelatorioRendimentos({ onVoltar, rendimentos = [], onDelete }: { onVolt
           </div>
         </div>
       </div>
+      {confirmar && (
+        <ModalConfirmarExclusao
+          titulo="Excluir Rendimento"
+          item={confirmar}
+          cor="#2E7D32"
+          onCancelar={() => setConfirmar(null)}
+          onConfirmar={() => { onDelete?.(confirmar.id); if (aberto === confirmar.id) setAberto(null); setConfirmar(null); }}
+        />
+      )}
     </div>
   );
 }
