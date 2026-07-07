@@ -2096,6 +2096,57 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
               if (cmd.tipo === "despesa-excluir") saveDB({ despesas: remItem((dbA.despesas as LancamentoItem[] | undefined) ?? []) });
               else saveDB({ rendimentos: remItem((dbA.rendimentos as LancamentoItem[] | undefined) ?? []) });
             }
+          } else if (cmd.tipo === "cliente-importar") {
+            // Cliente importado pela WEB (Importar Rotas): entra na lista
+            // local do app com crédito ativo. Dedupe por id e por consecutivo.
+            const d = (cmd.dados ?? {}) as {
+              nome?: string; telefone?: string; endereco?: string; consecutivo?: string;
+              dataInicio?: string; jurosPct?: number; valorParcela?: number;
+              numParcelas?: number; parcelasPagas?: number; parcelasRestantes?: number; saldo?: number;
+            };
+            const valorParcela = Number(d.valorParcela) || 0;
+            const totalParc = Math.max(1, Math.round(Number(d.numParcelas) || 1));
+            const pagas = Math.max(0, Math.round(Number(d.parcelasPagas) || 0));
+            const restantes = Math.round(Number(d.parcelasRestantes) || 0);
+            const saldoImp = Number(d.saldo) > 0 ? Number(d.saldo) : valorParcela * (restantes > 0 ? restantes : totalParc - pagas);
+            const inicioTs = d.dataInicio ? new Date(`${d.dataInicio}T12:00:00`).getTime() : clienteAlvoId;
+            const novoImportado: ClienteItem = {
+              id: clienteAlvoId,
+              consecutivo: d.consecutivo || undefined,
+              nome: d.nome ?? "",
+              parcela: valorParcela,
+              saldo: saldoImp,
+              status: "novo",
+              endereco: d.endereco ?? "",
+              parcelasPagas: pagas,
+              totalParcelas: totalParc,
+              telefone: d.telefone ?? "",
+              frequencia: "Diário",
+              taxaJuros: Number(d.jurosPct) || undefined,
+              creditoStartTimestamp: Number.isFinite(inicioTs) ? inicioTs : clienteAlvoId,
+            };
+            if (!novoImportado.nome.trim()) { await ackComandoClienteAPI(cmd.id); continue; }
+            // Dedupe: por id, por consecutivo e — quando não há consecutivo —
+            // por chave composta nome+telefone+endereço (reimport da mesma planilha).
+            const chaveImp = (c: { nome: string; telefone?: string; endereco?: string }) =>
+              `${c.nome}|${c.telefone ?? ""}|${c.endereco ?? ""}`.toLowerCase().replace(/\s+/g, " ").trim();
+            const chaveNovo = chaveImp(novoImportado);
+            const addImportado = (prev: ClienteItem[]) =>
+              prev.some(c => c.id === novoImportado.id ||
+                (!!novoImportado.consecutivo && c.consecutivo === novoImportado.consecutivo) ||
+                (!novoImportado.consecutivo && chaveImp(c) === chaveNovo))
+                ? prev : [...prev, novoImportado];
+            const addOrdem = (prev: number[]) => prev.includes(clienteAlvoId) ? prev : [...prev, clienteAlvoId];
+            setClientes(addImportado);
+            setOrdemClientesIds(addOrdem);
+            // Durabilidade ANTES do ack.
+            const dbA = loadDB();
+            if (dbA) {
+              saveDB({
+                clientes: addImportado((dbA.clientes as ClienteItem[] | undefined) ?? []),
+                ordemClientesIds: addOrdem(dbA.ordemClientesIds ?? []),
+              });
+            }
           } else if (cmd.tipo === "excluir") {
             // Mesmo critério da edição: empréstimo pertence ao cliente se
             // clienteId (renovação) ou o próprio id (cadastro) casar.

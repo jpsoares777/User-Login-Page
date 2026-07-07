@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
-import { db, clientesTable, emprestimosTable, cobradoresTable, aplicativosTable } from "@workspace/db";
+import { db, clientesTable, emprestimosTable, cobradoresTable, aplicativosTable, comandosClienteTable } from "@workspace/db";
 
 const router: IRouter = Router();
 
@@ -51,6 +51,10 @@ router.post("/importar-rota", async (req, res): Promise<void> => {
 
   let importados = 0;
   const erros: string[] = [];
+  // Base numérica para os ids que o APP usará localmente (convenção do app:
+  // ids são timestamps). Cada cliente importado ganha base + índice.
+  const idBaseApp = Date.now();
+  let idxApp = 0;
 
   for (const c of clientes) {
     try {
@@ -82,6 +86,34 @@ router.post("/importar-rota", async (req, res): Promise<void> => {
         parcelasPagas: String(c.parcelasPagas ?? 0),
         parcelasRestantes: String(c.parcelasRestantes ?? 0),
         ativo: true,
+      });
+
+      // Sincroniza com o APP do cobrador: enfileira um comando
+      // "cliente-importar" endereçado ao codigoAcesso da rota. O app aplica
+      // no polling (~20s), adiciona o cliente à lista local e persiste.
+      const idApp = idBaseApp + idxApp++;
+      await db.insert(comandosClienteTable).values({
+        aplicativoId: aplicativo.id,
+        codigoAcesso: aplicativo.codigoAcesso,
+        tipo: "cliente-importar",
+        clienteId: String(idApp),
+        consec: c.consecutivo ?? null,
+        dados: {
+          nome: c.nome.trim(),
+          telefone: c.telefone ?? "",
+          endereco: c.endereco ?? "",
+          consecutivo: c.consecutivo ?? "",
+          dataInicio: c.dataInicio || new Date().toISOString().slice(0, 10),
+          valorProduto: c.valorProduto ?? 0,
+          totalAPagar: c.totalAPagar ?? 0,
+          jurosPct: c.jurosPct ?? 40,
+          valorParcela: c.valorParcela ?? 0,
+          numParcelas: c.numParcelas ?? 1,
+          parcelasPagas: c.parcelasPagas ?? 0,
+          parcelasRestantes: c.parcelasRestantes ?? 0,
+          saldo: c.saldo ?? 0,
+        },
+        status: "pendente",
       });
 
       importados++;

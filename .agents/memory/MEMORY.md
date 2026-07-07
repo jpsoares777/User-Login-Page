@@ -6,6 +6,7 @@
 - [Aprovação de despesas/rendimentos](aprovacao-movimento.md) — "Desp e Rend" é fluxo aceitar/recusar (espelha empréstimos); gasto/rendimento acima do limite vira solicitação pendente.
 - [Valor emprestado (principal) no snapshot](valor-emprestado-principal.md) — "Valor Empr." usa valorEmprestado do empréstimo (não derivar do juros: taxaJuros costuma ser 0); lookup por id||clienteId; renovação gravava total.
 - [Aprovação de empréstimo por limite](aprovacao-emprestimo-limite.md) — acima do valorVendaMax vira solicitação no admin; dedupe por localId no backend + pollingRef/materializadosRef no app garantem materialização única.
+- [Importar Rotas — sync web→app](importar-rota-sync.md) — importação enfileira comandos "cliente-importar"; app aplica+saveDB antes do ack; dedupe por consecutivo ou nome+tel+endereço.
 - [Despesa/rendimento criados na web](movimentos-web-comando.md) — nunca gravar direto no snapshot (app sobrescreve); vira comando_cliente que o app aplica; admin mostra pendentes mesclados; editar/excluir web ainda só local.
 - [Comandos de cliente admin→app](comandos-cliente.md) — editar/excluir viaja por comandos_cliente com polling; endereçar por codigoAcesso, gravar localStorage antes do ack, ack escopado, merge de pendentes no admin.
 - [Dashboard Desempenho — fonte dos gráficos](dashboard-desempenho-dados.md) — 5 gráficos vêm do snapshot fechamento-rota; ano-a-ano usa clientesLista.historico (não novosEmprestimos); pizza guarda soma=0.
