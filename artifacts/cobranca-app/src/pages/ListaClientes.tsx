@@ -1593,6 +1593,24 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const db = loadDB();
     return (db?.novosClientesOutras as ClienteItem[]) ?? [];
   });
+  // Saneamento: remove marcações de "cobrado" cujo id não corresponde a nenhum
+  // cliente conhecido (ids "fantasmas" deixados por reimportações antigas da
+  // mesma planilha — cada import gerava um id novo, inflando o contador de
+  // cobranças e a cobrança diária).
+  useEffect(() => {
+    const idsConhecidos = new Set<number>([
+      ...clientes.map(c => c.id),
+      ...clientesAdicionaisHoje.map(c => c.id),
+      ...cobradosExtras.map(c => c.id),
+    ]);
+    if (idsConhecidos.size === 0) return;
+    const cobradosLimpos = cobrados.filter(id => idsConhecidos.has(id));
+    const valoresLimpos = cobradosValores.filter(x => idsConhecidos.has(x.id));
+    if (cobradosLimpos.length === cobrados.length && valoresLimpos.length === cobradosValores.length) return;
+    setCobrados(cobradosLimpos);
+    setCobradosValores(valoresLimpos);
+    saveDB({ cobrados: cobradosLimpos, cobradosValores: valoresLimpos });
+  }, [cobrados, cobradosValores, clientes, clientesAdicionaisHoje, cobradosExtras]);
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>(() => {
     const db = loadDB();
     return (db?.agendamentos as Agendamento[]) ?? [];
@@ -2175,7 +2193,17 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                 (!!novoImportado.consecutivo && c.consecutivo === novoImportado.consecutivo) ||
                 (!novoImportado.consecutivo && chaveImp(c) === chaveNovo))
                 ? prev : [...prev, novoImportado];
-            const addOrdem = (prev: number[]) => prev.includes(clienteAlvoId) ? prev : [...prev, clienteAlvoId];
+            // Reimportação: se o cliente já existe (dedupe por consecutivo ou
+            // nome+tel+endereço), usar o ID EXISTENTE nas demais listas —
+            // senão cobrados/ordem/histórico acumulam ids "fantasmas" de cada
+            // reimportação (ex.: 8 cobranças para 4 clientes).
+            const dbPre = loadDB();
+            const existenteImp = (((dbPre?.clientes as ClienteItem[] | undefined) ?? [])).find(c =>
+              c.id === novoImportado.id ||
+              (!!novoImportado.consecutivo && c.consecutivo === novoImportado.consecutivo) ||
+              (!novoImportado.consecutivo && chaveImp(c) === chaveNovo));
+            const idAlvoImp = existenteImp ? existenteImp.id : clienteAlvoId;
+            const addOrdem = (prev: number[]) => prev.includes(idAlvoImp) ? prev : [...prev, idAlvoImp];
             // Histórico de visitas sintetizado a partir da planilha: parcelas
             // pagas inteiras + (se houver) 1 pagamento parcial (quando pagas é
             // fracionário, ex.: 1,5 = 1 parcela cheia + meia parcela) + o resto
@@ -2209,15 +2237,15 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
               });
             }
             const addHist = (prev: Record<number, Pagamento[]>) =>
-              (prev[clienteAlvoId]?.length || pagsSintetizados.length === 0)
-                ? prev : { ...prev, [clienteAlvoId]: pagsSintetizados };
+              (prev[idAlvoImp]?.length || pagsSintetizados.length === 0)
+                ? prev : { ...prev, [idAlvoImp]: pagsSintetizados };
             // Rota importada vem de um caixa já trabalhado: o cliente entra
             // marcado como COBRADO hoje com o valor do ULT.PAGO da planilha.
             const ultPagoImp = Math.max(0, Number(d.ultPago) || 0);
             const addCobradoImp = (prev: number[]) =>
-              prev.includes(clienteAlvoId) ? prev : [...prev, clienteAlvoId];
+              prev.includes(idAlvoImp) ? prev : [...prev, idAlvoImp];
             const addCobradoValorImp = (prev: {id: number, valor: number}[]) =>
-              prev.some(x => x.id === clienteAlvoId) ? prev : [...prev, { id: clienteAlvoId, valor: ultPagoImp }];
+              prev.some(x => x.id === idAlvoImp) ? prev : [...prev, { id: idAlvoImp, valor: ultPagoImp }];
             setClientes(addImportado);
             setOrdemClientesIds(addOrdem);
             setHistoricoPagamentos(addHist);
