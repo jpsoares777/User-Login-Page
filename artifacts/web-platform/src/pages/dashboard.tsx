@@ -6364,6 +6364,20 @@ export default function DashboardPage() {
     return parseFloat(s) || 0;
   };
 
+  // ULT.PAGO vem como "2026-07-07 ( Vr 30 )": o valor recebido é o número
+  // depois do "Vr". Se não houver "Vr", tenta o conteúdo entre parênteses;
+  // se o campo for só um número, usa parseNum direto.
+  const parseUltPago = (v: string): number => {
+    if (!v) return 0;
+    const s = String(v);
+    const mVr = s.match(/vr\.?\s*([\d.,]+)/i);
+    if (mVr) return parseNum(mVr[1]);
+    const mPar = s.match(/\(([^)]*)\)/);
+    if (mPar) return parseNum(mPar[1]);
+    if (/\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4}/.test(s)) return 0;
+    return parseNum(s);
+  };
+
   const mapClienteRows = (rows: Record<string, string>[]): ImportClienteRow[] => {
     if (rows.length === 0) return [];
     const headers = Object.keys(rows[0]);
@@ -6416,7 +6430,7 @@ export default function DashboardPage() {
         saldo,
         atrasadas:         Math.round(parseNum(r[atrasCol])),
         visitas:           Math.round(parseNum(r[visitCol])),
-        ultPago:           parseNum(r[ultCol]),
+        ultPago:           parseUltPago(r[ultCol]),
       };
     }).filter(r => r.nome.trim() !== "");
   };
