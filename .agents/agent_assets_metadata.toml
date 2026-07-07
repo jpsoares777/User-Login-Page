@@ -6,3 +6,9 @@ id = "g1zMRI1qCs3ILW2g8t6lK"
 uri = "file://RELATORIO_SISTEMA.md"
 type = "text"
 title = "Relatório de Funcionamento do System Pay"
+
+[[outputs]]
+id = "6xboRqHbj2NGdJi1v7g41"
+uri = "file://RELATORIO_SISTEMA.pdf"
+type = "pdf"
+title = "Relatório de Funcionamento do System Pay (PDF)"
