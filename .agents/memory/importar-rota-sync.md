@@ -11,6 +11,8 @@ Regra: toda ação da web que precisa refletir no app do cobrador vai pela fila 
 
 **ULT.PAGO (formato):** a planilha traz ULT.PAGO como `2026-07-07 ( Vr 30 )` — o valor recebido é o número após "Vr". Nunca usar parseNum genérico (mistura a data com o valor); usar parser dedicado: regex `vr\.?\s*([\d.,]+)`, fallback parênteses, só-data → 0. Clientes importados entram no app marcados como COBRADOS hoje com valor = ULT.PAGO (rota importada vem de caixa já trabalhado). Parcelas pagas com coluna 0: derivar = round((totalAPagar − saldo)/valorParcela) — na web, na API e no app.
 
+**Resumen (caixa inicial/final):** o import do Resumen XLS deve PERSISTIR — só guardar em estado React não funciona (polling de 10s sobrescreve com o snapshot fechamento-rota e reload perde tudo). A web envia a `rota` junto no FormData; a API grava o resumo como dadosSnapshot no caixa do cobrador (atualiza aberto ou insere fechado) e enfileira comando `caixa-definir` (clienteId "0") com caixaInicial = Caja Final importado — vira o Caixa Inicial do app (continuidade do caixa fechado do sistema antigo).
+
 **Dedupe (importante):** reimportar a mesma planilha gera novos comandos/ids. O app deduplica por id, por `consecutivo` e — quando a planilha não tem consecutivo — por chave composta nome+telefone+endereço normalizada.
 
 **Atrasadas/visitas:** na ficha do app esses números são DERIVADOS do histórico de pagamentos do ciclo (atrasadas = "Sem pagamento"; visitas = total com id >= creditoStartTimestamp). A importação sintetiza esse histórico: `pagas` entradas "Parcela" + atrasadas entradas "Sem pagamento" (fallback: visitas − pagas). O snapshot ao admin também deriva visitas/atrasadas de historicoPagamentos (registro do dia como piso) — nunca gravar 0 fixo.

@@ -1,6 +1,8 @@
 import { Router, type IRouter } from "express";
 import multer from "multer";
 import * as XLSX from "xlsx";
+import { eq, and, desc } from "drizzle-orm";
+import { db, caixaTable, aplicativosTable, comandosClienteTable } from "@workspace/db";
 
 const router: IRouter = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
@@ -28,7 +30,7 @@ function parseStr(v: unknown): string {
   return v == null ? "" : String(v).trim();
 }
 
-router.post("/importar-resumo", upload.single("arquivo"), (req, res): void => {
+router.post("/importar-resumo", upload.single("arquivo"), async (req, res): Promise<void> => {
   try {
     if (!req.file) {
       res.status(400).json({ error: "Nenhum arquivo enviado" });
@@ -134,6 +136,50 @@ router.post("/importar-resumo", upload.single("arquivo"), (req, res): void => {
       carteiraFinal,
       sancao,
     };
+
+    // ── Persistência: se a rota foi informada, grava o resumo como snapshot
+    // do caixa dessa rota (assim Caixa Inicial/Final aparecem no Relatório
+    // Diário mesmo após recarregar) e envia o caixa ao app do cobrador via
+    // comando — o Caixa Final importado vira o Caixa Inicial do app, já que
+    // a rota importada vem de um caixa fechado no sistema antigo.
+    const rotaNome = parseStr(req.body?.rota);
+    if (rotaNome) {
+      const [aplicativo] = await db.select().from(aplicativosTable)
+        .where(eq(aplicativosTable.rota, rotaNome));
+      if (aplicativo) {
+        const snapshotJson = JSON.stringify(resultado);
+        const [aberto] = await db.select().from(caixaTable)
+          .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "aberto")))
+          .orderBy(desc(caixaTable.id))
+          .limit(1);
+        if (aberto) {
+          await db.update(caixaTable)
+            .set({ dadosSnapshot: snapshotJson, saldoInicial: String(resultado.caixaInicial) })
+            .where(eq(caixaTable.id, aberto.id));
+        } else {
+          const hoje = new Date().toISOString().slice(0, 10);
+          // Só usa datas do XLS se estiverem no formato ISO (YYYY-MM-DD);
+          // caso contrário cai para hoje, evitando erro de insert no Postgres.
+          const isoOk = (s: string | null | undefined) => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s.trim());
+          await db.insert(caixaTable).values({
+            cobradorId: aplicativo.id,
+            dataAbertura: isoOk(resultado.dataInicio) ? resultado.dataInicio.trim() : hoje,
+            dataFechamento: isoOk(resultado.dataFechamento) ? (resultado.dataFechamento as string).trim() : hoje,
+            saldoInicial: String(resultado.caixaInicial),
+            saldoFinal: String(resultado.caixaFinal),
+            status: "fechado",
+            dadosSnapshot: snapshotJson,
+          });
+        }
+        await db.insert(comandosClienteTable).values({
+          aplicativoId: aplicativo.id,
+          codigoAcesso: aplicativo.codigoAcesso,
+          tipo: "caixa-definir",
+          clienteId: "0",
+          dados: { caixaInicial: resultado.caixaFinal },
+        });
+      }
+    }
 
     res.json({ ok: true, data: resultado });
   } catch (err) {

@@ -2197,6 +2197,17 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                 cobradosValores: addCobradoValorImp((dbA.cobradosValores as {id: number, valor: number}[] | undefined) ?? []),
               });
             }
+          } else if (cmd.tipo === "caixa-definir") {
+            // Importação de rota na web: o Caixa Final do resumo importado
+            // vira o Caixa Inicial do app (continuidade do caixa fechado no
+            // sistema antigo). Comando de rota (clienteId "0").
+            const dc = (cmd.dados ?? {}) as { caixaInicial?: number };
+            const novoCaixa = Number(dc.caixaInicial);
+            if (Number.isFinite(novoCaixa)) {
+              setCaixaInicial(novoCaixa);
+              // Durabilidade ANTES do ack.
+              saveDB({ caixaInicial: novoCaixa });
+            }
           } else if (cmd.tipo === "excluir") {
             // Mesmo critério da edição: empréstimo pertence ao cliente se
             // clienteId (renovação) ou o próprio id (cadastro) casar.

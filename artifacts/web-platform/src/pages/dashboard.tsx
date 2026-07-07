@@ -6453,6 +6453,7 @@ export default function DashboardPage() {
       if (importarArquivo) {
         const form = new FormData();
         form.append("arquivo", importarArquivo);
+        if (importarVendedor) form.append("rota", importarVendedor);
         const res = await fetch(`${import.meta.env.BASE_URL}api/importar-resumo`, { method: "POST", body: form });
         const json = await res.json();
         if (!res.ok || !json.ok) {
