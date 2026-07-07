@@ -140,8 +140,9 @@ router.post("/importar-resumo", upload.single("arquivo"), async (req, res): Prom
     // ── Persistência: se a rota foi informada, grava o resumo como snapshot
     // do caixa dessa rota (assim Caixa Inicial/Final aparecem no Relatório
     // Diário mesmo após recarregar) e envia o caixa ao app do cobrador via
-    // comando — o Caixa Final importado vira o Caixa Inicial do app, já que
-    // a rota importada vem de um caixa fechado no sistema antigo.
+    // comando — o app recebe o MESMO Caixa Inicial da planilha; como os
+    // clientes importados já entram cobrados com o ULT.PAGO, o app reproduz
+    // o dia da planilha e chega ao mesmo Caixa Final.
     const rotaNome = parseStr(req.body?.rota);
     if (rotaNome) {
       const [aplicativo] = await db.select().from(aplicativosTable)
@@ -176,7 +177,7 @@ router.post("/importar-resumo", upload.single("arquivo"), async (req, res): Prom
           codigoAcesso: aplicativo.codigoAcesso,
           tipo: "caixa-definir",
           clienteId: "0",
-          dados: { caixaInicial: resultado.caixaFinal },
+          dados: { caixaInicial: resultado.caixaInicial },
         });
       }
     }

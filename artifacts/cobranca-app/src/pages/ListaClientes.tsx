@@ -2198,9 +2198,10 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
               });
             }
           } else if (cmd.tipo === "caixa-definir") {
-            // Importação de rota na web: o Caixa Final do resumo importado
-            // vira o Caixa Inicial do app (continuidade do caixa fechado no
-            // sistema antigo). Comando de rota (clienteId "0").
+            // Importação de rota na web: o app recebe o MESMO Caixa Inicial
+            // da planilha; os clientes importados (já cobrados com ULT.PAGO)
+            // reproduzem o dia e o Caixa Final bate com o da planilha.
+            // Comando de rota (clienteId "0").
             const dc = (cmd.dados ?? {}) as { caixaInicial?: number };
             const novoCaixa = Number(dc.caixaInicial);
             if (Number.isFinite(novoCaixa)) {
