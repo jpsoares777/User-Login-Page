@@ -15,6 +15,8 @@ Regra: toda ação da web que precisa refletir no app do cobrador vai pela fila 
 
 **Dedupe (importante):** reimportar a mesma planilha gera novos comandos/ids. O app deduplica por id, por `consecutivo` e — quando a planilha não tem consecutivo — por chave composta nome+telefone+endereço normalizada.
 
+**Despesas/rendimentos/retirada reais:** a planilha Resumen tem abas "Gastos" e "Ingresos" ([Concepto, Valor, Observaciones]) com os itens reais; a aba "Resumen" só traz totais. A importação extrai as listas (parseMovSheet), grava despesasLista/rendimentosLista no snapshot (abas Despesas/Rendimentos da web) e enfileira comandos `despesa`/`rendimento` para o app (ids determinísticos = Date.parse(dia meio-dia)+offset+índice → reimportar não duplica). "Retiros de caja" → categoria "Retirada de Caixa" (convenção do sistema). **Armadilha parseNum:** valores dessas abas vêm em PT "100,00" (vírgula decimal SEM ponto de milhar) — o detector de formato não pode exigir presença de ponto, senão "100,00" vira 10000.
+
 **Atrasadas/visitas:** na ficha do app esses números são DERIVADOS do histórico de pagamentos do ciclo (atrasadas = "Sem pagamento"; visitas = total com id >= creditoStartTimestamp). A importação sintetiza esse histórico: `pagas` entradas "Parcela" + atrasadas entradas "Sem pagamento" (fallback: visitas − pagas). O snapshot ao admin também deriva visitas/atrasadas de historicoPagamentos (registro do dia como piso) — nunca gravar 0 fixo.
 
 **Why:** o app trabalha com DB local (localStorage); inserir só no Postgres não aparece no app. Aplicar/persistir antes do ack garante durabilidade se o app fechar.

@@ -13,8 +13,9 @@ function parseNum(v: unknown): number {
     // Format can be "3,179.00" (EN: comma=thousands, dot=decimal)
     // or "3.179,00" (PT: dot=thousands, comma=decimal)
     const s = v.trim();
-    // Detect PT format: ends with ",XX" where XX are 1-2 digits
-    const ptFormat = /,\d{1,2}$/.test(s) && s.includes(".");
+    // Detect PT format: ends with ",XX" where XX are 1-2 digits (decimal
+    // comma), with or without dot as thousands separator — "100,00" is PT.
+    const ptFormat = /,\d{1,2}$/.test(s);
     if (ptFormat) {
       // PT: remove dots (thousands), replace comma with dot
       return parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
@@ -28,6 +29,50 @@ function parseNum(v: unknown): number {
 
 function parseStr(v: unknown): string {
   return v == null ? "" : String(v).trim();
+}
+
+type MovItem = {
+  id: number;
+  categoria: string;
+  descricao: string;
+  valor: number;
+  data: string;
+  hora: string;
+  responsavel: string;
+  obs: string;
+};
+
+// Lê uma aba de movimentos ("Gastos" ou "Ingresos") no formato
+// [Concepto, Valor, Observaciones], ignorando cabeçalho e linha "Total".
+// Os ids são determinísticos (data do dia + índice) para que reimportar o
+// mesmo arquivo não duplique os movimentos no app (dedupe por id).
+function parseMovSheet(workbook: XLSX.WorkBook, sheetName: string, dataMov: string, idOffset: number): MovItem[] {
+  const ws = workbook.Sheets[sheetName];
+  if (!ws) return [];
+  const rows = XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1 });
+  const itens: MovItem[] = [];
+  const baseId = Date.parse(`${dataMov}T12:00:00`) || Date.now();
+  for (const row of rows as unknown[][]) {
+    if (!Array.isArray(row) || row.length < 2) continue;
+    const concepto = parseStr(row[0]);
+    if (!concepto || /^concepto$/i.test(concepto) || /^total$/i.test(concepto)) continue;
+    const valor = parseNum(row[1]);
+    if (!(valor > 0)) continue;
+    const obs = parseStr(row[2]);
+    // Convenção do sistema: retirada de caixa é uma despesa com esta categoria.
+    const categoria = /retiros?\s+de\s+caja/i.test(concepto) ? "Retirada de Caixa" : concepto;
+    itens.push({
+      id: baseId + idOffset + itens.length,
+      categoria,
+      descricao: obs || categoria,
+      valor,
+      data: dataMov,
+      hora: "",
+      responsavel: "",
+      obs,
+    });
+  }
+  return itens;
 }
 
 router.post("/importar-resumo", upload.single("arquivo"), async (req, res): Promise<void> => {
@@ -137,6 +182,17 @@ router.post("/importar-resumo", upload.single("arquivo"), async (req, res): Prom
       sancao,
     };
 
+    // ── Listas reais de despesas e rendimentos (abas "Gastos" e "Ingresos") ──
+    // Vão no snapshot (abas Despesas/Rendimentos da web) e viram comandos
+    // para o app do cobrador, que reproduz o dia com os mesmos movimentos.
+    const isoOkMov = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s.trim());
+    const dataMov = isoOkMov(resultado.dataInicio)
+      ? resultado.dataInicio.trim()
+      : new Date().toISOString().slice(0, 10);
+    const despesasLista = parseMovSheet(workbook, "Gastos", dataMov, 0);
+    const rendimentosLista = parseMovSheet(workbook, "Ingresos", dataMov, 500);
+    const resultadoCompleto = { ...resultado, despesasLista, rendimentosLista };
+
     // ── Persistência: se a rota foi informada, grava o resumo como snapshot
     // do caixa dessa rota (assim Caixa Inicial/Final aparecem no Relatório
     // Diário mesmo após recarregar) e envia o caixa ao app do cobrador via
@@ -148,7 +204,7 @@ router.post("/importar-resumo", upload.single("arquivo"), async (req, res): Prom
       const [aplicativo] = await db.select().from(aplicativosTable)
         .where(eq(aplicativosTable.rota, rotaNome));
       if (aplicativo) {
-        const snapshotJson = JSON.stringify(resultado);
+        const snapshotJson = JSON.stringify(resultadoCompleto);
         const [aberto] = await db.select().from(caixaTable)
           .where(and(eq(caixaTable.cobradorId, aplicativo.id), eq(caixaTable.status, "aberto")))
           .orderBy(desc(caixaTable.id))
@@ -179,10 +235,26 @@ router.post("/importar-resumo", upload.single("arquivo"), async (req, res): Prom
           clienteId: "0",
           dados: { caixaInicial: resultado.caixaInicial },
         });
+        // Envia cada despesa/rendimento real da planilha ao app do cobrador
+        // (mesmo mecanismo dos movimentos criados na web). O app deduplica
+        // pelo id determinístico, então reimportar não gera duplicatas.
+        const comandosMov = [
+          ...despesasLista.map(m => ({ tipo: "despesa" as const, m })),
+          ...rendimentosLista.map(m => ({ tipo: "rendimento" as const, m })),
+        ];
+        if (comandosMov.length > 0) {
+          await db.insert(comandosClienteTable).values(comandosMov.map(({ tipo, m }) => ({
+            aplicativoId: aplicativo.id,
+            codigoAcesso: aplicativo.codigoAcesso,
+            tipo,
+            clienteId: String(m.id),
+            dados: { categoria: m.categoria, valor: m.valor, data: m.data, obs: m.obs },
+          })));
+        }
       }
     }
 
-    res.json({ ok: true, data: resultado });
+    res.json({ ok: true, data: resultadoCompleto });
   } catch (err) {
     console.error("importar-resumo error:", err);
     res.status(500).json({ error: "Erro ao processar arquivo: " + (err instanceof Error ? err.message : "desconhecido") });
