@@ -5841,12 +5841,14 @@ export default function DashboardPage() {
   const [importarPreviewClientes, setImportarPreviewClientes] = useState<ImportClienteRow[]>([]);
 
   // ── Faturas ──
-  type FaturaRow = { id: number; nro: string; data: string; iva: number; valorCop: number; valorUsd: number; meses: number; conceito: string; estado: "Pendente" | "Pago" | "Vencido"; vencimento: string; pais: string; };
-  const emptyFatura: Omit<FaturaRow, "id" | "nro"> = { data: new Date().toISOString().slice(0,10), iva: 0, valorCop: 0, valorUsd: 0, meses: 1, conceito: "", estado: "Pendente", vencimento: "", pais: "BR" };
+  type FaturaRow = { id: number; nro: string; data: string; iva: number; valorCop: number; meses: number; conceito: string; estado: "Pendente" | "Pago" | "Vencido"; vencimento: string; pais: string; };
+  const emptyFatura: Omit<FaturaRow, "id" | "nro"> = { data: new Date().toISOString().slice(0,10), iva: 0, valorCop: 0, meses: 1, conceito: "", estado: "Pendente", vencimento: "", pais: "BR" };
+  const fmtDataFatura = (s: string) => (s && /^\d{4}-\d{2}-\d{2}$/.test(s) ? s.split("-").reverse().join("/") : s);
+  const fmtRealFatura = (cents: number) => `R$ ${(cents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const [faturaRows, setFaturaRows] = useState<FaturaRow[]>([
-    { id: 1, nro: "14768398", data: "2026-05-28", iva: 0, valorCop: 5999, valorUsd: 11, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pendente", vencimento: "2026-05-28", pais: "BR" },
-    { id: 2, nro: "14768401", data: "2026-04-28", iva: 0, valorCop: 5999, valorUsd: 11, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pago",     vencimento: "2026-04-28", pais: "BR" },
-    { id: 3, nro: "14768405", data: "2026-03-28", iva: 0, valorCop: 5999, valorUsd: 11, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pago",     vencimento: "2026-03-28", pais: "BR" },
+    { id: 1, nro: "14768398", data: "2026-05-28", iva: 0, valorCop: 5999, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pendente", vencimento: "2026-05-28", pais: "BR" },
+    { id: 2, nro: "14768401", data: "2026-04-28", iva: 0, valorCop: 5999, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pago",     vencimento: "2026-04-28", pais: "BR" },
+    { id: 3, nro: "14768405", data: "2026-03-28", iva: 0, valorCop: 5999, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pago",     vencimento: "2026-03-28", pais: "BR" },
   ]);
   const [faturaNovaOpen, setFaturaNovaOpen] = useState(false);
   const [faturaDetalhesId, setFaturaDetalhesId] = useState<number | null>(null);
@@ -7303,23 +7305,20 @@ export default function DashboardPage() {
                           </td>
 
                           {/* Data */}
-                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center", color: "#64748b", fontSize: 12 }}>
-                            {row.data}
+                          <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center", color: "#475569", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}>
+                            {fmtDataFatura(row.data)}
                           </td>
 
                           {/* IVA */}
                           <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9", textAlign: "center", color: "#94a3b8", fontSize: 12, fontWeight: 600 }}>
-                            {row.iva}
+                            {row.iva}%
                           </td>
 
                           {/* Valor */}
                           <td style={{ padding: "12px 12px", borderBottom: "1px solid #f1f5f9" }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                              <span style={{ fontWeight: 700, color: "#1e293b", fontSize: 13 }}>
-                                R$ {(row.valorCop / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                              </span>
-                              <span style={{ fontSize: 11, color: "#64748b" }}>≈ $ {row.valorUsd} USD</span>
-                            </div>
+                            <span style={{ fontWeight: 800, color: "#0f172a", fontSize: 14, whiteSpace: "nowrap" }}>
+                              {fmtRealFatura(row.valorCop)}
+                            </span>
                           </td>
 
                           {/* Meses */}
@@ -7339,7 +7338,7 @@ export default function DashboardPage() {
                                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: estadoBadge.dot, flexShrink: 0 }} />
                                 {row.estado}
                               </span>
-                              <span style={{ fontSize: 10, color: "#94a3b8" }}>Venc. {row.vencimento}</span>
+                              <span style={{ fontSize: 10, color: "#94a3b8" }}>Venc. {fmtDataFatura(row.vencimento)}</span>
                             </div>
                           </td>
 
@@ -7399,8 +7398,8 @@ export default function DashboardPage() {
               </div>
               <span style={{ color: "#e2e8f0" }}>|</span>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em" }}>TOTAL USD</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1e40af", padding: "1px 10px", borderRadius: 6 }}>$ {faturaRows.filter(r => r.estado !== "Pago").reduce((a, r) => a + r.valorUsd, 0)} USD</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em" }}>TOTAL A PAGAR</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1e40af", padding: "1px 10px", borderRadius: 6 }}>{fmtRealFatura(faturaRows.filter(r => r.estado !== "Pago").reduce((a, r) => a + r.valorCop, 0))}</span>
               </div>
             </div>
             <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
@@ -7507,13 +7506,8 @@ export default function DashboardPage() {
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
                       <div>
                         <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Valor R$ *</label>
-                        <input type="number" min={0} step={0.01} value={faturaForm.valorCop / 100} onChange={e => setFaturaForm(f => ({ ...f, valorCop: Math.round(+e.target.value * 100), valorUsd: Math.round((+e.target.value) / 5.63) }))}
+                        <input type="number" min={0} step={0.01} value={faturaForm.valorCop / 100} onChange={e => setFaturaForm(f => ({ ...f, valorCop: Math.round(+e.target.value * 100) }))}
                           style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f8fafc" }} />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Valor USD</label>
-                        <input type="number" min={0} value={faturaForm.valorUsd} readOnly
-                          style={{ width: "100%", height: 36, border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "0 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#f0f4f8", color: "#64748b" }} />
                       </div>
                       <div>
                         <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", display: "block", marginBottom: 5 }}>Meses</label>
@@ -7580,9 +7574,9 @@ export default function DashboardPage() {
                     <div style={{ padding: "24px 24px", display: "flex", flexDirection: "column", gap: 0 }}>
                       {[
                         { label: "Conceito",   value: fr.conceito },
-                        { label: "Data",       value: fr.data },
-                        { label: "Vencimento", value: fr.vencimento },
-                        { label: "Valor",      value: `R$ ${(fr.valorCop / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ≈ $ ${fr.valorUsd} USD` },
+                        { label: "Data",       value: fmtDataFatura(fr.data) },
+                        { label: "Vencimento", value: fmtDataFatura(fr.vencimento) },
+                        { label: "Valor",      value: fmtRealFatura(fr.valorCop) },
                         { label: "IVA",        value: `${fr.iva}%` },
                         { label: "Meses",      value: `${fr.meses}` },
                         { label: "País",       value: fr.pais === "BR" ? "🇧🇷 Brasil" : "🇨🇴 Colômbia" },
@@ -7625,7 +7619,7 @@ export default function DashboardPage() {
                       <p style={{ fontSize: 13, color: "#475569", margin: "0 0 8px" }}>Tem certeza que deseja excluir a fatura:</p>
                       <p style={{ fontSize: 15, fontWeight: 800, color: "#1e40af", margin: "0 0 4px" }}>#{fr.nro}</p>
                       <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 4px" }}>{fr.conceito}</p>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1e293b", margin: "0 0 20px" }}>R$ {(fr.valorCop / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ≈ $ {fr.valorUsd} USD</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1e293b", margin: "0 0 20px" }}>{fmtRealFatura(fr.valorCop)}</p>
                       <p style={{ fontSize: 12, color: "#b91c1c", fontWeight: 600, margin: "0 0 20px" }}>⚠️ Esta ação não pode ser desfeita.</p>
                       <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
                         <button onClick={() => setFaturaDeleteId(null)}
