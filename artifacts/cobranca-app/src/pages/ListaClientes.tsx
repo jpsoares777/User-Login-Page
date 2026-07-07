@@ -3324,7 +3324,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         ? <EmprestimosDoDia
             lista={emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime()))}
             onDelete={(id) => {
-              if (confirm("Confirmar exclusão deste registro?")) {
+              // A confirmação já acontece no modal da tela EmprestimosDoDia.
+              {
                 const emp = emprestimentos.find(e => e.id === id);
                 const clienteAlvoId = emp?.clienteId ?? id;
                 setEmprestimentos(prev => prev.filter(e => e.id !== id));
