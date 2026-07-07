@@ -365,6 +365,22 @@ export type DadosSnapshot = {
   agendadosLista?: AgendadoSnapshot[];
 };
 
+// Abre um novo caixa no servidor (usado no fechamento retroativo: depois de
+// fechar o caixa do dia anterior, o app abre automaticamente o caixa de hoje
+// para o cobrador nao ficar bloqueado aguardando o administrador).
+export async function abrirCaixaAPI(data: {
+  cobradorId: number;
+  dataAbertura: string;
+  saldoInicial: number;
+}): Promise<boolean> {
+  try {
+    await apiPost("/caixa/abrir", data);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function postFechamentoCaixaAPI(data: {
   cobradorId: number;
   dataFechamento: string;

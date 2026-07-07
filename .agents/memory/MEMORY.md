@@ -11,3 +11,4 @@
 - [Despesa/rendimento criados na web](movimentos-web-comando.md) — nunca gravar direto no snapshot (app sobrescreve); vira comando_cliente que o app aplica; admin mostra pendentes mesclados; editar/excluir web ainda só local.
 - [Comandos de cliente admin→app](comandos-cliente.md) — editar/excluir viaja por comandos_cliente com polling; endereçar por codigoAcesso, gravar localStorage antes do ack, ack escopado, merge de pendentes no admin.
 - [Dashboard Desempenho — fonte dos gráficos](dashboard-desempenho-dados.md) — 5 gráficos vêm do snapshot fechamento-rota; ano-a-ano usa clientesLista.historico (não novosEmprestimos); pizza guarda soma=0.
+- [Fechamento retroativo de caixa](fechamento-retroativo.md) — dia pendente fecha sozinho e reabre caixa de hoje; CUIDADO: localStorage usa data pt-BR e API usa ISO — converter sempre.

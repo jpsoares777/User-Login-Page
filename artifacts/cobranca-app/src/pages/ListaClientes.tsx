@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Fragment, type ReactNode } from "react";
 import { loadDB, saveDB, getTodayStr, gerarConsecutivoUnico, type AppDB } from "../lib/storage";
-import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, postSolicitacaoMovimentoAPI, fetchSolicitacoesMovimentoAPI, fetchLimitesAprovacaoAPI, getLimitesAprovacaoCache, getRotaSessao, fetchComandosClienteAPI, ackComandoClienteAPI, type DadosSnapshot } from "../lib/api";
+import { postPagamentoAPI, postMovimentoCaixaAPI, postFechamentoCaixaAPI, abrirCaixaAPI, postSnapshotVivoAPI, getSaldoInicial, postSolicitacaoEmprestimoAPI, fetchSolicitacoesEmprestimoAPI, postSolicitacaoMovimentoAPI, fetchSolicitacoesMovimentoAPI, fetchLimitesAprovacaoAPI, getLimitesAprovacaoCache, getRotaSessao, fetchComandosClienteAPI, ackComandoClienteAPI, type DadosSnapshot } from "../lib/api";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ParcelaCliente } from "./ParcelaCliente";
 import { CadastroCliente } from "./CadastroCliente";
@@ -162,6 +162,13 @@ function criadoHoje(ts?: number): boolean {
   const d = new Date(ts);
   const now = new Date();
   return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+}
+
+// Converte data pt-BR "DD/MM/YYYY" (formato de getTodayStr/lastDate no
+// localStorage) para ISO "YYYY-MM-DD" (formato usado pela API e pelo snapshot).
+function brDateToIso(s: string): string {
+  const [d, m, y] = s.split("/");
+  return `${y}-${m}-${d}`;
 }
 
 function TelaLista({ busca, setBusca, vrf, setVrf, onSelectCliente, onAddAgendamento, ausentes, onAusentar, cobrados, onRemoverCobrado, clientesAdicionais = [], cobradosExtras = [], cobradosValores = [], pagamentosRegistro = {}, clientesBase = clientesData }: {
@@ -1501,17 +1508,28 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   const [verSincronizar, setVerSincronizar] = useState(false);
   const [verOutrasDatas, setVerOutrasDatas] = useState(false);
   const [verAusentes, setVerAusentes] = useState(false);
+  // FECHAMENTO RETROATIVO: se o último dia trabalhado (lastDate) não é hoje e
+  // aquele dia NÃO teve fechamento (fechamentoDia !== lastDate), existe uma
+  // pendência: o caixa daquele dia precisa ser fechado automaticamente com as
+  // movimentações DAQUELE dia antes de abrir o caixa de hoje. Enquanto a
+  // pendência existe, os estados day-scoped abaixo carregam os dados do dia
+  // pendente (em vez de zerar) e os efeitos de virada de dia ficam suspensos.
+  const [fechamentoPendenteDe] = useState<string | null>(() => {
+    const db = loadDB(); const hoje = getTodayStr();
+    if (db && db.lastDate && db.lastDate !== hoje && db.fechamentoDia !== db.lastDate) return db.lastDate;
+    return null;
+  });
   const [ausentes, setAusentes] = useState<number[]>(() => {
     const db = loadDB(); const hoje = getTodayStr();
-    return (db && db.lastDate === hoje) ? (db.ausentes ?? []) : [];
+    return (db && (db.lastDate === hoje || fechamentoPendenteDe)) ? (db.ausentes ?? []) : [];
   });
   const [cobrados, setCobrados] = useState<number[]>(() => {
     const db = loadDB(); const hoje = getTodayStr();
-    return (db && db.lastDate === hoje) ? (db.cobrados ?? []) : [];
+    return (db && (db.lastDate === hoje || fechamentoPendenteDe)) ? (db.cobrados ?? []) : [];
   });
   const [cobradosValores, setCobradosValores] = useState<{id: number, valor: number}[]>(() => {
     const db = loadDB(); const hoje = getTodayStr();
-    return (db && db.lastDate === hoje) ? (db.cobradosValores ?? []) : [];
+    return (db && (db.lastDate === hoje || fechamentoPendenteDe)) ? (db.cobradosValores ?? []) : [];
   });
   const [registroPagamentos, setRegistroPagamentos] = useState<Record<number, Pagamento[]>>(() => {
     const db = loadDB();
@@ -1594,11 +1612,11 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   const clientesOrdenadosEnriquecidos = clientesOrdenados.map(enrichCliente);
   const [despesas, setDespesas] = useState<LancamentoItem[]>(() => {
     const db = loadDB(); const hoje = getTodayStr();
-    return (db && db.lastDate === hoje && (db.despesas as LancamentoItem[])?.length) ? (db.despesas as LancamentoItem[]) : despesasIniciais;
+    return (db && (db.lastDate === hoje || fechamentoPendenteDe) && (db.despesas as LancamentoItem[])?.length) ? (db.despesas as LancamentoItem[]) : despesasIniciais;
   });
   const [rendimentos, setRendimentos] = useState<LancamentoItem[]>(() => {
     const db = loadDB(); const hoje = getTodayStr();
-    return (db && db.lastDate === hoje && (db.rendimentos as LancamentoItem[])?.length) ? (db.rendimentos as LancamentoItem[]) : rendimentosIniciais;
+    return (db && (db.lastDate === hoje || fechamentoPendenteDe) && (db.rendimentos as LancamentoItem[])?.length) ? (db.rendimentos as LancamentoItem[]) : rendimentosIniciais;
   });
   const [pendentesMovimento, setPendentesMovimento] = useState<PendenteMovimento[]>(() => {
     const db = loadDB();
@@ -1624,12 +1642,14 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   // estar aqui com fechamentoDia === hoje significa reabertura same-day: revertemos o
   // caixaInicial ao valor pre-fechamento p/ evitar contar os emprestimos em dobro.
   useEffect(() => {
+    if (fechamentoPendenteDe) return;
     const db = loadDB();
     if (db?.fechamentoDia === getTodayStr() && typeof db?.caixaInicialPreFechamento === "number") {
       const preFechamento = db.caixaInicialPreFechamento;
       setCaixaInicial(preFechamento);
       saveDB({ caixaInicial: preFechamento, caixaInicialPreFechamento: undefined, fechamentoDia: undefined });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Virada de dia: o saldo de caixa do dia anterior (caixaFinal) vira o caixaInicial de hoje.
@@ -1637,12 +1657,17 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   // Guarda por lastDate !== hoje garante que so dispara em dia novo genuino (nao na reabertura
   // same-day, tratada pelo efeito acima). Idempotente/StrictMode-safe: carimba lastDate = hoje.
   useEffect(() => {
+    // Com fechamento pendente, a virada de dia fica suspensa: primeiro o caixa
+    // do dia anterior é fechado (fluxo retroativo), que já grava o novo
+    // caixaInicial e carimba lastDate = hoje.
+    if (fechamentoPendenteDe) return;
     const db = loadDB();
     const hoje = getTodayStr();
     if (db && db.lastDate && db.lastDate !== hoje && typeof db.caixaFinal === "number") {
       setCaixaInicial(db.caixaFinal);
       saveDB({ caixaInicial: db.caixaFinal, lastDate: hoje, caixaInicialPreFechamento: undefined, fechamentoDia: undefined });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Backfill: garante que todo cliente/empréstimo já existente (criado antes do
@@ -1665,7 +1690,9 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   }, []);
 
   useEffect(() => {
-    if (caixaFechadoHoje) return;
+    // Durante o fechamento retroativo NADA é persistido aqui: senão o lastDate
+    // seria carimbado com hoje e as movimentações do dia pendente se perderiam.
+    if (caixaFechadoHoje || fechamentoPendenteDe) return;
     // Saldo de caixa corrente (mesma formula do RelatorioFinanceiro): persistimos como
     // caixaFinal para que, na virada de dia, ele vire o caixaInicial do proximo dia.
     const cobrancaDiariaVal = cobradosValores.reduce((s, x) => s + x.valor, 0);
@@ -2283,6 +2310,15 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   // fechamento do caixa quanto no envio AO VIVO (tempo real). Mantido em um unico
   // lugar para que a web sempre receba os mesmos numeros que o app calcula.
   const buildDadosSnapshot = (dataStr: string): { snapshot: DadosSnapshot; caixaFinal: number } => {
+    // "Criado no dia do snapshot": no fechamento normal dataStr = hoje (mesmo
+    // comportamento de criadoHoje); no fechamento RETROATIVO dataStr é o dia
+    // pendente, então os empréstimos/clientes criados NAQUELE dia é que contam.
+    const criadoNoDia = (ts?: number): boolean => {
+      if (!ts) return false;
+      const d = new Date(ts);
+      const s = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      return s === dataStr;
+    };
     const recebAtualSnap = cobradosValores.reduce((s, x) => s + x.valor, 0);
     // Divisão do recebido por forma: PIX (transferência) vem dos pagamentos com forma
     // "PIX"; o restante (Dinheiro + pagamentos antigos sem forma) conta como efetivo,
@@ -2293,7 +2329,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const totalDespesasSnap = despesas.filter(d => d.categoria !== "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const retiradaSnap = despesas.filter(d => d.categoria === "Retirada de Caixa").reduce((s, d) => s + d.valor, 0);
     const totalRendimentosSnap = rendimentos.reduce((s, r) => s + r.valor, 0);
-    const novosEmpHojeSnap = emprestimentos.filter(e => criadoHoje(new Date(e.criadoEm).getTime()));
+    const novosEmpHojeSnap = emprestimentos.filter(e => criadoNoDia(new Date(e.criadoEm).getTime()));
     const novosEmpSnap = novosEmpHojeSnap.reduce((s, e) => s + (e.valorEmprestado ?? 0), 0);
     const jurosSnap = novosEmpHojeSnap.reduce((s, e) => s + (Number(e.valorEmprestado) || 0) * ((Number(e.taxaJuros) || 0) / 100), 0);
     const caixaFinalSnap = caixaInicial + recebAtualSnap + totalRendimentosSnap - novosEmpSnap - totalDespesasSnap - retiradaSnap;
@@ -2348,8 +2384,8 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     // hoje) + adiantados criados hoje, vindos de `clientes` e `clientesAdicionaisHoje`,
     // sem duplicar por id. Fonte ÚNICA para "previsto", "pagos" e "não pagos".
     const elegiveisCobrancaSnap = [
-      ...clientes.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado)),
-      ...clientesAdicionaisHoje.filter(c => c.saldo > 0 && (!criadoHoje(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id)),
+      ...clientes.filter(c => c.saldo > 0 && (!criadoNoDia(c.creditoStartTimestamp) || c.pagamentoAdiantado)),
+      ...clientesAdicionaisHoje.filter(c => c.saldo > 0 && (!criadoNoDia(c.creditoStartTimestamp) || c.pagamentoAdiantado) && !clientes.some(k => k.id === c.id)),
     ];
     const recebPrevisto = elegiveisCobrancaSnap.reduce((s, c) => s + c.parcela, 0);
     // "pagos"/"não pagos" contam APENAS clientes efetivamente cobrados hoje — ou seja,
@@ -2702,7 +2738,7 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
   // web a cada mudanca relevante e a cada 15s. Assim cada movimentacao do cobrador
   // aparece na plataforma sem precisar fechar o caixa.
   useEffect(() => {
-    if (caixaFechadoHoje || !(cobradorId > 0)) return;
+    if (caixaFechadoHoje || fechamentoPendenteDe || !(cobradorId > 0)) return;
     const enviar = () => {
       const h = new Date();
       const dataStr = `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,"0")}-${String(h.getDate()).padStart(2,"0")}`;
@@ -2717,7 +2753,18 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       emprestimentos, clientes, caixaInicial, novosClientesIds, renovacoesIds, quitadosClientes,
       agendamentos]);
 
-  const handleCaixaFechado = () => {
+  // Fechamento retroativo: marca quando o fechamento do dia pendente terminou
+  // (snapshot enviado + novo caixa de hoje aberto no servidor).
+  const [retroConcluido, setRetroConcluido] = useState(false);
+  const retroExecutado = useRef(false);
+
+  // dataFechamentoParam: quando informado com um dia ANTERIOR a hoje, executa o
+  // FECHAMENTO RETROATIVO — fecha o caixa daquele dia (só com as movimentações
+  // daquele dia), abre automaticamente um novo caixa para hoje no servidor e
+  // deixa o localStorage pronto para o novo período (dia limpo, caixaInicial =
+  // caixaFinal do dia fechado).
+  const handleCaixaFechado = (dataFechamentoParam?: string) => {
+    const retro = !!dataFechamentoParam && dataFechamentoParam !== getTodayStr();
     const emprestimentosComoClientes = emprestimentos
       .filter(e => !e.renovacao && !clientes.some(c => c.id === e.id))
       .map(e => ({
@@ -2751,8 +2798,12 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       .filter(id => !ordemClientesIds.includes(id));
     const novaOrdem = [...ordemClientesIds, ...novosIds];
     if (cobradorId > 0) {
+      // A API e o snapshot usam datas ISO (YYYY-MM-DD). No fechamento
+      // retroativo, TODAS as movimentações e o snapshot são datados com o dia
+      // pendente (o dia que ficou sem fechamento), convertido de pt-BR p/ ISO.
       const hoje2 = new Date();
-      const dataStr2 = `${hoje2.getFullYear()}-${String(hoje2.getMonth()+1).padStart(2,"0")}-${String(hoje2.getDate()).padStart(2,"0")}`;
+      const isoHoje = `${hoje2.getFullYear()}-${String(hoje2.getMonth()+1).padStart(2,"0")}-${String(hoje2.getDate()).padStart(2,"0")}`;
+      const dataStr2 = retro && dataFechamentoParam ? brDateToIso(dataFechamentoParam) : isoHoje;
       despesas.forEach(d => {
         postMovimentoCaixaAPI({
           cobradorId,
@@ -2780,10 +2831,47 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
         dataFechamento: dataStr2,
         saldoFinal: caixaFinalSnap,
         dadosSnapshot: snapshot,
-      }).then(ok => {
+      }).then(async ok => {
         if (!ok) console.error("[FechamentoCaixa] Falha ao enviar snapshot para a API");
+        if (retro) {
+          // Abre automaticamente o novo caixa de HOJE no servidor para o
+          // cobrador não ficar bloqueado no PIN aguardando o administrador.
+          const abriu = await abrirCaixaAPI({ cobradorId, dataAbertura: isoHoje, saldoInicial: caixaFinalSnap });
+          if (!abriu) console.error("[FechamentoCaixa] Falha ao abrir o novo caixa de hoje");
+          setRetroConcluido(true);
+        }
       });
       saveDB({ caixaFechadoData: dataStr2 });
+
+      if (retro) {
+        // Dia novo começa LIMPO: as movimentações do dia pendente já foram
+        // fechadas acima. caixaInicial de hoje = caixaFinal do dia fechado.
+        // Sem fechamentoDia/caixaInicialPreFechamento: não é reabertura
+        // same-day — é a abertura de um novo período de trabalho.
+        setCaixaInicial(caixaFinalSnap);
+        saveDB({
+          lastDate: getTodayStr(),
+          clientes: clientesMerged,
+          ordemClientesIds: novaOrdem,
+          cobrados: [],
+          ausentes: [],
+          cobradosValores: [],
+          registroPagamentos: {},
+          cobradosExtras: [],
+          novosClientesIds: [],
+          renovacoesIds: [],
+          clientesAdicionaisHoje: [],
+          emprestimentos: [],
+          quitadosClientes: [],
+          despesas: [],
+          rendimentos: [],
+          caixaInicial: caixaFinalSnap,
+          caixaFinal: caixaFinalSnap,
+          caixaInicialPreFechamento: undefined,
+          fechamentoDia: undefined,
+        });
+        return;
+      }
     }
     setCaixaFechadoHoje(true);
     setClientes(clientesMerged);
@@ -2820,6 +2908,64 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
       fechamentoDia: getTodayStr(),
     });
   };
+
+  // Dispara o fechamento retroativo automaticamente ao entrar com pendência.
+  // Guard por ref + verificação no DB tornam o efeito idempotente (StrictMode).
+  useEffect(() => {
+    if (!fechamentoPendenteDe || retroExecutado.current || !(cobradorId > 0)) return;
+    retroExecutado.current = true;
+    // caixaFechadoData é gravado em ISO; fechamentoPendenteDe está em pt-BR.
+    if (loadDB()?.caixaFechadoData === brDateToIso(fechamentoPendenteDe)) {
+      // Já foi fechado (ex.: recarregou a página no meio do fluxo).
+      setRetroConcluido(true);
+      return;
+    }
+    handleCaixaFechado(fechamentoPendenteDe);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Tela BLOQUEANTE do fechamento retroativo: nada do dia pendente pode ser
+  // mexido; ao concluir, o cobrador volta ao PIN e o novo caixa de hoje começa.
+  if (fechamentoPendenteDe) {
+    // fechamentoPendenteDe já está em pt-BR (DD/MM/YYYY), pronto para exibir.
+    const dataFmtP = fechamentoPendenteDe;
+    return (
+      <div style={{
+        minHeight: "100dvh", display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", gap: 18,
+        padding: 24, background: "#fff", textAlign: "center",
+        fontFamily: "'Inter','Segoe UI',sans-serif",
+      }}>
+        <div style={{
+          width: 72, height: 72, borderRadius: "50%",
+          background: retroConcluido ? "rgba(16,185,129,0.15)" : "rgba(59,130,246,0.12)",
+          display: "flex", alignItems: "center", justifyContent: "center", fontSize: 34,
+        }}>
+          {retroConcluido ? "✓" : "🕗"}
+        </div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: "#111827" }}>
+          {retroConcluido ? "Caixa do dia anterior fechado" : "Fechando o caixa do dia anterior…"}
+        </div>
+        <div style={{ fontSize: 14, color: "#6b7280", maxWidth: 300, lineHeight: 1.5 }}>
+          {retroConcluido
+            ? `O caixa de ${dataFmtP} foi fechado com as movimentações daquele dia. Digite seu PIN novamente para abrir o caixa de hoje.`
+            : `O caixa de ${dataFmtP} não foi fechado. O sistema está fechando automaticamente aquele dia com as movimentações daquele dia.`}
+        </div>
+        {retroConcluido && (
+          <button
+            onClick={() => onSair?.()}
+            style={{
+              marginTop: 8, padding: "12px 28px", borderRadius: 12, border: "none",
+              background: "#2563eb", color: "#fff", fontSize: 15, fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Digitar PIN
+          </button>
+        )}
+      </div>
+    );
+  }
 
   if (clienteSelecionado) {
     return <ParcelaCliente cliente={{ ...clienteSelecionado, pagamentos: historicoPagamentos[clienteSelecionado.id] ?? [] }} onBack={() => setClienteSelecionado(null)} onSaved={(valor, metodo, forma) => {
