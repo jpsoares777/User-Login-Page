@@ -5841,15 +5841,31 @@ export default function DashboardPage() {
   const [importarPreviewClientes, setImportarPreviewClientes] = useState<ImportClienteRow[]>([]);
 
   // ── Faturas ──
-  type FaturaRow = { id: number; nro: string; data: string; iva: number; valorCop: number; meses: number; conceito: string; estado: "Pendente" | "Pago" | "Vencido"; vencimento: string; pais: string; };
-  const emptyFatura: Omit<FaturaRow, "id" | "nro"> = { data: new Date().toISOString().slice(0,10), iva: 0, valorCop: 0, meses: 1, conceito: "", estado: "Pendente", vencimento: "", pais: "BR" };
+  type FaturaRow = { id: number; nro: string; rota: string; data: string; valorCop: number; meses: number; conceito: string; estado: "Pendente" | "Pago" | "Vencido"; vencimento: string; pais: string; };
+  const emptyFatura: Omit<FaturaRow, "id" | "nro" | "rota"> = { data: new Date().toISOString().slice(0,10), valorCop: 0, meses: 1, conceito: "", estado: "Pendente", vencimento: "", pais: "BR" };
   const fmtDataFatura = (s: string) => (s && /^\d{4}-\d{2}-\d{2}$/.test(s) ? s.split("-").reverse().join("/") : s);
   const fmtRealFatura = (cents: number) => `R$ ${(cents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  const [faturaRows, setFaturaRows] = useState<FaturaRow[]>([
-    { id: 1, nro: "14768398", data: "2026-05-28", iva: 0, valorCop: 5999, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pendente", vencimento: "2026-05-28", pais: "BR" },
-    { id: 2, nro: "14768401", data: "2026-04-28", iva: 0, valorCop: 5999, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pago",     vencimento: "2026-04-28", pais: "BR" },
-    { id: 3, nro: "14768405", data: "2026-03-28", iva: 0, valorCop: 5999, meses: 1, conceito: "LICENCIAMENTO SYSTEMPAY", estado: "Pago",     vencimento: "2026-03-28", pais: "BR" },
-  ]);
+  const [faturaRows, setFaturaRows] = useState<FaturaRow[]>([]);
+  const fetchFaturas = () => {
+    fetch("/api/faturas")
+      .then(r => r.json())
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .then((rows: any[]) => setFaturaRows(rows.map(f => ({
+        id: f.id, nro: f.nro, rota: f.rota, data: f.data, valorCop: f.valorCentavos,
+        meses: f.meses, conceito: f.conceito, estado: f.estado, vencimento: f.vencimento, pais: f.pais,
+      }))))
+      .catch(() => {});
+  };
+  useEffect(() => { if (activeMain === "Faturas") fetchFaturas(); }, [activeMain]);
+  const [faturaFiltroRota, setFaturaFiltroRota] = useState("");
+  const [faturaFiltroNome, setFaturaFiltroNome] = useState("");
+  const [faturaNovaErro, setFaturaNovaErro] = useState<string | null>(null);
+  const faturasFiltradas = faturaRows.filter(f =>
+    (!faturaFiltroRota || f.rota === faturaFiltroRota) &&
+    (!faturaFiltroNome ||
+      f.conceito.toLowerCase().includes(faturaFiltroNome.toLowerCase()) ||
+      f.nro.includes(faturaFiltroNome) ||
+      f.rota.toLowerCase().includes(faturaFiltroNome.toLowerCase())));
   const [faturaNovaOpen, setFaturaNovaOpen] = useState(false);
   const [faturaDetalhesId, setFaturaDetalhesId] = useState<number | null>(null);
   const [faturaDeleteId, setFaturaDeleteId] = useState<number | null>(null);
@@ -5858,22 +5874,6 @@ export default function DashboardPage() {
   const [faturaRotaSelecionada, setFaturaRotaSelecionada] = useState<{ id: string; nome: string; vendedor: string; plano: string } | null>(null);
   const [faturaRotaDropdown, setFaturaRotaDropdown] = useState(false);
   const trmHoje = 3513;
-
-  const rotasSample = [
-    { id: "RT-001", nome: "Rota São Paulo Centro",     vendedor: "Carlos Silva",   plano: "Mensal"    },
-    { id: "RT-002", nome: "Rota Zona Sul SP",           vendedor: "Ana Pereira",    plano: "Trimestral"},
-    { id: "RT-003", nome: "Rota ABC Paulista",          vendedor: "João Santos",    plano: "Anual"     },
-    { id: "RT-004", nome: "Rota Campinas Norte",        vendedor: "Maria Oliveira", plano: "Mensal"    },
-    { id: "RT-005", nome: "Rota Santos Litoral",        vendedor: "Pedro Costa",    plano: "Semestral" },
-    { id: "RT-006", nome: "Rota Guarulhos Industrial",  vendedor: "Lucia Ferreira", plano: "Mensal"    },
-    { id: "RT-007", nome: "Rota Osasco Comercial",      vendedor: "Roberto Lima",   plano: "Trimestral"},
-    { id: "RT-008", nome: "Rota Bauru Centro",          vendedor: "Sandra Souza",   plano: "Mensal"    },
-  ];
-  const rotasFiltradas = rotasSample.filter(r =>
-    r.nome.toLowerCase().includes(faturaRotaBusca.toLowerCase()) ||
-    r.vendedor.toLowerCase().includes(faturaRotaBusca.toLowerCase()) ||
-    r.id.toLowerCase().includes(faturaRotaBusca.toLowerCase())
-  );
 
   // ── Gerenciar Rendimentos ──
   type RendGRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; rota: string; };
@@ -6085,15 +6085,26 @@ export default function DashboardPage() {
       setGaSolicitacoes(data);
     } catch { /* silent */ }
   };
-  const [rotasAPI, setRotasAPI] = useState<{ rota: string; estadoUF: string | null; cidade: string | null; ativo: boolean; codigoAcesso: string | null }[]>([]);
+  const [rotasAPI, setRotasAPI] = useState<{ rota: string; estadoUF: string | null; cidade: string | null; ativo: boolean; codigoAcesso: string | null; cobradorNome: string | null }[]>([]);
   const fetchRotasAPI = () => {
     fetch('/api/aplicativos')
       .then(r => r.json())
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((data: any[]) => setRotasAPI(data.map((d: any) => ({ rota: d.rota, estadoUF: d.estado, cidade: d.cidade, ativo: d.ativo, codigoAcesso: d.codigoAcesso ?? null }))))
+      .then((data: any[]) => setRotasAPI(data.map((d: any) => ({ rota: d.rota, estadoUF: d.estado, cidade: d.cidade, ativo: d.ativo, codigoAcesso: d.codigoAcesso ?? null, cobradorNome: d.cobradorNome ?? null }))))
       .catch(() => {});
   };
   useEffect(() => { fetchRotasAPI(); }, []);
+  const rotasFaturas = rotasAPI.map(r => ({
+    id: r.codigoAcesso ?? "—",
+    nome: r.rota,
+    vendedor: r.cobradorNome ?? "—",
+    plano: "Mensal",
+  }));
+  const rotasFiltradas = rotasFaturas.filter(r =>
+    r.nome.toLowerCase().includes(faturaRotaBusca.toLowerCase()) ||
+    r.vendedor.toLowerCase().includes(faturaRotaBusca.toLowerCase()) ||
+    r.id.toLowerCase().includes(faturaRotaBusca.toLowerCase())
+  );
   const ufToEstadoNome: Record<string, string> = {
     AC:"ACRE",AL:"ALAGOAS",AM:"AMAZONAS",AP:"AMAPÁ",BA:"BAHIA",CE:"CEARÁ",
     DF:"DISTRITO FEDERAL",ES:"ESPÍRITO SANTO",GO:"GOIÁS",MA:"MARANHÃO",
@@ -7228,15 +7239,17 @@ export default function DashboardPage() {
               {/* COBRADOR (ROTA) */}
               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <label style={{ fontSize: 10, fontWeight: 700, color: "#64748b", letterSpacing: "0.07em", textTransform: "uppercase" }}>Cobrador (Rota)</label>
-                <select style={{ height: 32, border: "1px solid #cbd5e1", borderRadius: 5, padding: "0 28px 0 8px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", minWidth: 160, cursor: "pointer" }}>
-                  <option>Rota Cred Bank -</option>
-                  {rotasSample.map(r => <option key={r.id}>{r.nome}</option>)}
+                <select value={faturaFiltroRota} onChange={e => setFaturaFiltroRota(e.target.value)}
+                  style={{ height: 32, border: "1px solid #cbd5e1", borderRadius: 5, padding: "0 28px 0 8px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", minWidth: 160, cursor: "pointer" }}>
+                  <option value="">-- Todas --</option>
+                  {rotasFaturas.map(r => <option key={r.id} value={r.nome}>{r.nome}</option>)}
                 </select>
               </div>
               {/* NOME */}
               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <label style={{ fontSize: 10, fontWeight: 700, color: "#64748b", letterSpacing: "0.07em", textTransform: "uppercase" }}>Nome</label>
                 <input type="text" placeholder="Pesquisar por nome..."
+                  value={faturaFiltroNome} onChange={e => setFaturaFiltroNome(e.target.value)}
                   style={{ height: 32, border: "1px solid #cbd5e1", borderRadius: 5, padding: "0 10px", fontSize: 12, color: "#334155", background: "#fff", outline: "none", minWidth: 200 }}
                   onFocus={e => (e.target.style.borderColor = "#2563eb")}
                   onBlur={e => (e.target.style.borderColor = "#cbd5e1")} />
@@ -7286,7 +7299,7 @@ export default function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {faturaRows.map((row, idx) => {
+                    {faturasFiltradas.map((row, idx) => {
                       const bg = idx % 2 === 0 ? "#fff" : "#f8fafc";
                       const estadoBadge = {
                         Pendente: { bg: "#fef3c7", text: "#92400e", border: "#fcd34d", dot: "#f59e0b" },
@@ -7376,7 +7389,7 @@ export default function DashboardPage() {
                         </tr>
                       );
                     })}
-                    {faturaRows.length === 0 && (
+                    {faturasFiltradas.length === 0 && (
                       <tr><td colSpan={10} style={{ padding: "60px", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>Nenhuma fatura cadastrada.</td></tr>
                     )}
                   </tbody>
@@ -7388,12 +7401,12 @@ export default function DashboardPage() {
             <div className="shrink-0 flex items-center justify-start gap-8 px-5 py-2" style={{ background: "#fff", borderTop: "1px solid #e2e8f0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em" }}>FATURAS PENDENTES</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#f59e0b", padding: "1px 10px", borderRadius: 6 }}>{faturaRows.filter(r => r.estado === "Pendente").length}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#f59e0b", padding: "1px 10px", borderRadius: 6 }}>{faturasFiltradas.filter(r => r.estado === "Pendente").length}</span>
               </div>
               <span style={{ color: "#e2e8f0" }}>|</span>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em" }}>TOTAL A PAGAR</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1e40af", padding: "1px 10px", borderRadius: 6 }}>{fmtRealFatura(faturaRows.filter(r => r.estado !== "Pago").reduce((a, r) => a + r.valorCop, 0))}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#fff", background: "#1e40af", padding: "1px 10px", borderRadius: 6 }}>{fmtRealFatura(faturasFiltradas.filter(r => r.estado !== "Pago").reduce((a, r) => a + r.valorCop, 0))}</span>
               </div>
             </div>
             <div className="shrink-0 flex items-center px-4 py-2.5 border-t" style={{ background: "#3d6e8e" }} />
@@ -7525,15 +7538,48 @@ export default function DashboardPage() {
                         </select>
                       </div>
                     </div>
+                    {faturaNovaErro && (
+                      <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#b91c1c", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 7, padding: "8px 12px" }}>{faturaNovaErro}</p>
+                    )}
                     <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
-                      <button onClick={() => setFaturaNovaOpen(false)}
+                      <button onClick={() => { setFaturaNovaOpen(false); setFaturaNovaErro(null); }}
                         style={{ background: "#f1f5f9", color: "#475569", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "9px 22px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                         Cancelar
                       </button>
-                      <button onClick={() => {
-                        const maxNro = faturaRows.length > 0 ? Math.max(...faturaRows.map(r => +r.nro)) : 14768398;
-                        setFaturaRows(prev => [...prev, { ...faturaForm, id: Date.now(), nro: String(maxNro + 1) }]);
-                        setFaturaNovaOpen(false);
+                      <button onClick={async () => {
+                        if (!faturaRotaSelecionada) { setFaturaNovaErro("Selecione uma rota."); return; }
+                        if (!faturaForm.conceito.trim()) { setFaturaNovaErro("Informe o conceito."); return; }
+                        if (!faturaForm.vencimento) { setFaturaNovaErro("Informe o vencimento."); return; }
+                        if (!faturaForm.data) { setFaturaNovaErro("Informe a data."); return; }
+                        if (faturaForm.valorCop <= 0) { setFaturaNovaErro("Informe um valor maior que zero."); return; }
+                        try {
+                          const res = await fetch("/api/faturas", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              rota: faturaRotaSelecionada.nome,
+                              data: faturaForm.data,
+                              valorCentavos: faturaForm.valorCop,
+                              meses: faturaForm.meses,
+                              conceito: faturaForm.conceito.trim(),
+                              estado: faturaForm.estado,
+                              vencimento: faturaForm.vencimento,
+                              pais: faturaForm.pais,
+                            }),
+                          });
+                          if (!res.ok) {
+                            const j = await res.json().catch(() => ({}));
+                            setFaturaNovaErro(j.error ?? "Erro ao salvar a fatura.");
+                            return;
+                          }
+                          setFaturaNovaOpen(false);
+                          setFaturaNovaErro(null);
+                          setFaturaForm(emptyFatura);
+                          setFaturaRotaSelecionada(null);
+                          fetchFaturas();
+                        } catch {
+                          setFaturaNovaErro("Falha de conexão com o servidor.");
+                        }
                       }} style={{ background: "linear-gradient(135deg,#2563eb,#1d4ed8)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.4)" }}>
                         Salvar Fatura
                       </button>
@@ -7619,7 +7665,11 @@ export default function DashboardPage() {
                           style={{ background: "#f1f5f9", color: "#475569", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                           Cancelar
                         </button>
-                        <button onClick={() => { setFaturaRows(prev => prev.filter(r => r.id !== faturaDeleteId)); setFaturaDeleteId(null); }}
+                        <button onClick={async () => {
+                          try { await fetch(`/api/faturas/${faturaDeleteId}`, { method: "DELETE" }); } catch { /* silent */ }
+                          setFaturaDeleteId(null);
+                          fetchFaturas();
+                        }}
                           style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                           Sim, Excluir
                         </button>

@@ -13,6 +13,7 @@ import comandosClienteRouter from "./comandos-cliente";
 import configuracoesRouter from "./configuracoes";
 import importarRotaRouter from "./importar-rota";
 import importarResumoRouter from "./importar-resumo";
+import faturasRouter from "./faturas";
 
 const router: IRouter = Router();
 
@@ -30,5 +31,6 @@ router.use(comandosClienteRouter);
 router.use(configuracoesRouter);
 router.use(importarRotaRouter);
 router.use(importarResumoRouter);
+router.use(faturasRouter);
 
 export default router;

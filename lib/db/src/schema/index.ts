@@ -10,3 +10,4 @@ export * from "./solicitacoes_emprestimo";
 export * from "./solicitacoes_movimento";
 export * from "./comandos_cliente";
 export * from "./configuracoes";
+export * from "./faturas";
