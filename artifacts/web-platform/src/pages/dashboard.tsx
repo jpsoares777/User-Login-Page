@@ -6348,19 +6348,42 @@ export default function DashboardPage() {
       .replace(/[^a-z0-9%]/g, " ")
       .trim();
 
+  // IMPORTANTE: nunca retornar "" quando a coluna não existe — planilhas do
+  // sistema antigo têm uma 1ª coluna SEM nome (chave "") com o número da
+  // linha, e r[""] devolveria esse número (ex.: atrasadas = 1,2,3,4).
+  // Retorna uma chave-sentinela inexistente para que r[col] seja undefined.
+  const COL_INEXISTENTE = "__COLUNA_NAO_ENCONTRADA__";
   const findCol = (headers: string[], ...candidates: string[]): string => {
     const norm = headers.map(normalizeHeader);
     for (const c of candidates) {
       const cn = normalizeHeader(c);
+      if (!cn) continue;
       const idx = norm.findIndex(h => h === cn || h.includes(cn));
       if (idx >= 0) return headers[idx];
     }
-    return "";
+    return COL_INEXISTENTE;
   };
 
+  // Aceita "700.00" / "14.0" (ponto decimal, formato do sistema antigo),
+  // "1.234,56" (pt-BR) e "1,234.56" (en). Regra: se tem vírgula E ponto, o
+  // que aparece por último é o decimal; se só tem vírgula, ela é o decimal;
+  // se só tem ponto, é decimal — exceto "1.234" (exatamente 3 dígitos após
+  // um único ponto), tratado como milhar.
   const parseNum = (v: string): number => {
-    if (!v) return 0;
-    const s = String(v).replace(/[^\d.,-]/g, "").replace(/\./g, "").replace(",", ".");
+    if (v === null || v === undefined || v === "") return 0;
+    let s = String(v).replace(/[^\d.,-]/g, "");
+    if (!s) return 0;
+    const temV = s.includes(","), temP = s.includes(".");
+    if (temV && temP) {
+      if (s.lastIndexOf(",") > s.lastIndexOf(".")) s = s.replace(/\./g, "").replace(",", ".");
+      else s = s.replace(/,/g, "");
+    } else if (temV) {
+      s = s.replace(/,(?=\d{3}(?:\D|$))/g, (m, off) => "").replace(",", ".");
+    } else if (temP) {
+      const partes = s.split(".");
+      if (partes.length > 2) s = s.replace(/\./g, "");
+      else if (partes[1]?.length === 3) s = s.replace(".", "");
+    }
     return parseFloat(s) || 0;
   };
 
