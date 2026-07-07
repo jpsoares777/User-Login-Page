@@ -5884,9 +5884,10 @@ export default function DashboardPage() {
   );
 
   // ── Gerenciar Rendimentos ──
-  type RendGRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; };
-  const emptyRend: RendGRow = { id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "" };
+  type RendGRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; rota: string; };
+  const emptyRend: RendGRow = { id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "", rota: "" };
   const [rendGRows, setRendGRows] = useState<RendGRow[]>([]);
+  const [rendGFiltroRota, setRendGFiltroRota] = useState("-- Todas --");
   const [rendGFiltroCategoria, setRendGFiltroCategoria] = useState("-- Selecione --");
   const [rendGFiltroData, setRendGFiltroData] = useState("");
   const [rendGModalOpen, setRendGModalOpen] = useState(false);
@@ -5895,14 +5896,16 @@ export default function DashboardPage() {
   const [rendGDeleteId, setRendGDeleteId] = useState<number | null>(null);
   const rendGCategorias = ["Aporte ao Caixa", "Recuperação de Crédito", "Outros Rendimentos"];
   const rendGFiltered = rendGRows.filter(r =>
+    (rendGFiltroRota === "-- Todas --" || r.rota === rendGFiltroRota) &&
     (rendGFiltroCategoria === "-- Selecione --" || r.categoria === rendGFiltroCategoria) &&
     (!rendGFiltroData || r.data === rendGFiltroData)
   );
 
   // ── Gerenciar Despesas ──
-  type DespRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; };
-  const emptyDesp: DespRow = { id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "" };
+  type DespRow = { id: number; data: string; hora: string; categoria: string; descricao: string; valor: number; responsavel: string; obs: string; rota: string; };
+  const emptyDesp: DespRow = { id: 0, data: new Date().toISOString().slice(0,10), hora: "08:00", categoria: "", descricao: "", valor: 0, responsavel: "", obs: "", rota: "" };
   const [despRows, setDespRows] = useState<DespRow[]>([]);
+  const [despFiltroRota, setDespFiltroRota] = useState("-- Todas --");
   const [despFiltroCategoria, setDespFiltroCategoria] = useState("-- Selecione --");
   const [despFiltroData, setDespFiltroData] = useState("");
   const [despModalOpen, setDespModalOpen] = useState(false);
@@ -5920,6 +5923,7 @@ export default function DashboardPage() {
     "Material de Limpeza", "Manutenção de Veículos", "Rastreamento Veicular",
   ];
   const despFiltered = despRows.filter(r =>
+    (despFiltroRota === "-- Todas --" || r.rota === despFiltroRota) &&
     (despFiltroCategoria === "-- Selecione --" || r.categoria === despFiltroCategoria) &&
     (!despFiltroData || r.data === despFiltroData)
   );
@@ -5944,6 +5948,7 @@ export default function DashboardPage() {
           valor: Number(m.valor) || 0,
           responsavel: String(m.responsavel ?? ""),
           obs: String(m.obs ?? ""),
+          rota: String(m.rota ?? ""),
         });
         if (Array.isArray(data.despesas))    setDespRows(data.despesas.map(mapMov));
         if (Array.isArray(data.rendimentos)) setRendGRows(data.rendimentos.map(mapMov));
@@ -6770,8 +6775,10 @@ export default function DashboardPage() {
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
             <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
-            <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
-              <option>– Rota Cred Bank –</option>
+            <select value={rendGFiltroRota} onChange={e => setRendGFiltroRota(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
+              <option>-- Todas --</option>
+              {rotasAPI.map(r => <option key={r.rota} value={r.rota}>{r.rota}</option>)}
             </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 190 }}>
@@ -6804,8 +6811,10 @@ export default function DashboardPage() {
         <div className="flex items-center h-12 px-3 gap-2 shrink-0" style={{ background: "#f8f9fa", borderBottom: "1px solid #e0e0e0" }}>
           <div className="flex flex-col" style={{ minWidth: 160 }}>
             <label style={{ fontSize: 10, color: "#6b7280", fontWeight: 600, marginBottom: 1 }}>Rota (*):</label>
-            <select className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
-              <option>– Rota Cred Bank –</option>
+            <select value={despFiltroRota} onChange={e => setDespFiltroRota(e.target.value)}
+              className="h-7 border border-gray-300 rounded px-2 text-xs bg-white outline-none focus:border-blue-400 text-gray-700" style={{ minWidth: 140 }}>
+              <option>-- Todas --</option>
+              {rotasAPI.map(r => <option key={r.rota} value={r.rota}>{r.rota}</option>)}
             </select>
           </div>
           <div className="flex flex-col" style={{ minWidth: 190 }}>
