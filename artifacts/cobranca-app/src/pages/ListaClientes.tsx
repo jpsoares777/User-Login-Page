@@ -2109,14 +2109,17 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             const totalParc = Math.max(1, Math.round(Number(d.numParcelas) || 1));
             const totalAPagarImp = Number(d.totalAPagar) || 0;
             const saldoPlan = Number(d.saldo) || 0;
-            // Parcelas pagas: usa o valor importado quando > 0; senão deriva do
-            // saldo: pagas = (total a pagar − saldo) / valor da parcela.
-            const pagasImp = Math.max(0, Math.round(Number(d.parcelasPagas) || 0));
-            const pagasDerivadas = valorParcela > 0 && totalAPagarImp > 0
-              ? Math.max(0, Math.round((totalAPagarImp - saldoPlan) / valorParcela))
-              : 0;
-            const pagas = pagasImp > 0 ? pagasImp : pagasDerivadas;
-            const restantes = Math.round(Number(d.parcelasRestantes) || 0);
+            // Parcelas pagas: o SALDO é a fonte da verdade (a coluna C.PAGAS
+            // costuma vir 0): pagas = (total a pagar − saldo) / parcela — pode
+            // ser fracionário (pagamento parcial, ex.: 1,5 pagas quando o
+            // cliente pagou meia parcela). Assim Pendentes = cuotas − pagas
+            // bate com o C.RESTA real da lista (ex.: 12,5).
+            const round2imp = (n: number) => Math.round(n * 100) / 100;
+            const pagasImp = Math.max(0, round2imp(Number(d.parcelasPagas) || 0));
+            const pagas = valorParcela > 0 && totalAPagarImp > 0
+              ? Math.max(0, round2imp((totalAPagarImp - saldoPlan) / valorParcela))
+              : pagasImp;
+            const restantes = round2imp(Number(d.parcelasRestantes) || 0);
             const saldoImp = saldoPlan > 0 ? saldoPlan : valorParcela * (restantes > 0 ? restantes : totalParc - pagas);
             const inicioTs = d.dataInicio ? new Date(`${d.dataInicio}T12:00:00`).getTime() : clienteAlvoId;
             const novoImportado: ClienteItem = {
@@ -2146,28 +2149,36 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                 (!novoImportado.consecutivo && chaveImp(c) === chaveNovo))
                 ? prev : [...prev, novoImportado];
             const addOrdem = (prev: number[]) => prev.includes(clienteAlvoId) ? prev : [...prev, clienteAlvoId];
-            // Histórico de visitas sintetizado a partir da planilha: `pagas`
-            // parcelas pagas + atrasadas como "Sem pagamento". Assim a ficha
-            // do cliente mostra Atrasadas e Visitas corretas (o app deriva
-            // esses números do histórico de pagamentos do ciclo).
+            // Histórico de visitas sintetizado a partir da planilha: parcelas
+            // pagas inteiras + (se houver) 1 pagamento parcial (quando pagas é
+            // fracionário, ex.: 1,5 = 1 parcela cheia + meia parcela) + o resto
+            // das VISITAS como "Sem pagamento". Assim a ficha mostra Visitas =
+            // coluna VISITAS da lista e Atrasadas = visitas sem pagamento (o
+            // app deriva esses números do histórico de pagamentos do ciclo).
+            const pagasInteiras = Math.floor(pagas + 1e-9);
+            const valorParcial = round2imp((pagas - pagasInteiras) * valorParcela);
+            const temParcial = valorParcial > 0.009;
+            const visitasComPag = pagasInteiras + (temParcial ? 1 : 0);
             const atrasImp = Math.max(0, Math.round(Number(d.atrasadas) || 0));
             const visitasImp = Math.max(0, Math.round(Number(d.visitas) || 0));
-            const semPagImp = atrasImp > 0 ? atrasImp : Math.max(0, visitasImp - pagas);
+            const semPagImp = atrasImp > 0 ? atrasImp : Math.max(0, visitasImp - visitasComPag);
             const baseTs = novoImportado.creditoStartTimestamp ?? clienteAlvoId;
             const fmtDataPag = (ts: number) => {
               const dt = new Date(ts);
               return `${String(dt.getDate()).padStart(2, "0")}/${String(dt.getMonth() + 1).padStart(2, "0")}/${dt.getFullYear()}`;
             };
             const pagsSintetizados: Pagamento[] = [];
-            for (let i = 0; i < pagas + semPagImp; i++) {
+            for (let i = 0; i < visitasComPag + semPagImp; i++) {
               const ts = baseTs + (i + 1) * 86400000;
+              const comPag = i < visitasComPag;
+              const parcial = temParcial && i === visitasComPag - 1;
               pagsSintetizados.push({
                 id: Math.max(ts, baseTs + i + 1),
                 data: fmtDataPag(Math.min(ts, Date.now())),
                 parcela: i + 1,
-                valor: i < pagas ? valorParcela : 0,
-                metodo: (i < pagas ? "Parcela" : "Sem pagamento") as MetodoPagamento,
-                ...(i < pagas ? { forma: "Dinheiro" as FormaPagamento } : {}),
+                valor: comPag ? (parcial ? valorParcial : valorParcela) : 0,
+                metodo: (comPag ? "Parcela" : "Sem pagamento") as MetodoPagamento,
+                ...(comPag ? { forma: "Dinheiro" as FormaPagamento } : {}),
               });
             }
             const addHist = (prev: Record<number, Pagamento[]>) =>

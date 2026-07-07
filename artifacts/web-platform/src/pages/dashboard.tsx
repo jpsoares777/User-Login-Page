@@ -6403,17 +6403,20 @@ export default function DashboardPage() {
       const totalAPagar  = parseNum(r[pagarCol]);
       const valorParcela = parseNum(r[parcelaCol]);
       const saldo        = parseNum(r[saldoCol]);
-      // Parcelas pagas: usa a coluna da planilha quando > 0; senão deriva do
-      // saldo: pagas = (total a pagar − saldo) / valor da parcela.
-      const pagasPlanilha = Math.round(parseNum(r[pagasCol]));
-      const pagasDerivadas = valorParcela > 0 && totalAPagar > 0
-        ? Math.max(0, Math.round((totalAPagar - saldo) / valorParcela))
-        : 0;
-      const parcelasPagas = pagasPlanilha > 0 ? pagasPlanilha : pagasDerivadas;
-      const restaPlanilha = Math.round(parseNum(r[restaCol]));
+      // Parcelas pagas/restantes: o SALDO é a fonte da verdade (a coluna
+      // C.PAGAS costuma vir 0). pagas = (total a pagar − saldo) / parcela,
+      // restantes = saldo / parcela — pode ser fracionário (pagamento
+      // parcial, ex.: C.RESTA 12,5). A coluna da planilha só entra como
+      // fallback quando não dá para derivar.
+      const round2 = (n: number) => Math.round(n * 100) / 100;
+      const pagasPlanilha = round2(parseNum(r[pagasCol]));
+      const restaPlanilha = round2(parseNum(r[restaCol]));
+      const parcelasPagas = valorParcela > 0 && totalAPagar > 0
+        ? Math.max(0, round2((totalAPagar - saldo) / valorParcela))
+        : pagasPlanilha;
       const parcelasRestantes = restaPlanilha > 0
         ? restaPlanilha
-        : (valorParcela > 0 ? Math.max(0, Math.round(saldo / valorParcela)) : 0);
+        : (valorParcela > 0 ? Math.max(0, round2(saldo / valorParcela)) : 0);
       return {
         nome:              r[nomeCol]    ?? "",
         telefone:          r[telCol]    ?? "",
@@ -6542,9 +6545,9 @@ export default function DashboardPage() {
         jurosPorc: c.jurosPct || 40,
         total: c.totalAPagar,
         parcelas: c.numParcelas,
-        atrasadas: c.atrasadas || 0,
-        pagas: Math.round(c.parcelasPagas),
-        rest: Math.round(c.parcelasRestantes),
+        atrasadas: c.atrasadas || Math.max(0, Math.round(c.visitas - c.parcelasPagas)),
+        pagas: c.parcelasPagas,
+        rest: c.parcelasRestantes,
         sancao: 0,
         visitas: c.visitas || (Math.round(c.parcelasPagas) + (c.atrasadas || 0)),
         valorParc: c.valorParcela,

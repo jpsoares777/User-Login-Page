@@ -63,18 +63,21 @@ router.post("/importar-rota", async (req, res): Promise<void> => {
     try {
       if (!c.nome || !c.nome.trim()) continue;
 
-      // Fallback: deriva parcelas pagas/restantes do saldo quando a planilha
-      // não trouxe esses valores (pagas = (total a pagar − saldo) / parcela).
+      // Parcelas pagas/restantes: o SALDO é a fonte da verdade (a coluna
+      // C.PAGAS costuma vir 0). pagas = (total a pagar − saldo) / parcela,
+      // restantes = saldo / parcela — pode ser fracionário (pagamento
+      // parcial, ex.: C.RESTA 12,5). A coluna da planilha só entra como
+      // fallback quando não dá para derivar.
+      const round2 = (n: number) => Math.round(n * 100) / 100;
       const valorParcelaNum = Number(c.valorParcela) || 0;
       const totalAPagarNum = Number(c.totalAPagar) || 0;
       const saldoNum = Number(c.saldo) || 0;
-      const pagasDerivadas = valorParcelaNum > 0 && totalAPagarNum > 0
-        ? Math.max(0, Math.round((totalAPagarNum - saldoNum) / valorParcelaNum))
-        : 0;
-      const parcelasPagas = Number(c.parcelasPagas) > 0 ? Number(c.parcelasPagas) : pagasDerivadas;
+      const parcelasPagas = valorParcelaNum > 0 && totalAPagarNum > 0
+        ? Math.max(0, round2((totalAPagarNum - saldoNum) / valorParcelaNum))
+        : (Number(c.parcelasPagas) || 0);
       const parcelasRestantes = Number(c.parcelasRestantes) > 0
-        ? Number(c.parcelasRestantes)
-        : (valorParcelaNum > 0 ? Math.max(0, Math.round(saldoNum / valorParcelaNum)) : 0);
+        ? round2(Number(c.parcelasRestantes))
+        : (valorParcelaNum > 0 ? Math.max(0, round2(saldoNum / valorParcelaNum)) : 0);
 
       const [cliente] = await db.insert(clientesTable).values({
         nome: c.nome.trim(),
