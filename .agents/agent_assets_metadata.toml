@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "g1zMRI1qCs3ILW2g8t6lK"
+uri = "file://RELATORIO_SISTEMA.md"
+type = "text"
+title = "Relatório de Funcionamento do System Pay"
