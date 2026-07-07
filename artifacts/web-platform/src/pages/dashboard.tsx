@@ -8136,14 +8136,13 @@ export default function DashboardPage() {
               <div className="flex-1 overflow-auto">
                 <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1100 }}>
                   <colgroup>
-                    {[54, 150, 280, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
+                    {[54, 150, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
                   </colgroup>
                   <thead>
                     <tr>
                       {[
                         { label: "Nro.",        align: "center" as const },
                         { label: "Categoria",   align: "center" as const },
-                        { label: "Descrição",   align: "left"   as const },
                         { label: "Valor",       align: "right"  as const },
                         { label: "Data",        align: "center" as const },
                         { label: "Hora",        align: "center" as const },
@@ -8173,7 +8172,6 @@ export default function DashboardPage() {
                           <td style={td("center")}>
                             <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: cat.bg, color: cat.text, border: `1px solid ${cat.border}` }}>{row.categoria}</span>
                           </td>
-                          <td style={td("left", { color: "#374151" })}>{row.descricao}</td>
                           <td style={td("right", { fontWeight: 700, color: "#15803d" })}>R$ {row.valor.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
                           <td style={td("center", { color: "#6b7280" })}>{row.data}</td>
                           <td style={td("center", { color: "#6b7280" })}>{row.hora}</td>
@@ -8195,7 +8193,7 @@ export default function DashboardPage() {
                       );
                     })}
                     {rpFiltered.length === 0 && (
-                      <tr><td colSpan={9} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum rendimento encontrado no período.</td></tr>
+                      <tr><td colSpan={8} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhum rendimento encontrado no período.</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -8360,14 +8358,13 @@ export default function DashboardPage() {
               <div className="flex-1 overflow-auto">
                 <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed", minWidth: 1100 }}>
                   <colgroup>
-                    {[54, 150, 280, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
+                    {[54, 150, 120, 110, 80, 160, 200, 90].map((w, i) => <col key={i} style={{ width: w }} />)}
                   </colgroup>
                   <thead>
                     <tr>
                       {[
                         { label: "Nro.",        align: "center" as const },
                         { label: "Categoria",   align: "center" as const },
-                        { label: "Descrição",   align: "left"   as const },
                         { label: "Valor",       align: "right"  as const },
                         { label: "Data",        align: "center" as const },
                         { label: "Hora",        align: "center" as const },
@@ -8397,7 +8394,6 @@ export default function DashboardPage() {
                           <td style={td("center")}>
                             <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: cat.bg, color: cat.text, border: `1px solid ${cat.border}` }}>{row.categoria}</span>
                           </td>
-                          <td style={td("left", { color: "#374151" })}>{row.descricao}</td>
                           <td style={td("right", { fontWeight: 700, color: "#b91c1c" })}>R$ {row.valor.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
                           <td style={td("center", { color: "#6b7280" })}>{row.data}</td>
                           <td style={td("center", { color: "#6b7280" })}>{row.hora}</td>
@@ -8419,7 +8415,7 @@ export default function DashboardPage() {
                       );
                     })}
                     {gpFiltered.length === 0 && (
-                      <tr><td colSpan={9} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada no período.</td></tr>
+                      <tr><td colSpan={8} style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Nenhuma despesa encontrada no período.</td></tr>
                     )}
                   </tbody>
                 </table>
