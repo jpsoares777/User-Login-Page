@@ -20,6 +20,7 @@ interface ClienteImport {
   saldo: number;
   atrasadas?: number;
   visitas?: number;
+  ultPago?: number;
 }
 
 router.post("/importar-rota", async (req, res): Promise<void> => {
@@ -62,6 +63,19 @@ router.post("/importar-rota", async (req, res): Promise<void> => {
     try {
       if (!c.nome || !c.nome.trim()) continue;
 
+      // Fallback: deriva parcelas pagas/restantes do saldo quando a planilha
+      // não trouxe esses valores (pagas = (total a pagar − saldo) / parcela).
+      const valorParcelaNum = Number(c.valorParcela) || 0;
+      const totalAPagarNum = Number(c.totalAPagar) || 0;
+      const saldoNum = Number(c.saldo) || 0;
+      const pagasDerivadas = valorParcelaNum > 0 && totalAPagarNum > 0
+        ? Math.max(0, Math.round((totalAPagarNum - saldoNum) / valorParcelaNum))
+        : 0;
+      const parcelasPagas = Number(c.parcelasPagas) > 0 ? Number(c.parcelasPagas) : pagasDerivadas;
+      const parcelasRestantes = Number(c.parcelasRestantes) > 0
+        ? Number(c.parcelasRestantes)
+        : (valorParcelaNum > 0 ? Math.max(0, Math.round(saldoNum / valorParcelaNum)) : 0);
+
       const [cliente] = await db.insert(clientesTable).values({
         nome: c.nome.trim(),
         telefone: c.telefone ?? null,
@@ -85,8 +99,8 @@ router.post("/importar-rota", async (req, res): Promise<void> => {
         dataInicio: c.dataInicio || new Date().toISOString().slice(0, 10),
         status: "Ativo",
         saldo: String(c.saldo ?? 0),
-        parcelasPagas: String(c.parcelasPagas ?? 0),
-        parcelasRestantes: String(c.parcelasRestantes ?? 0),
+        parcelasPagas: String(parcelasPagas),
+        parcelasRestantes: String(parcelasRestantes),
         ativo: true,
       });
 
@@ -111,11 +125,12 @@ router.post("/importar-rota", async (req, res): Promise<void> => {
           jurosPct: c.jurosPct ?? 40,
           valorParcela: c.valorParcela ?? 0,
           numParcelas: c.numParcelas ?? 1,
-          parcelasPagas: c.parcelasPagas ?? 0,
-          parcelasRestantes: c.parcelasRestantes ?? 0,
+          parcelasPagas,
+          parcelasRestantes,
           saldo: c.saldo ?? 0,
           atrasadas: c.atrasadas ?? 0,
           visitas: c.visitas ?? 0,
+          ultPago: c.ultPago ?? 0,
         },
         status: "pendente",
       });

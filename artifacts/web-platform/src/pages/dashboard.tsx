@@ -5926,7 +5926,7 @@ export default function DashboardPage() {
   const [importarArquivoClientes, setImportarArquivoClientes] = useState<File | null>(null);
   const [importarLoading, setImportarLoading] = useState(false);
   const [importarStatus, setImportarStatus] = useState<{ ok: boolean; msg: string } | null>(null);
-  type ImportClienteRow = { nome: string; telefone: string; endereco: string; consecutivo: string; dataInicio: string; valorProduto: number; totalAPagar: number; jurosPct: number; valorParcela: number; numParcelas: number; parcelasPagas: number; parcelasRestantes: number; saldo: number; atrasadas: number; visitas: number; };
+  type ImportClienteRow = { nome: string; telefone: string; endereco: string; consecutivo: string; dataInicio: string; valorProduto: number; totalAPagar: number; jurosPct: number; valorParcela: number; numParcelas: number; parcelasPagas: number; parcelasRestantes: number; saldo: number; atrasadas: number; visitas: number; ultPago: number; };
   const [importarPreviewClientes, setImportarPreviewClientes] = useState<ImportClienteRow[]>([]);
 
   // ── Faturas ──
@@ -6383,24 +6383,42 @@ export default function DashboardPage() {
     const saldoCol    = c("SALDO");
     const atrasCol    = c("C.NO PAGAS","NO PAGAS","NO PAGADAS","ATRASADAS","ATRASOS","CUOTAS ATRASADAS","PARCELAS ATRASADAS");
     const visitCol    = c("VISITAS","NRO VISITAS","VISITAS FEITAS");
+    const ultCol      = c("ULT.PAGO","ULT. PAGO","ULT PAGO","ULTIMO PAGO","ÚLT.PAGO","ULTPAGO");
 
-    return rows.map(r => ({
-      nome:              r[nomeCol]    ?? "",
-      telefone:          r[telCol]    ?? "",
-      endereco:          r[endCol]    ?? "",
-      consecutivo:       r[consCol]   ?? "",
-      dataInicio:        r[dateCol]   ?? new Date().toISOString().slice(0,10),
-      valorProduto:      parseNum(r[prestCol]),
-      totalAPagar:       parseNum(r[pagarCol]),
-      jurosPct:          parseNum(r[pctCol]),
-      valorParcela:      parseNum(r[parcelaCol]),
-      numParcelas:       Math.round(parseNum(r[numParc])) || 1,
-      parcelasPagas:     parseNum(r[pagasCol]),
-      parcelasRestantes: parseNum(r[restaCol]),
-      saldo:             parseNum(r[saldoCol]),
-      atrasadas:         Math.round(parseNum(r[atrasCol])),
-      visitas:           Math.round(parseNum(r[visitCol])),
-    })).filter(r => r.nome.trim() !== "");
+    return rows.map(r => {
+      const totalAPagar  = parseNum(r[pagarCol]);
+      const valorParcela = parseNum(r[parcelaCol]);
+      const saldo        = parseNum(r[saldoCol]);
+      // Parcelas pagas: usa a coluna da planilha quando > 0; senão deriva do
+      // saldo: pagas = (total a pagar − saldo) / valor da parcela.
+      const pagasPlanilha = Math.round(parseNum(r[pagasCol]));
+      const pagasDerivadas = valorParcela > 0 && totalAPagar > 0
+        ? Math.max(0, Math.round((totalAPagar - saldo) / valorParcela))
+        : 0;
+      const parcelasPagas = pagasPlanilha > 0 ? pagasPlanilha : pagasDerivadas;
+      const restaPlanilha = Math.round(parseNum(r[restaCol]));
+      const parcelasRestantes = restaPlanilha > 0
+        ? restaPlanilha
+        : (valorParcela > 0 ? Math.max(0, Math.round(saldo / valorParcela)) : 0);
+      return {
+        nome:              r[nomeCol]    ?? "",
+        telefone:          r[telCol]    ?? "",
+        endereco:          r[endCol]    ?? "",
+        consecutivo:       r[consCol]   ?? "",
+        dataInicio:        r[dateCol]   ?? new Date().toISOString().slice(0,10),
+        valorProduto:      parseNum(r[prestCol]),
+        totalAPagar,
+        jurosPct:          parseNum(r[pctCol]),
+        valorParcela,
+        numParcelas:       Math.round(parseNum(r[numParc])) || 1,
+        parcelasPagas,
+        parcelasRestantes,
+        saldo,
+        atrasadas:         Math.round(parseNum(r[atrasCol])),
+        visitas:           Math.round(parseNum(r[visitCol])),
+        ultPago:           parseNum(r[ultCol]),
+      };
+    }).filter(r => r.nome.trim() !== "");
   };
 
   const handleImportarArquivoClientes = async (file: File) => {

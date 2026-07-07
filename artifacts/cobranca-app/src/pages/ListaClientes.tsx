@@ -2101,15 +2101,23 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             // local do app com crédito ativo. Dedupe por id e por consecutivo.
             const d = (cmd.dados ?? {}) as {
               nome?: string; telefone?: string; endereco?: string; consecutivo?: string;
-              dataInicio?: string; jurosPct?: number; valorParcela?: number;
+              dataInicio?: string; jurosPct?: number; valorParcela?: number; totalAPagar?: number;
               numParcelas?: number; parcelasPagas?: number; parcelasRestantes?: number; saldo?: number;
-              atrasadas?: number; visitas?: number;
+              atrasadas?: number; visitas?: number; ultPago?: number;
             };
             const valorParcela = Number(d.valorParcela) || 0;
             const totalParc = Math.max(1, Math.round(Number(d.numParcelas) || 1));
-            const pagas = Math.max(0, Math.round(Number(d.parcelasPagas) || 0));
+            const totalAPagarImp = Number(d.totalAPagar) || 0;
+            const saldoPlan = Number(d.saldo) || 0;
+            // Parcelas pagas: usa o valor importado quando > 0; senão deriva do
+            // saldo: pagas = (total a pagar − saldo) / valor da parcela.
+            const pagasImp = Math.max(0, Math.round(Number(d.parcelasPagas) || 0));
+            const pagasDerivadas = valorParcela > 0 && totalAPagarImp > 0
+              ? Math.max(0, Math.round((totalAPagarImp - saldoPlan) / valorParcela))
+              : 0;
+            const pagas = pagasImp > 0 ? pagasImp : pagasDerivadas;
             const restantes = Math.round(Number(d.parcelasRestantes) || 0);
-            const saldoImp = Number(d.saldo) > 0 ? Number(d.saldo) : valorParcela * (restantes > 0 ? restantes : totalParc - pagas);
+            const saldoImp = saldoPlan > 0 ? saldoPlan : valorParcela * (restantes > 0 ? restantes : totalParc - pagas);
             const inicioTs = d.dataInicio ? new Date(`${d.dataInicio}T12:00:00`).getTime() : clienteAlvoId;
             const novoImportado: ClienteItem = {
               id: clienteAlvoId,
@@ -2165,16 +2173,28 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
             const addHist = (prev: Record<number, Pagamento[]>) =>
               (prev[clienteAlvoId]?.length || pagsSintetizados.length === 0)
                 ? prev : { ...prev, [clienteAlvoId]: pagsSintetizados };
+            // Rota importada vem de um caixa já trabalhado: o cliente entra
+            // marcado como COBRADO hoje com o valor do ULT.PAGO da planilha.
+            const ultPagoImp = Math.max(0, Number(d.ultPago) || 0);
+            const addCobradoImp = (prev: number[]) =>
+              prev.includes(clienteAlvoId) ? prev : [...prev, clienteAlvoId];
+            const addCobradoValorImp = (prev: {id: number, valor: number}[]) =>
+              prev.some(x => x.id === clienteAlvoId) ? prev : [...prev, { id: clienteAlvoId, valor: ultPagoImp }];
             setClientes(addImportado);
             setOrdemClientesIds(addOrdem);
             setHistoricoPagamentos(addHist);
+            setCobrados(addCobradoImp);
+            setCobradosValores(addCobradoValorImp);
             // Durabilidade ANTES do ack.
             const dbA = loadDB();
             if (dbA) {
               saveDB({
+                lastDate: getTodayStr(),
                 clientes: addImportado((dbA.clientes as ClienteItem[] | undefined) ?? []),
                 ordemClientesIds: addOrdem(dbA.ordemClientesIds ?? []),
                 historicoPagamentos: addHist((dbA.historicoPagamentos as Record<number, Pagamento[]> | undefined) ?? {}),
+                cobrados: addCobradoImp(dbA.cobrados ?? []),
+                cobradosValores: addCobradoValorImp((dbA.cobradosValores as {id: number, valor: number}[] | undefined) ?? []),
               });
             }
           } else if (cmd.tipo === "excluir") {
