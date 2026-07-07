@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, inArray } from "drizzle-orm";
 import { db, caixaTable, movimentosCaixaTable, aplicativosTable, comandosClienteTable } from "@workspace/db";
 
 const router: IRouter = Router();
@@ -220,18 +220,51 @@ router.get("/caixa/movimentos-rotas", async (_req, res): Promise<void> => {
         .orderBy(desc(caixaTable.dataFechamento), desc(caixaTable.id))
         .limit(1);
     }
-    if (!caixa || !caixa.dadosSnapshot) continue;
+    const tag = (m: any) => ({
+      ...m,
+      rota: aplicativo.rota,
+      responsavel: aplicativo.cobradorNome ?? "",
+    });
 
-    try {
-      const snap = JSON.parse(caixa.dadosSnapshot);
-      const tag = (m: any) => ({
-        ...m,
-        rota: aplicativo.rota,
-        responsavel: aplicativo.cobradorNome ?? "",
+    // Ids já presentes no snapshot desta rota (para não duplicar pendentes).
+    const idsExistentes = new Set<string>();
+
+    if (caixa?.dadosSnapshot) {
+      try {
+        const snap = JSON.parse(caixa.dadosSnapshot);
+        if (Array.isArray(snap?.despesasLista)) {
+          for (const m of snap.despesasLista) { idsExistentes.add(String(m?.id)); despesas.push(tag(m)); }
+        }
+        if (Array.isArray(snap?.rendimentosLista)) {
+          for (const m of snap.rendimentosLista) { idsExistentes.add(String(m?.id)); rendimentos.push(tag(m)); }
+        }
+      } catch { /* snapshot inválido: segue só com pendentes */ }
+    }
+
+    // Movimentos criados na WEB e ainda não aplicados pelo app (comandos
+    // pendentes tipo despesa/rendimento): aparecem imediatamente no admin.
+    const pendentes = await db.select().from(comandosClienteTable)
+      .where(and(
+        eq(comandosClienteTable.codigoAcesso, aplicativo.codigoAcesso),
+        eq(comandosClienteTable.status, "pendente"),
+        inArray(comandosClienteTable.tipo, ["despesa", "rendimento"]),
+      ))
+      .orderBy(comandosClienteTable.id);
+
+    for (const p of pendentes) {
+      if (idsExistentes.has(String(p.clienteId))) continue;
+      const d = (p.dados ?? {}) as any;
+      const mov = tag({
+        id: Number(p.clienteId),
+        categoria: String(d.categoria ?? ""),
+        descricao: String(d.obs ?? d.categoria ?? ""),
+        valor: Number(d.valor) || 0,
+        data: String(d.data ?? ""),
+        hora: String(d.hora ?? ""),
+        obs: String(d.obs ?? ""),
       });
-      if (Array.isArray(snap?.despesasLista))    despesas.push(...snap.despesasLista.map(tag));
-      if (Array.isArray(snap?.rendimentosLista)) rendimentos.push(...snap.rendimentosLista.map(tag));
-    } catch { continue; }
+      if (p.tipo === "despesa") despesas.push(mov); else rendimentos.push(mov);
+    }
   }
 
   res.json({ despesas, rendimentos });

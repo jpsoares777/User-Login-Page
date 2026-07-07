@@ -2066,6 +2066,26 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
                 quitadosClientes: mapF(dbA.quitadosClientes) ?? dbA.quitadosClientes,
               });
             }
+          } else if (cmd.tipo === "despesa" || cmd.tipo === "rendimento") {
+            // Movimento financeiro criado na WEB: entra na lista local do dia
+            // (mesma lista dos lançamentos feitos no próprio app) e volta ao
+            // admin pelo snapshot. clienteId = id do movimento.
+            const d = (cmd.dados ?? {}) as { categoria?: string; valor?: number; data?: string; obs?: string };
+            const item: LancamentoItem = {
+              id: clienteAlvoId,
+              data: d.data ?? new Date().toISOString().slice(0, 10),
+              categoria: d.categoria ?? "Outros",
+              valor: Number(d.valor) || 0,
+              observacao: d.obs ?? "",
+            };
+            const addItem = (prev: LancamentoItem[]) => prev.some(x => x.id === item.id) ? prev : [...prev, item];
+            if (cmd.tipo === "despesa") setDespesas(addItem); else setRendimentos(addItem);
+            // Durabilidade ANTES do ack.
+            const dbA = loadDB();
+            if (dbA) {
+              if (cmd.tipo === "despesa") saveDB({ despesas: addItem((dbA.despesas as LancamentoItem[] | undefined) ?? []) });
+              else saveDB({ rendimentos: addItem((dbA.rendimentos as LancamentoItem[] | undefined) ?? []) });
+            }
           } else if (cmd.tipo === "excluir") {
             // Mesmo critério da edição: empréstimo pertence ao cliente se
             // clienteId (renovação) ou o próprio id (cadastro) casar.

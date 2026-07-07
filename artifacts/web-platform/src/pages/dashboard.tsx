@@ -7746,6 +7746,14 @@ export default function DashboardPage() {
                     <button onClick={() => setRendGModalOpen(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
                   </div>
                   <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Rota *</label>
+                      <select value={rendGForm.rota} onChange={e => setRendGForm(f => ({ ...f, rota: e.target.value }))} disabled={!!rendGEditId}
+                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
+                        <option value="">-- Selecione --</option>
+                        {rotasAPI.map(r => <option key={r.rota} value={r.rota}>{r.rota}</option>)}
+                      </select>
+                    </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                       <div>
                         <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Data *</label>
@@ -7788,13 +7796,34 @@ export default function DashboardPage() {
                         style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                         Cancelar
                       </button>
-                      <button onClick={() => {
+                      <button onClick={async () => {
                         if (rendGEditId) {
                           setRendGRows(prev => prev.map(r => r.id === rendGEditId ? rendGForm : r));
-                        } else {
-                          setRendGRows(prev => [...prev, { ...rendGForm, id: Date.now() }]);
+                          setRendGModalOpen(false);
+                          return;
                         }
-                        setRendGModalOpen(false);
+                        if (!rendGForm.rota || !rendGForm.categoria || !(rendGForm.valor > 0)) {
+                          alert("Preencha Rota, Categoria e Valor.");
+                          return;
+                        }
+                        // Id = timestamp de data+hora (com segundos aleatórios p/ evitar colisão).
+                        const base = new Date(`${rendGForm.data}T${rendGForm.hora || "08:00"}:00`).getTime();
+                        const id = (Number.isFinite(base) ? base : Date.now()) + Math.floor(Math.random() * 59000);
+                        try {
+                          const res = await fetch(`${import.meta.env.BASE_URL}api/comandos-cliente`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              rota: rendGForm.rota, tipo: "rendimento", clienteId: id,
+                              dados: { categoria: rendGForm.categoria, valor: rendGForm.valor, data: rendGForm.data, hora: rendGForm.hora, obs: rendGForm.obs },
+                            }),
+                          });
+                          if (!res.ok) throw new Error(String(res.status));
+                          setRendGRows(prev => [...prev, { ...rendGForm, id }]);
+                          setRendGModalOpen(false);
+                        } catch {
+                          alert("Erro ao salvar o rendimento no servidor. Tente novamente.");
+                        }
                       }} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                         Salvar
                       </button>
@@ -7940,6 +7969,14 @@ export default function DashboardPage() {
                     <button onClick={() => setDespModalOpen(false)} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 4, padding: "3px 11px", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>✕</button>
                   </div>
                   <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Rota *</label>
+                      <select value={despForm.rota} onChange={e => setDespForm(f => ({ ...f, rota: e.target.value }))} disabled={!!despEditId}
+                        style={{ width: "100%", height: 32, border: "1px solid #d1d5db", borderRadius: 5, padding: "0 8px", fontSize: 12, outline: "none", boxSizing: "border-box", background: "#fff" }}>
+                        <option value="">-- Selecione --</option>
+                        {rotasAPI.map(r => <option key={r.rota} value={r.rota}>{r.rota}</option>)}
+                      </select>
+                    </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                       <div>
                         <label style={{ fontSize: 11, fontWeight: 700, color: "#374151", display: "block", marginBottom: 4 }}>Data *</label>
@@ -7982,13 +8019,34 @@ export default function DashboardPage() {
                         style={{ background: "#f1f5f9", color: "#374151", border: "1px solid #d1d5db", borderRadius: 6, padding: "8px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                         Cancelar
                       </button>
-                      <button onClick={() => {
+                      <button onClick={async () => {
                         if (despEditId) {
                           setDespRows(prev => prev.map(r => r.id === despEditId ? despForm : r));
-                        } else {
-                          setDespRows(prev => [...prev, { ...despForm, id: Date.now() }]);
+                          setDespModalOpen(false);
+                          return;
                         }
-                        setDespModalOpen(false);
+                        if (!despForm.rota || !despForm.categoria || !(despForm.valor > 0)) {
+                          alert("Preencha Rota, Categoria e Valor.");
+                          return;
+                        }
+                        // Id = timestamp de data+hora (com segundos aleatórios p/ evitar colisão).
+                        const base = new Date(`${despForm.data}T${despForm.hora || "08:00"}:00`).getTime();
+                        const id = (Number.isFinite(base) ? base : Date.now()) + Math.floor(Math.random() * 59000);
+                        try {
+                          const res = await fetch(`${import.meta.env.BASE_URL}api/comandos-cliente`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              rota: despForm.rota, tipo: "despesa", clienteId: id,
+                              dados: { categoria: despForm.categoria, valor: despForm.valor, data: despForm.data, hora: despForm.hora, obs: despForm.obs },
+                            }),
+                          });
+                          if (!res.ok) throw new Error(String(res.status));
+                          setDespRows(prev => [...prev, { ...despForm, id }]);
+                          setDespModalOpen(false);
+                        } catch {
+                          alert("Erro ao salvar a despesa no servidor. Tente novamente.");
+                        }
                       }} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, padding: "8px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                         Salvar
                       </button>

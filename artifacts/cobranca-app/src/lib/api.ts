@@ -602,7 +602,7 @@ export async function fetchLimitesAprovacaoAPI(): Promise<LimitesAprovacao> {
 export type ComandoClienteAPI = {
   id: number;
   codigoAcesso: string;
-  tipo: "editar" | "excluir";
+  tipo: "editar" | "excluir" | "inativar" | "reativar" | "despesa" | "rendimento";
   clienteId: string;
   consec: string | null;
   dados: {
