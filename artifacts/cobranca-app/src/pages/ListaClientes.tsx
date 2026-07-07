@@ -2297,7 +2297,17 @@ export function ListaClientes({ onSair, cobradorId = 0 }: { onSair?: () => void;
     const novosEmpSnap = novosEmpHojeSnap.reduce((s, e) => s + (e.valorEmprestado ?? 0), 0);
     const jurosSnap = novosEmpHojeSnap.reduce((s, e) => s + (Number(e.valorEmprestado) || 0) * ((Number(e.taxaJuros) || 0) / 100), 0);
     const caixaFinalSnap = caixaInicial + recebAtualSnap + totalRendimentosSnap - novosEmpSnap - totalDespesasSnap - retiradaSnap;
-    const carteiraInicialSnap = clientes.filter(c => c.saldo > 0).reduce((s, c) => s + c.saldo, 0);
+    // Carteira INICIAL = total a receber no COMEÇO do dia. O saldo atual já
+    // desconta os pagamentos de hoje (inclusive o ULT.PAGO de clientes
+    // importados), então somamos de volta o valor pago hoje de cada cliente
+    // (cobradosValores é zerado na virada do dia). Ex.: saldos 2.448 +
+    // recebido 132 = carteira inicial 2.580. Renovados hoje ficam de fora do
+    // ajuste (o pagamento de hoje pertence ao ciclo antigo, já encerrado).
+    const carteiraInicialSnap = clientes.reduce((s, c) => {
+      const pagoHoje = renovacoesIds.has(c.id) ? 0 : (cobradosValores.find(x => x.id === c.id)?.valor ?? 0);
+      const saldoInicioDia = c.saldo + pagoHoje;
+      return s + (saldoInicioDia > 0 ? saldoInicioDia : 0);
+    }, 0);
     // Carteira Final = total a receber ao fim do dia. É a soma de DUAS fontes, sem
     // duplicar por id:
     //  (1) SALDO ATUAL de todos os clientes ativos já representados nos arrays
